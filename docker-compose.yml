@@ -1,0 +1,47 @@
+services:
+  spa:
+    build: backend
+    container_name: backend
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend/spaproject:/app
+    environment:
+      - DATABASE_NAME=${DB_NAME}
+      - DATABASE_USER=${DB_USER}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - SECRET_KEY=${SECRET_KEY}
+        - DEBUG=${DEBUG}
+        - CERTS=${CERTS}
+        - COUNTRY=${COUNTRY}
+        - STATE=${STATE}
+        - LOCALITY=${LOCALITY}
+        - ORGANIZATION=${ORGANIZATION}
+        - ORGANIZATION_UNIT=${ORGANIZATION_UNIT}
+        - COMMON_NAME=${DOMAIN_NAME}
+        - EMAIL=${EMAIL}
+        - DOMAIN_NAME=${DOMAIN_NAME}
+    container_name: frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend/static_vol:/var/www/html
+      - ${CERTS}:/etc/nginx/ssl:ro
+
+  db:
+    image: postgres:13
+    container_name: db
+    volumes:
+      - ./postgres_vol:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5432:5432"
