@@ -1,6 +1,7 @@
 "use strict";
 
 //page
+import PageBase from "/js/components/PageBase.js";
 import Home from "/js/components/Home.js";
 import PageList from "/js/components/PageList.js";
 import User from "/js/components/User.js";
@@ -94,8 +95,15 @@ const router = async (ev) => {
     //const view = isConstructor(match.route.view) ? new match.route.view(getParams(match)) : null;
     const view = new match.route.view(getParams(match));
     if (view) {
+        //前画面のeventListenerをrm
+        const oldView = PageBase.instance;
+        if (oldView) {
+          oldView.destroy();
+        }
+        //view更新
         document.querySelector("#app").innerHTML = await view.renderHtml();
         view.afterRender();
+        //todo: ↓afterRenderに統合
         const linkPages = document.querySelectorAll('#app a[data-link]');
         addLinkPageEvClick(linkPages);
     }

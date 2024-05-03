@@ -20,6 +20,14 @@ export default class extends PageBase {
     }
 
     listenLogin() {
+        const btnLogin = document.querySelector("#btnLogin");
+        btnLogin.addEventListener("click", this.handleLogin.bind(this));
+        this.addListenEvent(btnLogin, this.handleLogin, "click");
+    }
 
+    handleLogin(ev) {
+        ev.preventDefault();
+        // todo:ログイン処理
+        console.log("ログインボタンがクリックされました");
     }
 }
