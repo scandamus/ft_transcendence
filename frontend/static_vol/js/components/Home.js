@@ -7,13 +7,19 @@ export default class extends PageBase {
         super(params);
         this.setTitle("LOGIN");
         this.labelButton = "サインイン with 42";
+        //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.listenLogin.bind(this));
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
             <form action="" method="post" class="blockForm blockForm-home">
                 <button type="submit" id="btnLogin" class="unitButton unitButton-large">${this.labelButton}</button>
             </form>
         `;
+    }
+
+    listenLogin() {
+
     }
 }

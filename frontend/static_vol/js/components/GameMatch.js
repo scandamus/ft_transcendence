@@ -21,7 +21,7 @@ export default class extends PageBase {
             });
     }
 
-    async getHtml() {
+    async renderHtml() {
         const listUsers = await this.getListPlayers();
         if (!listUsers || listUsers.length === 0) {
             return '<div>No players found.</div>';

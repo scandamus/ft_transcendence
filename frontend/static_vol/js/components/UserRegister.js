@@ -9,7 +9,7 @@ export default class extends PageBase {
         this.labelButton = "確認する";
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
             <form class="formUserResister blockForm" action="" method="post">
                 <dl class="unitFormInput">

@@ -8,7 +8,7 @@ export default class extends PageBase {
         this.setTitle("TournamentMatch");
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
             <p>TournamentMatch</p>
         `;

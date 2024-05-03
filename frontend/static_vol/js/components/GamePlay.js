@@ -10,7 +10,7 @@ export default class extends PageBase {
         this.player2 = "player2人目";
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
            <div class="playBoardWrap">
                 <ul class="listPlayerActiveMatch">

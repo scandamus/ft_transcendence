@@ -10,7 +10,7 @@ export default class extends PageBase {
         this.txtDeadline = "エントリー締切";
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
             <div class="listTournaments">
                 <section class="unitListItem">

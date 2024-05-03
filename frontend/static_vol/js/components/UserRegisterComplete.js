@@ -9,7 +9,7 @@ export default class extends PageBase {
         this.message = "登録完了しました";
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
            <p class="unitTextComplete unitBox">${this.message}</p>
         `;

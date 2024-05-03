@@ -11,7 +11,7 @@ export default class extends PageBase {
         this.textConfirm = "下記の内容で登録します";
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
             <form class="formUserResister blockForm" action="" method="post">
                 <p>${this.textConfirm}</p>

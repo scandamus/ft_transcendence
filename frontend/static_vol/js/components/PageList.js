@@ -8,7 +8,7 @@ export default class extends PageBase {
         this.setTitle("PageList");
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
             <ul>
                 <li><a href="/" data-link>login</a></li>

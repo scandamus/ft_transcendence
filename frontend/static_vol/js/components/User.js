@@ -9,7 +9,7 @@ export default class extends PageBase {
         this.setTitle(`USER: ${this.userName}`);
     }
 
-    async getHtml() {
+    async renderHtml() {
         return `
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">

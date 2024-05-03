@@ -94,7 +94,8 @@ const router = async (ev) => {
     //const view = isConstructor(match.route.view) ? new match.route.view(getParams(match)) : null;
     const view = new match.route.view(getParams(match));
     if (view) {
-        document.querySelector("#app").innerHTML = await view.getHtml();
+        document.querySelector("#app").innerHTML = await view.renderHtml();
+        view.afterRender();
         const linkPages = document.querySelectorAll('#app a[data-link]');
         addLinkPageEvClick(linkPages);
     }
