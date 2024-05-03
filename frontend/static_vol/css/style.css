@@ -1,0 +1,481 @@
+/* RESET */
+*,*::before,*::after{box-sizing:border-box}body,h1,h2,h3,h4,p,figure,blockquote,dl,dd{margin:0}ul[role="list"],ol[role="list"]{list-style:none}html:focus-within{scroll-behavior:smooth}body{min-height:100vh;text-rendering:optimizeSpeed;line-height:1.5}a:not([class]){text-decoration-skip-ink:auto}img,picture{max-width:100%;}input,button,textarea,select{font:inherit}@media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* -----
+ common
+----- */
+:root {
+  --heightMainHeader: 60px;
+
+  --content-color1: rgb(4, 229, 143);
+  --content-color2: rgb(230, 0, 255);
+  --color-burn: rgba(105,134,30, 0.3);
+  --color-white: #fff;
+  --color-white-alpha: rgba(255, 255, 255, 0.5);
+  --color-white-alpha2: rgba(255, 255, 255, 0.2);
+  --color-black: #000;
+  --color-black-alpha: rgba(0, 0, 0, 0.5);
+  --color-black-alpha2: rgba(0, 0, 0, 0.2);
+
+  font-family: "Chakra Petch", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-white);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 0.06em 0.06em var(--content-color1), -0.05em -0.07em var(--content-color2);
+}
+
+.wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  background-blend-mode: overlay;
+  background-image:
+          radial-gradient(circle, rgba(120, 130, 130, 1), rgba(60, 70, 70, 1) 80%),
+          repeating-linear-gradient(0deg, #a8a8a8, #a8a8a8 2px, transparent 2px, transparent 5px);
+  background-color: #3c4748;
+  overflow: hidden;
+}
+
+.wrap::before {
+  content: "";
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background-color: var(--color-burn);
+  box-shadow: 0 0 30px 20px var(--color-burn);
+  mix-blend-mode: multiply;
+  animation: 16s infinite anmScreenBurn;
+  pointer-events: none;
+}
+
+@keyframes anmScreenBurn {
+  from {
+    top: calc(100vh + 50px);
+  }
+
+  to {
+    top: -120px;
+  }
+}
+
+/* mainHeader */
+.mainHeader {
+  height: var(--heightMainHeader);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 3px 10px rgba(24, 28, 28, 0.6);
+}
+
+.mainHeader a {
+  color: var(--color-white);
+}
+
+.mainHeader_title {
+  flex: 1 0 auto;
+  padding-left: 20px;
+}
+
+.mainHeader_nav {
+  padding-right: 20px;
+}
+
+.mainHeader_nav h2 {
+  font-size: 1.3rem;
+}
+
+.headerNav-login {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.headerNav-login .thumb {
+  margin-right: 6px;
+}
+
+.navGlobal {
+  display: none;/*tmp*/
+  padding-right: 10px;
+}
+
+.navList {
+  display: flex;
+  list-style: none;
+}
+
+.navList_item {
+  margin: 0 1em;
+}
+
+/* mainContainer */
+.mainContainer {
+  flex: 1 0 auto;
+}
+
+.mainContainerHeader {
+  padding-top: 60px;
+  text-align: center;
+}
+
+.mainContainerHeader_title {
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+}
+
+.mainContainer_content {/* #app */
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* mainFooter */
+.mainFooter {
+  height: 2em;
+  line-height: 2em;
+  padding: 0 20px;
+  border-top: 1px solid var(--color-black-alpha);
+  color: var(--color-white);
+  text-align: right;
+}
+
+.formSwitchLang {
+
+}
+
+/* -----
+ module
+----- */
+
+/* unitButton */
+.unitButton {
+  position: relative;
+  padding: 0.2em 0.8em;
+  background-color: var(--color-burn);
+  border: none;
+  text-shadow:
+          0.06em 0.06em var(--content-color1),
+          -0.05em -0.07em var(--content-color2);
+  font-size: 1.3rem;
+  color: var(--color-white);
+}
+
+.unitButton-large {
+  font-size: 1.8rem;
+}
+
+.unitButton::before,
+.unitButton::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.unitButton::before {
+  transform: translate(-1px, -1px);
+  border: 1px solid var(--content-color2);
+}
+
+.unitButton::after {
+  transform: translate(1px, 1px);
+  border: 1px solid var(--content-color1);
+}
+
+.unitButton:hover::before {
+  animation: 0.2s ease-out btnHover1;
+}
+
+.unitButton:hover::after {
+  animation: 0.2s ease-out btnHover2;
+}
+
+@keyframes btnHover1 {
+  0% {
+    transform: translate(-1px, -1px);
+  }
+  50% {
+    transform: translate(1px, 1px);
+  }
+  100% {
+    transform: translate(-1px, -1px);
+  }
+}
+
+@keyframes btnHover2 {
+  0% {
+    transform: translate(1px, 1px);
+  }
+  50% {
+    transform: translate(-1px, -1px);
+  }
+  100% {
+    transform: translate(1px, 1px);
+  }
+}
+
+/* unitListItem */
+.unitListItem {
+  margin-bottom: 20px;
+  border: 4px solid var(--color-black-alpha);
+}
+
+.unitListItem_header {
+  padding: 4px 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  background-color: var(--color-black-alpha);
+}
+
+.unitListItem_header h3 {
+  font-size: 1.6rem;
+}
+
+.unitListItem_content {
+  padding: 0.7em 0.8em 0.5em;
+  font-size: 1.2rem;
+}
+
+/* form */
+input {
+  padding: 0.2em 0.5em;
+  font-size: 1.4rem;
+  background-color: var(--color-black-alpha);
+  border: 1px solid var(--color-white);
+  color: var(--color-white);
+  box-shadow:
+          1px 1px var(--content-color1),
+          -1px -1px var(--content-color2);
+}
+
+.blockForm {
+}
+
+.unitFormInput {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.unitFormInput_label {
+  margin-bottom: 0.3em;
+  font-size: 1.4rem;
+}
+
+.unitFormInput_input input {
+  width: 100%;
+}
+
+.unitFormInput_input-confirm {
+  padding: 0 0.5em;
+  font-size: 1.6rem;
+  background-color: var(--color-black-alpha2);
+}
+
+/* .thumb */
+.thumb {
+  line-height: 0;
+}
+
+.thumb img {
+  border-radius: 50%;
+}
+
+/* list */
+.listButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+}
+
+.listButton li {
+  margin: 0 10px;
+}
+
+/* .unitBox */
+.unitBox {
+  border: 1px solid var(--color-white);
+  box-shadow: -1px -1px var(--content-color1),
+  1px 1px var(--content-color2);
+}
+
+/* -----
+ page
+----- */
+/* home */
+.blockForm-home {
+  margin-top: 50px;
+  text-align: center;
+}
+
+/*User*/
+.blockPlayerDetail {
+
+}
+
+.blockPlayerDetail_profile {
+  margin-bottom: 40px;
+}
+
+@media screen and (min-width: 768px) {
+  .blockPlayerDetail {
+    display: flex;
+  }
+
+  .blockPlayerDetail_profile {
+    flex: 0 0 200px;
+    margin-right: 60px;
+  }
+}
+
+.blockPlayerDetail_thumb {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.blockPlayerDetail_thumb img {
+  display: inline;
+}
+
+.blockPlayerDetail_score {
+  font-size: 1.8rem;
+  text-align: center;
+  line-height: 1.7;
+}
+
+.blockPlayerDetail_log {
+
+}
+
+.logTournament {
+  width: 100%;
+  list-style: none;
+  font-size: 1.4rem;
+}
+
+.logTournament_item {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 0.5em;
+  padding: 0.5em 0;
+  border-bottom: 1px solid var(--color-white-alpha2);
+}
+
+.logTournament_item strong {
+
+}
+
+.logTournament_item span {
+  font-size: 1.2rem;
+}
+
+.logTournament_item:first-child {
+  border-top: 1px solid var(--color-white-alpha2);
+}
+
+/*UserRegister*/
+.formUserResister {
+  width: 70%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.formUserResister_button {
+  margin-top: 30px;
+}
+
+.unitTextComplete {
+  margin-top: 100px;
+  padding: 0.5em;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+/* GamePlay */
+.playBoardWrap {
+  padding-top: 50px;
+}
+
+.listPlayerActiveMatch {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4em;
+  font-size: 1.6rem;
+}
+
+#playBoard {
+  width: 100%;
+  background-color: var(--color-black);
+}
+
+/* GameMatch */
+.listPlayers {
+}
+
+.unitPlayerName {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+}
+.unitPlayerName h3 {
+  margin-left: 0.6em;
+}
+
+.unitPlayerScore {
+  display: flex;
+}
+
+.unitPlayerScore p:not(:last-child)::after {
+  content: "/";
+  margin: 0 1em;
+}
+
+/* GameMatch */
+.unitTournamentName {
+  display: flex;
+  align-items: center;
+}
+
+.unitTournamentName p {
+  margin-left: 1em;
+  font-size: 1.4rem;
+}
+
+.unitTournamentInfo p + p {
+  margin-top: 0.5em;
+}
