@@ -14,25 +14,25 @@ services:
   frontend:
     build:
       context: ./frontend
-      args:
-        - SECRET_KEY=${SECRET_KEY}
-        - DEBUG=${DEBUG}
-        - CERTS=${CERTS}
-        - COUNTRY=${COUNTRY}
-        - STATE=${STATE}
-        - LOCALITY=${LOCALITY}
-        - ORGANIZATION=${ORGANIZATION}
-        - ORGANIZATION_UNIT=${ORGANIZATION_UNIT}
-        - COMMON_NAME=${DOMAIN_NAME}
-        - EMAIL=${EMAIL}
-        - DOMAIN_NAME=${DOMAIN_NAME}
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - CERTS=${CERTS}
+      - COUNTRY=${COUNTRY}
+      - STATE=${STATE}
+      - LOCALITY=${LOCALITY}
+      - ORGANIZATION=${ORGANIZATION}
+      - ORGANIZATION_UNIT=${ORGANIZATION_UNIT}
+      - COMMON_NAME=${DOMAIN_NAME}
+      - EMAIL=${EMAIL}
+      - DOMAIN_NAME=${DOMAIN_NAME}
     container_name: frontend
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./frontend/static_vol:/var/www/html
-      - ${CERTS}:/etc/nginx/ssl:ro
+      - ${CERTS}:/etc/nginx/ssl
 
   db:
     image: postgres:13

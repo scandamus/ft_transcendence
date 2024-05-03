@@ -7,7 +7,7 @@ if [ ! -f $CERTS ]; then
     mkdir -p $CERTS
 fi
 
-if [ ! -f $CERTS/$server.key ] || [ ! -f $CERTS/$server.crt ]; then
+if [ ! -f /etc/nginx/ssl/server.key ] || [ ! -f /etc/nginx/ssl/server.crt ]; then
     echo "Generating self-signed certificate..."
     echo "[req]" > config.tmp
 	echo "distinguished_name=req_distinguished_name" >> config.tmp
@@ -31,6 +31,7 @@ if [ ! -f $CERTS/$server.key ] || [ ! -f $CERTS/$server.crt ]; then
 	echo "basicConstraints = critical,CA:true" >> config.tmp
 	echo "keyUsage = critical, digitalSignature, cRLSign, keyCertSign" >> config.tmp
 	echo "subjectAltName = @alt_names" >> config.tmp
+    openssl req -newkey rsa:2048 -x509 -nodes -days 365 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -config config.tmp
 fi
 
 exec "$@"
