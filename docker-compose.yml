@@ -12,6 +12,9 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
+      - DJANGO_SU_USER=${DJANGO_SU_USER}
+      - DJANGO_SU_MAIL=${DJANGO_SU_MAIL}
+      - DJANGO_SU_PASSWORD=${DJANGO_SU_PASSWORD}
 
   frontend:
     build:
