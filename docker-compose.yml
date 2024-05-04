@@ -1,15 +1,17 @@
 services:
-  spa:
+  backend:
     build: backend
     container_name: backend
     ports:
       - "8001:8001"
     volumes:
-      - ./backend/spaproject:/app
+      - ./backend/scandamus:/app
     environment:
-      - DATABASE_NAME=${DB_NAME}
-      - DATABASE_USER=${DB_USER}
-      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
 
   frontend:
     build:
