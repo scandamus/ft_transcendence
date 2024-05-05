@@ -12,7 +12,22 @@ done
 python manage.py makemigrations
 python manage.py migrate
 
-# superuserの作成
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$DJANGO_SU_USER', '$DJANGO_SU_MAIL', '$DJANGO_SU_PASSWORD') if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists() else None" | python manage.py shell
+# userの作成
+echo """
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+superuser_exists = User.objects.filter(username='$DJANGO_SU_USER').exists()
+if not superuser_exists:
+    User.objects.create_superuser('$DJANGO_SU_USER', '$DJANGO_SU_MAIL', '$DJANGO_SU_PASSWORD')
+
+player1_exists = User.objects.filter(username='$DJANGO_PLAYER1_USER').exists()
+if not player1_exists:
+    User.objects.create_user('$DJANGO_PLAYER1_USER', '$DJANGO_PLAYER1_MAIL', '$DJANGO_PLAYER1_PASSWORD')
+
+player2_exists = User.objects.filter(username='$DJANGO_PLAYER2_USER').exists()
+if not player2_exists:
+    User.objects.create_user('$DJANGO_PLAYER2_USER', '$DJANGO_PLAYER2_MAIL', '$DJANGO_PLAYER2_PASSWORD')
+""" | python manage.py shell
 
 exec "$@"
