@@ -1,9 +1,9 @@
 "use strict";
 
 const switchDisplayAccount = (isLogIn) => {
-  if (isLogIn) {
-    const namePlayer = "プレイヤー名";//todo: DBからとってくる
-    document.querySelector("#headerAccount").innerHTML = `
+    if (isLogIn) {
+        const namePlayer = "プレイヤー名";//todo: DBからとってくる
+        document.querySelector("#headerAccount").innerHTML = `
       <header class="headerNav headerNav-login">
         <h2>${namePlayer}</h2>
         <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
@@ -14,17 +14,17 @@ const switchDisplayAccount = (isLogIn) => {
         </ul>
       </nav>
     `;
-  } else {
-    document.querySelector("#headerAccount").innerHTML = `
+    } else {
+        document.querySelector("#headerAccount").innerHTML = `
       <h2><a href="/" data-link>login</a></h2>
     `;
-  }
+    }
 }
 
 const checkLoginStatus = async () => {
-  const isLogIn = true;
-  switchDisplayAccount(isLogIn);
-  return (isLogIn);
+    const isLogIn = true;
+    switchDisplayAccount(isLogIn);
+    return (isLogIn);
 };
 
 export { checkLoginStatus };

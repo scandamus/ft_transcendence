@@ -6,7 +6,7 @@ const switchLanguage = (language) => {
     // 言語が変更されたときの処理
     languageSelect.addEventListener("change", () => {
         const selectedLanguage = languageSelect.value;
-        console.log("!selectedLanguage! "+selectedLanguage);
+        console.log("!selectedLanguage! " + selectedLanguage);
         localStorage.setItem("configLang", selectedLanguage);
     });
 }

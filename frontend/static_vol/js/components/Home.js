@@ -45,15 +45,15 @@ export default class extends PageBase {
             body: JSON.stringify(data),
             credentials: 'include'
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Login failed with status: ' + response.status);
-            }
-            console.log("Login successful");  // ここでログイン成功をログに出力
-            // todo: 表示名切り替え
-        })
-        .catch(error => {
-            console.error('Login failed:', error);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Login failed with status: ' + response.status);
+                }
+                console.log("Login successful");  // ここでログイン成功をログに出力
+                // todo: 表示名切り替え
+            })
+            .catch(error => {
+                console.error('Login failed:', error);
+            });
     }
 }

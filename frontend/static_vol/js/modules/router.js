@@ -15,16 +15,16 @@ import TournamentMatch from "/js/components/TournamentMatch.js";
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = [
-    { path: "/page_list", view: PageList },
-    { path: "/", view: Home },
-    { path: "/register", view: UserRegister },
-    { path: "/register/confirm", view: UserRegisterConfirm },
-    { path: "/register/complete", view: UserRegisterComplete },
-    { path: "/user", view: User },
-    { path: "/game/play", view: GamePlay },
-    { path: "/game/match", view: GameMatch },
-    { path: "/tournament/entry", view: TournamentEntry },
-    { path: "/tournament/match", view: TournamentMatch }
+    {path: "/page_list", view: PageList},
+    {path: "/", view: Home},
+    {path: "/register", view: UserRegister},
+    {path: "/register/confirm", view: UserRegisterConfirm},
+    {path: "/register/complete", view: UserRegisterComplete},
+    {path: "/user", view: User},
+    {path: "/game/play", view: GamePlay},
+    {path: "/game/match", view: GameMatch},
+    {path: "/tournament/entry", view: TournamentEntry},
+    {path: "/tournament/match", view: TournamentMatch}
     // { path: "/user/:id", components: user },
 ];
 
@@ -36,7 +36,7 @@ const pathToRegex = (path) => new RegExp("^" + path.replace(/\//g, "\\/").replac
 //:idのような形式の場合
 const getParams = (match) => {
     if (!match || !match.route || !match.route.path) {
-    return {};
+        return {};
     }
     const values = match.result.slice(1);
     const keys = Array.from(match.route.path.match(/:(\w+)/g) || []).map(result => result.slice(1));
@@ -51,7 +51,7 @@ const addLinkPageEvClick = (linkPages) => {
         linkPage.addEventListener("click", async (ev) => {
             ev.preventDefault();
             if (window.location.href === ev.target.href) {
-                return ;
+                return;
             }
             history.pushState(null, null, ev.target.href);
             try {
@@ -69,12 +69,12 @@ const checkProtectedRoute = (path) => {
 }
 
 const isConstructor = (value) => {
-  try {
-    new value();
-  } catch {
-    return false;
-  }
-  return true;
+    try {
+        new value();
+    } catch {
+        return false;
+    }
+    return true;
 }
 
 const router = async (ev) => {
@@ -98,7 +98,7 @@ const router = async (ev) => {
         //前画面のeventListenerをrm
         const oldView = PageBase.instance;
         if (oldView) {
-          oldView.destroy();
+            oldView.destroy();
         }
         //view更新
         document.querySelector("#app").innerHTML = await view.renderHtml();

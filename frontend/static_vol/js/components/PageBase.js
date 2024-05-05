@@ -2,6 +2,7 @@
 
 export default class PageBase {
     static instance = null;
+
     constructor(params) {
         PageBase.instance = this;
         this.params = params;
@@ -31,7 +32,7 @@ export default class PageBase {
 
     //継承クラスでeventListenersにmethodをpushする際に使う
     addListenEvent(el, cb, ev) {
-        this.listEventListeners.push({ element: el, callback: cb, event: ev });
+        this.listEventListeners.push({element: el, callback: cb, event: ev});
     }
 
     // eventListeners解除
