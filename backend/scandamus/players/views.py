@@ -111,8 +111,8 @@ class LoginView(APIView):
             max_age = 60 * 60 * 12
             response.set_cookie('access', access, httponly=True, max_age=max_age)
             response.set_cookie('refresh', refresh, httponly=True, max_age=max_age)
+            # print('post　Login successful')
             return response
-        return Response({'errMsg': 'ユーザーの認証に失敗しました'}, status=status.HTTP_401_UNAUTHORIZED)
 
 # @login_required
 # @require_POST

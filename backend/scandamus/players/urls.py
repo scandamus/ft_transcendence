@@ -5,7 +5,7 @@ from django.urls import path
 from .views import LoginView
 
 urlpatterns = [
-    path('login/', LoginView.as_view()),
+    path('login/', LoginView.as_view(), name='login'),
     # path('getUserProfile', views.getUserProfile.as_view()),
     # # path('api/user/<str:username>/', views.getUserProfile.as_view()),
     # path('api/userProfile/', views.userProfile.as_view()),

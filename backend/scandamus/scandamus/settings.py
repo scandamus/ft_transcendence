@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
 ]
 
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -68,10 +69,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'scandamus.urls'
 
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost',
+    'https://localhost',
     'http://localhost:80',
-    'http://localhost:5173',
+    'https://localhost:80',
+    'https://localhost:443'
 ]
 
 CORS_ALLOW_METHODS = [
@@ -193,3 +198,22 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',  # コンソールに出力
+            'stream': 'ext://sys.stdout',      # 標準出力にログを直接出力
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
