@@ -6,7 +6,7 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle("GamePlay");
-        this.player1 = "player1人目";
+        this.player1 = "player1人目"; // TODO json
         this.player2 = "player2人目";
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
@@ -31,6 +31,7 @@ export default class extends PageBase {
         // キャンバスに描画するために使うツール
         const ctx = canvas.getContext("2d");
         let state = 1;
+        // TODO server side にするならこの辺を全部移植
         let ball = {
             x: canvas.width / 2,
             y: canvas.height / 2,
