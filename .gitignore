@@ -1,0 +1,5 @@
+.env
+*.log
+*.bak
+**/__pycache__/
+postgres_vol
