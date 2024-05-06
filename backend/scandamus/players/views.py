@@ -7,6 +7,7 @@ from .serializers import PlayerSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import permissions
 
 # from django.http import JsonResponse
 # from .models import UserProfile
@@ -139,14 +140,19 @@ class LoginView(APIView):
 #         return JsonResponse({'is_loggedin': False})
 
 
-# class CheckLoginStatusAPIView(APIView):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request):
-#         return Response({'status': 'logged in', 'user': request.user.username})
-#
-#
+class UserInfoView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        data = {
+            'is_authenticated': user.is_authenticated,
+            'username': user.username,
+        }
+        return Response(data)
+
+
 # class CustomAuthToken(ObtainAuthToken):
 #     def post(self, request, *args, **kwargs):
 #         serializer = self.serializer_class(data=request.data,
