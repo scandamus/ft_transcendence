@@ -6,7 +6,7 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle("LOGIN");
-        this.labelButtonForm = "ログイン";
+        this.labelButtonForm = "ログイン"; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
     }
