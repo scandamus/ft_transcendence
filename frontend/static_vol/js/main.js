@@ -7,8 +7,8 @@ import { switchLanguage } from "/js/modules/switchLanguage.js";
 
 //load
 document.addEventListener("DOMContentLoaded", async () => {
-    checkLoginStatus();
-    //const isLoggedIn = await checkLoginStatus();
+    const isLoggedIn = await checkLoginStatus();
+    console.log("isLoggedIn:"+isLoggedIn)
     // if (!isLoggedIn && checkProtectedRoute(window.location.pathname)) {
     //     window.history.pushState({}, "", "/");
     //     router("/");

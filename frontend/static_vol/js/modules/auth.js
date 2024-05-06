@@ -22,9 +22,28 @@ const switchDisplayAccount = (isLogIn) => {
 }
 
 const checkLoginStatus = async () => {
-    const isLogIn = true;
-    switchDisplayAccount(isLogIn);
-    return (isLogIn);
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    //todo: token格納されていなければfalse
+    //todo: Token期限
+    try {
+        const response = await fetch('http://localhost:8001/api/players/userinfo/', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+                'Refresh-Token': refreshToken
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            return !!(data.is_authenticated);
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error('Login check failed:', error);
+        return false;
+    }
 };
 
 export { checkLoginStatus };
