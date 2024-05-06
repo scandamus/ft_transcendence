@@ -103,17 +103,18 @@ class LoginView(APIView):
 
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid(raise_exception=True):
+            access = serializer.validated_data.get("access", None)
+            refresh = serializer.validated_data.get("refresh", None)
+            if access and refresh:
+                return Response({
+                    'access_token': access,
+                    'refresh_token': refresh
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid token data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        access = serializer.validated_data.get("access", None)
-        refresh = serializer.validated_data.get("refresh", None)
-        if access:
-            response = Response(status=status.HTTP_200_OK)
-            max_age = 60 * 60 * 12
-            response.set_cookie('access', access, httponly=True, max_age=max_age)
-            response.set_cookie('refresh', refresh, httponly=True, max_age=max_age)
-            # print('post　Login successful')
-            return response
 
 # @login_required
 # @require_POST

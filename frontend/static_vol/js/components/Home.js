@@ -49,6 +49,11 @@ export default class extends PageBase {
                 if (!response.ok) {
                     throw new Error('Login failed with status: ' + response.status);
                 }
+                return response.json();
+            })
+            .then(data => {
+                localStorage.setItem('accessToken', data.access_token);
+                localStorage.setItem('refreshToken', data.refresh_token);
                 console.log("Login successful");  // ここでログイン成功をログに出力
                 // todo: 表示名切り替え
             })
