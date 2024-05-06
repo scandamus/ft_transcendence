@@ -6,7 +6,7 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle("UserRegister - complete");
-        this.message = "登録完了しました";
+        this.message = "登録完了しました"; // TODO json
     }
 
     async renderHtml() {
