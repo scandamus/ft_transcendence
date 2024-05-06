@@ -6,11 +6,12 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle("TournamentEntry");
-        this.labelButton = "エントリー";
+        this.labelButton = "エントリー"; // TODO json
         this.txtDeadline = "エントリー締切";
     }
 
     async renderHtml() {
+        // TODO fetch(); 翻訳しやすくしたい
         return `
             <div class="listTournaments">
                 <section class="unitListItem">
