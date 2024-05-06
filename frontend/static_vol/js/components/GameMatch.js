@@ -6,7 +6,7 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle("GameMatch");
-        this.labelButton = "対戦を申し込む";
+        this.labelButton = "対戦を申し込む"; // TODO json
     }
 
     async getListPlayers() {
@@ -44,6 +44,6 @@ export default class extends PageBase {
                 </section>
                 `).join('')}
             </div>
-        `;
+        `; // TODO json; 翻訳しやすくしたい
     }
 }
