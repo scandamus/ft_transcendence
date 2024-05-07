@@ -2,11 +2,12 @@ from django.urls import path
 # ↓ view.pyの全てのviewをimport
 # from . import views
 # ↓ view.pyから指定したviewをimport（推奨）
-from .views import LoginView, UserInfoView
+from .views import LoginView, UserInfoView, LogoutView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('userinfo/', UserInfoView.as_view(), name='user_info'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     # path('getUserProfile', views.getUserProfile.as_view()),
     # # path('api/user/<str:username>/', views.getUserProfile.as_view()),
     # path('api/userProfile/', views.userProfile.as_view()),
