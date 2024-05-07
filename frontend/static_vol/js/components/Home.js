@@ -6,9 +6,11 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle("LOGIN");
-        this.labelButtonForm = "ログイン"; // TODO json
+        this.labelButtonLogin = "ログイン"; // TODO json
+        this.labelButtonLogout = "ログアウト"; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
+        this.addAfterRenderHandler(this.listenLogout.bind(this));
     }
 
     async renderHtml() {
@@ -16,7 +18,10 @@ export default class extends PageBase {
             <form action="" method="post" class="blockForm blockForm-home">
                 <input type="text" id="loginUsername" placeholder="Enter username">
                 <input type="password" id="loginPassword" placeholder="Enter password">
-                <button type="submit" id="btnLoginForm" class="unitButton">${this.labelButtonForm}</button>
+                <button type="submit" id="btnLoginForm" class="unitButton">${this.labelButtonLogin}</button>
+            </form>
+            <form action="" method="post" class="blockForm blockForm-home">
+                <button type="submit" id="btnLogoutForm" class="unitButton">${this.labelButtonLogout}</button>
             </form>
         `;
     }
@@ -42,8 +47,7 @@ export default class extends PageBase {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data),
-            credentials: 'include'
+            body: JSON.stringify(data)
         })
             .then(response => {
                 if (!response.ok) {
@@ -59,6 +63,36 @@ export default class extends PageBase {
             })
             .catch(error => {
                 console.error('Login failed:', error);
+            });
+    }
+
+    listenLogout() {
+        const btnLogout = document.querySelector("#btnLogoutForm");
+        btnLogout.addEventListener("click", this.handleLogout.bind(this));
+        this.addListenEvent(btnLogout, this.handleLogout, "click");
+    }
+
+    handleLogout(ev) {
+        ev.preventDefault();
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        fetch('http://localhost:8001/api/players/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+                'Refresh-Token': `${refreshToken}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Logout failed with status: ' + response.status);
+                }
+                console.log("Logout successful");
+            })
+            .catch(error => {
+                console.error('Logout failed:', error);
             });
     }
 }
