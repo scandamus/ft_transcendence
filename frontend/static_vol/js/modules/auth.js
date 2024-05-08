@@ -1,5 +1,31 @@
 "use strict";
 
+const checkLoginStatus = async () => {
+    try {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            //console.log("checkLoginStatus !accessToken")
+            return false;
+        }
+
+        const response = await fetch('http://localhost:8001/api/players/userinfo/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+
+        if (response.status === 401) {
+            //console.log("checkLoginStatus 401")
+            return false;
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error checking auth status:', error);
+        return false;
+    }
+};
+
 const switchDisplayAccount = async () => {
     const userData = await checkLoginStatus();
     const namePlayer = userData.username;
@@ -29,30 +55,4 @@ const switchDisplayAccount = async () => {
     }
 }
 
-const checkLoginStatus = async () => {
-    try {
-        const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
-            //console.log("checkLoginStatus !accessToken")
-            return false;
-        }
-
-        const response = await fetch('http://localhost:8001/api/players/userinfo/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            },
-        });
-
-        if (response.status === 401) {
-            //console.log("checkLoginStatus 401")
-            return false;
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error checking auth status:', error);
-        return false;
-    }
-};
-
-export { switchDisplayAccount, checkLoginStatus };
+export { switchDisplayAccount };

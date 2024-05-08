@@ -1,6 +1,6 @@
 "use strict";
 
-import { switchDisplayAccount, checkLoginStatus } from "/js/modules/auth.js";
+import { switchDisplayAccount } from "/js/modules/auth.js";
 import { addLinkPageEvClick, checkProtectedRoute, router } from "/js/modules/router.js";
 import { switchLanguage } from "/js/modules/switchLanguage.js";
 
