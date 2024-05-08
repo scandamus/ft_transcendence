@@ -22,28 +22,32 @@ const switchDisplayAccount = (isLogIn) => {
 }
 
 const checkLoginStatus = async () => {
-    const accessToken = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
-    //todo: token格納されていなければfalse
-    //todo: Token期限
     try {
-        const response = await fetch('http://localhost:8001/api/players/userinfo/', {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-                'Refresh-Token': refreshToken
-            }
-        });
-        if (response.ok) {
-            const data = await response.json();
-            return !!(data.is_authenticated);
-        } else {
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!accessToken) {
+            console.log("checkLoginStatus !accessToken")
             return false;
         }
+
+        const response = await fetch('http://localhost:8001/api/players/userinfo/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Refresh-Token': `${refreshToken}`
+            },
+        });
+
+        if (response.status === 401) {
+            console.log("checkLoginStatus 401")
+            return false;
+        }
+        const data = await response.json();
+        return data.is_authenticated;
     } catch (error) {
-        console.error('Login check failed:', error);
+        console.error('Error checking auth status:', error);
         return false;
     }
 };
 
-export { checkLoginStatus };
+export { switchDisplayAccount, checkLoginStatus };
