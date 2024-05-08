@@ -80,7 +80,6 @@ export default class extends PageBase {
         fetch('http://localhost:8001/api/players/logout/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`,
                 'Refresh-Token': `${refreshToken}`
             }
