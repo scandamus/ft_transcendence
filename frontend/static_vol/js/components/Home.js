@@ -89,7 +89,11 @@ export default class extends PageBase {
                 if (!response.ok) {
                     throw new Error('Logout failed with status: ' + response.status);
                 }
+                //token rm
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
                 console.log("Logout successful");
+                switchDisplayAccount();
             })
             .catch(error => {
                 console.error('Logout failed:', error);
