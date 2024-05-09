@@ -1,10 +1,38 @@
 "use strict";
 
+// token refresh 成功、失敗をboolで返す
+const getRefreshToken = async () => {
+    try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+            return false;
+        }
+
+        // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
+        const response = await fetch('http://localhost:8001/token/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 'refresh': `${refreshToken}` })
+        });
+        // refreshToken無効。
+        if (response.ok) {
+            const refreshData = await response.json();
+            localStorage.setItem('accessToken', refreshData.access);
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Token refresh failed:', error);
+    }
+}
+
+
 const checkLoginStatus = async () => {
     try {
         const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
-            //console.log("checkLoginStatus !accessToken")
+        if (!accessToken) {//todo:test (undefinedなど)
             return false;
         }
 
@@ -16,8 +44,22 @@ const checkLoginStatus = async () => {
         });
 
         if (response.status === 401) {
-            //console.log("checkLoginStatus 401")
-            return false;
+            const accessToken2 = localStorage.getItem('accessToken');
+            if (!accessToken2) {
+                return false;
+            }
+
+            const response2 = await fetch('http://localhost:8001/api/players/userinfo/', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken2}`
+                },
+            });
+            if (response2.status === 401) {
+                return false;
+            } else {
+                return await response2.json();
+            }
         }
         return await response.json();
     } catch (error) {
@@ -55,4 +97,4 @@ const switchDisplayAccount = async () => {
     }
 }
 
-export { switchDisplayAccount };
+export { getRefreshToken, switchDisplayAccount };
