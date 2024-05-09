@@ -16,12 +16,12 @@ const getRefreshToken = async () => {
             },
             body: JSON.stringify({ 'refresh': `${refreshToken}` })
         });
-        // refreshToken無効。
         if (response.ok) {
             const refreshData = await response.json();
             localStorage.setItem('accessToken', refreshData.access);
             return true;
         }
+        // refreshToken無効。
         return false;
     } catch (error) {
         console.error('Token refresh failed:', error);
@@ -44,6 +44,9 @@ const checkLoginStatus = async () => {
         });
 
         if (response.status === 401) {
+            if (!await getRefreshToken()) {
+                throw new Error('fail refresh token');
+            }
             const accessToken2 = localStorage.getItem('accessToken');
             if (!accessToken2) {
                 return false;

@@ -1,7 +1,7 @@
 "use strict";
 
 import PageBase from "./PageBase.js";
-import { switchDisplayAccount } from "/js/modules/auth.js";
+import { getRefreshToken, switchDisplayAccount } from "/js/modules/auth.js";
 
 export default class extends PageBase {
     constructor(params) {
@@ -59,7 +59,7 @@ export default class extends PageBase {
             .then(data => {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
-                console.log("Login successful");  // ここでログイン成功をログに出力
+                //console.log("Login successful");  // ここでログイン成功をログに出力
                 switchDisplayAccount();
             })
             .catch(error => {
@@ -76,23 +76,39 @@ export default class extends PageBase {
     handleLogout(ev) {
         ev.preventDefault();
         const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
 
         fetch('http://localhost:8001/api/players/logout/', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Refresh-Token': `${refreshToken}`
+                'Authorization': `Bearer ${accessToken}`
             }
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Logout failed with status: ' + response.status);
+                if (response.status === 401) {
+                    if (!getRefreshToken()) {
+                        throw new Error('fail refresh token');
+                        //todo: refresh token expired. 強制ログアウト
+                    }
+                    const accessToken2 = localStorage.getItem('accessToken');
+                    if (!accessToken2) {
+                        throw new Error('accessToken is invalid.');
+                        //todo: 強制ログアウト
+                    }
+
+                    const response2 = fetch('http://localhost:8001/api/players/logout/', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    });
+                    if (response2.status === 401) {
+                        throw new Error('accessToken is invalid.');
+                        //todo: 強制ログアウト
+                    }
                 }
                 //token rm
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
-                console.log("Logout successful");
                 switchDisplayAccount();
             })
             .catch(error => {
