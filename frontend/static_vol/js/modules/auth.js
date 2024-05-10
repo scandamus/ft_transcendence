@@ -7,7 +7,6 @@ const getAccessToken = () => {
             return null;//未ログイン
         }
         if (!accessToken) {//todo:test (undefinedなど)
-            console.log("getAccessToken"+!accessToken)
             throw new Error('accessToken is invalid');
         }
         return accessToken;
@@ -52,6 +51,7 @@ const refreshRefreshToken = async () => {
         console.error('refreshRefreshToken:', error);
     }
 }
+
 const handleLogout = (ev) => {
     ev.preventDefault();
     const accessToken = getAccessToken();
@@ -95,6 +95,21 @@ const handleLogout = (ev) => {
         });
 }
 
+const getIsLogin = async () => {
+    if ((getAccessToken()) === null) {//localstrageにaccessTokenがkey自体ない=>ログアウト状態
+        return null;
+    }
+    const userData = await checkLoginStatus();
+    if (userData == null) {
+        return null;
+    }
+    if (userData.is_authenticated) {
+        return userData;
+    } else {
+        return null;
+    }
+}
+
 const checkLoginStatus = async () => {
     try {
         const accessToken = getAccessToken();
@@ -105,7 +120,9 @@ const checkLoginStatus = async () => {
             },
         });
 
-        if (response.status === 401) {
+        if (response.ok) {
+            return await response.json();
+        } else if (response.status === 401) {
             if (!await refreshRefreshToken()) {
                 throw new Error('fail refresh token');
             }
@@ -117,18 +134,17 @@ const checkLoginStatus = async () => {
                     'Authorization': `Bearer ${accessToken2}`
                 },
             });
-            if (response2.status === 401) {
-                return false;
-            } else {
+            if (response2.ok) {
                 return await response2.json();
+            } else {
+                throw new Error('fail get userinfo');
             }
         }
-        return await response.json();
     } catch (error) {
-        console.error('Error checking auth status:', error);
-        return false;
+        console.error('checkLoginStatus:', error);
+        return null;
     }
-};
+}
 
 const switchDisplayAccount = async () => {
     try {
