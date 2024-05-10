@@ -15,9 +15,15 @@ export default class extends PageBase {
     async renderHtml() {
         return `
             <form action="" method="post" class="blockForm blockForm-home">
-                <input type="text" id="loginUsername" placeholder="Enter username">
-                <input type="password" id="loginPassword" placeholder="Enter password">
-                <button type="submit" id="btnLoginForm" class="unitButton">${this.labelButtonLogin}</button>
+                <dl class="blockForm_el">
+                    <dt>username</dt>
+                    <dd><input type="text" id="loginUsername" placeholder="Enter username"></dd>
+                </dl>
+                <dl class="blockForm_el">
+                    <dt>password</dt>
+                    <dd><input type="password" id="loginPassword" placeholder="Enter password"></dd>
+                </dl>
+                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton">${this.labelButtonLogin}</button></p>
             </form>
         `;
     }

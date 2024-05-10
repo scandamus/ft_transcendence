@@ -290,6 +290,26 @@ input {
 .blockForm {
 }
 
+.blockForm_el {
+  width: 50%;
+  min-width: 20em;
+  margin: 0 auto 1.2em;
+  font-size: 1.6rem;
+}
+
+.blockForm_el dt {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.blockForm_el input {
+  width: 100%;
+}
+
+.blockForm_button {
+  margin-top: 50px;
+}
+
 .unitFormInput {
   margin-bottom: 20px;
   text-align: left;
