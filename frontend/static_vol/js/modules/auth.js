@@ -52,7 +52,48 @@ const refreshRefreshToken = async () => {
         console.error('refreshRefreshToken:', error);
     }
 }
+const handleLogout = (ev) => {
+    ev.preventDefault();
+    const accessToken = getAccessToken();
 
+    fetch('http://localhost:8001/api/players/logout/', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+        .then(response => {
+            if (response.status === 401) {
+                if (!refreshRefreshToken()) {
+                    throw new Error('fail refresh token');
+                    //todo: refresh token expired. 強制ログアウト
+                }
+                const accessToken2 = getAccessToken();
+                if (!accessToken2) {
+                    throw new Error('accessToken is invalid.');
+                    //todo: 強制ログアウト
+                }
+
+                const response2 = fetch('http://localhost:8001/api/players/logout/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+                if (response2.status === 401) {
+                    throw new Error('accessToken is invalid.');
+                    //todo: 強制ログアウト
+                }
+            }
+            //token rm
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            switchDisplayAccount().then(r => {console.log(r)});
+        })
+        .catch(error => {
+            console.error('Logout failed:', error);
+        });
+}
 
 const checkLoginStatus = async () => {
     try {
@@ -90,31 +131,34 @@ const checkLoginStatus = async () => {
 };
 
 const switchDisplayAccount = async () => {
-    const userData = await checkLoginStatus();
-    const namePlayer = userData.username;
-    const labelButtonLogin = "ログイン"; // TODO json 共通化したい
-    const labelButtonLogout = "ログアウト"; // TODO json
-    if (userData.is_authenticated) {
-        document.querySelector("#headerAccount").innerHTML = `
-            <header class="headerNav headerNav-login">
-                <h2>${namePlayer}</h2>
-                <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
-            </header>
-            <nav class="navGlobal">
-                <ul class="navGlobal_list navList">
-                    <li class="navList_item"><a href="/page_list" data-link>PageList</a></li>
-                    <li id="" class="navList_item">
-                        <form action="" method="post" class="blockForm blockForm-home">
-                            <button type="submit" id="btnLogoutForm2" class="unitButton">${labelButtonLogout}</button>
-                        </form>
-                    </li>
-                </ul>
-            </nav>
-        `;
-    } else {
-        document.querySelector("#headerAccount").innerHTML = `
-            <h2><a href="/" data-link>${labelButtonLogin}</a></h2>
-        `;
+    try {
+        const labelButtonLogout = "ログアウト"; // TODO json 共通化したい
+        const userData = await getIsLogin();
+        if (userData !== null) {
+            const namePlayer = userData.username;
+            document.querySelector("#headerAccount").innerHTML = `
+                <header class="headerNav headerNav-login">
+                    <h2>${namePlayer}</h2>
+                    <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
+                </header>
+                <nav class="navGlobal">
+                    <ul class="navGlobal_list navList">
+                        <li class="navList_item"><a href="/page_list" data-link>PageList</a></li>
+                        <li id="" class="navList_item">
+                            <form action="" method="post" class="blockForm blockForm-home">
+                                <button type="submit" id="btnLogoutForm2" class="unitButton">${labelButtonLogout}</button>
+                            </form>
+                        </li>
+                    </ul>
+                </nav>
+            `;
+            const btnLogout = document.querySelector("#btnLogoutForm2");
+            btnLogout.addEventListener("click", handleLogout);
+        } else {
+            document.querySelector("#headerAccount").innerHTML = "";
+        }
+    } catch (error) {
+        console.error('switchDisplayAccount:', error);
     }
 }
 

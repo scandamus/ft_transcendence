@@ -1,17 +1,15 @@
 "use strict";
 
 import PageBase from "./PageBase.js";
-import { getAccessToken, refreshRefreshToken, switchDisplayAccount } from "/js/modules/auth.js";
+import { switchDisplayAccount } from "/js/modules/auth.js";
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle("LOGIN");
         this.labelButtonLogin = "ログイン"; // TODO json
-        this.labelButtonLogout = "ログアウト"; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
-        this.addAfterRenderHandler(this.listenLogout.bind(this));
     }
 
     async renderHtml() {
@@ -20,9 +18,6 @@ export default class extends PageBase {
                 <input type="text" id="loginUsername" placeholder="Enter username">
                 <input type="password" id="loginPassword" placeholder="Enter password">
                 <button type="submit" id="btnLoginForm" class="unitButton">${this.labelButtonLogin}</button>
-            </form>
-            <form action="" method="post" class="blockForm blockForm-home">
-                <button type="submit" id="btnLogoutForm" class="unitButton">${this.labelButtonLogout}</button>
             </form>
         `;
     }
@@ -64,55 +59,6 @@ export default class extends PageBase {
             })
             .catch(error => {
                 console.error('Login failed:', error);
-            });
-    }
-
-    listenLogout() {
-        const btnLogout = document.querySelector("#btnLogoutForm");
-        btnLogout.addEventListener("click", this.handleLogout.bind(this));
-        this.addListenEvent(btnLogout, this.handleLogout, "click");
-    }
-
-    handleLogout(ev) {
-        ev.preventDefault();
-        const accessToken = localStorage.getItem('accessToken');
-
-        fetch('http://localhost:8001/api/players/logout/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        })
-            .then(response => {
-                if (response.status === 401) {
-                    if (!getRefreshToken()) {
-                        throw new Error('fail refresh token');
-                        //todo: refresh token expired. 強制ログアウト
-                    }
-                    const accessToken2 = localStorage.getItem('accessToken');
-                    if (!accessToken2) {
-                        throw new Error('accessToken is invalid.');
-                        //todo: 強制ログアウト
-                    }
-
-                    const response2 = fetch('http://localhost:8001/api/players/logout/', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`
-                        }
-                    });
-                    if (response2.status === 401) {
-                        throw new Error('accessToken is invalid.');
-                        //todo: 強制ログアウト
-                    }
-                }
-                //token rm
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                switchDisplayAccount();
-            })
-            .catch(error => {
-                console.error('Logout failed:', error);
             });
     }
 }
