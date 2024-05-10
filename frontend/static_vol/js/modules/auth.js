@@ -1,12 +1,37 @@
 "use strict";
 
-// token refresh 成功、失敗をboolで返す
-const getRefreshToken = async () => {
+const getAccessToken = () => {
+    try {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken === null) {
+            return null;//未ログイン
+        }
+        if (!accessToken) {//todo:test (undefinedなど)
+            console.log("getAccessToken"+!accessToken)
+            throw new Error('accessToken is invalid');
+        }
+        return accessToken;
+    } catch (error) {
+        // ここではエラーをキャッチせず呼び出し側でキャッチする
+        return error;
+    }
+}
+
+const getRefreshToken = () => {
     try {
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) {
-            return false;
+            throw new Error('refreshToken is invalid');
         }
+        return refreshToken;
+    } catch (error) {
+        return error;
+    }
+}
+
+const refreshRefreshToken = async () => {
+    try {
+        const refreshToken = getRefreshToken();
 
         // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
         const response = await fetch('http://localhost:8001/token/refresh/', {
@@ -24,18 +49,14 @@ const getRefreshToken = async () => {
         // refreshToken無効。
         return false;
     } catch (error) {
-        console.error('Token refresh failed:', error);
+        console.error('refreshRefreshToken:', error);
     }
 }
 
 
 const checkLoginStatus = async () => {
     try {
-        const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {//todo:test (undefinedなど)
-            return false;
-        }
-
+        const accessToken = getAccessToken();
         const response = await fetch('http://localhost:8001/api/players/userinfo/', {
             method: 'GET',
             headers: {
@@ -44,13 +65,10 @@ const checkLoginStatus = async () => {
         });
 
         if (response.status === 401) {
-            if (!await getRefreshToken()) {
+            if (!await refreshRefreshToken()) {
                 throw new Error('fail refresh token');
             }
-            const accessToken2 = localStorage.getItem('accessToken');
-            if (!accessToken2) {
-                return false;
-            }
+            const accessToken2 = getAccessToken();
 
             const response2 = await fetch('http://localhost:8001/api/players/userinfo/', {
                 method: 'GET',
@@ -100,4 +118,4 @@ const switchDisplayAccount = async () => {
     }
 }
 
-export { getRefreshToken, switchDisplayAccount };
+export { getAccessToken, refreshRefreshToken, switchDisplayAccount };
