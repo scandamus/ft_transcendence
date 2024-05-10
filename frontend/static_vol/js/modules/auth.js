@@ -161,14 +161,14 @@ const switchDisplayAccount = async () => {
                     <ul class="navGlobal_list navList">
                         <li class="navList_item"><a href="/page_list" data-link>PageList</a></li>
                         <li id="" class="navList_item">
-                            <form action="" method="post" class="blockForm blockForm-home">
-                                <button type="submit" id="btnLogoutForm2" class="unitButton">${labelButtonLogout}</button>
+                            <form action="" method="post" class="blockForm">
+                                <button type="submit" id="btnLogoutForm" class="unitButton">${labelButtonLogout}</button>
                             </form>
                         </li>
                     </ul>
                 </nav>
             `;
-            const btnLogout = document.querySelector("#btnLogoutForm2");
+            const btnLogout = document.querySelector("#btnLogoutForm");
             btnLogout.addEventListener("click", handleLogout);
         } else {
             document.querySelector("#headerAccount").innerHTML = "";

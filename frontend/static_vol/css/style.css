@@ -121,17 +121,24 @@ button {
 }
 
 .navGlobal {
-  display: none;/*tmp*/
-  padding-right: 10px;
+  position: absolute;
+  top: var(--heightMainHeader);
+  right: 0;
+  padding: 20px;
+  background-color: var(--color-black-alpha);
+  z-index: 1;
 }
 
 .navList {
-  display: flex;
   list-style: none;
 }
 
 .navList_item {
-  margin: 0 1em;
+
+}
+
+.navList_item + .navList_item {
+  margin-top: 20px;
 }
 
 /* mainContainer */
