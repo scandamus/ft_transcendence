@@ -111,7 +111,8 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def schedule_ball_update(self):
         try:
             while self.is_active:
-                await asyncio.sleep(0.05)  # 50ミリ秒待機
+#                await asyncio.sleep(0.05)  # 50ミリ秒待機
+                await asyncio.sleep(1/60)  # 60Hz
                 await self.update_ball_and_send_data()
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
