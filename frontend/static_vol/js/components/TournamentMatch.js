@@ -1,6 +1,6 @@
 "use strict";
 
-import PageBase from "./PageBase.js";
+import PageBase from './PageBase.js';
 
 export default class extends PageBase {
     constructor(params) {

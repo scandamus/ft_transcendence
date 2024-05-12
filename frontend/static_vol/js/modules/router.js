@@ -1,17 +1,17 @@
 "use strict";
 
 //page
-import PageBase from "/js/components/PageBase.js";
-import Home from "/js/components/Home.js";
-import PageList from "/js/components/PageList.js";
-import User from "/js/components/User.js";
-import UserRegister from "/js/components/UserRegister.js";
-import UserRegisterConfirm from "/js/components/UserRegisterConfirm.js";
-import UserRegisterComplete from "/js/components/UserRegisterComplete.js";
-import GamePlay from "/js/components/GamePlay.js";
-import GameMatch from "/js/components/GameMatch.js";
-import TournamentEntry from "/js/components/TournamentEntry.js";
-import TournamentMatch from "/js/components/TournamentMatch.js";
+import PageBase from '../components/PageBase.js';
+import Home from '../components/Home.js';
+import PageList from '../components/PageList.js';
+import User from '../components/User.js';
+import UserRegister from '../components/UserRegister.js';
+import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
+import UserRegisterComplete from '../components/UserRegisterComplete.js';
+import GamePlay from '../components/GamePlay.js';
+import GameMatch from '../components/GameMatch.js';
+import TournamentEntry from '../components/TournamentEntry.js';
+import TournamentMatch from '../components/TournamentMatch.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = [

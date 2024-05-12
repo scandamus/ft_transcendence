@@ -1,7 +1,7 @@
 "use strict";
 
-import { getToken, refreshAccessToken } from "/js/modules/token.js";
-import { handleLogout } from "/js/modules/logout.js";
+import { getToken, refreshAccessToken } from './token.js';
+import { handleLogout } from './logout.js';
 
 const getIsLogin = async () => {
     if ((getToken('accessToken')) === null) {//localstrageにaccessTokenがkey自体ない=>ログアウト状態

@@ -1,7 +1,7 @@
 "use strict";
 
-import PageBase from "./PageBase.js";
-import { switchDisplayAccount } from "/js/modules/auth.js";
+import PageBase from './PageBase.js';
+import { switchDisplayAccount } from '../modules/auth.js';
 
 export default class extends PageBase {
     constructor(params) {

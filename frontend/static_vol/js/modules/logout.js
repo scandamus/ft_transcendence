@@ -1,7 +1,7 @@
 "use strict";
 
-import { getToken, refreshAccessToken } from "/js/modules/token.js";
-import { switchDisplayAccount } from "/js/modules/auth.js";
+import { getToken, refreshAccessToken } from './token.js';
+import { switchDisplayAccount } from './auth.js';
 
 const fetchLogout = async (isRefresh) => {
     const accessToken = getToken('accessToken');

@@ -1,8 +1,8 @@
 "use strict";
 
-import { switchDisplayAccount } from "/js/modules/auth.js";
-import { addLinkPageEvClick, checkProtectedRoute, router } from "/js/modules/router.js";
-import { switchLanguage } from "/js/modules/switchLanguage.js";
+import { switchDisplayAccount } from './modules/auth.js';
+import { addLinkPageEvClick, checkProtectedRoute, router } from './modules/router.js';
+import { switchLanguage } from './modules/switchLanguage.js';
 
 //load
 document.addEventListener("DOMContentLoaded", async () => {
