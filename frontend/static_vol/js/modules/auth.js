@@ -1,85 +1,13 @@
 "use strict";
 
-//localstrageにtokenがkey自体ない=>ログアウト状態
-//tokenがundefined=>何かがおかしい
-const getToken = (nameToken) => {
-    const token = localStorage.getItem(nameToken);
-    if (token === null) {
-        return null;//未ログイン
-    }
-    if (!token) {//todo:test (undefinedなど)
-        throw new Error(`${nameToken} is invalid`);
-    }
-    return token;
-}
-
-const refreshToken = async () => {
-    const refreshToken = getToken('refreshToken');
-
-    // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
-    const response = await fetch('http://localhost:8001/token/refresh/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 'refresh': `${refreshToken}` })
-    });
-    if (response.ok) {
-        const refreshData = await response.json();
-        localStorage.setItem('accessToken', refreshData.access);
-        return true;
-    }
-    // refreshToken無効。
-    return false;
-}
-
-const fetchLogout = async (isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        throw new Error('accessToken is invalid.');
-        //todo: 強制ログアウト
-    }
-    const response = await fetch('http://localhost:8001/api/players/logout/', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
-    });
-    if (response.status === 401) {
-        if (!isRefresh) {
-            //初回のaccessToken expiredならrefreshして再度ログイン
-            if (!await refreshToken()) {
-                throw new Error('fail refresh token');
-                //todo: refresh token expired. 強制ログアウト
-            }
-            await fetchLogout(true);
-        }
-        //todo: tokenRefresh後も401なら例外throw。強制ログアウト
-        throw new Error('accessToken is invalid.');
-
-    } else if (response.ok) {
-        //token rm
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        switchDisplayAccount();//not return
-    } else {
-        throw new Error(`fetchLogout error. status: ${response.status}`);
-    }
-}
-
-const handleLogout = (ev) => {
-    ev.preventDefault();
-    fetchLogout(false)
-        .catch(error => {
-            console.error('Logout failed:', error);
-        });
-}
+import { getToken, refreshAccessToken } from "/js/modules/token.js";
+import { handleLogout } from "/js/modules/logout.js";
 
 const getIsLogin = async () => {
     if ((getToken('accessToken')) === null) {//localstrageにaccessTokenがkey自体ない=>ログアウト状態
         return null;
     }
-    const userData = await checkLoginStatus();
+    const userData = await getUserInfo();
     if (userData === null) {
         return null;
     }
@@ -90,7 +18,7 @@ const getIsLogin = async () => {
     }
 }
 
-const checkLoginStatus = async () => {
+const getUserInfo = async () => {
     try {
         const accessToken = getToken('accessToken');
         const response = await fetch('http://localhost:8001/api/players/userinfo/', {
@@ -103,7 +31,7 @@ const checkLoginStatus = async () => {
         if (response.ok) {
             return await response.json();
         } else if (response.status === 401) {
-            if (!await refreshToken()) {
+            if (!await refreshAccessToken()) {
                 throw new Error('fail refresh token');
             }
             const accessToken2 = getToken('accessToken');
@@ -121,7 +49,7 @@ const checkLoginStatus = async () => {
             }
         }
     } catch (error) {
-        console.error('checkLoginStatus:', error);
+        console.error('getUserInfo:', error);
         return null;
     }
 }
@@ -154,4 +82,4 @@ const switchDisplayAccount = async () => {
     }
 }
 
-export { getToken, refreshToken, switchDisplayAccount };
+export { switchDisplayAccount };
