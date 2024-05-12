@@ -1,6 +1,11 @@
 .env
+.DS_Store
 *.log
 *.bak
 **/__pycache__/
 postgres_vol
-.DS_Store
+*~
+.*
+!.gitignore
+!.dockerignore
+!.gitkeep
