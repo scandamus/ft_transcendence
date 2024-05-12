@@ -6,7 +6,7 @@ import { switchLanguage } from './modules/switchLanguage.js';
 
 //load
 document.addEventListener("DOMContentLoaded", async () => {
-    switchDisplayAccount();
+    await switchDisplayAccount();
     // if (!isLoggedIn && checkProtectedRoute(window.location.pathname)) {
     //     window.history.pushState({}, "", "/");
     //     router("/");

@@ -61,7 +61,7 @@ export default class extends PageBase {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
                 //console.log("Login successful");  // ここでログイン成功をログに出力
-                switchDisplayAccount();
+                switchDisplayAccount();//not return
             })
             .catch(error => {
                 console.error('Login failed:', error);

@@ -31,7 +31,7 @@ const fetchLogout = async (isRefresh) => {
         //token rm
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        switchDisplayAccount();//not return
+        await switchDisplayAccount();
     } else {
         throw new Error(`fetchLogout error. status: ${response.status}`);
     }

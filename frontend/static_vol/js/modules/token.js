@@ -1,6 +1,6 @@
 "use strict";
 
-//localstrageにtokenがkey自体ない=>ログアウト状態
+//localstorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
 const getToken = (nameToken) => {
     const token = localStorage.getItem(nameToken);
