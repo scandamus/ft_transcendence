@@ -33,44 +33,43 @@ const refreshToken = async () => {
     return false;
 }
 
-const handleLogout = (ev) => {
-    ev.preventDefault();
-    const accessToken = getAccessToken();
-
-    fetch('http://localhost:8001/api/players/logout/', {
+const fetchLogout = async (isRefresh) => {
+    const accessToken = getToken('accessToken');
+    if (accessToken === null) {
+        throw new Error('accessToken is invalid.');
+        //todo: 強制ログアウト
+    }
+    const response = await fetch('http://localhost:8001/api/players/logout/', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${accessToken}`
         }
-    })
-        .then(response => {
-            if (response.status === 401) {
-                if (!refreshRefreshToken()) {
-                    throw new Error('fail refresh token');
-                    //todo: refresh token expired. 強制ログアウト
-                }
-                const accessToken2 = getAccessToken();
-                if (!accessToken2) {
-                    throw new Error('accessToken is invalid.');
-                    //todo: 強制ログアウト
-                }
-
-                const response2 = fetch('http://localhost:8001/api/players/logout/', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                });
-                if (response2.status === 401) {
-                    throw new Error('accessToken is invalid.');
-                    //todo: 強制ログアウト
-                }
+    });
+    if (response.status === 401) {
+        if (!isRefresh) {
+            //初回のaccessToken expiredならrefreshして再度ログイン
+            if (!await refreshToken()) {
+                throw new Error('fail refresh token');
+                //todo: refresh token expired. 強制ログアウト
             }
-            //token rm
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
-            switchDisplayAccount().then(r => {console.log(r)});
-        })
+            await fetchLogout(true);
+        }
+        //todo: tokenRefresh後も401なら例外throw。強制ログアウト
+        throw new Error('accessToken is invalid.');
+
+    } else if (response.ok) {
+        //token rm
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        switchDisplayAccount();//not return
+    } else {
+        throw new Error(`fetchLogout error. status: ${response.status}`);
+    }
+}
+
+const handleLogout = (ev) => {
+    ev.preventDefault();
+    fetchLogout(false)
         .catch(error => {
             console.error('Logout failed:', error);
         });
@@ -128,34 +127,30 @@ const checkLoginStatus = async () => {
 }
 
 const switchDisplayAccount = async () => {
-    try {
-        const labelButtonLogout = "ログアウト"; // TODO json 共通化したい
-        const userData = await getIsLogin();
-        if (userData !== null) {
-            const namePlayer = userData.username;
-            document.querySelector("#headerAccount").innerHTML = `
-                <header class="headerNav headerNav-login">
-                    <h2>${namePlayer}</h2>
-                    <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
-                </header>
-                <nav class="navGlobal">
-                    <ul class="navGlobal_list navList">
-                        <li class="navList_item"><a href="/page_list" data-link>PageList</a></li>
-                        <li id="" class="navList_item">
-                            <form action="" method="post" class="blockForm">
-                                <button type="submit" id="btnLogoutForm" class="unitButton">${labelButtonLogout}</button>
-                            </form>
-                        </li>
-                    </ul>
-                </nav>
-            `;
-            const btnLogout = document.querySelector("#btnLogoutForm");
-            btnLogout.addEventListener("click", handleLogout);
-        } else {
-            document.querySelector("#headerAccount").innerHTML = "";
-        }
-    } catch (error) {
-        console.error('switchDisplayAccount:', error);
+    const labelButtonLogout = "ログアウト"; // TODO json 共通化したい
+    const userData = await getIsLogin();
+    if (userData !== null) {
+        const namePlayer = userData.username;
+        document.querySelector("#headerAccount").innerHTML = `
+            <header class="headerNav headerNav-login">
+                <h2>${namePlayer}</h2>
+                <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
+            </header>
+            <nav class="navGlobal">
+                <ul class="navGlobal_list navList">
+                    <li class="navList_item"><a href="/page_list" data-link>PageList</a></li>
+                    <li id="" class="navList_item">
+                        <form action="" method="post" class="blockForm">
+                            <button type="submit" id="btnLogoutForm" class="unitButton">${labelButtonLogout}</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        `;
+        const btnLogout = document.querySelector("#btnLogoutForm");
+        btnLogout.addEventListener("click", handleLogout);
+    } else {
+        document.querySelector("#headerAccount").innerHTML = "";
     }
 }
 
