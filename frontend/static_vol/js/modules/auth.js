@@ -3,60 +3,45 @@
 import { getToken, refreshAccessToken } from './token.js';
 import { handleLogout } from './logout.js';
 
-const getIsLogin = async () => {
-    if ((getToken('accessToken')) === null) {//localstrageにaccessTokenがkey自体ない=>ログアウト状態
-        return null;
-    }
-    const userData = await getUserInfo();
-    if (userData === null) {
-        return null;
-    }
-    if (userData.is_authenticated) {
-        return userData;
-    } else {
-        return null;
-    }
-}
-
 const getUserInfo = async () => {
-    try {
-        const accessToken = getToken('accessToken');
-        const response = await fetch('http://localhost:8001/api/players/userinfo/', {
+    const accessToken = getToken('accessToken');
+    //localStorageにaccessTokenがkey自体ない=>ログアウト状態
+    if (accessToken === null) {
+        return Promise.resolve(null);
+    }
+    const response = await fetch('http://localhost:8001/api/players/userinfo/', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else if (response.status === 401) {
+        if (!await refreshAccessToken()) {
+            throw new Error('fail refresh token');
+        }
+        const accessToken2 = getToken('accessToken');
+        if (accessToken2 === null) {
+            throw new Error('fail refresh token');
+        }
+        const response2 = await fetch('http://localhost:8001/api/players/userinfo/', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${accessToken2}`
             },
         });
-
-        if (response.ok) {
-            return await response.json();
-        } else if (response.status === 401) {
-            if (!await refreshAccessToken()) {
-                throw new Error('fail refresh token');
-            }
-            const accessToken2 = getToken('accessToken');
-
-            const response2 = await fetch('http://localhost:8001/api/players/userinfo/', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${accessToken2}`
-                },
-            });
-            if (response2.ok) {
-                return await response2.json();
-            } else {
-                throw new Error('fail get userinfo');
-            }
+        if (response2.ok) {
+            return await response2.json();
+        } else {
+            throw new Error('fail get userinfo');
         }
-    } catch (error) {
-        console.error('getUserInfo:', error);
-        return null;
     }
 }
 
-const switchDisplayAccount = async () => {
+const switchDisplayAccount = async (userData) => {
     const labelButtonLogout = "ログアウト"; // TODO json 共通化したい
-    const userData = await getIsLogin();
     if (userData !== null) {
         const namePlayer = userData.username;
         document.querySelector("#headerAccount").innerHTML = `
@@ -82,4 +67,4 @@ const switchDisplayAccount = async () => {
     }
 }
 
-export { switchDisplayAccount };
+export { getUserInfo, switchDisplayAccount };

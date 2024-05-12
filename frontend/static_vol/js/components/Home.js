@@ -1,7 +1,7 @@
 "use strict";
 
 import PageBase from './PageBase.js';
-import { switchDisplayAccount } from '../modules/auth.js';
+import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -61,7 +61,8 @@ export default class extends PageBase {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
                 //console.log("Login successful");  // ここでログイン成功をログに出力
-                switchDisplayAccount();//not return
+                const userData = getUserInfo();
+                switchDisplayAccount(userData);//not return
             })
             .catch(error => {
                 console.error('Login failed:', error);

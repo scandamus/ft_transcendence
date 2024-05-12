@@ -1,12 +1,18 @@
 "use strict";
 
-import { switchDisplayAccount } from './modules/auth.js';
+import { getUserInfo, switchDisplayAccount } from './modules/auth.js';
 import { addLinkPageEvClick, checkProtectedRoute, router } from './modules/router.js';
 import { switchLanguage } from './modules/switchLanguage.js';
 
 //load
 document.addEventListener("DOMContentLoaded", async () => {
-    await switchDisplayAccount();
+    getUserInfo()
+        .then(data => {
+            switchDisplayAccount(data);
+        })
+        .catch(error => {
+                console.error('getUserInfo failed:', error);
+            });
     // if (!isLoggedIn && checkProtectedRoute(window.location.pathname)) {
     //     window.history.pushState({}, "", "/");
     //     router("/");
