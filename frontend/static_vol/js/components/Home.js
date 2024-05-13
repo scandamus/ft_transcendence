@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
 import PageBase from './PageBase.js';
 import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
-import { router } from "../modules/router.js";
+import { router } from '../modules/router.js';
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle("LOGIN");
-        this.labelButtonLogin = "ログイン"; // TODO json
+        this.setTitle('LOGIN');
+        this.labelButtonLogin = 'ログイン'; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
     }
@@ -30,9 +30,9 @@ export default class extends PageBase {
     }
 
     listenLogin() {
-        const btnLogin = document.querySelector("#btnLoginForm");
-        btnLogin.addEventListener("click", this.handleLogin.bind(this));
-        this.addListenEvent(btnLogin, this.handleLogin, "click");
+        const btnLogin = document.querySelector('#btnLoginForm');
+        btnLogin.addEventListener('click', this.handleLogin.bind(this));
+        this.addListenEvent(btnLogin, this.handleLogin, 'click');
     }
 
     handleLogin(ev) {

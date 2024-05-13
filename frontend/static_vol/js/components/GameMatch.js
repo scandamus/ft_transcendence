@@ -1,12 +1,12 @@
-"use strict";
+'use strict';
 
 import PageBase from './PageBase.js';
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle("GameMatch");
-        this.labelButton = "対戦を申し込む"; // TODO json
+        this.setTitle('GameMatch');
+        this.labelButton = '対戦を申し込む'; // TODO json
     }
 
     async getListPlayers() {
@@ -16,7 +16,7 @@ export default class extends PageBase {
                 return data;
             })
             .catch(error => {
-                console.error("Error fetching users:", error);
+                console.error('Error fetching users:', error);
                 throw error;
             });
     }

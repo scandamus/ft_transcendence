@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 //localstorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい

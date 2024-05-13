@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 export default class PageBase {
     static instance = null;
@@ -16,7 +16,7 @@ export default class PageBase {
     }
 
     async renderHtml() {
-        return "";
+        return '';
     }
 
     //renderHtml後にlistAfterRenderHandlersに登録されたmethodを実行
@@ -42,8 +42,8 @@ export default class PageBase {
             listener.element.removeEventListener(listener.event, listener.callback);
         });
         // if (this.listEventListeners.length === 0)
-        //     console.log("Listeners all clear")
+        //     console.log('Listeners all clear')
         // else
-        //     console.log("Listeners" + this.listEventListeners.length + "left)
+        //     console.log('Listeners' + this.listEventListeners.length + 'left')
     }
 }

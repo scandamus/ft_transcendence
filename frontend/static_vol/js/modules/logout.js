@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
 import { getToken, refreshAccessToken } from './token.js';
 import { switchDisplayAccount } from './auth.js';
-import { router } from "./router.js";
+import { router } from './router.js';
 
 const fetchLogout = async (isRefresh) => {
     const accessToken = getToken('accessToken');

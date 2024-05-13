@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 //page
 import PageBase from '../components/PageBase.js';
@@ -16,24 +16,24 @@ import { getToken } from './token.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = [
-    {path: "/page_list", view: PageList, isProtected: null},
-    {path: "/", view: Home, isProtected: false},
-    {path: "/register", view: UserRegister, isProtected: false},
-    {path: "/register/confirm", view: UserRegisterConfirm, isProtected: false},
-    {path: "/register/complete", view: UserRegisterComplete, isProtected: false},
-    {path: "/user", view: User, isProtected: true},
-    {path: "/game/play", view: GamePlay, isProtected: true},
-    {path: "/game/match", view: GameMatch, isProtected: true},
-    {path: "/tournament/entry", view: TournamentEntry, isProtected: true},
-    {path: "/tournament/match", view: TournamentMatch, isProtected: true},
-    // { path: "/user/:id", components: user },
+    {path: '/page_list', view: PageList, isProtected: null},
+    {path: '/', view: Home, isProtected: false},
+    {path: '/register', view: UserRegister, isProtected: false},
+    {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
+    {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
+    {path: '/user', view: User, isProtected: true},
+    {path: '/game/play', view: GamePlay, isProtected: true},
+    {path: '/game/match', view: GameMatch, isProtected: true},
+    {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
+    {path: '/tournament/match', view: TournamentMatch, isProtected: true},
+    // { path: '/user/:id', components: user },
 ];
 
 //認証の必要なページ
 const protectedRoutes = [/\/(?:user|game|tournament)\/?.*$/];
 
 //pathを正規表現に変換
-const pathToRegex = (path) => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "/?$");
+const pathToRegex = (path) => new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '/?$');
 
 //todo: :idのような形式の場合
 const getParams = (matchRoute) => {
@@ -50,7 +50,7 @@ const getParams = (matchRoute) => {
 
 const addLinkPageEvClick = (linkPages) => {
     linkPages.forEach((linkPage) => {
-        linkPage.addEventListener("click", async (ev) => {
+        linkPage.addEventListener('click', async (ev) => {
             ev.preventDefault();
             if (window.location.href === ev.target.href) {
                 return;
@@ -90,14 +90,14 @@ const router = async (isLogin) => {
     //ログイン状態で非認証ページにアクセス => userにリダイレクト
     //ログイン状況を問わずアクセスできるページは、現状page_listのみ
     if (!isLogin && matchRoute.route.isProtected && matchRoute.result !== routes[0].path) {
-        window.history.pushState({}, "", routes[1].path);
+        window.history.pushState({}, '', routes[1].path);
         matchRoute = {
             route: routes[1],
             result: routes[1].path
         };
     } else if (isLogin && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
-        window.history.pushState({}, "", routes[5].path);
+        window.history.pushState({}, '', routes[5].path);
         matchRoute = {
             route: routes[5],
             result: routes[5].path
@@ -112,7 +112,7 @@ const router = async (isLogin) => {
             oldView.destroy();
         }
         //view更新
-        document.querySelector("#app").innerHTML = await view.renderHtml();
+        document.querySelector('#app').innerHTML = await view.renderHtml();
         view.afterRender();
         //todo: ↓afterRenderに統合
         const linkPages = document.querySelectorAll('#app a[data-link]');

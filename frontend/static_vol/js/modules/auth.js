@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import { getToken, refreshAccessToken } from './token.js';
 import { handleLogout } from './logout.js';
@@ -57,10 +57,10 @@ const showMenu = () => {
 }
 
 const switchDisplayAccount = async (userData) => {
-    const labelButtonLogout = "ログアウト"; // TODO json 共通化したい
+    const labelButtonLogout = 'ログアウト'; // TODO json 共通化したい
     if (userData !== null) {
         const namePlayer = userData.username;
-        document.querySelector("#headerAccount").innerHTML = `
+        document.querySelector('#headerAccount').innerHTML = `
             <header class="headerNav headerNav-login">
                 <h2>${namePlayer}</h2>
                 <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
@@ -76,12 +76,12 @@ const switchDisplayAccount = async (userData) => {
             </nav>
         `;
         const btnLogout = document.querySelector("#btnLogoutForm");
-        btnLogout.addEventListener("click", handleLogout);
+        btnLogout.addEventListener('click', handleLogout);
         const btnNavHeader = document.querySelector(".headerNav-login");
-        btnNavHeader.addEventListener("click", showMenu);
+        btnNavHeader.addEventListener('click', showMenu);
         btnNavHeader.nextElementSibling.style.display = 'none';
     } else {
-        document.querySelector("#headerAccount").innerHTML = "";
+        document.querySelector("#headerAccount").innerHTML = '';
     }
 }
 
