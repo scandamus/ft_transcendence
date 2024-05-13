@@ -51,7 +51,6 @@ const switchDisplayAccount = async (userData) => {
             </header>
             <nav class="navGlobal">
                 <ul class="navGlobal_list navList">
-                    <li class="navList_item"><a href="/page_list" data-link>PageList</a></li>
                     <li id="" class="navList_item">
                         <form action="" method="post" class="blockForm">
                             <button type="submit" id="btnLogoutForm" class="unitButton">${labelButtonLogout}</button>
