@@ -47,11 +47,15 @@ const getUserInfo = async () => {
 const showMenu = () => {
     const classIsShow = 'is-show';
     const navGlobal = document.getElementById('navGlobal');
+    const onAnimationEnd = (ev) => {
+        if (ev.target === navGlobal) {
+            navGlobal.style.display = 'none';
+            navGlobal.removeEventListener('animationend', onAnimationEnd);
+        }
+    };
     if (navGlobal.classList.contains(classIsShow)) {
         navGlobal.classList.remove(classIsShow);
-        navGlobal.addEventListener('animationend', () => {
-            navGlobal.style.display = 'none';
-        }, { once: true });
+        navGlobal.addEventListener('animationend', onAnimationEnd);
     } else {
         navGlobal.style.display = 'block';
         requestAnimationFrame(() => {
@@ -85,6 +89,14 @@ const switchDisplayAccount = async (userData) => {
         btnNavHeader.addEventListener('click', showMenu);
         btnNavHeader.nextElementSibling.style.display = 'none';
     } else {
+        const btnLogout = document.getElementById('btnLogoutForm');
+        if (btnLogout) {
+            btnLogout.removeEventListener('click', handleLogout);
+        }
+        const btnNavHeader = document.getElementById('btnNavHeader');
+        if (btnNavHeader) {
+            btnNavHeader.removeEventListener('click', showMenu);
+        }
         document.getElementById('headerAccount').innerHTML = '';
     }
 }
