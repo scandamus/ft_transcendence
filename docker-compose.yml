@@ -57,3 +57,16 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - "5432:5432"
+
+  pong-server:
+    build: pong-server
+    container_name: pong-server
+    depends_on:
+      - redis
+    ports:
+      - "8002:8002"
+
+  redis:
+    image: redis:7
+  # ports:
+  #   - "6379:6379"
