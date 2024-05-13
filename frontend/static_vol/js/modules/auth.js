@@ -22,7 +22,7 @@ const fetchUserInfo = async (isRefresh) => {
             if (!await refreshAccessToken()) {
                 throw new Error('fail refresh token');
             }
-            await fetchUserInfo(true);
+            return await fetchUserInfo(true);
         } else {
             throw new Error('refreshed accessToken is invalid.');
         }
