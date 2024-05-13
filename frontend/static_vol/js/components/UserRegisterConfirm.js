@@ -5,10 +5,10 @@ import PageBase from './PageBase.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle("UserRegister - confirm");
-        this.labelButtonRegister = "登録する"; // TODO json
-        this.labelButtonReset = "修正する";
-        this.textConfirm = "下記の内容で登録します";
+        this.setTitle('UserRegister - confirm');
+        this.labelButtonRegister = '登録する'; // TODO json
+        this.labelButtonReset = '修正する';
+        this.textConfirm = '下記の内容で登録します';
     }
 
     async renderHtml() {

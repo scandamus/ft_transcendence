@@ -42,7 +42,7 @@ const getUserInfo = async () => {
 
 const showMenu = () => {
     const classIsShow = 'is-show';
-    const navGlobal = document.querySelector('.navGlobal');
+    const navGlobal = document.getElementById('navGlobal');
     if (navGlobal.classList.contains(classIsShow)) {
         navGlobal.classList.remove(classIsShow);
         navGlobal.addEventListener('animationend', () => {
@@ -60,12 +60,12 @@ const switchDisplayAccount = async (userData) => {
     const labelButtonLogout = 'ログアウト'; // TODO json 共通化したい
     if (userData !== null) {
         const namePlayer = userData.username;
-        document.querySelector('#headerAccount').innerHTML = `
-            <header class="headerNav headerNav-login">
+        document.getElementById('headerAccount').innerHTML = `
+            <header id="btnNavHeader" class="headerNav headerNav-login">
                 <h2>${namePlayer}</h2>
                 <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
             </header>
-            <nav class="navGlobal">
+            <nav id="navGlobal" class="navGlobal">
                 <ul class="navGlobal_list navList">
                     <li id="" class="navList_item">
                         <form action="" method="post" class="blockForm">
@@ -75,13 +75,13 @@ const switchDisplayAccount = async (userData) => {
                 </ul>
             </nav>
         `;
-        const btnLogout = document.querySelector("#btnLogoutForm");
+        const btnLogout = document.getElementById('btnLogoutForm');
         btnLogout.addEventListener('click', handleLogout);
-        const btnNavHeader = document.querySelector(".headerNav-login");
+        const btnNavHeader = document.getElementById('btnNavHeader');
         btnNavHeader.addEventListener('click', showMenu);
         btnNavHeader.nextElementSibling.style.display = 'none';
     } else {
-        document.querySelector("#headerAccount").innerHTML = '';
+        document.getElementById('headerAccount').innerHTML = '';
     }
 }
 

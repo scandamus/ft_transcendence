@@ -12,7 +12,7 @@ export default class PageBase {
 
     setTitle(title) {
         document.title = title;
-        document.querySelector('.mainContainerHeader_title').innerText = title;
+        document.getElementById('titlePage').innerText = title;
     }
 
     async renderHtml() {

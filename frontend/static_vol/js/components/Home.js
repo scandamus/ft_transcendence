@@ -30,7 +30,7 @@ export default class extends PageBase {
     }
 
     listenLogin() {
-        const btnLogin = document.querySelector('#btnLoginForm');
+        const btnLogin = document.getElementById('btnLoginForm');
         btnLogin.addEventListener('click', this.handleLogin.bind(this));
         this.addListenEvent(btnLogin, this.handleLogin, 'click');
     }
@@ -61,7 +61,6 @@ export default class extends PageBase {
             .then(data => {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
-                //console.log("Login successful");  // ここでログイン成功をログに出力
                 return getUserInfo();
             })
             .then((userData) => {

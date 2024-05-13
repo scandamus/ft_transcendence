@@ -5,9 +5,9 @@ import PageBase from './PageBase.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle("TournamentEntry");
-        this.labelButton = "エントリー"; // TODO json
-        this.txtDeadline = "エントリー締切";
+        this.setTitle('TournamentEntry');
+        this.labelButton = 'エントリー'; // TODO json
+        this.txtDeadline = 'エントリー締切';
     }
 
     async renderHtml() {

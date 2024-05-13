@@ -112,7 +112,7 @@ const router = async (isLogin) => {
             oldView.destroy();
         }
         //view更新
-        document.querySelector('#app').innerHTML = await view.renderHtml();
+        document.getElementById('app').innerHTML = await view.renderHtml();
         view.afterRender();
         //todo: ↓afterRenderに統合
         const linkPages = document.querySelectorAll('#app a[data-link]');
