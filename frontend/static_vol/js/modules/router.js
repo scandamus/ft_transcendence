@@ -71,6 +71,9 @@ const checkProtectedRoute = (path) => {
 }
 
 const router = async (isLogin) => {
+    if (isLogin instanceof PopStateEvent) {
+        isLogin = getToken('accessToken');
+    }
     const mapRoutes = Object.keys(routes).map(key => {
     const route = routes[key];
     return {
