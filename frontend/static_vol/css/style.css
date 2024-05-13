@@ -128,16 +128,15 @@ button {
   padding: 20px;
   background-color: var(--color-black-alpha);
   z-index: 1;
-  visibility: hidden;
   opacity: 0;
-  transition: translate 0.14s steps(2, jump-none), opacity 0.2s ease;
-  translate: 0 5%;
+  translate: 15%;
+  transition: translate 0.2s steps(3, jump-none), opacity 0.14s ease;
 }
 
 .navGlobal.is-show {
-  visibility: visible;
   opacity: 1;
   translate: 0;
+  transition: translate 0.2s steps(3, jump-none), opacity 0.2s ease;
 }
 
 .navList {

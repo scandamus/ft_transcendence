@@ -41,8 +41,19 @@ const getUserInfo = async () => {
 }
 
 const showMenu = () => {
+    const classIsShow = 'is-show';
     const navGlobal = document.querySelector('.navGlobal');
-    navGlobal.classList.toggle('is-show');
+    if (navGlobal.classList.contains(classIsShow)) {
+        navGlobal.classList.remove(classIsShow);
+        navGlobal.addEventListener('animationend', () => {
+            navGlobal.style.display = 'none';
+        }, { once: true });
+    } else {
+        navGlobal.style.display = 'block';
+        requestAnimationFrame(() => {
+            navGlobal.classList.add(classIsShow);
+        });
+    }
 }
 
 const switchDisplayAccount = async (userData) => {
@@ -68,6 +79,7 @@ const switchDisplayAccount = async (userData) => {
         btnLogout.addEventListener("click", handleLogout);
         const btnNavHeader = document.querySelector(".headerNav-login");
         btnNavHeader.addEventListener("click", showMenu);
+        btnNavHeader.nextElementSibling.style.display = 'none';
     } else {
         document.querySelector("#headerAccount").innerHTML = "";
     }
