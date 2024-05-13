@@ -62,7 +62,9 @@ export default class extends PageBase {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
                 //console.log("Login successful");  // ここでログイン成功をログに出力
-                const userData = getUserInfo();
+                return getUserInfo();
+            })
+            .then((userData) => {
                 switchDisplayAccount(userData);//not return
                 router(true);
             })
