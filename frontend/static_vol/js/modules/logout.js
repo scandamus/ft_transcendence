@@ -41,8 +41,8 @@ const handleLogout = (ev) => {
     ev.preventDefault();
     fetchLogout(false)
         .then(()=> {
-            switchDisplayAccount(null);
-            router(false);
+            switchDisplayAccount(null);//not return
+            router(false);//not return
         })
         .catch(error => {
             console.error('Logout failed:', error);
