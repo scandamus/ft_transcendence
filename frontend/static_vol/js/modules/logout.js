@@ -2,6 +2,7 @@
 
 import { getToken, refreshAccessToken } from './token.js';
 import { switchDisplayAccount } from './auth.js';
+import { router } from "./router.js";
 
 const fetchLogout = async (isRefresh) => {
     const accessToken = getToken('accessToken');
@@ -31,7 +32,6 @@ const fetchLogout = async (isRefresh) => {
         //token rm
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        await switchDisplayAccount(null);
     } else {
         throw new Error(`fetchLogout error. status: ${response.status}`);
     }
@@ -40,6 +40,10 @@ const fetchLogout = async (isRefresh) => {
 const handleLogout = (ev) => {
     ev.preventDefault();
     fetchLogout(false)
+        .then(()=> {
+            switchDisplayAccount(null);
+            router(false);
+        })
         .catch(error => {
             console.error('Logout failed:', error);
         });

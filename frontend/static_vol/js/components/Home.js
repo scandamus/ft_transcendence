@@ -2,6 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
+import { router } from "../modules/router.js";
 
 export default class extends PageBase {
     constructor(params) {
@@ -63,6 +64,7 @@ export default class extends PageBase {
                 //console.log("Login successful");  // ここでログイン成功をログに出力
                 const userData = getUserInfo();
                 switchDisplayAccount(userData);//not return
+                router(true);
             })
             .catch(error => {
                 console.error('Login failed:', error);
