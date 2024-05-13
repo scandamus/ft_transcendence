@@ -3,11 +3,10 @@
 import { getToken, refreshAccessToken } from './token.js';
 import { handleLogout } from './logout.js';
 
-const getUserInfo = async () => {
+const fetchUserInfo = async (isRefresh) => {
     const accessToken = getToken('accessToken');
-    //localStorageにaccessTokenがkey自体ない=>ログアウト状態
     if (accessToken === null) {
-        return Promise.resolve(null);
+        return Promise.resolve(null);//logout状態なら何もしない
     }
     const response = await fetch('http://localhost:8001/api/players/userinfo/', {
         method: 'GET',
@@ -15,29 +14,34 @@ const getUserInfo = async () => {
             'Authorization': `Bearer ${accessToken}`
         },
     });
-
     if (response.ok) {
         return await response.json();
     } else if (response.status === 401) {
-        if (!await refreshAccessToken()) {
-            throw new Error('fail refresh token');
-        }
-        const accessToken2 = getToken('accessToken');
-        if (accessToken2 === null) {
-            throw new Error('fail refresh token');
-        }
-        const response2 = await fetch('http://localhost:8001/api/players/userinfo/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken2}`
-            },
-        });
-        if (response2.ok) {
-            return await response2.json();
+        if (!isRefresh) {
+            //初回のaccessToken expiredならrefreshして再度ログイン
+            if (!await refreshAccessToken()) {
+                throw new Error('fail refresh token');
+            }
+            await fetchUserInfo(true);
         } else {
-            throw new Error('fail get userinfo');
+            throw new Error('refreshed accessToken is invalid.');
         }
+    } else {
+        throw new Error(`fetchUserInfo error. status: ${response.status}`);
     }
+}
+
+const getUserInfo = async () => {
+    return fetchUserInfo(false)
+        .then((userData) => {
+            if (!userData) {
+                return Promise.resolve(null);
+            }
+            return userData;
+        })
+        .catch(error => {
+            console.error('getUserInfo failed:', error);
+        })
 }
 
 const showMenu = () => {
@@ -57,8 +61,8 @@ const showMenu = () => {
 }
 
 const switchDisplayAccount = async (userData) => {
-    const labelButtonLogout = 'ログアウト'; // TODO json 共通化したい
-    if (userData !== null) {
+    if (userData) {
+        const labelButtonLogout = 'ログアウト'; // TODO json 共通化したい
         const namePlayer = userData.username;
         document.getElementById('headerAccount').innerHTML = `
             <header id="btnNavHeader" class="headerNav headerNav-login">
