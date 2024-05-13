@@ -8,7 +8,6 @@ const fetchLogout = async (isRefresh) => {
     const accessToken = getToken('accessToken');
     if (accessToken === null) {
         throw new Error('accessToken is invalid.');
-        //todo: 強制ログアウト
     }
     const response = await fetch('http://localhost:8001/api/players/logout/', {
         method: 'POST',
@@ -21,18 +20,12 @@ const fetchLogout = async (isRefresh) => {
             //初回のaccessToken expiredならrefreshして再度ログイン
             if (!await refreshAccessToken()) {
                 throw new Error('fail refresh token');
-                //todo: refresh token expired. 強制ログアウト
             }
             await fetchLogout(true);
         } else {
-            //todo: tokenRefresh後も401なら例外throw。強制ログアウト
-            throw new Error('accessToken is invalid.');
+            throw new Error('refreshed accessToken is invalid.');
         }
-    } else if (response.ok) {
-        //token rm
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-    } else {
+    } else if (!response.ok) {
         throw new Error(`fetchLogout error. status: ${response.status}`);
     }
 }
@@ -40,13 +33,17 @@ const fetchLogout = async (isRefresh) => {
 const handleLogout = (ev) => {
     ev.preventDefault();
     fetchLogout(false)
-        .then(()=> {
+        .catch(error => {
+            console.error('Logout failed:', error);
+        })
+        .finally(() => {
+            //todo: catchからここに入る場合は強制ログアウト。画面にエラー表示を出すか？
+            //token rm
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             switchDisplayAccount(null);//not return
             router(false);//not return
         })
-        .catch(error => {
-            console.error('Logout failed:', error);
-        });
 }
 
 export { handleLogout };
