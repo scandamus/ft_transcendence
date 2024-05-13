@@ -15,19 +15,19 @@ import TournamentMatch from '../components/TournamentMatch.js';
 import { getToken } from './token.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
-const routes = [
-    {path: '/page_list', view: PageList, isProtected: null},
-    {path: '/', view: Home, isProtected: false},
-    {path: '/register', view: UserRegister, isProtected: false},
-    {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
-    {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
-    {path: '/user', view: User, isProtected: true},
-    {path: '/game/play', view: GamePlay, isProtected: true},
-    {path: '/game/match', view: GameMatch, isProtected: true},
-    {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
-    {path: '/tournament/match', view: TournamentMatch, isProtected: true},
-    // { path: '/user/:id', components: user },
-];
+const routes = {
+    pageList: {path: '/page_list', view: PageList, isProtected: null},
+    login: {path: '/', view: Home, isProtected: false},
+    register: {path: '/register', view: UserRegister, isProtected: false},
+    registerConfirm: {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
+    registerComplete: {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
+    user: {path: '/user', view: User, isProtected: true},
+    gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
+    gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
+    tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
+    tournamentMatch: {path: '/tournament/match', view: TournamentMatch, isProtected: true},
+    //userId:  { path: '/user/:id', components: user },
+};
 
 //認証の必要なページ
 const protectedRoutes = [/\/(?:user|game|tournament)\/?.*$/];
@@ -71,17 +71,18 @@ const checkProtectedRoute = (path) => {
 }
 
 const router = async (isLogin) => {
-    const mapRoutes = routes.map(route => {
-        return {
-            route: route,
-            result: location.pathname.match(pathToRegex(route.path))
-        };
-    });
+    const mapRoutes = Object.keys(routes).map(key => {
+    const route = routes[key];
+    return {
+        route: route,
+        result: location.pathname.match(pathToRegex(route.path))
+    };
+});
     let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
     if (!matchRoute) {//todo:404はpage_listに移動(暫定)
         matchRoute = {
-            route: routes[0],
-            result: routes[0].path
+            route: routes.pageList,
+            result: routes.pageList.path
         };
     }
 
@@ -89,18 +90,18 @@ const router = async (isLogin) => {
     //非ログイン状態で要認証ページにアクセス => ログインにリダイレクト
     //ログイン状態で非認証ページにアクセス => userにリダイレクト
     //ログイン状況を問わずアクセスできるページは、現状page_listのみ
-    if (!isLogin && matchRoute.route.isProtected && matchRoute.result !== routes[0].path) {
-        window.history.pushState({}, '', routes[1].path);
+    if (!isLogin && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
+        window.history.pushState({}, '', routes.login.path);
         matchRoute = {
-            route: routes[1],
-            result: routes[1].path
+            route: routes.login,
+            result: routes.login.path
         };
     } else if (isLogin && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
-        window.history.pushState({}, '', routes[5].path);
+        window.history.pushState({}, '', routes.user.path);
         matchRoute = {
-            route: routes[5],
-            result: routes[5].path
+            route: routes.user,
+            result: routes.user.path
         };
     }
 
