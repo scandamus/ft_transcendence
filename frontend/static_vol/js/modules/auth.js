@@ -40,6 +40,11 @@ const getUserInfo = async () => {
     }
 }
 
+const showMenu = () => {
+    const navGlobal = document.querySelector('.navGlobal');
+    navGlobal.classList.toggle('is-show');
+}
+
 const switchDisplayAccount = async (userData) => {
     const labelButtonLogout = "ログアウト"; // TODO json 共通化したい
     if (userData !== null) {
@@ -61,6 +66,8 @@ const switchDisplayAccount = async (userData) => {
         `;
         const btnLogout = document.querySelector("#btnLogoutForm");
         btnLogout.addEventListener("click", handleLogout);
+        const btnNavHeader = document.querySelector(".headerNav-login");
+        btnNavHeader.addEventListener("click", showMenu);
     } else {
         document.querySelector("#headerAccount").innerHTML = "";
     }
