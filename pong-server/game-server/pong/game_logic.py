@@ -6,11 +6,23 @@ def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier):
     angle_radians = angle_degrees * (math.pi / 180)
     cos_value = math.cos(angle_radians)
     sin_value = math.sin(angle_radians)
-    speed = random.randint(1, 2)
+    speed = random.randint(10, 11)
     return {
         "dx": speed * direction_multiplier * cos_value,
         "dy": speed * -sin_value,
     }
+
+
+class Score:
+    def __init__(self):
+        self.left_score = 0
+        self.right_score = 0
+
+    def increment_score(self, side):
+        if side == "LEFT":
+            self.left_score += 1
+        elif side == "RIGHT":
+            self.right_score += 1
 
 
 class Paddle:
@@ -39,14 +51,28 @@ class Ball:
         self.radius = radius
         self.flag = True  # 衝突判定を  True: する   False: しない
 
-    def move(self, paddle1, paddle2, canvas_width, canvas_height):
+    def reset(self, x, y):
+        tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
+        self.x = x
+        self.y = y
+        self.dx = tmp['dx']
+        self.dy = tmp['dy']
+        self.flag = True  # 衝突判定を  True: する   False: しない
+
+    def move(self, paddle1, paddle2, score, canvas_width, canvas_height):
         if self.y + self.dy > canvas_height - self.radius or self.y + self.dy < self.radius:
             self.dy = -self.dy
         if self.flag:
             if not collision_detection(self, paddle1, paddle2, canvas_width):
                 self.flag = False
-        if self.x - self.radius + self.dx < 0 or self.x + self.radius + self.dx > canvas_width:
-            return False
+        if self.x - self.radius + self.dx < 0:
+            score.increment_score("RIGHT")
+            self.reset(canvas_width / 2, canvas_height / 2)
+            return score.right_score < 10
+        elif self.x + self.radius + self.dx > canvas_width:
+            score.increment_score("LEFT")
+            self.reset(canvas_width / 2, canvas_height / 2)
+            return score.left_score < 10
         else:
             self.x += self.dx
         self.y += self.dy
