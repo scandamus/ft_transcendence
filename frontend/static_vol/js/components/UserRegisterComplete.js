@@ -1,12 +1,12 @@
-"use strict";
+'use strict';
 
-import PageBase from "./PageBase.js";
+import PageBase from './PageBase.js';
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle("UserRegister - complete");
-        this.message = "登録完了しました"; // TODO json
+        this.setTitle('UserRegister - complete');
+        this.message = '登録完了しました'; // TODO json
     }
 
     async renderHtml() {
