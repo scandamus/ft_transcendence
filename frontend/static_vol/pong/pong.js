@@ -50,14 +50,14 @@ function drawPaddle(obj) {
     ctx.closePath();
 }
 
-function updateGameObjects(ball, paddle1, paddle2, game_status) {
+function updateGameObjects(ball, right_paddle, left_paddle, game_status) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawBall(ball);
     // 右
-    drawPaddle(paddle1);
+    drawPaddle(right_paddle);
     // 左
-    drawPaddle(paddle2);
+    drawPaddle(left_paddle);
 
     if (!game_status) {
         console.log("Game Over");
@@ -107,13 +107,8 @@ pongSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         // document.querySelector('#pong-log').value += (data.message + '\n');
         console.log('received_data -> ', data);
-        if (data.score) {  // scoreオブジェクトが存在する場合のみログを出力
-            console.log("left: ", data.score.left_score, "  right: ", data.score.right_score);
-        } else {
-            console.log("Score data is missing.");
-        }
-        console.log("updateGameObjects() called");
-        updateGameObjects(data.ball, data.paddle1, data.paddle2, data.game_status);
+        console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
+        updateGameObjects(data.ball, data.right_paddle, data.left_paddle, data.game_status);
     } catch (error) {
         console.error('Error parsing message data:', error);
     }

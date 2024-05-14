@@ -4,7 +4,7 @@ import asyncio
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from datetime import datetime as dt
-from .game_logic import Paddle, Ball, Score
+from .game_logic import Paddle, Ball
 
 import logging
 
@@ -18,12 +18,11 @@ CANVAS_HEIGHT = 300
 class PongConsumer(AsyncWebsocketConsumer):
     players = 0
     scheduled_task = None
-    paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
-    paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
+    right_paddle = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
+    left_paddle = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
     ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
     ready = False
     game_continue = False
-    score = Score()
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -88,22 +87,22 @@ class PongConsumer(AsyncWebsocketConsumer):
         # キー入力によってパドルを操作
         if key and is_pressed:
             if key == "ArrowUp":
-                self.paddle1.speed = -10
+                self.right_paddle.speed = -10
             elif key == "ArrowDown":
-                self.paddle1.speed = 10
+                self.right_paddle.speed = 10
             elif key == "w":
-                self.paddle2.speed = -10
+                self.left_paddle.speed = -10
             elif key == "s":
-                self.paddle2.speed = 10
+                self.left_paddle.speed = 10
         else:
             if key == "ArrowUp":
-                self.paddle1.speed = 0
+                self.right_paddle.speed = 0
             elif key == "ArrowDown":
-                self.paddle1.speed = 0
+                self.right_paddle.speed = 0
             elif key == "w":
-                self.paddle2.speed = 0
+                self.left_paddle.speed = 0
             elif key == "s":
-                self.paddle2.speed = 0
+                self.left_paddle.speed = 0
 
         # Send message to WebSocket
         # await self.send_game_data(True, message=message, timestamp=timestamp)
@@ -127,9 +126,9 @@ class PongConsumer(AsyncWebsocketConsumer):
             pass
 
     async def update_ball_and_send_data(self):
-        self.paddle1.move("", CANVAS_HEIGHT)
-        self.paddle2.move("", CANVAS_HEIGHT)
-        game_continue = self.ball.move(self.paddle1, self.paddle2, self.score, CANVAS_WIDTH, CANVAS_HEIGHT)
+        self.right_paddle.move("", CANVAS_HEIGHT)
+        self.left_paddle.move("", CANVAS_HEIGHT)
+        game_continue = self.ball.move(self.right_paddle, self.left_paddle, CANVAS_WIDTH, CANVAS_HEIGHT)
         await self.channel_layer.group_send(self.room_group_name, {
             "type": "ball.message",
             "message": "update_ball_pos",
@@ -146,10 +145,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             "message": message + f'\n{timestamp}\n\n',
             "game_status": game_status,
-            "score": {
-                "left_score": self.score.left_score,
-                "right_score": self.score.right_score,
-            },
             "ball": {
                 "x": self.ball.x,
                 "y": self.ball.y,
@@ -157,17 +152,19 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "dy": self.ball.dy,
                 "radius": self.ball.radius,
             },
-            "paddle1": {
-                "x": self.paddle1.x,
-                "y": self.paddle1.y,
-                "width": self.paddle1.width,
-                "height": self.paddle1.height
+            "right_paddle": {
+                "x": self.right_paddle.x,
+                "y": self.right_paddle.y,
+                "width": self.right_paddle.width,
+                "height": self.right_paddle.height,
+                "score": self.right_paddle.score,
             },
-            "paddle2": {
-                "x": self.paddle2.x,
-                "y": self.paddle2.y,
-                "width": self.paddle2.width,
-                "height": self.paddle2.height
+            "left_paddle": {
+                "x": self.left_paddle.x,
+                "y": self.left_paddle.y,
+                "width": self.left_paddle.width,
+                "height": self.left_paddle.height,
+                "score": self.left_paddle.score,
             },
         }))
 

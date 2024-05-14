@@ -13,16 +13,16 @@ def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier):
     }
 
 
-class Score:
-    def __init__(self):
-        self.left_score = 0
-        self.right_score = 0
-
-    def increment_score(self, side):
-        if side == "LEFT":
-            self.left_score += 1
-        elif side == "RIGHT":
-            self.right_score += 1
+# class Score:
+#     def __init__(self):
+#         self.left_score = 0
+#         self.right_score = 0
+#
+#     def increment_score(self, side):
+#         if side == "LEFT":
+#             self.left_score += 1
+#         elif side == "RIGHT":
+#             self.right_score += 1
 
 
 class Paddle:
@@ -32,6 +32,7 @@ class Paddle:
         self.height = height
         self.width = width
         self.speed = 0
+        self.score = 0
 
     def move(self, direction, canvas_height):
         self.y += self.speed
@@ -39,6 +40,9 @@ class Paddle:
             self.y = 0
         if self.y + self.height > canvas_height:
             self.y = canvas_height - self.height
+
+    def increment_score(self):
+        self.score += 1
 
 
 class Ball:
@@ -59,20 +63,20 @@ class Ball:
         self.dy = tmp['dy']
         self.flag = True  # 衝突判定を  True: する   False: しない
 
-    def move(self, paddle1, paddle2, score, canvas_width, canvas_height):
+    def move(self, paddle1, paddle2, canvas_width, canvas_height):
         if self.y + self.dy > canvas_height - self.radius or self.y + self.dy < self.radius:
             self.dy = -self.dy
         if self.flag:
             if not collision_detection(self, paddle1, paddle2, canvas_width):
                 self.flag = False
         if self.x - self.radius + self.dx < 0:
-            score.increment_score("RIGHT")
+            paddle1.increment_score()
             self.reset(canvas_width / 2, canvas_height / 2)
-            return score.right_score < 10
+            return paddle1.score < 10
         elif self.x + self.radius + self.dx > canvas_width:
-            score.increment_score("LEFT")
+            paddle2.increment_score()
             self.reset(canvas_width / 2, canvas_height / 2)
-            return score.left_score < 10
+            return paddle2.score < 10
         else:
             self.x += self.dx
         self.y += self.dy
