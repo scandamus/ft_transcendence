@@ -4,7 +4,7 @@ import asyncio
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 from datetime import datetime as dt
-from .game_logic import Paddle, Ball
+from .game_logic import Paddle, Ball, Score
 
 import logging
 
@@ -21,8 +21,9 @@ class PongConsumer(AsyncWebsocketConsumer):
     paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
     paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
     ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
-    is_active = False
     ready = False
+    game_continue = False
+    score = Score()
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -41,7 +42,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.accept()
 
             # クライアント側でonopenが発火したらループを開始する
-            self.is_active = True
             if not self.ready:
                 self.ready = True
                 self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
@@ -51,7 +51,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
-        self.is_active = False
+        self.game_continue = False
         if self.scheduled_task:
             self.scheduled_task.cancel()
         await self.channel_layer.group_discard(
@@ -109,11 +109,18 @@ class PongConsumer(AsyncWebsocketConsumer):
         # await self.send_game_data(True, message=message, timestamp=timestamp)
 
     async def schedule_ball_update(self):
+        self.game_continue = True
         try:
-            while self.is_active:
-#                await asyncio.sleep(0.05)  # 50ミリ秒待機
+            while self.game_continue:
+                #                await asyncio.sleep(0.05)  # 50ミリ秒待機
                 await asyncio.sleep(1/60)  # 60Hz
-                await self.update_ball_and_send_data()
+                self.game_continue = await self.update_ball_and_send_data()
+                if not self.game_continue:
+                    await self.channel_layer.group_send(self.room_group_name, {
+                        "type": "send_game_over_message",
+                        "message": "GameOver",
+                    })
+
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
             # 今は特に書いていないのでpass
@@ -122,22 +129,27 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def update_ball_and_send_data(self):
         self.paddle1.move("", CANVAS_HEIGHT)
         self.paddle2.move("", CANVAS_HEIGHT)
-        self.is_active = self.ball.move(self.paddle1, self.paddle2, CANVAS_WIDTH, CANVAS_HEIGHT)
+        game_continue = self.ball.move(self.paddle1, self.paddle2, self.score, CANVAS_WIDTH, CANVAS_HEIGHT)
         await self.channel_layer.group_send(self.room_group_name, {
             "type": "ball.message",
             "message": "update_ball_pos",
             "timestamp": dt.utcnow().isoformat(),
         })
+        return game_continue
 
     async def ball_message(self, data):
         message = data["message"]
         timestamp = data["timestamp"]
-        await self.send_game_data(game_status=self.is_active, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
 
     async def send_game_data(self, game_status, message, timestamp):
         await self.send(text_data=json.dumps({
             "message": message + f'\n{timestamp}\n\n',
             "game_status": game_status,
+            "score": {
+                "left_score": self.score.left_score,
+                "right_score": self.score.right_score,
+            },
             "ball": {
                 "x": self.ball.x,
                 "y": self.ball.y,
@@ -158,3 +170,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "height": self.paddle2.height
             },
         }))
+
+    async def send_game_over_message(self, event):
+        message = event["message"]
+        timestamp = dt.utcnow().isoformat()
+        await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
