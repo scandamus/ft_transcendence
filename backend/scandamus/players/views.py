@@ -7,6 +7,8 @@ from .serializers import PlayerSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import permissions
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # from django.http import JsonResponse
 # from .models import UserProfile
@@ -102,17 +104,30 @@ class LoginView(APIView):
 
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid(raise_exception=True):
+            access = serializer.validated_data.get("access", None)
+            refresh = serializer.validated_data.get("refresh", None)
+            if access and refresh:
+                return Response({
+                    'access_token': access,
+                    'refresh_token': refresh
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Invalid token data'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        access = serializer.validated_data.get("access", None)
-        refresh = serializer.validated_data.get("refresh", None)
-        if access:
-            response = Response(status=status.HTTP_200_OK)
-            max_age = 60 * 60 * 12
-            response.set_cookie('access', access, httponly=True, max_age=max_age)
-            response.set_cookie('refresh', refresh, httponly=True, max_age=max_age)
-            # print('post　Login successful')
-            return response
+
+class LogoutView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh_token')
+            RefreshToken(refresh_token)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # @login_required
 # @require_POST
@@ -139,14 +154,19 @@ class LoginView(APIView):
 #         return JsonResponse({'is_loggedin': False})
 
 
-# class CheckLoginStatusAPIView(APIView):
-#     authentication_classes = [TokenAuthentication]
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request):
-#         return Response({'status': 'logged in', 'user': request.user.username})
-#
-#
+class UserInfoView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        data = {
+            'is_authenticated': user.is_authenticated,
+            'username': user.username,
+        }
+        return Response(data)
+
+
 # class CustomAuthToken(ObtainAuthToken):
 #     def post(self, request, *args, **kwargs):
 #         serializer = self.serializer_class(data=request.data,

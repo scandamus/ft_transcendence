@@ -114,6 +114,7 @@ button {
 .headerNav-login {
   display: flex;
   flex-direction: row-reverse;
+  cursor: pointer;
 }
 
 .headerNav-login .thumb {
@@ -121,17 +122,33 @@ button {
 }
 
 .navGlobal {
-  display: none;/*tmp*/
-  padding-right: 10px;
+  position: absolute;
+  top: var(--heightMainHeader);
+  right: 0;
+  padding: 20px;
+  background-color: var(--color-black-alpha);
+  z-index: 1;
+  opacity: 0;
+  translate: 15%;
+  transition: translate 0.2s steps(3, jump-none), opacity 0.14s ease;
+}
+
+.navGlobal.is-show {
+  opacity: 1;
+  translate: 0;
+  transition: translate 0.2s steps(3, jump-none), opacity 0.2s ease;
 }
 
 .navList {
-  display: flex;
   list-style: none;
 }
 
 .navList_item {
-  margin: 0 1em;
+
+}
+
+.navList_item + .navList_item {
+  margin-top: 20px;
 }
 
 /* mainContainer */
@@ -157,16 +174,21 @@ button {
 
 /* mainFooter */
 .mainFooter {
-  height: 2em;
-  line-height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  height: 40px;
+  line-height: 40px;
   padding: 0 20px;
   border-top: 1px solid var(--color-black-alpha);
   color: var(--color-white);
   text-align: right;
+  font-size: 1.3rem;
 }
 
 .formSwitchLang {
-
+  margin-right: 30px;/*tmp*/
 }
 
 /* -----
@@ -281,6 +303,26 @@ input {
 }
 
 .blockForm {
+}
+
+.blockForm_el {
+  width: 50%;
+  min-width: 20em;
+  margin: 0 auto 1.2em;
+  font-size: 1.6rem;
+}
+
+.blockForm_el dt {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.blockForm_el input {
+  width: 100%;
+}
+
+.blockForm_button {
+  margin-top: 50px;
 }
 
 .unitFormInput {

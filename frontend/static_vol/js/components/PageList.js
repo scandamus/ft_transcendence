@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-import PageBase from "./PageBase.js";
+import PageBase from './PageBase.js';
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle("PageList");
+        this.setTitle('PageList');
     }
 
     async renderHtml() {
