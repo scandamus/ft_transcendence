@@ -9,7 +9,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # from django.http import JsonResponse
-# from .models import UserProfile
+# from .models import PlayerProfile
 # from django.contrib.auth.models import User
 # from django.views.decorators.csrf import csrf_exempt
 # from django.contrib.auth.decorators import login_required
@@ -28,25 +28,25 @@ class PlayersViewSet(viewsets.ModelViewSet):
     template_name = None
 #
 #
-# def getUserProfile(request, username):
+# def getPlayerProfile(request, username):
 #     try:
-#         userProfile = UserProfile.objects.get(user__username=username)
+#         PlayerProfile = PlayerProfile.objects.get(user__username=username)
 #         data = {
-#             "username": userProfile.user.username if userProfile.user else None,
-#             "email": userProfile.user.email if userProfile.user else None,
-#             "level": userProfile.level,
-#             "createdDate": userProfile.createdDate,
-#             "playCount": userProfile.playCount,
-#             "winCount": userProfile.winCount
+#             "username": PlayerProfile.user.username if PlayerProfile.user else None,
+#             "email": PlayerProfile.user.email if PlayerProfile.user else None,
+#             "level": PlayerProfile.level,
+#             "createdDate": PlayerProfile.createdDate,
+#             "playCount": PlayerProfile.playCount,
+#             "winCount": PlayerProfile.winCount
 #         }
 #         return JsonResponse(data)
-#     except UserProfile.DoesNotExist:
+#     except PlayerProfile.DoesNotExist:
 #         return JsonResponse({"error": "User not found"}, status=404)
 #
 # @login_required
-# def userProfile(request):
+# def PlayerProfile(request):
 #     try:
-#         user_profile = UserProfile.objects.get(user=request.user)
+#         user_profile = PlayerProfile.objects.get(user=request.user)
 #         data = {
 #             "username": request.user.username,
 #             "email": request.user.email,
@@ -56,7 +56,7 @@ class PlayersViewSet(viewsets.ModelViewSet):
 #             "winCount": user_profile.winCount
 #         }
 #         return JsonResponse(data)
-#     except UserProfile.DoesNotExist:
+#     except PlayerProfile.DoesNotExist:
 #         return JsonResponse({"error": "User profile not found"}, status=404)
 #
 # def registerUser(request):

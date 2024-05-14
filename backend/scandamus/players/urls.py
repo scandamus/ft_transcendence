@@ -6,9 +6,9 @@ from .views import LoginView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
-    # path('getUserProfile', views.getUserProfile.as_view()),
-    # # path('api/user/<str:username>/', views.getUserProfile.as_view()),
-    # path('api/userProfile/', views.userProfile.as_view()),
+    # path('getPlayerProfile', views.getPlayerProfile.as_view()),
+    # # path('api/user/<str:username>/', views.getPlayerProfile.as_view()),
+    # path('api/PlayerProfile/', views.PlayerProfile.as_view()),
     # path('api/register/', views.registerUser.as_view()),
     # path('api/login/', views.loginUser.as_view()),
     # path('api/logout/', views.logoutUser.as_view()),

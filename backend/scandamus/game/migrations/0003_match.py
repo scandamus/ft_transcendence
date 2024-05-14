@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0002_userprofile'),
+        ('players', '0002_PlayerProfile'),
         ('game', '0002_alter_tournament_period_alter_tournament_start'),
     ]
 
