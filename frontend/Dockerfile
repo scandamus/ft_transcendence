@@ -2,7 +2,8 @@ FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
 	nginx \
-	openssl
+	openssl \
+	netcat-traditional
 
 COPY tools/nginx.conf /etc/nginx/
 COPY tools/ssl.conf /etc/nginx/sites-available/default
