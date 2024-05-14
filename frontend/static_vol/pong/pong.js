@@ -16,7 +16,12 @@ pongSocket.onopen = function(e) {
 };
 
 pongSocket.onclose = function(e) {
-    console.error('pong socket closed unexpectedly', e.reason, 'Code:', e.code);
+    // 1000は正常終了
+    if (e.code === 1000) {
+        console.log('WebSocket closed normally.');
+    } else {
+        console.error('pong socket closed unexpectedly', 'Reason:', e.reason, 'Code:', e.code);
+    }
 };
 
 // document.querySelector('#pong-message-input').focus();
@@ -58,7 +63,7 @@ function updateGameObjects(ball, paddle1, paddle2, game_status) {
         console.log("Game Over");
         alert('GAME OVER');
         // ここでゲームをリセットする処理を追加するか、ページをリロードする
-        document.location.reload();
+        // document.location.reload();
     }
 }
 
@@ -100,8 +105,13 @@ function sendSocketOpen() {
 pongSocket.onmessage = function(e) {
     try {
         const data = JSON.parse(e.data);
-//        document.querySelector('#pong-log').value += (data.message + '\n');
+        // document.querySelector('#pong-log').value += (data.message + '\n');
         console.log('received_data -> ', data);
+        if (data.score) {  // scoreオブジェクトが存在する場合のみログを出力
+            console.log("left: ", data.score.left_score, "  right: ", data.score.right_score);
+        } else {
+            console.log("Score data is missing.");
+        }
         console.log("updateGameObjects() called");
         updateGameObjects(data.ball, data.paddle1, data.paddle2, data.game_status);
     } catch (error) {
