@@ -2,6 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
+import { showModalWaitMatch } from '../modules/match.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -11,6 +12,7 @@ export default class extends PageBase {
         this.setTitle(`USER: ${this.userName}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.addAfterRenderHandler(this.showModal.bind(this));
     }
 
     async renderHtml() {
@@ -61,5 +63,9 @@ export default class extends PageBase {
             .catch(error => {
                 console.error('getUserInfo failed:', error);
             })
+    }
+
+    showModal() {
+        showModalWaitMatch();
     }
 }
