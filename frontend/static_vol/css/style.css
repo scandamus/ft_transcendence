@@ -391,15 +391,64 @@ input {
   margin-bottom: 40px;
 }
 
+.blockPlayerDetail_detail {
+}
+
 @media screen and (min-width: 768px) {
   .blockPlayerDetail {
     display: flex;
+    justify-content: space-between;
   }
 
   .blockPlayerDetail_profile {
     flex: 0 0 200px;
     margin-right: 60px;
   }
+
+  .blockPlayerDetail_detail {
+    flex: 1 1 auto;
+  }
+}
+
+.blockFriends {
+  margin-bottom: 30px;
+}
+
+.blockFriends h3 {
+  font-size: 1.6rem;
+}
+
+.listFriends {
+}
+
+.unitFriend {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.unitFriend_header {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.unitFriend_name {
+  font-size: 1.4rem;
+}
+
+.unitFriend_thumb {
+    margin-right: 10px;
+  line-height: 0;
+}
+
+.unitFriend_thumb img {
+    width: 100%;
+    height: auto;
+}
+
+.unitFriend_button {
+  text-align: center;
 }
 
 .blockPlayerDetail_thumb {
