@@ -26,7 +26,8 @@ button {
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
-  --color-burn: rgba(105,134,30, 0.3);
+  --color-burn1: rgba(105,134,30, 0.3);
+  --color-burn2: rgba(105,134,30, 0.12);
   --color-white: #fff;
   --color-white-alpha: rgba(255, 255, 255, 0.5);
   --color-white-alpha2: rgba(255, 255, 255, 0.2);
@@ -68,8 +69,8 @@ button {
   left: 0;
   width: 100%;
   height: 70px;
-  background-color: var(--color-burn);
-  box-shadow: 0 0 30px 20px var(--color-burn);
+  background-color: var(--color-burn1);
+  box-shadow: 0 0 30px 20px var(--color-burn1);
   mix-blend-mode: multiply;
   animation: 16s infinite anmScreenBurn;
   pointer-events: none;
@@ -199,7 +200,7 @@ button {
 .unitButton {
   position: relative;
   padding: 0.2em 0.8em;
-  background-color: var(--color-burn);
+  background-color: var(--color-burn1);
   border: none;
   text-shadow:
           0.06em 0.06em var(--content-color1),
@@ -264,6 +265,40 @@ button {
   100% {
     transform: translate(1px, 1px);
   }
+}
+
+/* unitTitle */
+.unitTitle1 {
+  position: relative;
+  padding: 0.2em 0.8em;
+  background-color: var(--color-burn2);
+  text-shadow:
+          0.06em 0.06em var(--content-color1),
+          -0.05em -0.07em var(--content-color2);
+  font-size: 1.6rem;
+  color: var(--color-white);
+}
+
+.unitTitle1::before,
+.unitTitle1::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  display: block;
+  width: 1px;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+}
+
+.unitTitle1::before {
+  transform: translate(-1px, -1px);
+  background-color: var(--content-color2);
+}
+
+.unitTitle1::after {
+  transform: translate(1px, 1px);
+  background-color: var(--content-color1);
 }
 
 /* unitListItem */
@@ -366,6 +401,16 @@ input {
   margin: 0 10px;
 }
 
+.listLineDivide > li,
+.listLineDivide > section {
+  border-bottom: 2px dotted var(--color-white-alpha2);
+}
+
+.listLineDivide > li:last-child,
+.listLineDivide > section:last-child {
+  border-bottom: none;
+}
+
 /* .unitBox */
 .unitBox {
   border: 1px solid var(--color-white);
@@ -411,44 +456,52 @@ input {
 }
 
 .blockFriends {
-  margin-bottom: 30px;
-}
-
-.blockFriends h3 {
-  font-size: 1.6rem;
+  margin-bottom: 50px;
 }
 
 .listFriends {
 }
 
 .unitFriend {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px 0;
 }
 
 .unitFriend_header {
-    display: flex;
-    flex-direction: row-reverse;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  padding-right: 20px;
 }
 
 .unitFriend_name {
   font-size: 1.4rem;
+  word-break: break-all;
 }
 
 .unitFriend_thumb {
-    margin-right: 10px;
+  flex: 0 0 64px;
+  margin-right: 14px;
   line-height: 0;
 }
 
 .unitFriend_thumb img {
-    width: 100%;
-    height: auto;
+  width: 100%;
+  height: auto;
 }
 
-.unitFriend_button {
-  text-align: center;
+.unitFriendButton {
+  flex: 1 0 auto;
+  margin-bottom: -12px;
+  padding: 12px 0;
+  text-align: right;
+}
+
+.unitFriendButton_button {
+  word-break: keep-all;
 }
 
 .blockPlayerDetail_thumb {
@@ -458,6 +511,8 @@ input {
 
 .blockPlayerDetail_thumb img {
   display: inline;
+  width: 160px;
+  height: auto;
 }
 
 .blockPlayerDetail_score {
@@ -466,35 +521,26 @@ input {
   line-height: 1.7;
 }
 
-.blockPlayerDetail_log {
-
-}
-
-.logTournament {
+.listMatchLog {
   width: 100%;
   list-style: none;
   font-size: 1.4rem;
 }
 
-.logTournament_item {
+.listMatchLog_item {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   margin-bottom: 0.5em;
   padding: 0.5em 0;
-  border-bottom: 1px solid var(--color-white-alpha2);
 }
 
-.logTournament_item strong {
+.listMatchLog_item strong {
 
 }
 
-.logTournament_item span {
+.listMatchLog_item span {
   font-size: 1.2rem;
-}
-
-.logTournament_item:first-child {
-  border-top: 1px solid var(--color-white-alpha2);
 }
 
 /*UserRegister*/
