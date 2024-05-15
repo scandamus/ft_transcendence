@@ -1,12 +1,13 @@
 import random
 import math
+from .consts import CANVAS_WIDTH, CANVAS_HEIGHT, PADDING
 
 
 def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier):
     angle_radians = angle_degrees * (math.pi / 180)
     cos_value = math.cos(angle_radians)
     sin_value = math.sin(angle_radians)
-    speed = random.randint(10, 11)
+    speed = random.randint(1, 2)
     return {
         "dx": speed * direction_multiplier * cos_value,
         "dy": speed * -sin_value,
@@ -22,12 +23,12 @@ class Paddle:
         self.speed = 0
         self.score = 0
 
-    def move(self, canvas_height):
+    def move(self):
         self.y += self.speed
         if self.y < 0:
             self.y = 0
-        if self.y + self.height > canvas_height:
-            self.y = canvas_height - self.height
+        if self.y + self.height > CANVAS_HEIGHT:
+            self.y = CANVAS_HEIGHT - self.height
 
     def increment_score(self):
         self.score += 1
@@ -51,22 +52,22 @@ class Ball:
         self.dy = tmp['dy']
         self.flag = True  # 衝突判定を  True: する   False: しない
 
-    def move(self, paddle1, paddle2, canvas_width, canvas_height):
+    def move(self, paddle1, paddle2):
         # 上下の壁との衝突判定 # if 上 or 下
-        if self.y + self.dy < 0 or self.y + self.size + self.dy > canvas_height:
+        if self.y + self.dy < 0 or self.y + self.size + self.dy > CANVAS_HEIGHT:
             self.dy = -self.dy
         if self.flag:
-            if not collision_detection(self, paddle1, paddle2, canvas_width):
+            if not collision_detection(self, paddle1, paddle2):
                 self.flag = False
         # 左の壁との衝突判定
         if self.x + self.dx < 0:
             paddle1.increment_score()
-            self.reset(canvas_width / 2, canvas_height / 2)
+            self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
             return paddle1.score < 10
         # 右の壁との衝突判定
-        elif self.x + self.size + self.dx > canvas_width:
+        elif self.x + self.size + self.dx > CANVAS_WIDTH:
             paddle2.increment_score()
-            self.reset(canvas_width / 2, canvas_height / 2)
+            self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
             return paddle2.score < 10
         else:
             self.x += self.dx
@@ -91,13 +92,13 @@ class Ball:
         return True  # Successful paddle hit
 
 
-def collision_detection(ball, paddle1, paddle2, canvas_width):
+def collision_detection(ball, paddle1, paddle2):
     # 左のパドル
-    if ball.x < paddle2.width:
+    if ball.x < paddle2.width + PADDING:
         if not ball.handle_paddle_collision(paddle2, "LEFT"):
             return False  # Game over, paddle missed the ball
     # 右のパドル
-    elif ball.x + ball.size > canvas_width - paddle1.width:
+    elif ball.x + ball.size > paddle1.x:
         if not ball.handle_paddle_collision(paddle1, "RIGHT"):
             return False  # Game over, paddle missed the ball
 
