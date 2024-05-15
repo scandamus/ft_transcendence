@@ -37,7 +37,7 @@ const ctx = canvas.getContext("2d");
 
 function drawBall(obj) {
     ctx.beginPath();
-    ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
+    ctx.rect(obj.x, obj.y, obj.size, obj.size)
     ctx.fillStyle = '#0095DD';
     ctx.fill();
     ctx.closePath();

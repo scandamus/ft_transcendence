@@ -126,8 +126,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             pass
 
     async def update_ball_and_send_data(self):
-        self.right_paddle.move("", CANVAS_HEIGHT)
-        self.left_paddle.move("", CANVAS_HEIGHT)
+        self.right_paddle.move(CANVAS_HEIGHT)
+        self.left_paddle.move(CANVAS_HEIGHT)
         game_continue = self.ball.move(self.right_paddle, self.left_paddle, CANVAS_WIDTH, CANVAS_HEIGHT)
         await self.channel_layer.group_send(self.room_group_name, {
             "type": "ball.message",
@@ -150,7 +150,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "y": self.ball.y,
                 "dx": self.ball.dx,
                 "dy": self.ball.dy,
-                "radius": self.ball.radius,
+                "size": self.ball.size,
             },
             "right_paddle": {
                 "x": self.right_paddle.x,
