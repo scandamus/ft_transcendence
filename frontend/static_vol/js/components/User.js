@@ -2,17 +2,17 @@
 
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
-import { showModalWaitMatch } from '../modules/match.js';
+import { showModal } from '../modules/modal.js';
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
         this.userName = 'user1';
         this.labelMatch = '対戦する';
+        this.labelCancel = 'キャンセル';
         this.setTitle(`USER: ${this.userName}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
-        this.addAfterRenderHandler(this.showModal.bind(this));
     }
 
     async renderHtml() {
@@ -54,18 +54,40 @@ export default class extends PageBase {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <p class="unitFriendButton unitFriend_button-match">
-                            <button type="submit" id="btnLogoutForm" class="unitFriendButton_button unitButton">${this.labelMatch}</button>
+                            <button type="submit" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button>
                         </p>
                     </section>
                   `);
                 listFriendsWrapper.innerHTML = userElements.join('');
+            })
+            .then(()=> {
+                this.listenRequestMatch();
             })
             .catch(error => {
                 console.error('getUserInfo failed:', error);
             })
     }
 
-    showModal() {
-        showModalWaitMatch();
+    listenRequestMatch() {
+        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
+        btnMatchRequest.forEach((btn) => {
+            btn.addEventListener('click', this.showModalMatchRequest.bind(this));
+            this.addListenEvent(btn, this.showModalMatchRequest, 'click');//todo: rm 確認
+        });
+    }
+
+    showModalMatchRequest() {
+        const elHtml = `
+            <section class="blockModal">
+                <h2>対戦を申し込みました</h2>
+                <p class="blockBtnCancel">
+                    <button type="submit" class="blockBtnCancel_button unitButton">${this.labelCancel}</button>
+                </p>
+                <div id="indicator" class="blockModal_indicator unitIndicator">
+                    <div class="unitIndicator_bar"></div>
+                </div>
+            </section>
+        `;
+        showModal(elHtml);
     }
 }
