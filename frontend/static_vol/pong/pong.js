@@ -53,7 +53,7 @@ function drawScore(left_paddle, right_paddle) {
     ctx.font = '48px "Courier New"';
     ctx.textAlign = "center";
     ctx.fillStyle = '#808080FF';
-    ctx.fillText(`${left_paddle.score}      ${right_paddle.score}`, canvas.width / 2, 50);
+    ctx.fillText(`${left_paddle.score}   ${right_paddle.score}`, canvas.width / 2, 50);
 }
 function drawBall(obj) {
     ctx.beginPath();

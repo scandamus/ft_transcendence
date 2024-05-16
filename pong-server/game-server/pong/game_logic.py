@@ -1,13 +1,13 @@
 import random
 import math
-from .consts import CANVAS_WIDTH, CANVAS_HEIGHT, PADDING
+from .consts import CANVAS_WIDTH, CANVAS_HEIGHT, REFLECTION_ANGLE
 
 
 def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier):
     angle_radians = angle_degrees * (math.pi / 180)
     cos_value = math.cos(angle_radians)
     sin_value = math.sin(angle_radians)
-    speed = random.randint(1, 2)
+    speed = random.randint(10, 11)
     return {
         "dx": speed * direction_multiplier * cos_value,
         "dy": speed * -sin_value,
@@ -75,31 +75,42 @@ class Ball:
         return True
 
     def handle_paddle_collision(self, paddle, paddle_side):
-        if paddle.y < self.y < paddle.y + paddle.height:
-            distance_from_paddle_center = (paddle.y + (paddle.height / 2)) - self.y
-            # 最大の反射角を45°に設定した場合
-            # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
-            # 角度 / paddleの大きさ で修正
-            angle_degrees = distance_from_paddle_center * 1.2
-            # 左右で方向を逆に
-            ball_direction = 1 if paddle_side == "LEFT" else -1
-            new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction)
-            self.dx = new_direction["dx"]
-            self.dy = new_direction["dy"]
-        else:
-            return False  # Paddle missed the ball, game over condition
+        next_x = self.x + self.dx
+        next_y = self.y + self.dy
 
-        return True  # Successful paddle hit
+        if paddle_side == "RIGHT" and paddle.x <= next_x + self.size <= paddle.x + paddle.width:
+            if paddle.y <= next_y + self.size and next_y <= paddle.y + paddle.height:
+                self.reflect_ball(paddle, paddle_side)
+                return True
+            else:
+                return False
+        elif paddle_side == "LEFT" and paddle.x <= next_x <= paddle.x + paddle.width:
+            if paddle.y <= next_y + self.size and next_y <= paddle.y + paddle.height:
+                self.reflect_ball(paddle, paddle_side)
+                return True
+            else:
+                return False
+        else:
+            return True
+
+    def reflect_ball(self, paddle, paddle_side):
+        distance_from_paddle_center = (paddle.y + (paddle.height / 2)) - self.y
+        # 最大の反射角を45°に設定した場合
+        # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
+        # 角度 / paddleの大きさ で修正
+        normalize = REFLECTION_ANGLE / (paddle.height / 2)
+        angle_degrees = distance_from_paddle_center * normalize
+        # 左右で方向を逆に
+        ball_direction = 1 if paddle_side == "LEFT" else -1
+        new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction)
+        self.dx = new_direction["dx"]
+        self.dy = new_direction["dy"]
 
 
 def collision_detection(ball, paddle1, paddle2):
     # 左のパドル
-    if ball.x < paddle2.width + PADDING:
-        if not ball.handle_paddle_collision(paddle2, "LEFT"):
-            return False  # Game over, paddle missed the ball
+    if ball.dx < 0:
+        return ball.handle_paddle_collision(paddle2, "LEFT")
     # 右のパドル
-    elif ball.x + ball.size > paddle1.x:
-        if not ball.handle_paddle_collision(paddle1, "RIGHT"):
-            return False  # Game over, paddle missed the ball
-
-    return True  # Continue playing
+    elif 0 < ball.dx:
+        return ball.handle_paddle_collision(paddle1, "RIGHT")
