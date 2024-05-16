@@ -217,6 +217,10 @@ button {
   font-size: 1.8rem;
 }
 
+.unitButton-small {
+  font-size: 1.0rem;
+}
+
 .unitButton::before,
 .unitButton::after {
   content: "";
@@ -660,9 +664,10 @@ input {
 .blockModal {
   position: fixed;
   width: 70%;
-  height: 50vh;
-  inset: 0;
-  margin: auto;
+  min-height: 300px;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  padding: 30px;
   background-color: var(--color-burn3);
 }
 
@@ -689,9 +694,30 @@ input {
   border: 1px solid var(--content-color1);
 }
 
-.blockModal_indicator {
-  position: absolute;
-  bottom: 30px;
-  left: 30px;
-  right: 30px;
+.blockModal_title {
+  max-width: 80%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.blockModal .blockOpponent {
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 50px 0;
+  text-align: center;
+}
+
+.blockModal .blockOpponent_name {
+  padding-top: 0.2em;
+  font-size: 2.2rem;
+}
+
+.blockModal .blockOpponent_thumb img {
+  width: 180px;
+  height: auto;
+}
+
+.blockModal .blockBtnCancel {
+  padding-bottom: 10px;
+  text-align: right;
 }

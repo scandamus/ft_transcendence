@@ -54,7 +54,7 @@ export default class extends PageBase {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <p class="unitFriendButton unitFriend_button-match">
-                            <button type="submit" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button>
+                            <button type="submit" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button>
                         </p>
                     </section>
                   `);
@@ -76,12 +76,17 @@ export default class extends PageBase {
         });
     }
 
-    showModalMatchRequest() {
+    showModalMatchRequest(ev) {
+        const button = ev.target;
         const elHtml = `
             <section class="blockModal">
-                <h2>対戦を申し込みました</h2>
+                <h2 class="blockModal_title">対戦を申し込みました</h2>
+                <section class="blockOpponent">
+                    <h4 class="blockOpponent_name">${button.dataset.name}</h4>
+                    <p class="blockOpponent_thumb"><img src="${button.dataset.avatar}" alt="" width="200" height="200"></p>
+                </section>
                 <p class="blockBtnCancel">
-                    <button type="submit" class="blockBtnCancel_button unitButton">${this.labelCancel}</button>
+                    <button type="submit" class="blockBtnCancel_button unitButton unitButton-small">${this.labelCancel}</button>
                 </p>
                 <div id="indicator" class="blockModal_indicator unitIndicator">
                     <div class="unitIndicator_bar"></div>
