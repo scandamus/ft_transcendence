@@ -94,5 +94,6 @@ export default class extends PageBase {
             </section>
         `;
         showModal(elHtml);
+        //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
     }
 }
