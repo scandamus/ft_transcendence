@@ -1,5 +1,12 @@
 'use strict';
 
+const endIndicator = (ev) => {
+    const indicatorBar = ev.target;
+    indicatorBar.removeEventListener('transitionend', endIndicator);
+    closeModal();
+};
+
+//elHtmlのルート要素は`.blockModal`とする
 const showModal = (elHtml) => {
     //modal open
     const elModal = document.getElementById('wrapModal');
@@ -12,13 +19,17 @@ const showModal = (elHtml) => {
         btn.addEventListener('click', closeModal);
     });
 
-    //インディケータがあれば進行
+    //インディケータがあれば進行、終了でcloseModal
     const indicator = document.getElementById('indicator');
     if (indicator) {
+        const indicatorBar = indicator.querySelector('.unitIndicator_bar');
+        indicatorBar.addEventListener('transitionend', endIndicator);
         requestAnimationFrame(() => {
             indicator.classList.add('is-progress');
         });
     }
+
+    //todo: インディケータのないモーダルは何かしら閉じるようにしておく
 }
 
 const closeModal = () => {
@@ -27,11 +38,15 @@ const closeModal = () => {
     btnCancel.forEach((btn) => {
         btn.removeEventListener('click', closeModal);
     });
-
+    const indicator = document.getElementById('indicator');
+    if (indicator) {
+        const indicatorBar = indicator.querySelector('.unitIndicator_bar');
+        indicatorBar.removeEventListener('transitionend', endIndicator);
+    }
     //modal close
     const elModal = document.getElementById('wrapModal');
     elModal.classList.remove('is-show');
     elModal.innerHTML = '';
 }
 
-export { showModal };
+export { showModal, closeModal };

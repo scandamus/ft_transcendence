@@ -13,6 +13,7 @@ import GameMatch from '../components/GameMatch.js';
 import TournamentEntry from '../components/TournamentEntry.js';
 import TournamentMatch from '../components/TournamentMatch.js';
 import { getToken } from './token.js';
+import { closeModal } from './modal.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = {
@@ -110,6 +111,13 @@ const router = async (isLogin) => {
 
     const view = new matchRoute.route.view(getParams(matchRoute));
     if (view) {
+        //モーダルが開いていたら閉じる
+        //todo: openModal後のフローに組み込む方がよさそう
+        const elModal = document.querySelector('.blockModal');
+        if (elModal) {
+            closeModal();
+        }
+
         //前画面のeventListenerをrm
         const oldView = PageBase.instance;
         if (oldView) {
