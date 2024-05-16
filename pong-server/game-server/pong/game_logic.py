@@ -7,7 +7,7 @@ def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier):
     angle_radians = angle_degrees * (math.pi / 180)
     cos_value = math.cos(angle_radians)
     sin_value = math.sin(angle_radians)
-    speed = random.randint(10, 11)
+    speed = random.randint(8, 9)
     return {
         "dx": speed * direction_multiplier * cos_value,
         "dy": speed * -sin_value,
@@ -56,25 +56,40 @@ class Ball:
         # 上下の壁との衝突判定 # if 上 or 下
         if self.y + self.dy < 0 or self.y + self.size + self.dy > CANVAS_HEIGHT:
             self.dy = -self.dy
-        if self.flag:
-            if not collision_detection(self, paddle1, paddle2):
-                self.flag = False
+        # if self.flag:
+        #     hit_paddle = collision_detection(self, paddle1, paddle2)
+        #     if not hit_paddle:
+        #         self.flag = False
+        collision_with_paddle1 = False
+        collision_with_paddle2 = False
+        # 衝突判定
+        if 0 < self.dx:
+            collision_with_paddle1 = self.collision_detection(paddle1, "RIGHT")
+        elif self.dx < 0:
+            collision_with_paddle2 = self.collision_detection(paddle2, "LEFT")
+
         # 左の壁との衝突判定
-        if self.x + self.dx < 0:
+        if self.x + self.size + self.dx < 0:
             paddle1.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
             return paddle1.score < 10
         # 右の壁との衝突判定
-        elif self.x + self.size + self.dx > CANVAS_WIDTH:
+        elif self.x + self.dx > CANVAS_WIDTH:
             paddle2.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
             return paddle2.score < 10
+        # 衝突判定がTrueの場合はpaddleにballを接触させるように
+        if collision_with_paddle1:
+            self.x = paddle1.x - self.size
+        elif collision_with_paddle2:
+            self.x = paddle2.x + paddle2.width
         else:
             self.x += self.dx
         self.y += self.dy
+
         return True
 
-    def handle_paddle_collision(self, paddle, paddle_side):
+    def collision_detection(self, paddle, paddle_side):
         next_x = self.x + self.dx
         next_y = self.y + self.dy
 
@@ -82,16 +97,11 @@ class Ball:
             if paddle.y <= next_y + self.size and next_y <= paddle.y + paddle.height:
                 self.reflect_ball(paddle, paddle_side)
                 return True
-            else:
-                return False
         elif paddle_side == "LEFT" and paddle.x <= next_x <= paddle.x + paddle.width:
             if paddle.y <= next_y + self.size and next_y <= paddle.y + paddle.height:
                 self.reflect_ball(paddle, paddle_side)
                 return True
-            else:
-                return False
-        else:
-            return True
+        return False
 
     def reflect_ball(self, paddle, paddle_side):
         distance_from_paddle_center = (paddle.y + (paddle.height / 2)) - self.y
@@ -106,11 +116,3 @@ class Ball:
         self.dx = new_direction["dx"]
         self.dy = new_direction["dy"]
 
-
-def collision_detection(ball, paddle1, paddle2):
-    # 左のパドル
-    if ball.dx < 0:
-        return ball.handle_paddle_collision(paddle2, "LEFT")
-    # 右のパドル
-    elif 0 < ball.dx:
-        return ball.handle_paddle_collision(paddle1, "RIGHT")
