@@ -1,11 +1,11 @@
-from django.core.validators import FileExtensionValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-class PlayerProfile(models.Model):
+class Player(models.Model):
     player = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -63,4 +63,4 @@ class PlayerProfile(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        PlayerProfile.objects.create(user=instance)
+        Player.objects.create(user=instance)
