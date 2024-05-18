@@ -3,6 +3,7 @@
 *.log
 *.bak
 **/__pycache__/
+**/migrations/
 postgres_vol
 *~
 .*
