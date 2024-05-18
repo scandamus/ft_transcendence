@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from players.models import Player
 
 
 class Tournament(models.Model):
@@ -33,15 +33,15 @@ class Match(models.Model):
         verbose_name="ラウンド"
     )
     player1 = models.ForeignKey(
-        'User',
+        'players.Player',
         related_name='matches_as_player1',
-        on_delete=models.SET_NULL,  # プレイヤーが削除されたらNULLに設定
+        on_delete=models.CASCADE,  # プレイヤーが削除されたらNULLに設定 but Field specifies on_delete=SET_NULL, but cannot be null.
         verbose_name="プレイヤー1"
     )
     player2 = models.ForeignKey(
-        'User',
+        'players.Player',
         related_name='matches_as_player2',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name="プレイヤー2"
     )
     status = models.CharField(
@@ -76,7 +76,7 @@ class Entry(models.Model):
         on_delete=models.CASCADE,  # トーナメントが削除された場合、該当するエントリー削除
     )
     player = models.ForeignKey(
-        'User',
+        'players.Player',
         on_delete=models.CASCADE
     )
     nickname = models.CharField(

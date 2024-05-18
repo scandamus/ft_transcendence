@@ -11,12 +11,12 @@ class Player(models.Model):
         on_delete=models.CASCADE,
         verbose_name="プレイヤー"
     )
-    avatar = models.ImageField(
-        upload_to='uploads/avatar/',
-        validators=[FileExtensionValidator(['jpg', 'png'])],
-        null=True,
-        verbose_name="アバター"
-    )
+    # avatar = models.ImageField(
+    #     upload_to='uploads/avatar/',
+    #     validators=[FileExtensionValidator(['jpg', 'png'])],
+    #     null=True,
+    #     verbose_name="アバター"
+    # )
     level = models.FloatField(
         validators=[MinValueValidator(0.0)],
         default=0.0,
