@@ -9,8 +9,8 @@ for i in {30..0}; do
     sleep 1
 done
 
-python manage.py makemigrations
-python manage.py migrate
+python3 manage.py makemigrations players game
+python3 manage.py migrate
 
 # userの作成
 echo """
