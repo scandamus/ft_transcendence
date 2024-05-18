@@ -35,13 +35,15 @@ class Match(models.Model):
     player1 = models.ForeignKey(
         'players.Player',
         related_name='matches_as_player1',
-        on_delete=models.CASCADE,  # プレイヤーが削除されたらNULLに設定 but Field specifies on_delete=SET_NULL, but cannot be null.
+        on_delete=models.SET_NULL,  # プレイヤーが削除されたらNULLに設定
+        null=True,  # on_delete=SET_NULL なので nullを許可
         verbose_name="プレイヤー1"
     )
     player2 = models.ForeignKey(
         'players.Player',
         related_name='matches_as_player2',
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
         verbose_name="プレイヤー2"
     )
     status = models.CharField(
