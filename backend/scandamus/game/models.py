@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from players.models import Player
 
 
@@ -25,25 +26,26 @@ class Match(models.Model):
     tournament = models.ForeignKey(
         'Tournament',
         on_delete=models.SET_NULL,  # トーナメントが削除されたらNULLに設定
-        null=True,
+        null=True, blank=True,
         verbose_name="トーナメント"
     )
     round = models.IntegerField(
-        null=True,
+        default=-1,  # トーナメント外のmatchは-1
+        null=True, blank=True,
         verbose_name="ラウンド"
     )
     player1 = models.ForeignKey(
         'players.Player',
         related_name='matches_as_player1',
         on_delete=models.SET_NULL,  # プレイヤーが削除されたらNULLに設定
-        null=True,  # on_delete=SET_NULL なので nullを許可
+        null=True, blank=False,  # on_delete=SET_NULL なので nullを許可
         verbose_name="プレイヤー1"
     )
     player2 = models.ForeignKey(
         'players.Player',
         related_name='matches_as_player2',
         on_delete=models.SET_NULL,
-        null=True,
+        null=True, blank=False,
         verbose_name="プレイヤー2"
     )
     status = models.CharField(
@@ -58,10 +60,12 @@ class Match(models.Model):
     )
     score1 = models.IntegerField(
         default=0,
+        null=True, blank=True,
         verbose_name="スコア(プレイヤー1)"
     )
     score2 = models.IntegerField(
         default=0,
+        null=True, blank=True,
         verbose_name="スコア(プレイヤー2)"
     )
 
@@ -70,6 +74,14 @@ class Match(models.Model):
 
     class Meta:
         verbose_name = '対戦'
+
+    def clean(self):
+        if self.player1 == self.player2:
+            raise ValidationError('player1 and player2 cannot be the same player')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Entry(models.Model):
