@@ -219,6 +219,10 @@ hr {
   color: var(--color-white);
 }
 
+.unitButton:hover {
+  opacity: 1;
+}
+
 .unitButton-large {
   font-size: 1.8rem;
 }
@@ -391,6 +395,23 @@ input {
 .blockForm-home {
   margin-top: 50px;
   text-align: center;
+}
+
+.blockSignUp {
+  text-align: center;
+}
+
+.blockSignUp {
+  text-align: center;
+}
+
+.blockSignUp_txt {
+  margin-bottom: 0.7em;
+  font-size: 1.2rem;
+}
+
+.blockSignUp_link {
+
 }
 
 /*User*/
