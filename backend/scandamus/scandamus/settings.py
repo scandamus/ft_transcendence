@@ -130,7 +130,7 @@ SIMPLE_JWT = {
     'SIGNING_KEY': get_env_var('SIGNING_KEY'),
     'ALGORITHM': 'HS256',
     'ENCODE': 'utf-8',
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
     'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化
