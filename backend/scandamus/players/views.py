@@ -1,9 +1,11 @@
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from rest_framework import viewsets, renderers, status
 from .models import Player
-from .serializers import PlayerSerializer
+from .serializers import UserSerializer, PlayerSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -18,7 +20,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 # from django.contrib.auth.hashers import make_password
 # from django.contrib.auth import authenticate, login, logout
 # from django.views.decorators.http import require_POST
-# from django.contrib.auth.password_validation import validate_password
 # from django.core.exceptions import ValidationError
 
 
@@ -96,6 +97,23 @@ class PlayersViewSet(viewsets.ModelViewSet):
 #         return JsonResponse({'message': 'Login successful'}, status=200)
 #     else:
 #         return JsonResponse({'message': 'Invalid username or password'}, status=401)
+
+
+class RegistView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = []
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            # パスワードをハッシュ化して保存
+            hashed_password = make_password(validated_data['password'])
+            new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
+            new_user.save()
+            return Response({'message': 'User created successfully.'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
