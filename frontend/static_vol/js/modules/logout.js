@@ -3,7 +3,6 @@
 import { getToken, refreshAccessToken } from './token.js';
 import { switchDisplayAccount } from './auth.js';
 import { router } from './router.js';
-import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
     const accessToken = getToken('accessToken');
@@ -42,7 +41,6 @@ const handleLogout = (ev) => {
             //token rm
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
-            closeWebSocket();
             switchDisplayAccount(null);//not return
             router(false);//not return
         })

@@ -71,18 +71,17 @@ const checkProtectedRoute = (path) => {
     return (protectedRoutes.some(route => route.test(path)));
 }
 
-const router = async (accessToken) => {
-    if (accessToken instanceof PopStateEvent) {
-        accessToken = getToken('accessToken');
+const router = async (isLogin) => {
+    if (isLogin instanceof PopStateEvent) {
+        isLogin = getToken('accessToken');
     }
     const mapRoutes = Object.keys(routes).map(key => {
-        const route = routes[key];
-        return {
-            route: route,
-            result: location.pathname.match(pathToRegex(route.path))
-        };
-    });
-
+    const route = routes[key];
+    return {
+        route: route,
+        result: location.pathname.match(pathToRegex(route.path))
+    };
+});
     let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
     if (!matchRoute) {//todo:404はpage_listに移動(暫定)
         matchRoute = {
@@ -90,18 +89,18 @@ const router = async (accessToken) => {
             result: routes.pageList.path
         };
     }
-    
+
     //認証ページ判定
     //非ログイン状態で要認証ページにアクセス => ログインにリダイレクト
     //ログイン状態で非認証ページにアクセス => userにリダイレクト
     //ログイン状況を問わずアクセスできるページは、現状page_listのみ
-    if (!accessToken && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
+    if (!isLogin && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
         window.history.pushState({}, '', routes.login.path);
         matchRoute = {
             route: routes.login,
             result: routes.login.path
         };
-    } else if (accessToken && matchRoute.route.isProtected === false) {
+    } else if (isLogin && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
         window.history.pushState({}, '', routes.user.path);
         matchRoute = {
@@ -110,7 +109,7 @@ const router = async (accessToken) => {
         };
     }
 
-    const view = new matchRoute.route.view(getParams(matchRoute), accessToken);
+    const view = new matchRoute.route.view(getParams(matchRoute));
     if (view) {
         //モーダルが開いていたら閉じる
         //todo: openModal後のフローに組み込む方がよさそう
@@ -132,66 +131,5 @@ const router = async (accessToken) => {
         addLinkPageEvClick(linkPages);
     }
 };
-
-// const router = async (isLogin) => {
-//     if (isLogin instanceof PopStateEvent) {
-//         isLogin = getToken('accessToken');
-//     }
-//     const mapRoutes = Object.keys(routes).map(key => {
-//     const route = routes[key];
-//     return {
-//         route: route,
-//         result: location.pathname.match(pathToRegex(route.path))
-//     };
-//     });
-//     let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
-//     if (!matchRoute) {//todo:404はpage_listに移動(暫定)
-//         matchRoute = {
-//             route: routes.pageList,
-//             result: routes.pageList.path
-//         };
-//     }
-
-//     //認証ページ判定
-//     //非ログイン状態で要認証ページにアクセス => ログインにリダイレクト
-//     //ログイン状態で非認証ページにアクセス => userにリダイレクト
-//     //ログイン状況を問わずアクセスできるページは、現状page_listのみ
-//     if (!isLogin && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
-//         window.history.pushState({}, '', routes.login.path);
-//         matchRoute = {
-//             route: routes.login,
-//             result: routes.login.path
-//         };
-//     } else if (isLogin && matchRoute.route.isProtected === false) {
-//         //todo: page_list削除時に === false条件削除
-//         window.history.pushState({}, '', routes.user.path);
-//         matchRoute = {
-//             route: routes.user,
-//             result: routes.user.path
-//         };
-//     }
-
-//     const view = new matchRoute.route.view(getParams(matchRoute));
-//     if (view) {
-//         //モーダルが開いていたら閉じる
-//         //todo: openModal後のフローに組み込む方がよさそう
-//         const elModal = document.querySelector('.blockModal');
-//         if (elModal) {
-//             closeModal();
-//         }
-
-//         //前画面のeventListenerをrm
-//         const oldView = PageBase.instance;
-//         if (oldView) {
-//             oldView.destroy();
-//         }
-//         //view更新
-//         document.getElementById('app').innerHTML = await view.renderHtml();
-//         view.afterRender();
-//         //todo: ↓afterRenderに統合
-//         const linkPages = document.querySelectorAll('#app a[data-link]');
-//         addLinkPageEvClick(linkPages);
-//     }
-// };
 
 export { addLinkPageEvClick, router };

@@ -8,5 +8,4 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/players/', include('players.urls')),
     path('api/game/', include('game.urls')),
-    path('ws/lounge/', include('game.urls')),
 ]

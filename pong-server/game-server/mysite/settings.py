@@ -16,20 +16,12 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-def get_env_var(var):
-    try:
-        return os.environ[var]
-    except KeyError:
-        error_msg = f'Error: {var} is not set in .env/docker-compose.yml'
-        raise ImproperlyConfigured(error_msg)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-$$k5y1zm9k%%^v*sdqv=y(9#f44#l)yjxy3t3_=g-%1*a044gb'
-SECRET_KEY = get_env_var('SECRET_KEY')
-CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
+SECRET_KEY = 'django-insecure-$$k5y1zm9k%%^v*sdqv=y(9#f44#l)yjxy3t3_=g-%1*a044gb'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -146,9 +138,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("redis", 6379)],
-            "symmetric_encryption_keys": [CHANNEL_SECRET_KEY],
-            "expiry": 3600,
-            'prefix': 'pong-server',
+            #"hosts": [("127.0.0.1", 6379)],
         },
     },
 }
