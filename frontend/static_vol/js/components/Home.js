@@ -3,11 +3,14 @@
 import PageBase from './PageBase.js';
 import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
+import { openWebSocket } from '../modules/websocket.js';
 
 export default class extends PageBase {
-    constructor(params) {
+    constructor(params, accessToken) {
+    // constructor(params) {
         super(params);
         this.setTitle('LOGIN');
+        this.accessToken = accessToken;
         this.labelButtonLogin = 'ログイン'; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
@@ -61,6 +64,7 @@ export default class extends PageBase {
             .then(data => {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
+                openWebSocket();
                 return getUserInfo();
             })
             .then((userData) => {

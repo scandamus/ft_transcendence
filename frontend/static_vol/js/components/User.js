@@ -3,16 +3,24 @@
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
 import { showModal } from '../modules/modal.js';
+import { getWebSocket, closeWebSocket } from '../modules/websocket.js';
 
 export default class extends PageBase {
-    constructor(params) {
+    constructor(params, accessToken) {
         super(params);
         this.userName = 'user1';
+//        this.accessToken = accessToken;
+        this.accessToken = localStorage.getItem('accessToken');
+        console.log('accessToken: ', this.accessToken);
+
         this.labelMatch = '対戦する';
         this.labelCancel = 'キャンセル';
         this.setTitle(`USER: ${this.userName}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
+
+        //WebSocket
+        this.websocket = getWebSocket();
     }
 
     async renderHtml() {
@@ -95,5 +103,39 @@ export default class extends PageBase {
         `;
         showModal(elHtml);
         //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
+        this.join_game();
+        const btnCancel = document.querySelector('.blockBtnCancel_button');
+        btnCancel.addEventListener('click', () => {
+            console.log('Game canceled');
+        });
+    }
+
+    join_game() {
+        this.websocket = getWebSocket();
+
+        if (!this.websocket) {
+            this.websocket = getWebSocket();
+            this.websocket.onopen = () => {
+                console.log('WebSocket is open now');
+            }
+        }
+
+        this.websocket.send(JSON.stringify({
+            action: 'join_game',
+            token: this.accessToken
+        }));
+        console.log('Request join_game sent');
+
+        this.websocket.onmessage = (event) => {
+            console.log('Message received: ', event.data);
+            const message = JSON.parse(event.data);
+            if (message.type === 'gameSession') {
+                this.loadGameContent(message.jwt);
+            }
+        };
+    }
+
+    loadGameContent(jwt) {
+        console.log('Loading game content with JWT:', jwt);
     }
 }

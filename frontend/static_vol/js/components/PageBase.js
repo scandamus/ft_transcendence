@@ -3,7 +3,7 @@
 export default class PageBase {
     static instance = null;
 
-    constructor(params) {
+    constructor(params, accessToken) {
         PageBase.instance = this;
         this.params = params;
         this.listAfterRenderHandlers = [];

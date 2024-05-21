@@ -9,4 +9,5 @@ router.register(r'entry', EntryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+#    path('join', JoinGameView.as_view(), name='joinGame')
 ]
