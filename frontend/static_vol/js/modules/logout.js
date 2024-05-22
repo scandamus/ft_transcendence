@@ -10,7 +10,7 @@ const fetchLogout = async (isRefresh) => {
     if (accessToken === null) {
         throw new Error('accessToken is invalid.');
     }
-    const response = await fetch('http://localhost:8001/api/players/logout/', {
+    const response = await fetch('https://localhost/api/players/logout/', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${accessToken}`
