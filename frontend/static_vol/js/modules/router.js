@@ -70,17 +70,37 @@ const checkProtectedRoute = (path) => {
     return (protectedRoutes.some(route => route.test(path)));
 }
 
+const replaceView = async (matchRoute) => {
+    const view = new matchRoute.route.view(getParams(matchRoute));
+    if (view) {
+        //前画面のeventListenerをrm
+        const oldView = PageBase.instance;
+        if (oldView) {
+            oldView.destroy();
+        }
+        //view更新
+        document.getElementById('app').innerHTML = await view.renderHtml();
+        view.afterRender();
+        //todo: ↓afterRenderに統合
+        const linkPages = document.querySelectorAll('#app a[data-link]');
+        addLinkPageEvClick(linkPages);
+    }
+}
+
 const router = async (isLogin) => {
     if (isLogin instanceof PopStateEvent) {
         isLogin = getToken('accessToken');
     }
+
     const mapRoutes = Object.keys(routes).map(key => {
-    const route = routes[key];
-    return {
-        route: route,
-        result: location.pathname.match(pathToRegex(route.path))
-    };
-});
+        const route = routes[key];
+        return {
+            route: route,
+            result: location.pathname.match(pathToRegex(route.path))
+        };
+    });
+
+    //実際の遷移先パスを取得
     let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
     if (!matchRoute) {//todo:404はpage_listに移動(暫定)
         matchRoute = {
@@ -108,20 +128,7 @@ const router = async (isLogin) => {
         };
     }
 
-    const view = new matchRoute.route.view(getParams(matchRoute));
-    if (view) {
-        //前画面のeventListenerをrm
-        const oldView = PageBase.instance;
-        if (oldView) {
-            oldView.destroy();
-        }
-        //view更新
-        document.getElementById('app').innerHTML = await view.renderHtml();
-        view.afterRender();
-        //todo: ↓afterRenderに統合
-        const linkPages = document.querySelectorAll('#app a[data-link]');
-        addLinkPageEvClick(linkPages);
-    }
+    await replaceView(matchRoute);
 };
 
 export { addLinkPageEvClick, router };
