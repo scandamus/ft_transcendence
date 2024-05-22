@@ -1,6 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { router } from '../modules/router.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -9,14 +10,14 @@ export default class extends PageBase {
         this.labelButton = '確認する'; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.watchValidateForm.bind(this));
-        this.addAfterRenderHandler(this.listenRegister.bind(this));
+        this.addAfterRenderHandler(this.listenConfirm.bind(this));
     }
 
     async renderHtml() {
         return `
             <form class="formUserRegister blockForm" action="" method="post">
                 <dl class="unitFormInput">
-                    <dt class="unitFormInput_label"><label for="registUsername">name</label></dt>
+                    <dt class="unitFormInput_label"><label for="registUsername">username</label></dt>
                     <dd class="unitFormInput_input"><input type="text" id="registUsername" placeholder="Enter username" pattern="^(?!.*?[-_][-_])[a-zA-Z0-9](?:[-_]?[a-zA-Z0-9])[a-zA-Z0-9]$" minlength="3" maxlength="30" required /></dd>
                 </dl>
                 <dl class="unitFormInput">
@@ -27,23 +28,23 @@ export default class extends PageBase {
                     <dt class="unitFormInput_label"><label for="registPasswordConfirm">password(confirm)</label></dt>
                     <dd class="unitFormInput_input"><input type="password" id="registPasswordConfirm" placeholder="Enter password(confirm)" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$" required /></dd>
                 </dl>
-                <button type="submit" id="btnRegisterForm" class="formUserRegister_button unitButton">${this.labelButton}</button>
+                <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton">${this.labelButton}</button>
             </form>
         `;
     }
 
     watchValidateForm() {
-        //focus外れたらvalidチェック
-        //passは両方入力履歴あれば一致チェック
+        //todo: focus外れたらvalidチェック
+        //todo: passは両方入力履歴あれば一致チェック
     }
 
-    listenRegister() {
-        const btnRegister = document.getElementById('btnRegisterForm');
-        btnRegister.addEventListener('click', this.handleRegister.bind(this));
-        this.addListenEvent(btnRegister, this.handleRegister, 'click');
+    listenConfirm() {
+        const btnConfirm = document.getElementById('btnConfirmForm');
+        btnConfirm.addEventListener('click', this.handleConfirm.bind(this));
+        this.addListenEvent(btnConfirm, this.handleConfirm, 'click');
     }
 
-    handleRegister(ev) {
+    handleConfirm(ev) {
         ev.preventDefault();
         const elUsername = document.getElementById('registUsername');
         const elPassword = document.getElementById('registPassword');
@@ -79,17 +80,18 @@ export default class extends PageBase {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('register failed with status: ' + response.status);
+                    throw new Error('confirm failed with status: ' + response.status);
                 }
                 return response.json();
             })
-            .then(() => {
+            .then( async () => {
                 sessionStorage.setItem('username', data.username);
                 sessionStorage.setItem('password', data.password);
-                window.history.pushState({}, '', '/register/confirm');//todo:router
+                history.pushState(null, null, '/register/confirm');
+                await router(false);
             })
             .catch(error => {
-                console.error('register failed:', error);
+                console.error('confirm failed:', error);
             });
     }
 }
