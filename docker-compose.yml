@@ -26,6 +26,8 @@ services:
       - DJANGO_PLAYER2_USER=${DJANGO_PLAYER2_USER}
       - DJANGO_PLAYER2_MAIL=${DJANGO_PLAYER2_MAIL}
       - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+    restart: always
 
   frontend:
     build:
@@ -43,12 +45,15 @@ services:
       - EMAIL=${EMAIL}
       - DOMAIN_NAME=${DOMAIN_NAME}
     container_name: frontend
+    depends_on:
+      - backend
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./frontend/static_vol:/var/www/html
       - ${CERTS}:/etc/nginx/ssl
+    restart: always
 
   db:
     image: postgres:13
@@ -61,6 +66,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - "5432:5432"
+    restart: always
 
   pong-server:
     build: pong-server
@@ -73,8 +79,10 @@ services:
       - redis
     ports:
       - "8002:8002"
+    restart: always
 
   redis:
     image: redis:7
+    restart: always
   # ports:
   #   - "6379:6379"
