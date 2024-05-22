@@ -99,6 +99,18 @@ class PlayersViewSet(viewsets.ModelViewSet):
 #         return JsonResponse({'message': 'Invalid username or password'}, status=401)
 
 
+class ValidateView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = []
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"message": "Validation successful"}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class RegistView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = []
