@@ -29,78 +29,10 @@ class PlayersViewSet(viewsets.ModelViewSet):
     serializer_class = PlayerSerializer
     renderer_classes = [renderers.JSONRenderer]
     template_name = None
-#
-#
-# def getUserProfile(request, username):
-#     try:
-#         userProfile = UserProfile.objects.get(user__username=username)
-#         data = {
-#             "username": userProfile.user.username if userProfile.user else None,
-#             "email": userProfile.user.email if userProfile.user else None,
-#             "level": userProfile.level,
-#             "createdDate": userProfile.createdDate,
-#             "playCount": userProfile.playCount,
-#             "winCount": userProfile.winCount
-#         }
-#         return JsonResponse(data)
-#     except UserProfile.DoesNotExist:
-#         return JsonResponse({"error": "User not found"}, status=404)
-#
-# @login_required
-# def userProfile(request):
-#     try:
-#         user_profile = UserProfile.objects.get(user=request.user)
-#         data = {
-#             "username": request.user.username,
-#             "email": request.user.email,
-#             "level": user_profile.level,
-#             "createdDate": user_profile.createdDate.strftime('%Y-%m-%d %H:%M:%S'),
-#             "playCount": user_profile.playCount,
-#             "winCount": user_profile.winCount
-#         }
-#         return JsonResponse(data)
-#     except UserProfile.DoesNotExist:
-#         return JsonResponse({"error": "User profile not found"}, status=404)
-#
-# def registerUser(request):
-#     if request.method == 'POST':
-#         try:
-#             data = request.POST
-#             username = data.get('username')
-#             email = data.get('email')
-#             password = data.get('password')
-#
-#             validate_password(password, request.user)
-#
-#             if User.objects.filter(username=username).exists():
-#                 return JsonResponse({'error': 'Username already exists'}, status=400)
-#
-#             user = User.objects.create(
-#                 username=username,
-#                 email=email,
-#                 password=make_password(password)
-#             )
-#             user.save()
-#
-#             return JsonResponse({'message': 'User created successfully'}, status=201)
-#         except Exception as e:
-#             return JsonResponse({'error': str(e)}, status=500)
-#     else:
-#         return JsonResponse({'error': 'Invalid request'}, status=400)
-#
-# def loginUser(request):
-#     username = request.POST.get('username')
-#     password = request.POST.get('password')
-#     user = authenticate(request, username=username, password=password)
-#     if user is not None:
-#         login(request, user)
-#         return JsonResponse({'message': 'Login successful'}, status=200)
-#     else:
-#         return JsonResponse({'message': 'Invalid username or password'}, status=401)
 
 
 class ValidateView(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = []
     permission_classes = []
 
     def post(self, request):
@@ -112,7 +44,7 @@ class ValidateView(APIView):
 
 
 class RegistView(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = []
     permission_classes = []
 
     def post(self, request):
@@ -129,7 +61,7 @@ class RegistView(APIView):
 
 
 class LoginView(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = []
     permission_classes = []
 
     def post(self, request):
