@@ -16,21 +16,58 @@ const getToken = (nameToken) => {
 const refreshAccessToken = async () => {
     const refreshToken = getToken('refreshToken');
 
-    // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
-    const response = await fetch('https://localhost/token/refresh/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 'refresh': `${refreshToken}` })
-    });
-    if (response.ok) {
-        const refreshData = await response.json();
-        localStorage.setItem('accessToken', refreshData.access);
-        return true;
+    // ネットワークエラー、サーバーエラー、ストレージエラーの例外に対応
+    try {
+        // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
+        const response = await fetch('https://localhost/token/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 'refresh': `${refreshToken}` })
+        });
+        if (response.ok) {
+            const refreshData = await response.json();
+            localStorage.setItem('accessToken', refreshData.access);
+            return true;
+        }
+        console.error('Failed to refresh token, server responded with: ', response.status);
+        return false;
+    } catch (error) {
+        console.error('Error occured while refreshing token: ', error);
+        return false;
     }
-    // refreshToken無効。
-    return false;
 }
 
-export { getToken, refreshAccessToken };
+const isTokenExpired = (token) => {
+    try {
+        const payloadBase64 = token.split('.')[1];
+        const decodePayload = JSON.parse(atob(payloadBase64));
+        const exp = decodePayload.exp;
+        const currentUnixTime = Math.floor(Date.now() / 1000);
+        return exp < currentUnixTime;
+    } catch (e) {
+        console.log('Decode token failed: ', e);
+        return true;
+    }
+}
+
+const getValidToken = async (nameToken) => {
+    const myToken = getToken(nameToken);
+    if (myToken == null) {
+        console.log('No token found.');
+        return { token: null, error: 'No token found' };
+    }
+    if (!isTokenExpired(myToken)) {
+        return { token: myToken, error: null };
+    }
+    const refreshedToken = await refreshAccessToken();
+    if (!refreshedToken) {
+        console.error('Failed to refresh token.');
+        return { token: null, error: 'Failed to refresh token' };
+    }
+    myToken = getToken(nameToken);
+    return { token: myToken, error: (!myToken ? null : 'No access token though refresh is success')};
+}
+
+export { getToken, refreshAccessToken, isTokenExpired, getValidToken };

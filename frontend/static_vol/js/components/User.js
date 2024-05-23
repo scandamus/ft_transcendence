@@ -3,24 +3,35 @@
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
 import { showModal } from '../modules/modal.js';
-import { getWebSocket, closeWebSocket } from '../modules/websocket.js';
+import { webSocketManager } from '../modules/websocket.js';
+import { pongHandler } from '../modules/WebsocketHandler.js';
+import { getValidToken } from '../modules/token.js';
+//import { getWebSocket, closeWebSocket } from '../modules/websocket.js';
 
 export default class extends PageBase {
     constructor(params, accessToken) {
         super(params);
-        this.userName = 'user1';
-//        this.accessToken = accessToken;
-        this.accessToken = localStorage.getItem('accessToken');
-        console.log('accessToken: ', this.accessToken);
-
+        this.accessToken = { token: null, error: null };//getValidToken('accessToken'); //localStorage.getItem('accessToken');
         this.labelMatch = '対戦する';
         this.labelCancel = 'キャンセル';
         this.setTitle(`USER: ${this.userName}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.websocket = null;
+    }
 
-        //WebSocket
-        this.websocket = getWebSocket();
+    async init() {
+        try {
+            const tokenResult = await getValidToken('accessToken');
+            if (tokenResult.token) {
+                this.accessToken = tokenResult;
+                console.log('accessToken: ', this.accessToken.token);
+            } else {
+                console.error('Token error: ', tokenResult.error);
+            }
+        } catch (error) {
+            console.error('Error user page init: ', error);
+        }
     }
 
     async renderHtml() {
@@ -51,6 +62,7 @@ export default class extends PageBase {
     }
 
     showUserList() {
+        this.init();
         const listFriendsWrapper = document.querySelector('.listFriends');
         getUserList()
             .then(data => {
@@ -111,31 +123,28 @@ export default class extends PageBase {
     }
 
     join_game() {
-        this.websocket = getWebSocket();
-
+//        this.websocket = getWebSocket();
         if (!this.websocket) {
-            this.websocket = getWebSocket();
-            this.websocket.onopen = () => {
-                console.log('WebSocket is open now');
-            }
+            this.websocket = webSocketManager.openWebSocket('lounge', pongHandler);
+//            this.websocket = getWebSocket();
+//            this.websocket.onopen = () => {
+//                console.log('WebSocket is open now');
         }
-
-        this.websocket.send(JSON.stringify({
+        
+    //    this.websocket.send(JSON.stringify({
+        webSocketManager.sendWebSocketMessage('lounge', {
             action: 'join_game',
-            token: this.accessToken
-        }));
+            token: this.accessToken.token
+        });
         console.log('Request join_game sent');
 
-        this.websocket.onmessage = (event) => {
-            console.log('Message received: ', event.data);
-            const message = JSON.parse(event.data);
-            if (message.type === 'gameSession') {
-                this.loadGameContent(message.jwt);
-            }
-        };
-    }
-
-    loadGameContent(jwt) {
-        console.log('Loading game content with JWT:', jwt);
+//        this.websocket.onmessage = (event) => {
+        // webSocketManager.getWebSocket('lounge').onmessage = (event) => {
+        //     console.log('Message received: ', event.data);
+        //     const message = JSON.parse(event.data);
+        //     if (message.type === 'gameSession') {
+        //         this.loadGameContent(message.jwt);
+        //     }
+        // };
     }
 }

@@ -1,57 +1,106 @@
-let socket = null;
+import { getValidToken } from "./token.js";
 
-export function openWebSocket() {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) {
-        console.error('Access token is missing');
-        return;
+class WebSocketManager {
+    constructor() {
+        this.sockets = {};
+        this.messageHandlers = {};
+    }
+    
+    openWebSocket(containerId, messageHandler) {
+        if (this.sockets[containerId]) {
+            const accessToken = getValidToken('accessToken');
+            if (!accessToken) {
+                console.log('Access Token is missing or expired. Closing socket...');
+                this.closeWebSocket(containerId);
+
+                setTimeout(() => {
+                    this.openWebSocket(containerId, messageHandler);
+                }, 3000); // 3 sec
+                return;
+            }
+                console.log(`WebSocket for ${containerId} is already open.`);
+                return;
+        }
+
+        const accessToken = getValidToken('accessToken');
+        if (!accessToken) {
+            console.error('Access token is missing');
+            return;
+        }
+        
+        const url = 'wss://'
+            + window.location.host
+            + '/ws/'
+            + containerId
+            + '/';
+
+        const socket = new WebSocket(url);
+
+        socket.onopen = () => {
+            console.log(`WebSocket for ${containerId} is open now.`);
+        };
+
+        socket.onmessage = (event) => {
+            this.handleMessage(containerId, event);
+        };
+
+        socket.onclose = (event) => {
+            console.log(`WebSocket for ${containerId} is onclose.`);
+            this.handleClose(containerId);
+        };
+
+        socket.onerror = (error) => {
+            console.error(`WebSocket error for ${containerId}: `, error);
+        };
+
+        this.sockets[containerId] = socket;
+        this.messageHandlers[containerId] = messageHandler || this.defaultMessageHandler(this, containerId);
     }
 
-    //socket = new WebSocket(`ws://localhost:8001/ws/some_path/?token=${accessToken}`);
-    socket = new WebSocket(
-        'wss://'
-        + window.location.host
-        + '/ws/lounge/'
-    );
-
-    socket.onopen = () => {
-        console.log('WebSocket is open now.');
-    };
-
-    socket.onmessage = (event) => {
+    defaultMessageHandler(event, containerId) {
         const data = JSON.parse(event.data);
-        console.log('WebSocket message received:', data);
-        // Handle incoming messages
-    };
+        console.log(`Default handler message from ${containerId}:`, data)
+    }
 
-    socket.onclose = (event) => {
-        console.log('WebSocket is closed now.');
-    };
+    loadGameContent(jwt, containerId) {
+        console.log(`Loading ${containerId}`);
+   }
 
-    socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-    };
-}
+    handleMessage(containerId, event) {
+        const handler = this.messageHandlers[containerId];
+        if (handler) {
+            handler(event, containerId);
+        } else {
+            console.error(`No message from ${containerId}`);
+        }
+    }
 
-export function closeWebSocket() {
-    if (socket) {
-        socket.close();
-        socket = null;
-        console.log('WebSocket has been closed.');
+    handleClose(containerId) {
+        console.log(`WebSocket for ${containerId} is closing now.`);
+        delete this.sockets[containerId];
+        delete this.messageHandlers[containerId];
+    }
+
+    closeWebSocket(containerId) {
+        const socket = this.sockets[containerId];
+        if (socket) {
+            socket.close();
+            delete this.sockets[containerId];
+            delete this.messageHandlers[containerId];
+            console.log(`WebSocket for ${containerId} has been closed.`);
+        }
+    }
+
+    sendWebSocketMessage(containerId, message) {
+        const socket = this.sockets[containerId];
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(message));
+            console.log(`Message sent to ${containerId}:`, message);
+        } else {
+            console.error(`WebSocket for ${containerId} is not open.`);
+        }
     }
 }
 
-export function sendWebSocketMessage(message) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(message));
-    } else {
-        console.error('WebSocket is not open.');
-    }
-}
-
-export function getWebSocket() {
-    if (!socket) {
-        openWebSocket();
-    }
-    return socket;
-}
+// Singleton instance
+export const webSocketManager = new WebSocketManager();
