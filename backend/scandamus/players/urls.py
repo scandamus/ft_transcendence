@@ -2,7 +2,7 @@ from django.urls import path
 # ↓ view.pyの全てのviewをimport
 # from . import views
 # ↓ view.pyから指定したviewをimport（推奨）
-from .views import LoginView, UserInfoView, LogoutView, RegistView, ValidateView
+from .views import LoginView, UserInfoView, LogoutView, RegistView, ValidateView, UserListView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
@@ -18,4 +18,5 @@ urlpatterns = [
     # path('api/logout/', views.logoutUser.as_view()),
     # path('check_login/', views.check_login_status.as_view()),
     # path('api/delete/', views.deleteUser.as_view()),
+    path('userlist/', UserListView.as_view(), name='userList'),
 ]
