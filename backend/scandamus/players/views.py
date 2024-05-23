@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rest_framework import viewsets, renderers, status
+from rest_framework import viewsets, renderers, status, generics
 from .models import Player
-from .serializers import PlayerSerializer
+from django.contrib.auth.models import User
+from .serializers import PlayerSerializer, UserSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -12,7 +13,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 # from django.http import JsonResponse
 # from .models import UserProfile
-# from django.contrib.auth.models import User
 # from django.views.decorators.csrf import csrf_exempt
 # from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.hashers import make_password
@@ -179,3 +179,14 @@ class UserInfoView(APIView):
 #             'user_id': user.pk,
 #             'username': user.username
 #         })
+
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        queryset = (
+            User.objects.all()
+            .filter(is_superuser=False)
+            .exclude(id=self.request.user.id)
+        )
+        return queryset
