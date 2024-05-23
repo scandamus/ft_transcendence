@@ -85,6 +85,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://localhost:443'
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://127.0.0.1']
+
 # クライアントからのリクエストヘッダーに含める項目をカスタマイズ
 # CORS_ALLOW_HEADERS = list(default_headers) + [
 #     'Refresh-Token',  # カスタムヘッダーを追加
