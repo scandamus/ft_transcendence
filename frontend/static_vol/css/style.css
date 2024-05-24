@@ -292,6 +292,18 @@ hr {
   }
 }
 
+.unitButton:disabled {
+  opacity: 0.5;
+  filter: grayscale(100%);
+  border: 1px solid var(--color-white);
+  cursor: not-allowed;
+}
+
+.unitButton:disabled::before,
+.unitButton:disabled::after {
+  content: normal;
+}
+
 /* unitTitle */
 .unitTitle1 {
   position: relative;

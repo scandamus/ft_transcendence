@@ -18,17 +18,19 @@ export default class extends PageBase {
             <form class="formUserRegister blockForm" action="" method="post">
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registUsername">username</label></dt>
-                    <dd class="unitFormInput_input"><input type="text" id="registUsername" placeholder="Enter username" pattern="^(?!.*?[-_][-_])[a-zA-Z0-9](?:[-_]?[a-zA-Z0-9])[a-zA-Z0-9]$" minlength="3" maxlength="30" required /></dd>
+                    <dd class="unitFormInput_input"><input type="text" id="registUsername" placeholder="Enter username" pattern="^(?!.*?__)[a-zA-Z0-9_]+$" minlength="3" maxlength="30" required /></dd>
                 </dl>
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registPassword">password</label></dt>
-                    <dd class="unitFormInput_input"><input type="password" id="registPassword" placeholder="Enter password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$" required /></dd>
+                    <dd class="unitFormInput_input"><input type="password" id="registPassword" placeholder="Enter password"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};:'\\\\|,.<>/?~])[a-zA-Z\\d!@#$%^&*()_+\\-=\\[\\]{};:'\\\\|,.<>/?~]+$" minlength="8" required /></dd>
                 </dl>
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registPasswordConfirm">password(confirm)</label></dt>
-                    <dd class="unitFormInput_input"><input type="password" id="registPasswordConfirm" placeholder="Enter password(confirm)" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$" required /></dd>
+                    <dd class="unitFormInput_input"><input type="password" id="registPasswordConfirm" placeholder="Enter password(confirm)"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};:'\\\\|,.<>/?~])[a-zA-Z\\d!@#$%^&*()_+\\-=\\[\\]{};:'\\\\|,.<>/?~]+$" minlength="8" required /></dd>
                 </dl>
-                <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton">${this.labelButton}</button>
+                <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton" disabled>${this.labelButton}</button>
             </form>
         `;
     }
