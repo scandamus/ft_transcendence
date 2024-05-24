@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>pong</title>
+    <!-- css書いてないから -->
+    <style>
+        * {
+            /* margin:boderの外側の余白 */
+            /* padding:borderの内側の余白 */
+            padding: 0;
+            margin: 0;
+        }
+        canvas {
+            /* 背景色 */
+            background: #eee;
+            display: block;
+            /* 画面中央に自動で */
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="multipongcanvas" width="650" height="650"></canvas>
+<script type="text/javascript">
+    const roomName = "{{ room_name }}";
+</script>
+<script src="{% static 'js/multipong.js' %}"></script>
+</body>
+</html>
