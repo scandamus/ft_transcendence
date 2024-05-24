@@ -53,6 +53,17 @@ export default class extends PageBase {
         this.watchValidateForm(elPassword);
         this.watchValidateForm(elPasswordConfirm);
     }
+    
+    addErrorMessage = (elInput, message) => {
+        const classHasInput = 'has-input';
+        const elError = document.createElement('p');
+        elError.classList.add('blockError');
+        elError.textContent = message;
+        elInput.parentNode.insertBefore(elError, elInput.nextSibling);
+        if (!elInput.classList.contains(classHasInput)) {
+            elInput.classList.add(classHasInput);
+        }
+    }
 
     listenConfirm() {
         const btnConfirm = document.getElementById('btnConfirmForm');
@@ -66,19 +77,19 @@ export default class extends PageBase {
         const elPassword = document.getElementById('registPassword');
         const elPasswordConfirm = document.getElementById('registPasswordConfirm');
         let numError = 0;
-        if (elUsername.validity.patternMismatch) {
-            console.error('username is invalid.');
+        if (!elUsername.validity.patternMismatch) {
+            this.addErrorMessage(elUsername, 'username is invalid.');
             numError++;
         }
-        if (elPassword.validity.patternMismatch) {
-            console.error('password is invalid.');
+        if (!elPassword.validity.patternMismatch) {
+            this.addErrorMessage(elPassword, 'password is invalid.');
             numError++;
         }
-        if (elPassword.value !== elPasswordConfirm.value) {
-            console.error('The passwords you entered are not the same.');
+        if (!elPassword.value !== elPasswordConfirm.value) {
+            this.addErrorMessage(elPasswordConfirm, 'The passwords you entered are not the same.');
             numError++;
         }
-        if (numError) {
+        if (numError !== 0) {
             return ;
         }
 
