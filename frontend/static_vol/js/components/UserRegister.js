@@ -9,7 +9,7 @@ export default class extends PageBase {
         this.setTitle('UserRegister');
         this.labelButton = '確認する'; // TODO json
         //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.watchValidateForm.bind(this));
+        this.addAfterRenderHandler(this.watchForms.bind(this));
         this.addAfterRenderHandler(this.listenConfirm.bind(this));
     }
 
@@ -33,9 +33,25 @@ export default class extends PageBase {
         `;
     }
 
-    watchValidateForm() {
-        //todo: focus外れたらvalidチェック
-        //todo: passは両方入力履歴あれば一致チェック
+    watchValidateForm(inputField) {
+        const classHasInput = 'has-input';
+        const addHasInput = () => {
+            inputField.classList.add(classHasInput);
+            inputField.removeEventListener('blur', addHasInput);
+        };
+
+        if (!inputField.classList.contains(classHasInput)) {
+            inputField.addEventListener('blur', addHasInput);
+        }
+    }
+
+    watchForms() {
+        const elUsername = document.getElementById('registUsername');
+        const elPassword = document.getElementById('registPassword');
+        const elPasswordConfirm = document.getElementById('registPasswordConfirm');
+        this.watchValidateForm(elUsername);
+        this.watchValidateForm(elPassword);
+        this.watchValidateForm(elPasswordConfirm);
     }
 
     listenConfirm() {

@@ -378,7 +378,7 @@ input {
           -1px -1px var(--content-color2);
 }
 
-input:invalid {
+input.has-input:invalid {
   border: 1px solid var(--color-error1);
   box-shadow: inset 0 0 2px 1px var(--color-error1);
   background-color: var(--color-error1-alpha);
