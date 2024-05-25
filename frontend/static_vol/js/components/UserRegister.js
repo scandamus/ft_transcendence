@@ -20,7 +20,7 @@ export default class extends PageBase {
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registUsername">username</label></dt>
                     <dd class="unitFormInput_input">
-                        <input type="text" id="registUsername" placeholder="Enter username" pattern="^(?!.*?__)[a-zA-Z0-9_]+$" minlength="3" maxlength="30" required />
+                        <input type="text" id="registUsername" placeholder="Enter username" pattern="^(?=.*[a-zA-Z0-9])[\\w_]+$" minlength="3" maxlength="30" required />
                         <ul class="listError"></ul>
                     </dd>
                 </dl>
@@ -28,7 +28,7 @@ export default class extends PageBase {
                     <dt class="unitFormInput_label"><label for="registPassword">password</label></dt>
                     <dd class="unitFormInput_input">
                         <input type="password" id="registPassword" placeholder="Enter password"
-                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\\\_+\\\\-=\\\\[\\\\]{};:'\\\\\\\\|,.<>/?~]+)[a-zA-Z\\d!@#$%^&*()\\\\_+\\\\-=\\\\[\\\\]{};:'\\\\\\\\|,.<>/?~]+$" minlength="8" required />
+                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+$" minlength="8" maxlength="64" required />
                         <ul class="listError"></ul>
                     </dd>
                 </dl>
@@ -36,7 +36,7 @@ export default class extends PageBase {
                     <dt class="unitFormInput_label"><label for="registPasswordConfirm">password(confirm)</label></dt>
                     <dd class="unitFormInput_input">
                         <input type="password" id="registPasswordConfirm" placeholder="Enter password(confirm)"
-                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()\\\\_+\\\\-=\\\\[\\\\]{};:'\\\\\\\\|,.<>/?~]+)[a-zA-Z\\d!@#$%^&*()\\\\_+\\\\-=\\\\[\\\\]{};:'\\\\\\\\|,.<>/?~]+$" minlength="8" required />
+                            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+$" minlength="8" maxlength="64" required />
                         <ul class="listError"></ul>
                     </dd>
                 </dl>
