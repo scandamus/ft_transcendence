@@ -81,6 +81,14 @@ export default class extends PageBase {
         if (!elInput.classList.contains(classHasInput)) {
             elInput.classList.add(classHasInput);
         }
+        //customError
+        if (elInput.id === 'registPasswordConfirm') {
+            if (elInput.value !== document.getElementById('registPassword').value) {
+                elInput.setCustomValidity( "passwordIsNotSame");
+            } else {
+                elInput.setCustomValidity( "");
+            }
+        }
         //formの各input validate
         checkInputValid(elInput);
         //ボタンenabled切り替え(ok=>ngもありうる)
