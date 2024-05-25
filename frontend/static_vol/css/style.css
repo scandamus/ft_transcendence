@@ -401,15 +401,6 @@ input.has-input:invalid {
   background-color: var(--color-error1-alpha);
 }
 
-.blockError {
-  margin-top: 10px;
-  padding: 0.2em 0.5em;
-  color: var(--color-error1);
-  text-shadow: none;
-  font-size: 1.2rem;
-  background: var(--color-error2-alpha);
-}
-
 .blockForm {
 }
 
@@ -483,6 +474,28 @@ input.has-input:invalid {
 .listLineDivide > section:last-child {
   border-bottom: none;
 }
+
+.listError {
+  margin-top: 10px;
+  padding: 0.8em 1em 0.8em 2em;
+  background: var(--color-error2-alpha);
+}
+
+.listError:empty {
+  display: none;
+}
+
+.listError li {
+  color: var(--color-error1);
+  text-shadow: none;
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+.listError li:not(:last-child) {
+  margin-bottom: 0.5em;
+}
+
 
 /* .unitBox */
 .unitBox {
