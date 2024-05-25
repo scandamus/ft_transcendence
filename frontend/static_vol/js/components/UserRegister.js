@@ -10,7 +10,6 @@ export default class extends PageBase {
         this.setTitle('UserRegister');
         this.labelButton = '確認する'; // TODO json
         //afterRenderにmethod追加
-        //this.addAfterRenderHandler(this.watchInputs.bind(this));
         this.addAfterRenderHandler(this.listenConfirm.bind(this));
     }
 

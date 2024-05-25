@@ -1,16 +1,5 @@
 'use strict';
 
-import PageList from "../components/PageList.js";
-import Home from "../components/Home.js";
-import UserRegister from "../components/UserRegister.js";
-import UserRegisterConfirm from "../components/UserRegisterConfirm.js";
-import UserRegisterComplete from "../components/UserRegisterComplete.js";
-import User from "../components/User.js";
-import GamePlay from "../components/GamePlay.js";
-import GameMatch from "../components/GameMatch.js";
-import TournamentEntry from "../components/TournamentEntry.js";
-import TournamentMatch from "../components/TournamentMatch.js";
-
 const errorMessages = {
     'valueMissing': 'This field is required.',
     'patternMismatch': 'The character types used do not meet the requirement.',
