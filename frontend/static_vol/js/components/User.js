@@ -9,7 +9,7 @@ import { getValidToken } from '../modules/token.js';
 
 
 export default class extends PageBase {
-    constructor(params, accessToken) {
+    constructor(params) {
         super(params);
         this.accessToken = { token: null, error: null };
         this.labelMatch = '対戦する';

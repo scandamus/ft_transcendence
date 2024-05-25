@@ -8,11 +8,9 @@ import { pongHandler } from '../modules/WebsocketHandler.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class extends PageBase {
-    constructor(params, accessToken) {
-    // constructor(params) {
+    constructor(params) {
         super(params);
         this.setTitle('LOGIN');
-        this.accessToken = accessToken;
         this.labelButtonLogin = 'ログイン'; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));

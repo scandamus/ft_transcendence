@@ -6,15 +6,11 @@ services:
       - "8001:8001"
     volumes:
       - ./backend/scandamus:/app
-    depends_on:
-      - redis
     environment:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - SECRET_KEY=${BACKEND_SECRET_KEY}
-      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
-      - CHANNEL_SECRET_KEY=${BACKEND_CHANNEL_SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
       - SIGNING_KEY=${SIGNING_KEY}
       - DJANGO_SU_USER=${DJANGO_SU_USER}
@@ -33,7 +29,7 @@ services:
     build:
       context: ./frontend
     environment:
-      - SECRET_KEY=${FRONTEND_SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
       - CERTS=${CERTS}
       - COUNTRY=${COUNTRY}
