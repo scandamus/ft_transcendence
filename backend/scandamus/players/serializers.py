@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import Player
 
 # validate_username
-# 最小文字数: 3文字 / 最大文字数: 30文字 / 使用可能: アルファベット(大文字小文字)、数字、アンダースコア(_) / 不可: "me"に一致
+# 最小文字数: 3文字 / 最大文字数: 30文字 / 使用可能: アルファベット(大文字小文字)、数字、アンダースコア(_)
 
 # validate_password
 # 最小文字数: 8文字 / 数字: 含む / 大文字: 含む / 小文字: 含む / 記号: 含む
