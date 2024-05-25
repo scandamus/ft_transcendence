@@ -8,9 +8,11 @@ from channels.db import database_sync_to_async
 from datetime import datetime as dt
 from .game_logic import Paddle, Ball
 from django.contrib.auth.models import User
+from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from game.models import Match
+from django.conf import settings
 #from .models import Match
 
 logger = logging.getLogger(__name__)
@@ -32,7 +34,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         super().__init__(args, kwargs)
         self.match_id = None
         self.room_group_name = None
-        self.authenticated = False
+        self.user_id = None
+        self.username = None
+    #    self.authenticated = False
 
     async def connect(self):
         try:
@@ -43,31 +47,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await self.close(code=4200)
                 return
             logger.info('match_id exists')
-            
-            # データベースと照合
-            match = await self.get_match(self.match_id)
-            if not match:
-                logger.error(f'No match found with match iD: {self.match_id}')
-                await self.close(code=4201)
-                return
-            logger.info('match_id available in DB')
 
-            # # ユーザーチェック
-            # user = self.scope['user']
-            # if user.is_anonymous:
-            #     logger.error('Error Anonymous user')
-            #     await self.close(code=4202)
-            #     return
-            # if not await self.is_user_in_match(user, match):
-            #     logger.error(f'Error user not a paticipant in this match {match.match_id}')
-            #     await self.close(code=4203)
-            #     return
-
-            # self.room_group_name = f"pong_{self.match_id}"
-            # logger.info(f"Match ID: {self.match_id}, Room group name: {self.room_group_name}")
-            # await self.channel_layer.group_add(
-            #     self.room_group_name, self.channel_name
-            # )
             await self.accept()
 
             # クライアント側でonopenが発火したらループを開始する
@@ -90,58 +70,45 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data=None, bytes_data=None):
-        if not self.authenticated:
-            await self.handle_token_message(text_data)
+        text_data_json = json.loads(text_data)
+        action = text_data_json.get('action')
+
+        if action == 'authenticate':
+            jwt = text_data_json.get('jwt')
+            user_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
+
+            if not user_id or not username or not jwt_match_id:
+                logger.error('Error occured while decoding JWT')
+                await self.send(text_data=json.dumps({
+                    'type': 'authenticationFailed',
+                    'message': 'Authentication failed. please log in again.'
+                }))
+                return
+            
+            if int(self.match_id) != int(jwt_match_id):
+                logger.error(f'Error: match ID conflict jwt match_id: {jwt_match_id}, URL match_id: {self.match_id}')
+                await self.send(text_data=json.dumps({
+                    'type': 'error',
+                    'message': 'Match ID conflict'
+                }))
+                return
+
+            self.user_id = int(user_id)
+            self.username = username
+            match = await self.get_match(self.match_id)
+            if match and await self.is_user_in_match(self.user_id, match):
+                self.room_group_name = f'pong_{self.match_id}'
+                await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            else:
+                logger.error('Match data not found or user is not for this match')
+                self.close(code=5000)
+                return
         else:
             await self.handle_game_message(text_data)
 
-    async def handle_token_message(self, text_data):
-        text_data_json = json.loads(text_data)
-        token = text_data_json.get('token')
-        logger.info(f'handle_token_message in {text_data_json}')
-        if token:
-            user = await self.authenticate_token(token)
-            if user:
-                self.authenticated = True
-                logger.info(f'User authenticated {user.username}')
-
-                match = await self.get_match(self.match_id)
-                if match and await self.is_user_in_match(user, match):
-                    logger.info(f'User {user.username} is in match {self.match_id}')
-                    self.room_group_name = f"pong_{self.match_id}"
-                    logger.info(f"Match ID: {self.match_id}, Room group name: {self.room_group_name}")
-                    await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-                else:
-                    logger.error(f'Error user not a paticipant in this match {match.id}')
-                    await self.close(code=4201)
-            else:
-                logger.error(f'Error user authentication')
-                await self.close(code=4202)
-        else:
-            logger.error(f'Error token error')
-            await self.close(code=4202)
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
-        # token = text_data_json.get('token')
-        # if token:
-        #     logger.info("checking received token")
-        #     if await self.authenticate_token(token):
-        #         await self.channel_layer.group_add(
-        #             self.room_group_name,
-        #             self.channel_name
-        #         )
-        #         logger.info('Authenticated')
-        #         return
-        #     else:
-        #         logger.info('Authenticatin failed')
-        #         await self.close()
-        #         return
-        # if not self.user:
-        #     await self.close()
-        #     return
-        
-
         message = text_data_json["message"]
         if message == 'key_event':
             key = text_data_json['key']
@@ -241,15 +208,19 @@ class PongConsumer(AsyncWebsocketConsumer):
         }))
 
     @database_sync_to_async
-    def authenticate_token(self, token):
+    def auhtnticate_jwt(self, jwt):
         try:
-            decoded_data = AccessToken(token)
-            user = User.objects.get(id=decoded_data['user_id'], is_active=True)
-            return user
-        except (TokenError, InvalidToken, User.DoesNotExist) as e:
-            logger.error(f"Authenticatioin failed: {e}")
-            return None
-        
+            token_backend = TokenBackend(algorithm='HS256', signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
+            validated_token = token_backend.decode(jwt, verify=True)
+            user_id = validated_token['user_id']
+            username = validated_token['username']
+            match_id = validated_token['match_id']
+            return user_id, username, match_id
+        except InvalidToken as e:
+            logger.error('Error: invalid token in jwt')
+            return None, None
+
+    # TODO: API経由に変更
     @database_sync_to_async
     def get_match(self, match_id):
         try:
@@ -257,10 +228,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         except Match.DoesNotExist:
             return None
     
+    # TODO: API経由に変更
     @database_sync_to_async
-    def is_user_in_match(self, user, match):
-        result = user == match.player1.user or user == match.player2.user
-        logger.debug(f'Checking if user {user.username} (id: {user.id}) is in match {match.id}: {result}')
-        logger.debug(f'user.id: {user.id}, match.player1.id: {match.player1.id}, match.player2.id: {match.player2.id}')
-        logger.debug(f'match.player1.user.id: {match.player1.user.id}, match.player2.user.id: {match.player2.user.id}')
+    def is_user_in_match(self, user_id, match):
+        result = user_id == match.player1.user.id or user_id == match.player2.user.id
+        logger.debug(f'Checking if user {self.username} (id: {user_id}) is in match {match.id}: {result}')
+        logger.debug(f'username: {self.username} user_id: {user_id} match.player1.user.id: {match.player1.user.id}, match.player2.user.id: {match.player2.user.id}')
         return result
