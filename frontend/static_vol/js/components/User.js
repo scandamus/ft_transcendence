@@ -6,18 +6,17 @@ import { showModal } from '../modules/modal.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
 import { getValidToken } from '../modules/token.js';
-//import { getWebSocket, closeWebSocket } from '../modules/websocket.js';
+
 
 export default class extends PageBase {
     constructor(params, accessToken) {
         super(params);
-        this.accessToken = { token: null, error: null };//getValidToken('accessToken'); //localStorage.getItem('accessToken');
+        this.accessToken = { token: null, error: null };
         this.labelMatch = '対戦する';
         this.labelCancel = 'キャンセル';
         this.setTitle(`USER: ${this.userName}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
-        this.websocket = null;
     }
 
     async init() {
@@ -123,28 +122,13 @@ export default class extends PageBase {
     }
 
     join_game() {
-//        this.websocket = getWebSocket();
-        if (!this.websocket) {
-            this.websocket = webSocketManager.openWebSocket('lounge', pongHandler);
-//            this.websocket = getWebSocket();
-//            this.websocket.onopen = () => {
-//                console.log('WebSocket is open now');
+        if (!webSocketManager.isWebSocketOpened('lounge')) {
+            webSocketManager.openWebSocket('lounge', pongHandler);
         }
-        
-    //    this.websocket.send(JSON.stringify({
         webSocketManager.sendWebSocketMessage('lounge', {
             action: 'join_game',
             token: this.accessToken.token
         });
         console.log('Request join_game sent');
-
-//        this.websocket.onmessage = (event) => {
-        // webSocketManager.getWebSocket('lounge').onmessage = (event) => {
-        //     console.log('Message received: ', event.data);
-        //     const message = JSON.parse(event.data);
-        //     if (message.type === 'gameSession') {
-        //         this.loadGameContent(message.jwt);
-        //     }
-        // };
     }
 }

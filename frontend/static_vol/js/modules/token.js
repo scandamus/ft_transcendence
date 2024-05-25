@@ -29,6 +29,7 @@ const refreshAccessToken = async () => {
         if (response.ok) {
             const refreshData = await response.json();
             localStorage.setItem('accessToken', refreshData.access);
+            console.log(`Successfully token refreshed: ${refreshData.access}`);
             return true;
         }
         console.error('Failed to refresh token, server responded with: ', response.status);

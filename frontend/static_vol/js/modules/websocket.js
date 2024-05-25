@@ -6,9 +6,9 @@ class WebSocketManager {
         this.messageHandlers = {};
     }
     
-    openWebSocket(containerId, messageHandler) {
+    async openWebSocket(containerId, messageHandler) {
         if (this.sockets[containerId]) {
-            const accessToken = getValidToken('accessToken');
+            const accessToken = await getValidToken('accessToken');
             if (!accessToken) {
                 console.log('Access Token is missing or expired. Closing socket...');
                 this.closeWebSocket(containerId);
@@ -99,6 +99,15 @@ class WebSocketManager {
         } else {
             console.error(`WebSocket for ${containerId} is not open.`);
         }
+    }
+
+    isWebSocketOpened(containerId) {
+        const socket = this.sockets[containerId];
+        return socket && socket.readyState == WebSocket.OPEN;
+    }
+
+    getWebSocket(containerId) {
+        return this.sockets[containerId];
     }
 }
 

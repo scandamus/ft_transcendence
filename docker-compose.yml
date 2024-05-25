@@ -72,15 +72,21 @@ services:
     build: pong-server
     container_name: pong-server
     environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SIGNING_KEY=${SIGNING_KEY}
       - SECRET_KEY=${PONG_SERVER_SECRET_KEY}
       - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
       - CHANNEL_SECRET_KEY=${PONG_SERVER_CHANNEL_SECRET_KEY}
+      - POSTGRES_USER=${DB_USER}
     depends_on:
       - redis
     ports:
       - "8002:8002"
     restart: always
-
+    volumes:
+      - ./pong-server/game-server:/app
   redis:
     image: redis:7
     restart: always
