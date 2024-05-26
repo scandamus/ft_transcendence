@@ -7,54 +7,49 @@ class WebSocketManager {
     }
     
     async openWebSocket(containerId, messageHandler) {
-        if (this.sockets[containerId]) {
-            const accessToken = await getValidToken('accessToken');
-            if (!accessToken) {
-                console.log('Access Token is missing or expired. Closing socket...');
-                this.closeWebSocket(containerId);
-
-                setTimeout(() => {
-                    this.openWebSocket(containerId, messageHandler);
-                }, 3000); // 3 sec
+        return new Promise(async (resolve, reject) => {
+            if (this.sockets[containerId] && this.sockets[containerId].readyState) {
+                console.log(`WebSocket for ${containerId} is already open.`);
+                resolve(this.sockets[containerId]);
                 return;
             }
-                console.log(`WebSocket for ${containerId} is already open.`);
+
+            const accessTokenResult = await getValidToken('accessToken');
+            if (!accessTokenResult.token) {
+                console.error('Access token is missing or invalid');
+                reject('Access token is missing or invalid.');
                 return;
-        }
+            }
 
-        const accessToken = getValidToken('accessToken');
-        if (!accessToken) {
-            console.error('Access token is missing');
-            return;
-        }
-        
-        const url = 'wss://'
-            + window.location.host
-            + '/ws/'
-            + containerId
-            + '/';
+            const url = 'wss://'
+                + window.location.host
+                + '/ws/'
+                + containerId
+                + '/';
 
-        const socket = new WebSocket(url);
+            const socket = new WebSocket(url);
 
-        socket.onopen = () => {
-            console.log(`WebSocket for ${containerId} is open now.`);
-        };
+            socket.onopen = () => {
+                console.log(`WebSocket for ${containerId} is open now.`);
+                this.sockets[containerId] = socket;
+                this.messageHandlers[containerId] = messageHandler || this.defaultMessageHandler(this, containerId);
+                resolve(socket);
+            };
 
-        socket.onmessage = (event) => {
-            this.handleMessage(containerId, event);
-        };
+            socket.onmessage = (event) => {
+                this.handleMessage(containerId, event);
+            };
 
-        socket.onclose = (event) => {
-            console.log(`WebSocket for ${containerId} is onclose.`);
-            this.handleClose(containerId);
-        };
+            socket.onclose = (event) => {
+                console.log(`WebSocket for ${containerId} is onclose.`);
+                this.handleClose(containerId);
+            };
 
-        socket.onerror = (error) => {
-            console.error(`WebSocket error for ${containerId}: `, error);
-        };
-
-        this.sockets[containerId] = socket;
-        this.messageHandlers[containerId] = messageHandler || this.defaultMessageHandler(this, containerId);
+            socket.onerror = (error) => {
+                console.error(`WebSocket error for ${containerId}: `, error);
+                reject(error);
+            };
+        })
     }
 
     defaultMessageHandler(event, containerId) {
