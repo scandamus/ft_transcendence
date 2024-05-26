@@ -63,6 +63,8 @@ class LoungeSession(AsyncWebsocketConsumer):
                             }))
                         self.players.clear()
                 else:
+                    logger.error('Error: Authentication Failed')
+                    logger.error(f'error={error}')
                     await self.send(text_data=json.dumps({
                         'type': 'authenticationFailed',
                         'message': error
@@ -127,6 +129,7 @@ class LoungeSession(AsyncWebsocketConsumer):
             validated_token = token_backend.decode(token, verify=True)
             user_id = validated_token['user_id']
             user = User.objects.get(id=user_id)
+            self.user = user
             return user, None
         except TokenBackendError as e:
             logger.info(f"TokenBackendError: " + str(e))
@@ -139,4 +142,8 @@ class LoungeSession(AsyncWebsocketConsumer):
             return None, 'User not found'
      
     async def disconnect(self, close_code):
-        pass
+        if hasattr(self, 'user') and self.user.username in self.players:
+            del self.players[self.user.username]
+            logger.info(f'User {self.user.username} disconnected and removed from players list.')
+        else:
+            logger.info('Disconnect called but no user found.')
