@@ -118,9 +118,7 @@ export default class extends PageBase {
         //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
         this.join_game();
         const btnCancel = document.querySelector('.blockBtnCancel_button');
-        btnCancel.addEventListener('click', () => {
-            console.log('Game canceled');
-        });
+        btnCancel.addEventListener('click', this.cancel_game.bind(this));
     }
 
     async join_game() {
@@ -134,6 +132,19 @@ export default class extends PageBase {
             console.log('Request join_game sent to backend.');
         } catch (error) {
             console.error('Failed to open or send throught WebSocket: ', error);
+        }
+    }
+
+    async cancel_game() {
+        try {
+            console.log('Cancelling the game...');
+            webSocketManager.sendWebSocketMessage('lounge', {
+                action: 'cancel',
+                token: this.accessToken.token
+            });
+            console.log('Cancel request sent to backend.');
+        } catch {
+            console.error('Failed to send cancel request.');
         }
     }
 }

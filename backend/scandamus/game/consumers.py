@@ -40,7 +40,6 @@ class LoungeSession(AsyncWebsocketConsumer):
 
             if action == 'join_game':
                 user, error = await self.authenticate_token(token)
-#                user = await self.get_user_from_token(token)
                 if user:
                     self.players[user.username] = {
                         'user': user,
@@ -53,7 +52,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                         player2 = await self.get_player_from_user(players_list[1]['user'])
                         match = await self.create_match(player1, player2)
                         for player in players_list:
-#                            game_token = await self.issue_game_token(player['user'])
                             game_token = await self.issue_jwt(player['user'], match.id)
                             await player['websocket'].send(text_data=json.dumps({
                                 'type': 'gameSession',
@@ -69,6 +67,10 @@ class LoungeSession(AsyncWebsocketConsumer):
                         'type': 'authenticationFailed',
                         'message': error
                     }))
+            elif action == 'cancel':
+                if hasattr(self, 'user') and self.user.username in self.players:
+                    del self.players[self.user.username]
+                    logger.info(f'{self.user.username}: cancel accepted.')
             else:
                 await self.send(text_data=json.dumps({
                     'message': 'response from server'
@@ -140,7 +142,7 @@ class LoungeSession(AsyncWebsocketConsumer):
         except (User.DoesNotExist) as e:
             logger.info(f"User not found")
             return None, 'User not found'
-     
+
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.username in self.players:
             del self.players[self.user.username]
