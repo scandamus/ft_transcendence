@@ -20,8 +20,10 @@ export default class extends PageBase {
     }
 
     async init() {
+        console.log('init in');
         try {
             const tokenResult = await getValidToken('accessToken');
+            console.log('tokenResult: ', tokenResult);
             if (tokenResult.token) {
                 this.accessToken = tokenResult;
                 console.log('accessToken: ', this.accessToken.token);
@@ -121,14 +123,17 @@ export default class extends PageBase {
         });
     }
 
-    join_game() {
-        if (!webSocketManager.isWebSocketOpened('lounge')) {
-            webSocketManager.openWebSocket('lounge', pongHandler);
+    async join_game() {
+        try {
+            await this.init();
+            await webSocketManager.openWebSocket('lounge', pongHandler);
+            webSocketManager.sendWebSocketMessage('lounge', {
+                action: 'join_game',
+                token: this.accessToken.token
+            });
+            console.log('Request join_game sent to backend.');
+        } catch (error) {
+            console.error('Failed to open or send throught WebSocket: ', error);
         }
-        webSocketManager.sendWebSocketMessage('lounge', {
-            action: 'join_game',
-            token: this.accessToken.token
-        });
-        console.log('Request join_game sent');
     }
 }

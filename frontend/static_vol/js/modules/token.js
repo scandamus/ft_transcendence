@@ -15,7 +15,7 @@ const getToken = (nameToken) => {
 
 const refreshAccessToken = async () => {
     const refreshToken = getToken('refreshToken');
-
+    console.log(`refreshToken: ${refreshToken}`);
     // ネットワークエラー、サーバーエラー、ストレージエラーの例外に対応
     try {
         // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
@@ -24,19 +24,23 @@ const refreshAccessToken = async () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 'refresh': `${refreshToken}` })
+            body: JSON.stringify({
+                'refresh': refreshToken
+            })
         });
         if (response.ok) {
             const refreshData = await response.json();
+            console.log(`refreshData: `, refreshData);
             localStorage.setItem('accessToken', refreshData.access);
+            localStorage.setItem('refreshToken', refreshData.refresh);
             console.log(`Successfully token refreshed: ${refreshData.access}`);
-            return true;
+            return refreshData.access;
         }
         console.error('Failed to refresh token, server responded with: ', response.status);
-        return false;
+        return null;
     } catch (error) {
         console.error('Error occured while refreshing token: ', error);
-        return false;
+        return null;
     }
 }
 
@@ -54,7 +58,7 @@ const isTokenExpired = (token) => {
 }
 
 const getValidToken = async (nameToken) => {
-    const myToken = getToken(nameToken);
+    let myToken = getToken(nameToken);
     if (myToken == null) {
         console.log('No token found.');
         return { token: null, error: 'No token found' };
@@ -67,8 +71,7 @@ const getValidToken = async (nameToken) => {
         console.error('Failed to refresh token.');
         return { token: null, error: 'Failed to refresh token' };
     }
-    myToken = getToken(nameToken);
-    return { token: myToken, error: (!myToken ? null : 'No access token though refresh is success')};
+    return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
 }
 
 export { getToken, refreshAccessToken, isTokenExpired, getValidToken };
