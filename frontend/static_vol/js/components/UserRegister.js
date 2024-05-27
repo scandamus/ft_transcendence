@@ -2,7 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { router } from '../modules/router.js';
-import { checkInputValid } from '../modules/form.js';
+import { addErrorMessage, checkInputValid } from '../modules/form.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -82,6 +82,7 @@ export default class extends PageBase {
             elInput.classList.add(classHasInput);
         }
         //customError
+        //password(確認)の値が等しいか
         if (elInput.id === 'registPasswordConfirm') {
             if (elInput.value !== document.getElementById('registPassword').value) {
                 elInput.setCustomValidity('passwordIsNotSame');
@@ -99,6 +100,7 @@ export default class extends PageBase {
         ev.preventDefault();
         const elUsername = document.getElementById('registUsername');
         const elPassword = document.getElementById('registPassword');
+        const btnConfirm = document.getElementById('btnConfirmForm');
 
         const data = {
             username: elUsername.value,
@@ -130,7 +132,29 @@ export default class extends PageBase {
                 const errorObject = JSON.parse(error.message);
                 Object.keys(errorObject).forEach(key => {
                     errorObject[key].forEach(value => {
-                        console.error(`${key}: ${value}`);
+                        if (key === 'username') {
+                            elUsername.setCustomValidity('isExists');
+                            btnConfirm.setAttribute('disabled', '');
+                            const errWrapper = elUsername.parentNode.querySelector('.listError');
+                            addErrorMessage(errWrapper, 'isExists', true);
+                            // 値が更新されたか
+                            let valueUsername;
+                            elUsername.addEventListener('focus', () => {
+                                valueUsername = elUsername.value;
+                            });
+                            elUsername.addEventListener('blur', () => {
+                                if (valueUsername !== elUsername.value) {
+                                    const liCustomError = errWrapper.querySelector('li[data-error-type="customError"]');
+                                    if (liCustomError) {
+                                        liCustomError.remove();
+                                    }
+                                    elUsername.setCustomValidity('');
+                                    this.checkFormReady();
+                                }
+                            });
+                        } else {
+                            console.error(`${key}: ${value}`);
+                        }
                     });
                 });
             });

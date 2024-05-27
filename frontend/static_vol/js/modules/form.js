@@ -2,6 +2,7 @@
 
 const errorMessages = {
     'valueMissing': 'This field is required.',
+    'isExists': 'This username already exists.',
     'patternMismatch': 'The character types used do not meet the requirement.',
     'tooShortOrTooLong': 'The character count does not meet the requirement.',
     'passwordIsNotSame': 'password is not same.'
@@ -77,4 +78,4 @@ const checkInputValid = (elInput) => {
     return false;
 };
 
-export { checkInputValid };
+export { addErrorMessage, checkInputValid };
