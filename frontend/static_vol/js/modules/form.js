@@ -5,7 +5,11 @@ const errorMessages = {
     'isExists': 'This username already exists.',
     'patternMismatch': 'The character types used do not meet the requirement.',
     'tooShortOrTooLong': 'The character count does not meet the requirement.',
-    'passwordIsNotSame': 'password is not same.'
+    'passwordIsNotSame': 'password is not same.',
+    'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
+    'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
+    'invalidPasswordLenBackend': 'password is invalid.(len - backend)',
+    'invalidPasswordCharacterTypesBackend': 'password is invalid.(character types - backend)',
 };
 
 const addErrorMessage = (errWrapper, errorType, isCustomError) => {

@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from django.utils.translation import gettext as _
 from django.core.validators import RegexValidator
 from .models import Player
 
@@ -15,16 +14,16 @@ class CustomUsernameValidator:
     def __call__(self, username):
         # unique check
         if User.objects.filter(username=username).exists():
-            raise serializers.ValidationError('This username already exists.')
+            raise serializers.ValidationError('isExists')
 
         # len
         if len(username) < 3 or len(username) > 15:
-            raise serializers.ValidationError('Username must be between 3 and 15 characters long.')
+            raise serializers.ValidationError('invalidUsernameLenBackend')
 
         # 文字種
         alphanumeric_validator = RegexValidator(
             r'^(?=.*[a-zA-Z0-9])[\w_]+$',
-            _('Enter a valid username. This value may contain only letters, numbers, and underscores.'),
+            'invalidUsernameCharacterTypesBackend',
             'invalid_username'
         )
         alphanumeric_validator(username)
@@ -39,13 +38,13 @@ class CustomPasswordValidator:
     def __call__(self, password):
         # len
         if len(password) < 8 or len(password) > 24:
-            raise serializers.ValidationError('Password must be between 8 and 64 characters long.')
+            raise serializers.ValidationError('invalidPasswordLenBackend')
 
         # 文字種
         alphanumeric_validator = RegexValidator(
             r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~\'])[\w@_#$%&!.,+*~\']+$',
-            _('Enter a valid password. This value may contain at least one digit, one uppercase letter, one lowercase letter, and one special character.'),
-            'invalid_username'
+            'invalidPasswordCharacterTypesBackend',
+            'invalid_password'
         )
         alphanumeric_validator(password)
 
