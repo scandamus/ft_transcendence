@@ -112,10 +112,11 @@ export default class extends PageBase {
             },
             body: JSON.stringify(data)
         })
-            .then(response => {
+            .then( async (response) => {
                 if (!response.ok) {
-                    throw new Error('confirm failed with status: ' + response.status);
-                }
+                    const responseBody = await response.text();
+                    throw new Error(responseBody);
+                 }
                 return response.json();
             })
             .then( async () => {
@@ -125,8 +126,13 @@ export default class extends PageBase {
                 history.pushState(null, null, '/register/confirm');
                 await router(false);
             })
-            .catch(error => {
-                console.error('confirm failed:', error);
+            .catch((error) => {
+                const errorObject = JSON.parse(error.message);
+                Object.keys(errorObject).forEach(key => {
+                    errorObject[key].forEach(value => {
+                        console.error(`${key}: ${value}`);
+                    });
+                });
             });
     }
 }
