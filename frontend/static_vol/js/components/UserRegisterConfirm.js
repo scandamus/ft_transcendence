@@ -1,7 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { router } from "../modules/router.js";
+import { router } from '../modules/router.js';
 
 export default class extends PageBase {
     constructor(params) {

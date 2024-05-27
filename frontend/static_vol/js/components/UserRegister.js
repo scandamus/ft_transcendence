@@ -2,7 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { router } from '../modules/router.js';
-import { checkInputValid } from "../modules/form.js";
+import { checkInputValid } from '../modules/form.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -84,9 +84,9 @@ export default class extends PageBase {
         //customError
         if (elInput.id === 'registPasswordConfirm') {
             if (elInput.value !== document.getElementById('registPassword').value) {
-                elInput.setCustomValidity( "passwordIsNotSame");
+                elInput.setCustomValidity('passwordIsNotSame');
             } else {
-                elInput.setCustomValidity( "");
+                elInput.setCustomValidity('');
             }
         }
         //formの各input validate
