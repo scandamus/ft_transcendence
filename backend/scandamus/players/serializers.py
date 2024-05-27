@@ -41,6 +41,7 @@ class CustomPasswordValidator:
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=30, required=True)
     password = serializers.CharField(validators=[CustomPasswordValidator()], write_only=True, required=True)
+
     class Meta:
         model = User
         fields = ('username', 'password')
@@ -56,8 +57,3 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = '__all__'
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username')
