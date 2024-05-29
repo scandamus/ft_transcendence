@@ -129,31 +129,33 @@ export default class extends PageBase {
                 await router(false);
             })
             .catch((error) => {
+                let tmpValueUsername,  tmpValuePassword;
                 const errorObject = JSON.parse(error.message);
-                Object.keys(errorObject).forEach(key => {
-                    errorObject[key].forEach(value => {
+                btnConfirm.setAttribute('disabled', '');
+                Object.keys(errorObject).forEach((key) => {
+                    let elInput = (key === 'username') ? elUsername : elPassword;
+                    let errWrapper = elInput.parentNode.querySelector('.listError');
+                    errorObject[key].forEach((value) => {
+                        elInput.setCustomValidity(value);
+                        addErrorMessageCustom(errWrapper, value);
+                    });
+                    // 値が更新されたか
+                    elInput.addEventListener('focus', () => {
                         if (key === 'username') {
-                            elUsername.setCustomValidity('isExists');
-                            btnConfirm.setAttribute('disabled', '');
-                            const errWrapper = elUsername.parentNode.querySelector('.listError');
-                            addErrorMessageCustom(errWrapper, 'isExists');
-                            // 値が更新されたか
-                            let valueUsername;
-                            elUsername.addEventListener('focus', () => {
-                                valueUsername = elUsername.value;
+                            tmpValueUsername = elInput.value;
+                        } else if (key === 'password') {
+                            tmpValuePassword = elInput.value;
+                        }
+                    });
+                    elInput.addEventListener('blur', () => {
+                        const tmpValue = (key === 'username') ? tmpValueUsername : tmpValuePassword;
+                        if (tmpValue !== elInput.value) {
+                            const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
+                            listLiCustomError.forEach((li) => {
+                                li.remove();
                             });
-                            elUsername.addEventListener('blur', () => {
-                                if (valueUsername !== elUsername.value) {
-                                    const liCustomError = errWrapper.querySelector('li[data-error-type="customError"]');
-                                    if (liCustomError) {
-                                        liCustomError.remove();
-                                    }
-                                    elUsername.setCustomValidity('');
-                                    this.checkFormReady();
-                                }
-                            });
-                        } else {
-                            console.error(`${key}: ${value}`);
+                            elInput.setCustomValidity('');
+                            this.checkFormReady();
                         }
                     });
                 });
