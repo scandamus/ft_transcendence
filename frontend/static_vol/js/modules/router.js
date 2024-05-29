@@ -90,7 +90,7 @@ const router = async (accessToken) => {
             result: routes.pageList.path
         };
     }
-    
+
     //認証ページ判定
     //非ログイン状態で要認証ページにアクセス => ログインにリダイレクト
     //ログイン状態で非認証ページにアクセス => userにリダイレクト
@@ -110,7 +110,7 @@ const router = async (accessToken) => {
         };
     }
 
-    const view = new matchRoute.route.view(getParams(matchRoute), accessToken);
+    const view = new matchRoute.route.view(getParams(matchRoute));
     if (view) {
         //モーダルが開いていたら閉じる
         //todo: openModal後のフローに組み込む方がよさそう
