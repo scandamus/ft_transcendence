@@ -30,7 +30,7 @@ def get_env_var(var):
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_var('SECRET_KEY')
+SECRET_KEY = get_env_var('BACKEND_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
@@ -127,7 +127,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SIMPLE_JWT = {
-    'SIGNING_KEY': get_env_var('SIGNING_KEY'),
+    'SIGNING_KEY': get_env_var('BACKEND_JWT_SIGNING_KEY'),
     'ALGORITHM': 'HS256',
     'ENCODE': 'utf-8',
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
