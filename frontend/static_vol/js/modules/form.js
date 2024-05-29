@@ -1,12 +1,6 @@
 'use strict';
 
-const listLiErrorByType = {
-    valueMissing: [],
-    patternMismatch: [],
-    tooLong: [],
-    tooShort: [],
-    customError: []
-};
+const errorTypes = ['valueMissing', 'patternMismatch', 'tooLong', 'tooShort', 'customError'];
 
 const errorMessages = {
     'valueMissing': 'This field is required.',
@@ -39,13 +33,9 @@ const addErrorMessageCustom = (errWrapper, errorKey) => {
 
 const checkInputValid = (elInput) => {
     const errWrapper = elInput.parentNode.querySelector('.listError');
+    const errWrapperPasswordConfirm =
+        document.getElementById('registPasswordConfirm').parentNode.querySelector('.listError');
     const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
-    listLiError.forEach((li) => {
-        const errorType = li.getAttribute('data-error-type');
-        if (listLiErrorByType.hasOwnProperty(errorType)) {
-            listLiErrorByType[errorType].push(li);
-        }
-    });
 
     //validate OK
     const validityState = elInput.validity;
@@ -53,51 +43,42 @@ const checkInputValid = (elInput) => {
         listLiError.forEach((li) => {
             li.remove();
         });
-        for (const key in listLiErrorByType) {
-            listLiErrorByType[key] = [];
-        }
         return true;
     }
 
     //invalid。error表示してreturn false
-    for (const errorType in listLiErrorByType) {
-        const errorList = listLiErrorByType[errorType];
-        //customErrorの場合はdata-error-customが重複しないかで判定
+    errorTypes.forEach((errorType) => {
+        //customError => data-error-customが重複しないかで判定
         if (errorType === 'customError') {
             const errorKey = elInput.validationMessage;
-            if (validityState[errorType]) {//該当errorType
-                const isDisplayed = errorList.some((li) => {
-                    return li.getAttribute('data-error-custom') === errorKey;
-                });
-                if (!isDisplayed) {
+            let targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === errorKey);
+            if (validityState[errorType]) {
+                if (!targetLi) {
                     //password不一致エラーはconfirmのエラーとして表示
                     if (errorKey === 'passwordIsNotSame') {
-                        const errWrapperPasswordConfirm =
-                            document.getElementById('registPasswordConfirm').parentNode.querySelector('.listError');
                         addErrorMessageCustom(errWrapperPasswordConfirm, errorKey);
                     } else {
                         addErrorMessageCustom(errWrapper, errorKey);
                     }
                 }
-            } else if (errorList.length > 0) {//該当errorTypeが修正された(かもしれない)
-                errorList.forEach((li) => {
-                    li.remove();
-                    listLiErrorByType[errorType] = [];
-                });
+            } else {
+                if (targetLi) {
+                    targetLi.remove();
+                }
             }
-        }  else { //not customError data-error-typeが重複しないかで判定
-            if (validityState[errorType]) {//該当errorType
-                if (errorList.length === 0) {
+        } else { //not customError => data-error-typeで判定
+            const targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-type') === errorType);
+            if (validityState[errorType]) {
+                if (!targetLi) {
                     addErrorMessage(errWrapper, errorType);
                 }
-            } else if (errorList.length > 0) {//該当errorTypeが修正された
-                errorList.forEach((li) => {
-                    li.remove();
-                    listLiErrorByType[errorType] = [];
-                });
+            } else {
+                if (targetLi) {
+                    targetLi.remove();
+                }
             }
         }
-    }
+    });
     return false;
 };
 
