@@ -70,11 +70,19 @@ const checkInputValid = (elInput) => {
                     return li.getAttribute('data-error-custom') === errorKey;
                 });
                 if (!isDisplayed) {
-                    addErrorMessageCustom(errWrapper, errorKey);
+                    //password不一致エラーはconfirmのエラーとして表示
+                    if (errorKey === 'passwordIsNotSame') {
+                        const errWrapperPasswordConfirm =
+                            document.getElementById('registPasswordConfirm').parentNode.querySelector('.listError');
+                        addErrorMessageCustom(errWrapperPasswordConfirm, errorKey);
+                    } else {
+                        addErrorMessageCustom(errWrapper, errorKey);
+                    }
                 }
             } else if (errorList.length > 0) {//該当errorTypeが修正された(かもしれない)
                 errorList.forEach((li) => {
                     li.remove();
+                    listLiErrorByType[errorType] = [];
                 });
             }
         }  else { //not customError data-error-typeが重複しないかで判定
@@ -85,6 +93,7 @@ const checkInputValid = (elInput) => {
             } else if (errorList.length > 0) {//該当errorTypeが修正された
                 errorList.forEach((li) => {
                     li.remove();
+                    listLiErrorByType[errorType] = [];
                 });
             }
         }

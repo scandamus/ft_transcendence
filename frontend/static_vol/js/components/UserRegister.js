@@ -83,8 +83,10 @@ export default class extends PageBase {
         }
         //customError
         //password(確認)の値が等しいか
-        if (elInput.id === 'registPasswordConfirm') {
-            if (elInput.value !== document.getElementById('registPassword').value) {
+        if ((elInput.id === 'registPassword' || elInput.id === 'registPasswordConfirm')
+            && document.getElementById('registPassword').classList.contains(classHasInput)
+            && document.getElementById('registPasswordConfirm').classList.contains(classHasInput)) {
+            if (document.getElementById('registPassword').value !== document.getElementById('registPasswordConfirm').value) {
                 elInput.setCustomValidity('passwordIsNotSame');
             } else {
                 elInput.setCustomValidity('');
