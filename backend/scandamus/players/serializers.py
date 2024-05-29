@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.core.validators import RegexValidator
+
 from .models import Player
 
 # validate_username
@@ -12,51 +13,59 @@ from .models import Player
 
 class CustomUsernameValidator:
     def __call__(self, username):
+        errors = []
+
         # unique check
         if User.objects.filter(username=username).exists():
-            raise serializers.ValidationError('isExists')
+            errors.append('isExists')
 
         # len
         if len(username) < 3 or len(username) > 15:
-            raise serializers.ValidationError('invalidUsernameLenBackend')
+            errors.append('invalidUsernameLenBackend')
 
-        # 文字種
-        alphanumeric_validator = RegexValidator(
-            r'^(?=.*[a-zA-Z0-9])[\w_]+$',
-            'invalidUsernameCharacterTypesBackend',
-            'invalid_username'
-        )
-        alphanumeric_validator(username)
+        if errors:
+            raise serializers.ValidationError(errors)
 
         return None
 
-    def get_help_text(self):
-        return 'Username must be between 3 and 30 characters long and contain only letters, numbers, and underscores.'
+
+# CharacterTypes
+usernameCharacterTypesValidator = RegexValidator(
+    r'^(?=.*[a-zA-Z0-9])[\w_]+$',
+    'invalidUsernameCharacterTypesBackend',
+    'invalid_username'
+)
 
 
 class CustomPasswordValidator:
     def __call__(self, password):
+        errors = []
+
         # len
         if len(password) < 8 or len(password) > 24:
             raise serializers.ValidationError('invalidPasswordLenBackend')
 
-        # 文字種
-        alphanumeric_validator = RegexValidator(
-            r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~\'])[\w@_#$%&!.,+*~\']+$',
-            'invalidPasswordCharacterTypesBackend',
-            'invalid_password'
-        )
-        alphanumeric_validator(password)
+        if errors:
+            raise serializers.ValidationError(errors)
 
         return None
 
-    def get_help_text(self):
-        return 'Password must be between 8 and 64 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character.'
+
+# CharacterTypes
+passwordCharacterTypesValidator = RegexValidator(
+    r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~\'])[\w@_#$%&!.,+*~\']+$',
+    'invalidPasswordCharacterTypesBackend',
+    'invalid_password'
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(validators=[CustomUsernameValidator()], required=True)
-    password = serializers.CharField(validators=[CustomPasswordValidator()], write_only=True, required=True)
+    username = serializers.CharField(
+        validators=[CustomUsernameValidator(), usernameCharacterTypesValidator],
+        required=True)
+    password = serializers.CharField(
+        validators=[CustomPasswordValidator(), passwordCharacterTypesValidator],
+        write_only=True, required=True)
 
     class Meta:
         model = User
