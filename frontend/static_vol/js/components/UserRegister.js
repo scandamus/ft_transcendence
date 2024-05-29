@@ -2,7 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { router } from '../modules/router.js';
-import { addErrorMessage, checkInputValid } from '../modules/form.js';
+import { addErrorMessage, addErrorMessageCustom, checkInputValid } from '../modules/form.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -136,7 +136,7 @@ export default class extends PageBase {
                             elUsername.setCustomValidity('isExists');
                             btnConfirm.setAttribute('disabled', '');
                             const errWrapper = elUsername.parentNode.querySelector('.listError');
-                            addErrorMessage(errWrapper, 'isExists', true);
+                            addErrorMessageCustom(errWrapper, 'isExists');
                             // 値が更新されたか
                             let valueUsername;
                             elUsername.addEventListener('focus', () => {

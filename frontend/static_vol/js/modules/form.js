@@ -1,85 +1,95 @@
 'use strict';
 
+const listLiErrorByType = {
+    valueMissing: [],
+    patternMismatch: [],
+    tooLong: [],
+    tooShort: [],
+    customError: []
+};
+
 const errorMessages = {
     'valueMissing': 'This field is required.',
-    'isExists': 'This username already exists.',
     'patternMismatch': 'The character types used do not meet the requirement.',
-    'tooShortOrTooLong': 'The character count does not meet the requirement.',
+    'tooLong': 'The character count is too long.',
+    'tooShort': 'The character count is too short.',
+    //for customError
     'passwordIsNotSame': 'password is not same.',
+    'isExists': 'This username already exists.',
     'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
     'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
     'invalidPasswordLenBackend': 'password is invalid.(len - backend)',
     'invalidPasswordCharacterTypesBackend': 'password is invalid.(character types - backend)',
 };
 
-const addErrorMessage = (errWrapper, errorType, isCustomError) => {
+const addErrorMessage = (errWrapper, errorType) => {
     const elError = document.createElement('li');
     elError.textContent = errorMessages[errorType];
-    if (isCustomError) {
-        elError.setAttribute('data-error-type', 'customError');
-    } else {
-        elError.setAttribute('data-error-type', errorType);
-    }
+    elError.setAttribute('data-error-type', errorType);
+    errWrapper.appendChild(elError);
+}
+
+const addErrorMessageCustom = (errWrapper, errorKey) => {
+    const elError = document.createElement('li');
+    elError.textContent = errorMessages[errorKey];
+    elError.setAttribute('data-error-type', 'customError');
+    elError.setAttribute('data-error-custom', errorKey);
     errWrapper.appendChild(elError);
 }
 
 const checkInputValid = (elInput) => {
     const errWrapper = elInput.parentNode.querySelector('.listError');
-    const liValueMissing = errWrapper.querySelector('li[data-error-type="valueMissing"]');
-    const liPatternMismatch = errWrapper.querySelector('li[data-error-type="patternMismatch"]');
-    const liTooShortOrTooLong = errWrapper.querySelector('li[data-error-type="tooShortOrTooLong"]');
-    const liCustomError = errWrapper.querySelector('li[data-error-type="customError"]');
+    const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
+    listLiError.forEach((li) => {
+        const errorType = li.getAttribute('data-error-type');
+        if (listLiErrorByType.hasOwnProperty(errorType)) {
+            listLiErrorByType[errorType].push(li);
+        }
+    });
+
+    //validate OK
     const validityState = elInput.validity;
     if (validityState.valid) {
-        if (liValueMissing) {
-            liValueMissing.remove();
-        }
-        if (liPatternMismatch) {
-            liPatternMismatch.remove();
-        }
-        if (liTooShortOrTooLong) {
-            liTooShortOrTooLong.remove();
-        }
-        if (liCustomError) {
-            liCustomError.remove();
+        listLiError.forEach((li) => {
+            li.remove();
+        });
+        for (const key in listLiErrorByType) {
+            listLiErrorByType[key] = [];
         }
         return true;
     }
-    //これ以降はinvalid。error表示してreturn false
-    // requiredが未入力
-    if (validityState.valueMissing) {
-        if (!liValueMissing) {
-            addErrorMessage(errWrapper, 'valueMissing', false);
+
+    //invalid。error表示してreturn false
+    for (const errorType in listLiErrorByType) {
+        const errorList = listLiErrorByType[errorType];
+        //customErrorの場合はdata-error-customが重複しないかで判定
+        if (errorType === 'customError') {
+            const errorKey = elInput.validationMessage;
+            if (validityState[errorType]) {//該当errorType
+                const isDisplayed = errorList.some((li) => {
+                    return li.getAttribute('data-error-custom') === errorKey;
+                });
+                if (!isDisplayed) {
+                    addErrorMessageCustom(errWrapper, errorKey);
+                }
+            } else if (errorList.length > 0) {//該当errorTypeが修正された(かもしれない)
+                errorList.forEach((li) => {
+                    li.remove();
+                });
+            }
+        }  else { //not customError data-error-typeが重複しないかで判定
+            if (validityState[errorType]) {//該当errorType
+                if (errorList.length === 0) {
+                    addErrorMessage(errWrapper, errorType);
+                }
+            } else if (errorList.length > 0) {//該当errorTypeが修正された
+                errorList.forEach((li) => {
+                    li.remove();
+                });
+            }
         }
-    } else if (liValueMissing) {
-        liValueMissing.remove();
     }
-    // patternを満たさない
-    if (validityState.patternMismatch) {
-        if (!liPatternMismatch) {
-            addErrorMessage(errWrapper, 'patternMismatch', false);
-        }
-    } else if (liPatternMismatch) {
-        liPatternMismatch.remove();
-    }
-    // 文字数が規定に反する
-    if (validityState.tooShort || validityState.tooLong) {
-        if (!liTooShortOrTooLong) {
-            addErrorMessage(errWrapper, 'tooShortOrTooLong', false);
-        }
-    } else if (liTooShortOrTooLong) {
-        liTooShortOrTooLong.remove();
-    }
-    // customError
-    if (validityState.customError) {
-        if (!liCustomError) {
-            addErrorMessage(errWrapper, elInput.validationMessage, true);
-        }
-    } else if (liCustomError) {
-        liCustomError.remove();
-    }
-    // todo: min, max, step, typeは設定箇所が無いためチェックなし
     return false;
 };
 
-export { addErrorMessage, checkInputValid };
+export { addErrorMessage, addErrorMessageCustom, checkInputValid };
