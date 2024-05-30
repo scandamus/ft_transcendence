@@ -12,6 +12,10 @@ done
 
 python manage.py makemigrations
 python manage.py migrate
+python manage.py makemigrations game
+python manage.py makemigrations players
+python manage.py migrate game
+python manage.py migrate players
 
 # userの作成
 echo """
