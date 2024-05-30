@@ -77,6 +77,8 @@ export default class extends PageBase {
 
     handleInput(ev) {
         const elInput = ev.target;
+        const elPassword = document.getElementById('registPassword');
+        const elPasswordConfirm = document.getElementById('registPasswordConfirm');
         //初回入力時、invalid styleが当たるようにclass付与
         const classHasInput = 'has-input';
         if (!elInput.classList.contains(classHasInput)) {
@@ -84,15 +86,15 @@ export default class extends PageBase {
         }
         //customError
         //password(確認)の値が等しいか
-        if ((elInput.id === 'registPassword' || elInput.id === 'registPasswordConfirm')
-            && document.getElementById('registPassword').classList.contains(classHasInput)
-            && document.getElementById('registPasswordConfirm').classList.contains(classHasInput)) {
-            if (document.getElementById('registPassword').value !== document.getElementById('registPasswordConfirm').value) {
-                document.getElementById('registPassword').setCustomValidity('passwordIsNotSame');
-                document.getElementById('registPasswordConfirm').setCustomValidity('passwordIsNotSame');
+        if ((elInput === elPassword || elInput === elPasswordConfirm)
+            && elPassword.classList.contains(classHasInput)
+            && elPasswordConfirm.classList.contains(classHasInput)) {
+            if (elPassword.value !== elPasswordConfirm.value) {
+                elPassword.setCustomValidity('passwordIsNotSame');
+                elPasswordConfirm.setCustomValidity('passwordIsNotSame');
             } else {
-                document.getElementById('registPassword').setCustomValidity('');
-                document.getElementById('registPasswordConfirm').setCustomValidity('');
+                elPassword.setCustomValidity('');
+                elPasswordConfirm.setCustomValidity('');
             }
         }
         //formの各input validate
@@ -134,37 +136,41 @@ export default class extends PageBase {
                 await router(false);
             })
             .catch((error) => {
-                let tmpValueUsername,  tmpValuePassword;
-                const errorObject = JSON.parse(error.message);
-                btnConfirm.setAttribute('disabled', '');
-                Object.keys(errorObject).forEach((key) => {
-                    let elInput = (key === 'username') ? elUsername : elPassword;
-                    let errWrapper = elInput.parentNode.querySelector('.listError');
-                    errorObject[key].forEach((value) => {
-                        elInput.setCustomValidity(value);
-                        addErrorMessageCustom(errWrapper, value);
-                    });
-                    // 値が更新されたか
-                    elInput.addEventListener('focus', () => {
-                        if (key === 'username') {
-                            tmpValueUsername = elInput.value;
-                        } else if (key === 'password') {
-                            tmpValuePassword = elInput.value;
-                        }
-                    });
-                    elInput.addEventListener('blur', () => {
-                        const tmpValue = (key === 'username') ? tmpValueUsername : tmpValuePassword;
-                        if (tmpValue !== elInput.value) {
-                            const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
-                            listLiCustomError.forEach((li) => {
-                                li.remove();
-                            });
-                            elInput.setCustomValidity('');
-                            this.checkFormReady();
-                        }
-                    });
-                });
+                this.handleBackendValidationError(error, btnConfirm, elUsername, elPassword);
             });
+    }
+
+    handleBackendValidationError(error, btnConfirm, elUsername, elPassword) {
+        let tmpValueUsername,  tmpValuePassword;
+        const errorObject = JSON.parse(error.message);
+        btnConfirm.setAttribute('disabled', '');
+        Object.keys(errorObject).forEach((key) => {
+            let elInput = (key === 'username') ? elUsername : elPassword;
+            let errWrapper = elInput.parentNode.querySelector('.listError');
+            errorObject[key].forEach((value) => {
+                elInput.setCustomValidity(value);
+                addErrorMessageCustom(errWrapper, value);
+            });
+            // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
+            elInput.addEventListener('focus', () => {
+                if (key === 'username') {
+                    tmpValueUsername = elInput.value;
+                } else if (key === 'password') {
+                    tmpValuePassword = elInput.value;
+                }
+            });
+            elInput.addEventListener('blur', () => {
+                const tmpValue = (key === 'username') ? tmpValueUsername : tmpValuePassword;
+                if (tmpValue !== elInput.value) {
+                    const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
+                    listLiCustomError.forEach((li) => {
+                        li.remove();
+                    });
+                    elInput.setCustomValidity('');
+                    this.checkFormReady();
+                }
+            });
+        });
     }
 
     restoreInputForm() {
