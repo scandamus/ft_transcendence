@@ -139,4 +139,4 @@ const router = async (isLogin) => {
     await replaceView(matchRoute);
 };
 
-export { addLinkPageEvClick, router };
+export { addLinkPageEvClick, router, routes };

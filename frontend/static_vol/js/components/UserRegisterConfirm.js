@@ -1,7 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { router } from '../modules/router.js';
+import { router, routes } from '../modules/router.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -36,9 +36,15 @@ export default class extends PageBase {
         `;
     }
 
-    displayInputData() {
+    async displayInputData() {
         const elUsername = document.getElementById('confirmUsername');
-        elUsername.textContent = sessionStorage.getItem('username');
+        const tmpValueUsername = sessionStorage.getItem('username');
+        if (!tmpValueUsername) {
+            history.pushState(null, null, routes.register.path);
+            await router(false);
+        } else {
+            elUsername.textContent = sessionStorage.getItem('username');
+        }
     }
 
     listenLinkBack() {
@@ -79,8 +85,6 @@ export default class extends PageBase {
                 return response.json();
             })
             .then( async () => {
-                sessionStorage.removeItem('username');
-                sessionStorage.removeItem('password');
                 history.pushState(null, null, '/register/complete');
                 await router(false);
             })
