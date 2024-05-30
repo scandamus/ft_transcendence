@@ -1,7 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { router } from '../modules/router.js';
+import { router, routes } from '../modules/router.js';
 import { addErrorMessage, addErrorMessageCustom, checkInputValid } from '../modules/form.js';
 
 export default class extends PageBase {
@@ -11,6 +11,7 @@ export default class extends PageBase {
         this.labelButton = '確認する'; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenConfirm.bind(this));
+        this.addAfterRenderHandler(this.restoreInputForm.bind(this));
     }
 
     async renderHtml() {
@@ -164,5 +165,13 @@ export default class extends PageBase {
                     });
                 });
             });
+    }
+
+    restoreInputForm() {
+        const elUsername = document.getElementById('registUsername');
+        const tmpValueUsername = sessionStorage.getItem('username');
+        if (tmpValueUsername) {
+            elUsername.value = sessionStorage.getItem('username');
+        }
     }
 }
