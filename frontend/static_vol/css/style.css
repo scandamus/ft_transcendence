@@ -237,6 +237,9 @@ hr {
 .unitButton-small {
   font-size: 1.0rem;
 }
+.unitButtonWrap {
+  text-align: center;
+}
 
 .unitButton::before,
 .unitButton::after {
@@ -658,7 +661,7 @@ input.has-input:invalid {
 }
 
 .unitTextComplete {
-  margin-top: 100px;
+  margin: 100px 0;
   padding: 0.5em;
   text-align: center;
   font-size: 1.8rem;
