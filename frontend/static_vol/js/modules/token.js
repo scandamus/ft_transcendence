@@ -17,7 +17,7 @@ const refreshAccessToken = async () => {
     const refreshToken = getToken('refreshToken');
 
     // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
-    const response = await fetch('http://localhost:8001/token/refresh/', {
+    const response = await fetch('https://localhost/token/refresh/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

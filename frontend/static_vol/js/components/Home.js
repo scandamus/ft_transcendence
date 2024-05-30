@@ -52,7 +52,7 @@ export default class extends PageBase {
             password: password
         };
 
-        fetch('http://localhost:8001/api/players/login/', {
+        fetch('https://localhost/api/players/login/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

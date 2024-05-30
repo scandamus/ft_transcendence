@@ -114,7 +114,7 @@ export default class extends PageBase {
             password: elPassword.value
         };
 
-        fetch('http://localhost:8001/api/players/validate/', {
+        fetch('https://localhost/api/players/validate/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
