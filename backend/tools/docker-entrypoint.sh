@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "Waiting for progreSQL booting..."
 for i in {30..0}; do
@@ -7,6 +7,7 @@ for i in {30..0}; do
 	    break;
     fi
     sleep 1
+    echo "wait counter: $i"
 done
 
 python manage.py makemigrations
