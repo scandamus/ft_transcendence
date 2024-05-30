@@ -35,11 +35,11 @@ const checkInputValid = (elInput) => {
     const errWrapper = elInput.parentNode.querySelector('.listError');
     const errWrapperPasswordConfirm =
         document.getElementById('registPasswordConfirm').parentNode.querySelector('.listError');
-    const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
 
     //validate OK
     const validityState = elInput.validity;
     if (validityState.valid) {
+        const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
         listLiError.forEach((li) => {
             li.remove();
         });
@@ -51,7 +51,10 @@ const checkInputValid = (elInput) => {
         //customError => data-error-customが重複しないかで判定
         if (errorType === 'customError') {
             const errorKey = elInput.validationMessage;
-            let targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === errorKey);
+            const listLiError = (errorKey === 'passwordIsNotSame') ?
+                errWrapperPasswordConfirm.querySelectorAll('li[data-error-type]') :
+                errWrapper.querySelectorAll('li[data-error-type]');
+            const targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === errorKey);
             if (validityState[errorType]) {
                 if (!targetLi) {
                     //password不一致エラーはconfirmのエラーとして表示
@@ -62,11 +65,15 @@ const checkInputValid = (elInput) => {
                     }
                 }
             } else {
+                const targetLi = (elInput.id === 'registPassword' || elInput.id === 'registPasswordConfirm') ?
+                    Array.from(errWrapperPasswordConfirm.querySelectorAll('li[data-error-type]')).find(li => li.getAttribute('data-error-custom')) :
+                    Array.from(listLiError).find(li => li.getAttribute('data-error-custom'));
                 if (targetLi) {
                     targetLi.remove();
                 }
             }
         } else { //not customError => data-error-typeで判定
+            const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
             const targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-type') === errorType);
             if (validityState[errorType]) {
                 if (!targetLi) {

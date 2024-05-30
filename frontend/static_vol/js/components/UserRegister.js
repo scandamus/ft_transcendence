@@ -87,9 +87,11 @@ export default class extends PageBase {
             && document.getElementById('registPassword').classList.contains(classHasInput)
             && document.getElementById('registPasswordConfirm').classList.contains(classHasInput)) {
             if (document.getElementById('registPassword').value !== document.getElementById('registPasswordConfirm').value) {
-                elInput.setCustomValidity('passwordIsNotSame');
+                document.getElementById('registPassword').setCustomValidity('passwordIsNotSame');
+                document.getElementById('registPasswordConfirm').setCustomValidity('passwordIsNotSame');
             } else {
-                elInput.setCustomValidity('');
+                document.getElementById('registPassword').setCustomValidity('');
+                document.getElementById('registPasswordConfirm').setCustomValidity('');
             }
         }
         //formの各input validate
