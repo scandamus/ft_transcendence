@@ -8,6 +8,7 @@ ul, ol {
 
 a {
   text-decoration: none;
+  transition: var(--transition-step);
 }
 
 a:hover {
@@ -38,6 +39,9 @@ button {
   --color-black-alpha3: rgba(0, 0, 0, 0.8);
 
   --color-navy-alpha: rgba(10, 14, 34, 0.7);
+
+  --transition-base: all 0.2s ease;
+  --transition-step: all 0.2s steps(2);
 
   font-family: "Chakra Petch", sans-serif;
   font-style: normal;
@@ -231,6 +235,7 @@ button {
   height: 100%;
   top: 0;
   left: 0;
+  transition: none;
 }
 
 .unitButton::before {
@@ -499,6 +504,20 @@ input {
   padding: 12px 0;
 }
 
+.unitFriend a:hover {
+  opacity: 1;
+}
+
+.unitFriend a .unitFriend_header::before {
+  content: ">>";
+  margin-left: 1em;
+  transition: var(--transition-step);
+}
+
+.unitFriend a:hover .unitFriend_header::before {
+  translate: 3px 0;
+}
+
 .unitFriend_header {
   display: flex;
   flex-direction: row-reverse;
@@ -509,6 +528,7 @@ input {
 .unitFriend_name {
   font-size: 1.4rem;
   word-break: break-all;
+  color: var(--color-white);
 }
 
 .unitFriend_thumb {
@@ -520,6 +540,11 @@ input {
 .unitFriend_thumb img {
   width: 100%;
   height: auto;
+  transition: var(--transition-base);
+}
+
+.unitFriend a:hover .unitFriend_thumb img {
+  scale: 1.05;
 }
 
 .unitFriendButton {

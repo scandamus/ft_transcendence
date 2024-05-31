@@ -4,7 +4,9 @@
 import PageBase from '../components/PageBase.js';
 import Home from '../components/Home.js';
 import PageList from '../components/PageList.js';
-import User from '../components/User.js';
+import Dashboard from '../components/Dashboard.js';
+import PlayerId from '../components/PlayerId.js';
+import Player from '../components/Player.js';
 import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
@@ -22,12 +24,13 @@ const routes = {
     register: {path: '/register', view: UserRegister, isProtected: false},
     registerConfirm: {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
     registerComplete: {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
-    user: {path: '/user', view: User, isProtected: true},
+    dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
     gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
     gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
     tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
     tournamentMatch: {path: '/tournament/match', view: TournamentMatch, isProtected: true},
-    //userId:  { path: '/user/:id', components: user },
+    player:  { path: '/player', view: Player, isProtected: true },
+    PlayerId:  { path: '/player/:id', view: PlayerId, isProtected: true },
 };
 
 //認証の必要なページ
@@ -36,7 +39,7 @@ const protectedRoutes = [/\/(?:user|game|tournament)\/?.*$/];
 //pathを正規表現に変換
 const pathToRegex = (path) => new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '/?$');
 
-//todo: :idのような形式の場合
+///player/:id 取得
 const getParams = (matchRoute) => {
     if (!matchRoute || !matchRoute.route || !matchRoute.route.path || !matchRoute.result) {
         return {};
@@ -103,10 +106,10 @@ const router = async (accessToken) => {
         };
     } else if (accessToken && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
-        window.history.pushState({}, '', routes.user.path);
+        window.history.pushState({}, '', routes.dashboard.path);
         matchRoute = {
-            route: routes.user,
-            result: routes.user.path
+            route: routes.dashboard,
+            result: routes.dashboard.path
         };
     }
 

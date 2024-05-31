@@ -50,10 +50,12 @@ export default class extends PageBase {
                 listFriendsWrapper.innerHTML = '';
                 const userElements = data.map(user => `
                     <section class="unitFriend">
-                        <header class="unitFriend_header">
-                            <h4 class="unitFriend_name">${user.username}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                        </header>
+                        <a href="/player/${user.username}" data-link>
+                            <header class="unitFriend_header">
+                                <h4 class="unitFriend_name">${user.username}</h4>
+                                <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                            </header>
+                        </a>
                         <p class="unitFriendButton unitFriend_button-match">
                             <button type="submit" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button>
                         </p>
