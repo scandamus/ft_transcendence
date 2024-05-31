@@ -7,7 +7,7 @@ const fetchUserList = async (isRefresh) => {
     if (accessToken === null) {
         return Promise.resolve(null);
     }
-    const response = await fetch('http://localhost:8001/api/players/userlist/', {
+    const response = await fetch('https://localhost/api/players/userlist/', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${accessToken}`

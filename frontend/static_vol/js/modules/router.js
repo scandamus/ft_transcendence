@@ -71,17 +71,18 @@ const checkProtectedRoute = (path) => {
     return (protectedRoutes.some(route => route.test(path)));
 }
 
-const router = async (isLogin) => {
-    if (isLogin instanceof PopStateEvent) {
-        isLogin = getToken('accessToken');
+const router = async (accessToken) => {
+    if (accessToken instanceof PopStateEvent) {
+        accessToken = getToken('accessToken');
     }
     const mapRoutes = Object.keys(routes).map(key => {
-    const route = routes[key];
-    return {
-        route: route,
-        result: location.pathname.match(pathToRegex(route.path))
-    };
-});
+        const route = routes[key];
+        return {
+            route: route,
+            result: location.pathname.match(pathToRegex(route.path))
+        };
+    });
+
     let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
     if (!matchRoute) {//todo:404はpage_listに移動(暫定)
         matchRoute = {
@@ -94,13 +95,13 @@ const router = async (isLogin) => {
     //非ログイン状態で要認証ページにアクセス => ログインにリダイレクト
     //ログイン状態で非認証ページにアクセス => userにリダイレクト
     //ログイン状況を問わずアクセスできるページは、現状page_listのみ
-    if (!isLogin && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
+    if (!accessToken && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
         window.history.pushState({}, '', routes.login.path);
         matchRoute = {
             route: routes.login,
             result: routes.login.path
         };
-    } else if (isLogin && matchRoute.route.isProtected === false) {
+    } else if (accessToken && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
         window.history.pushState({}, '', routes.user.path);
         matchRoute = {

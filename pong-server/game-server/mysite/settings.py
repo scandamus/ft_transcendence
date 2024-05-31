@@ -10,18 +10,29 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
+from timedelta import datetime
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+def get_env_var(var):
+    try:
+        return os.environ[var]
+    except KeyError:
+        error_msg = f'Error: {var} is not set in .env/docker-compose.yml'
+        raise ImproperlyConfigured(error_msg)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$$k5y1zm9k%%^v*sdqv=y(9#f44#l)yjxy3t3_=g-%1*a044gb'
+#SECRET_KEY = 'django-insecure-$$k5y1zm9k%%^v*sdqv=y(9#f44#l)yjxy3t3_=g-%1*a044gb'
+SECRET_KEY = get_env_var('SECRET_KEY')
+CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -33,6 +44,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'daphne',
+    'game',
+    'players',
     'pong',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -72,19 +85,41 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
+SIMPLE_JWT = {
+    'SIGNING_KEY': get_env_var('SIGNING_KEY'),
+    'ALGORITHM': 'HS256',
+ #   'ENCODE': 'utf-8',
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
+    'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
+    'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化
+    'UPDATE_LAST_LOGIN': True,
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        "TEST": {
-            "NAME": BASE_DIR / "db.sqlite3",
-        },
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': get_env_var('DB_NAME'),
+        'USER': get_env_var('DB_USER'),
+        'PASSWORD': get_env_var('DB_PASSWORD'),
+        'HOST': 'db',
+        'PORT': 5432
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#         "TEST": {
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         },
+#     }
+# }
 
 
 # Password validation
@@ -131,6 +166,33 @@ STATICFILES_DIRS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 # Daphne
 ASGI_APPLICATION = "mysite.asgi.application"
 CHANNEL_LAYERS = {
@@ -138,7 +200,9 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("redis", 6379)],
-            #"hosts": [("127.0.0.1", 6379)],
+            "symmetric_encryption_keys": [CHANNEL_SECRET_KEY],
+            "expiry": 3600,
+            'prefix': 'pong-server',
         },
     },
 }
