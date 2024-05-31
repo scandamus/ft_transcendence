@@ -8,7 +8,7 @@ const fetchUserInfo = async (isRefresh) => {
     if (accessToken === null) {
         return Promise.resolve(null);//logout状態なら何もしない
     }
-    const response = await fetch('http://localhost:8001/api/players/userinfo/', {
+    const response = await fetch('https://localhost/api/players/userinfo/', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${accessToken}`

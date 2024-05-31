@@ -31,6 +31,7 @@ def get_env_var(var):
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_env_var('SECRET_KEY')
+CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
@@ -41,6 +42,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,8 +51,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    "rest_framework_simplejwt",
+    'rest_framework_simplejwt.token_blacklist',
+    'channels',
     'players.apps.PlayersConfig',
-    'game.apps.GameConfig'
+    'game.apps.GameConfig',
     # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。
     # 'players',
     # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
@@ -79,6 +84,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://localhost:80',
     'https://localhost:443'
 ]
+
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://127.0.0.1']
 
 # クライアントからのリクエストヘッダーに含める項目をカスタマイズ
 # CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -126,6 +133,8 @@ AUTHENTICATION_BACKENDS = (
     # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+#JWT_SECRET_KEY = get_env_var('SECRET_KEY')
+
 SIMPLE_JWT = {
     'SIGNING_KEY': get_env_var('SIGNING_KEY'),
     'ALGORITHM': 'HS256',
@@ -135,6 +144,15 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
     'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化
     'UPDATE_LAST_LOGIN': True,
+}
+
+GAME_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=3),
+    'SIGNING_KEY': get_env_var('GAME_JWT_SIGNING_KEY'),
+    'ALGORITHM': 'HS256',
+#    'AUDIENCE': '',
+#    'ISSUER': 'pong-server'
 }
 
 ## ブラウザブルAPIレンダリングをOFFにする場合、下記を有効にする
@@ -151,6 +169,7 @@ SIMPLE_JWT = {
 
 WSGI_APPLICATION = 'scandamus.wsgi.application'
 
+ASGI_APPLICATION = 'scandamus.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -216,9 +235,12 @@ LOGGING = {
     'handlers': {
         'console': {
             'level': 'DEBUG',
-            'class': 'logging.StreamHandler',  # コンソールに出力
-            'stream': 'ext://sys.stdout',      # 標準出力にログを直接出力
+            'class': 'logging.StreamHandler',
         },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
     },
     'loggers': {
         'django': {
@@ -226,5 +248,23 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'django.channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+            'symmetric_encryption_keys': [CHANNEL_SECRET_KEY],
+            'expiry': 3600,
+            'prefix': 'scandamus',
+        },
+    },
+}
+

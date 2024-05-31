@@ -3,13 +3,15 @@
 import { getToken, refreshAccessToken } from './token.js';
 import { switchDisplayAccount } from './auth.js';
 import { router } from './router.js';
+import { webSocketManager } from './websocket.js';
+//import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
     const accessToken = getToken('accessToken');
     if (accessToken === null) {
         throw new Error('accessToken is invalid.');
     }
-    const response = await fetch('http://localhost:8001/api/players/logout/', {
+    const response = await fetch('https://localhost/api/players/logout/', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -41,6 +43,8 @@ const handleLogout = (ev) => {
             //token rm
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
+            webSocketManager.closeWebSocket('louunge');
+            webSocketManager.closeWebSocket('pong');
             switchDisplayAccount(null);//not return
             router(false);//not return
         })
