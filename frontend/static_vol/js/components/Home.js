@@ -3,6 +3,9 @@
 import PageBase from './PageBase.js';
 import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
+import { webSocketManager } from '../modules/websocket.js';
+import { pongHandler } from '../modules/WebsocketHandler.js';
+//import { openWebSocket } from '../modules/websocket.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -51,15 +54,16 @@ export default class extends PageBase {
             username: username,
             password: password
         };
-
+        console.log('Sending data :', data);
         fetch('https://localhost/api/players/login/', {
-            method: 'POST',
+                method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         })
             .then(response => {
+                console.log('Response status: ', response.status);
                 if (!response.ok) {
                     throw new Error('Login failed with status: ' + response.status);
                 }
@@ -68,6 +72,7 @@ export default class extends PageBase {
             .then(data => {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
+                webSocketManager.openWebSocket('lounge', pongHandler);
                 return getUserInfo();
             })
             .then((userData) => {
