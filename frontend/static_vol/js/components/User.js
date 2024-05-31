@@ -3,7 +3,7 @@
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
 import { showModal } from '../modules/modal.js';
-import { join_game, cancel_game } from '../modules/match.js';
+import { join_game } from '../modules/match.js';
 
 
 export default class extends PageBase {
