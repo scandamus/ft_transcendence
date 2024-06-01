@@ -6,7 +6,7 @@ import { initToken } from "./token.js";
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
     indicatorBar.removeEventListener('transitionend', endIndicator);
-    closeModal();
+    closeModalOnCancel();
 };
 
 //elHtmlのルート要素は`.blockModal`とする
@@ -18,9 +18,9 @@ const showModal = (elHtml) => {
 
     //キャンセルボタンにaddEventListener
     const btnCancel = document.querySelector('.blockBtnCancel_button');
-    btnCancel.addEventListener('click', closeModal);
+    btnCancel.addEventListener('click', closeModalOnCancel);
 
-    //インディケータがあれば進行、終了でcloseModal
+    //インディケータがあれば進行、終了でcloseModalOnCancel
     const indicator = document.getElementById('indicator');
     if (indicator) {
         const indicatorBar = indicator.querySelector('.unitIndicator_bar');
@@ -33,12 +33,12 @@ const showModal = (elHtml) => {
     //todo: インディケータのないモーダルは何かしら閉じるようにしておく
 }
 
-const closeModal = () => {
+const closeModalOnCancel = () => {
     initToken()
         .then((accessToken) => {
             //キャンセルボタンremoveEventListener
             const btnCancel = document.querySelector('.blockBtnCancel_button');
-            btnCancel.removeEventListener('click', closeModal);
+            btnCancel.removeEventListener('click', closeModalOnCancel);
             //indicator removeEventListener
             const indicator = document.getElementById('indicator');
             if (indicator) {
@@ -56,4 +56,4 @@ const closeModal = () => {
         });
 }
 
-export { showModal, closeModal };
+export { showModal, closeModalOnCancel };
