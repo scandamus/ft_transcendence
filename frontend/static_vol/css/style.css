@@ -441,6 +441,10 @@ input.has-input:invalid {
   width: 100%;
 }
 
+.unitFormInput_input .listAnnotation {
+  margin-top: 10px;
+}
+
 .unitFormInput_input-confirm {
   padding: 0 0.5em;
   font-size: 1.6rem;
@@ -497,6 +501,26 @@ input.has-input:invalid {
 
 .listError li:not(:last-child) {
   margin-bottom: 0.5em;
+}
+
+/* listAnnotation */
+.listAnnotation {
+  list-style: none;
+}
+
+.listAnnotation li {
+  font-size: 0.9rem;
+  margin-right: 0.5em;
+}
+
+.listAnnotation li {
+  text-shadow: none;
+  color: var(--color-white-alpha3);
+}
+
+.listAnnotation li::before {
+  content: "※";
+  margin-right: 0.2em;
 }
 
 
