@@ -46,7 +46,7 @@ const closeModal = () => {
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
             //cancel game
-            cancel_game(accessToken);
+            cancel_game();
         })
         .then(() => {
             //modal close

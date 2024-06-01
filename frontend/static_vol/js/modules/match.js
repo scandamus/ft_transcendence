@@ -19,13 +19,12 @@ const join_game = async () => {
     }
 }
 
-const cancel_game = (accessToken) => {
+const cancel_game = () => {
     console.log('cancel_game');
     try {
         console.log('Cancelling the game...');
         webSocketManager.sendWebSocketMessage('lounge', {
-            action: 'cancel',
-            token: accessToken.token
+            action: 'cancel'
         });
         console.log('Cancel request sent to backend.');
     } catch {
