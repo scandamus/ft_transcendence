@@ -1,8 +1,8 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { router, routes } from '../modules/router.js';
-import { addErrorMessage, addErrorMessageCustom, checkInputValid } from '../modules/form.js';
+import { router } from '../modules/router.js';
+import { addErrorMessageCustom, checkInputValid } from '../modules/form.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -10,7 +10,7 @@ export default class extends PageBase {
         this.setTitle('UserRegister');
         this.labelButton = '確認する'; // TODO json
         this.descUsername = ['[使用可能]半角英小文字,半角数字,記号(_)','[必須]半角英小文字,半角数字のいずれか','3〜32文字'];
-        this.descPassword = ['[使用可能]半角英数字と記号(@_#$%&!.,+*~\')',' [必須]英小文字,英大文字,数字,記号,それぞれ1文字',' 8〜24文字'];
+        this.descPassword = ['[使用可能]半角英数字と記号(@_#$%&!.,+*~\')','[必須]英小文字,英大文字,数字,記号,それぞれ1文字','8〜24文字'];
         this.descPasswordConfirm = '確認のためパスワードをもう一度入力してください';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenConfirm.bind(this));
@@ -53,6 +53,7 @@ export default class extends PageBase {
                         <input type="password" id="registPasswordConfirm" title="${this.descPasswordConfirm}" placeholder="Enter password(confirm)"
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required />
                         <ul class="listError"></ul>
+                        <ul class="listAnnotation"><li>${this.descPasswordConfirm}</li></ul>
                     </dd>
                 </dl>
                 <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton" disabled>${this.labelButton}</button>
