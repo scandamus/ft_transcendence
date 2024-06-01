@@ -6,7 +6,7 @@ import { router, routes } from '../modules/router.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('UserRegister - confirm');
+        this.setTitle('SIGN UP');
         this.labelButtonRegister = '登録する'; // TODO json
         this.labelButtonBack = '修正する';
         this.textConfirm = '下記の内容で登録します';
