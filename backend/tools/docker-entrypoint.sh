@@ -14,8 +14,8 @@ for i in {60..0}; do
     echo "wait counter: $i"
 done
 
-python3 manage.py makemigrations players game
-python3 manage.py migrate
+python manage.py makemigrations
+python manage.py migrate
 
 # userの作成
 echo """
