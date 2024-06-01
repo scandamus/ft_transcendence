@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from .models import Player
 
 # validate_username
-# 最小文字数: 3文字 / 最大文字数: 32文字 / 使用可能: アルファベット(大文字小文字)、数字、アンダースコア(_) / アンダースコアのみは不可
+# 最小文字数: 3文字 / 最大文字数: 32文字 / 使用可能: 英小文字、数字、アンダースコア(_) / アンダースコアのみは不可
 
 # validate_password
 # 最小文字数: 8文字 / 最大文字数: 24文字 / 数字: 含む / 大文字: 含む / 小文字: 含む / 記号: 含む
@@ -31,7 +31,7 @@ class CustomUsernameValidator:
 
 # CharacterTypes
 usernameCharacterTypesValidator = RegexValidator(
-    r'^(?=.*[a-zA-Z0-9])[\w_]+$',
+    r'^(?=.*[a-z0-9])[a-z0-9_]+$',
     'invalidUsernameCharacterTypesBackend',
     'invalid_username'
 )
