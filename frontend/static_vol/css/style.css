@@ -482,6 +482,7 @@ input.has-input:invalid {
   border-bottom: none;
 }
 
+/* listError */
 .listError {
   margin-top: 10px;
   padding: 0.8em 1em 0.8em 2em;
