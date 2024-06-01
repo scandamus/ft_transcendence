@@ -39,11 +39,13 @@ export default class extends PageBase {
     async displayInputData() {
         const elUsername = document.getElementById('confirmUsername');
         const tmpValueUsername = sessionStorage.getItem('username');
+        //tmpValueUsernameがなければフロー外遷移。リダイレクト
         if (!tmpValueUsername) {
             history.pushState(null, null, routes.register.path);
             await router(false);
         } else {
             elUsername.textContent = sessionStorage.getItem('username');
+            sessionStorage.setItem('isConfirm', 'true');
         }
     }
 

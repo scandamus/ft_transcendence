@@ -176,8 +176,13 @@ export default class extends PageBase {
     restoreInputForm() {
         const elUsername = document.getElementById('registUsername');
         const tmpValueUsername = sessionStorage.getItem('username');
+        const tmpValueIsConfirm = sessionStorage.getItem('isConfirm');
         if (tmpValueUsername) {
             elUsername.value = sessionStorage.getItem('username');
+        }
+        //confirmからのhistory.back();ならisConfirmを削除
+        if (tmpValueIsConfirm) {
+            sessionStorage.removeItem('isConfirm');
         }
     }
 }
