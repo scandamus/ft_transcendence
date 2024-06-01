@@ -12,7 +12,7 @@ def get_default_user():
         return None
 
 class Player(models.Model):
-    player = models.ForeignKey(
+    user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         verbose_name="プレイヤー"
@@ -63,10 +63,10 @@ class Player(models.Model):
     )
 
     def __str__(self):
-        return f"{self.player.username}"
+        return f"{self.user.username}"
 
 
 @receiver(post_save, sender=User)
 def create_player(sender, instance, created, **kwargs):
     if created:
-        Player.objects.create(player=instance)
+        Player.objects.create(user=instance)
