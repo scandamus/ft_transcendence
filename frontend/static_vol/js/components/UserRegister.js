@@ -85,8 +85,10 @@ export default class extends PageBase {
             if (btnConfirm.hasAttribute('disabled')) {
                 btnConfirm.removeAttribute('disabled');
             }
+            return true;
         } else if (!btnConfirm.hasAttribute('disabled')) {
             btnConfirm.setAttribute('disabled', '');
+            return false;
         }
     }
 
@@ -123,6 +125,9 @@ export default class extends PageBase {
         const elUsername = document.getElementById('registUsername');
         const elPassword = document.getElementById('registPassword');
         const btnConfirm = document.getElementById('btnConfirmForm');
+        if (!this.checkFormReady()) {
+            return ;
+        }
 
         const data = {
             username: elUsername.value,

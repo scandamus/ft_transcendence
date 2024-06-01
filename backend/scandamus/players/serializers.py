@@ -62,10 +62,14 @@ passwordCharacterTypesValidator = RegexValidator(
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[CustomUsernameValidator(), usernameCharacterTypesValidator],
-        required=True)
+        required=True,
+        error_messages={'blank': 'invalidUsernameBlank'}
+    )
     password = serializers.CharField(
         validators=[CustomPasswordValidator(), passwordCharacterTypesValidator],
-        write_only=True, required=True)
+        write_only=True, required=True,
+        error_messages={'blank': 'invalidPasswordBlank'}
+    )
 
     class Meta:
         model = User

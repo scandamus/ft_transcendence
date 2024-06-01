@@ -10,10 +10,13 @@ const errorMessages = {
     //for customError
     'passwordIsNotSame': 'password is not same.',
     'isExists': 'This username already exists.',
+    //以下はfront validate弾けているはずができずにbackend validateでエラーになるパターン
     'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
     'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
+    'invalidUsernameBlank': 'username is required.(required - backend)',
     'invalidPasswordLenBackend': 'password is invalid.(len - backend)',
     'invalidPasswordCharacterTypesBackend': 'password is invalid.(character types - backend)',
+    'invalidPasswordBlank': 'password is required.(required - backend)',
 };
 
 const addErrorMessage = (errWrapper, errorType) => {
