@@ -20,7 +20,7 @@ export default class extends PageBase {
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registUsername">username</label></dt>
                     <dd class="unitFormInput_input">
-                        <input type="text" id="registUsername" placeholder="Enter username" pattern="^(?=.*[a-zA-Z0-9])[\\w_]+$" minlength="3" maxlength="15" required />
+                        <input type="text" id="registUsername" placeholder="Enter username" pattern="^(?=.*[a-zA-Z0-9])[\\w_]+$" minlength="3" maxlength="32" required />
                         <ul class="listError"></ul>
                     </dd>
                 </dl>
