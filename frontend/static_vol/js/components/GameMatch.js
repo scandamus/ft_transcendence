@@ -10,7 +10,7 @@ export default class extends PageBase {
     }
 
     // async getListPlayers() {
-    //     return fetch('http://localhost:8001/api/players/')
+    //     return fetch('https://localhost/api/players/')
     //         .then(response => response.json())
     //         .then(data => {
     //             return data;
