@@ -45,7 +45,6 @@ export default class extends PageBase {
             await router(false);
         } else {
             elUsername.textContent = sessionStorage.getItem('username');
-            sessionStorage.setItem('isConfirm', 'true');
         }
     }
 
@@ -87,6 +86,7 @@ export default class extends PageBase {
                 return response.json();
             })
             .then( async () => {
+                sessionStorage.setItem('isConfirm', 'true');
                 history.pushState(null, null, '/register/complete');
                 await router(false);
             })
