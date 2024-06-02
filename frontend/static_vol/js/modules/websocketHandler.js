@@ -58,6 +58,7 @@ const loadGameContent = async (data) => {
             console.log('Token sent to pong-server, stopping further process.');
             return; // ←これを取るとpong-serverからゲームの通信が流れてきます
             // TODO: ゲーム画面に変遷してゲーム続行
+
         } else {
             console.error('WebSocket is not in OPEN state.');
         }
