@@ -21,10 +21,12 @@ export default class extends PageBase {
     }
 
     async checkRegisterFlow() {
-        const tmpValueUsername = sessionStorage.getItem('username');
         const tmpValueIsConfirm = sessionStorage.getItem('isConfirm');
         //tmpValueUsername or tmpValueIsConfirm がなければフロー外遷移。リダイレクト
-        if (!tmpValueUsername || !tmpValueIsConfirm) {
+        if (!tmpValueIsConfirm) {
+            if (sessionStorage.getItem('password')) {
+                sessionStorage.removeItem('password');
+            }
             history.pushState(null, null, routes.register.path);
             await router(false);
         } else {

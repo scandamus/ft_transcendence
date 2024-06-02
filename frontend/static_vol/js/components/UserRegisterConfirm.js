@@ -39,8 +39,9 @@ export default class extends PageBase {
     async displayInputData() {
         const elUsername = document.getElementById('confirmUsername');
         const tmpValueUsername = sessionStorage.getItem('username');
+        const tmpValuePassword = sessionStorage.getItem('password');
         //tmpValueUsernameがなければフロー外遷移。リダイレクト
-        if (!tmpValueUsername) {
+        if (!tmpValueUsername || !tmpValuePassword) {
             history.pushState(null, null, routes.register.path);
             await router(false);
         } else {
@@ -55,6 +56,7 @@ export default class extends PageBase {
     }
 
     handleBack() {
+        sessionStorage.removeItem('password');
         history.back();
     }
 
