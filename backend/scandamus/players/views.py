@@ -43,7 +43,7 @@ class ValidateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class RegistView(APIView):
+class RegisterView(APIView):
     authentication_classes = []
     permission_classes = []
 

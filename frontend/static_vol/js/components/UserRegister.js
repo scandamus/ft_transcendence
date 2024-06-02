@@ -30,27 +30,27 @@ export default class extends PageBase {
             <form id="formUserRegister" class="formUserRegister blockForm" action="" method="post">
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label">
-                        <label for="registUsername">username</label>
+                        <label for="registerUsername">username</label>
                     </dt>
                     <dd class="unitFormInput_input">
-                        <input type="text" id="registUsername" title="${this.descUsername}" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required />
+                        <input type="text" id="registerUsername" title="${this.descUsername}" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required />
                         <ul class="listError"></ul>
                         <ul class="listAnnotation">${listDescUsername}</ul>
                     </dd>
                 </dl>
                 <dl class="unitFormInput">
-                    <dt class="unitFormInput_label"><label for="registPassword">password</label></dt>
+                    <dt class="unitFormInput_label"><label for="registerPassword">password</label></dt>
                     <dd class="unitFormInput_input">
-                        <input type="password" id="registPassword" title="${this.descPassword}" placeholder="Enter password"
+                        <input type="password" id="registerPassword" title="${this.descPassword}" placeholder="Enter password"
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required />
                         <ul class="listError"></ul>
                         <ul class="listAnnotation">${listDescPassword}</ul>
                     </dd>
                 </dl>
                 <dl class="unitFormInput">
-                    <dt class="unitFormInput_label"><label for="registPasswordConfirm">password(confirm)</label></dt>
+                    <dt class="unitFormInput_label"><label for="registerPasswordConfirm">password(confirm)</label></dt>
                     <dd class="unitFormInput_input">
-                        <input type="password" id="registPasswordConfirm" title="${this.descPasswordConfirm}" placeholder="Enter password(confirm)"
+                        <input type="password" id="registerPasswordConfirm" title="${this.descPasswordConfirm}" placeholder="Enter password(confirm)"
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required />
                         <ul class="listError"></ul>
                         <ul class="listAnnotation"><li>${this.descPasswordConfirm}</li></ul>
@@ -66,15 +66,15 @@ export default class extends PageBase {
         btnConfirm.addEventListener('click', this.handleConfirm.bind(this));
         this.addListenEvent(btnConfirm, this.handleConfirm, 'click');
 
-        const elUsername = document.getElementById('registUsername');
+        const elUsername = document.getElementById('registerUsername');
         elUsername.addEventListener('blur', this.handleInput.bind(this));
         this.addListenEvent(elUsername, this.handleInput, 'blur');
 
-        const elPassword = document.getElementById('registPassword');
+        const elPassword = document.getElementById('registerPassword');
         elPassword.addEventListener('blur', this.handleInput.bind(this));
         this.addListenEvent(elPassword, this.handleInput, 'blur');
 
-        const elPasswordConfirm = document.getElementById('registPasswordConfirm');
+        const elPasswordConfirm = document.getElementById('registerPasswordConfirm');
         elPasswordConfirm.addEventListener('blur', this.handleInput.bind(this));
         this.addListenEvent(elPasswordConfirm, this.handleInput, 'blur');
     }
@@ -95,8 +95,8 @@ export default class extends PageBase {
 
     handleInput(ev) {
         const elInput = ev.target;
-        const elPassword = document.getElementById('registPassword');
-        const elPasswordConfirm = document.getElementById('registPasswordConfirm');
+        const elPassword = document.getElementById('registerPassword');
+        const elPasswordConfirm = document.getElementById('registerPasswordConfirm');
         //初回入力時、invalid styleが当たるようにclass付与
         const classHasInput = 'has-input';
         if (!elInput.classList.contains(classHasInput)) {
@@ -123,8 +123,8 @@ export default class extends PageBase {
 
     handleConfirm(ev) {
         ev.preventDefault();
-        const elUsername = document.getElementById('registUsername');
-        const elPassword = document.getElementById('registPassword');
+        const elUsername = document.getElementById('registerUsername');
+        const elPassword = document.getElementById('registerPassword');
         const btnConfirm = document.getElementById('btnConfirmForm');
         if (!this.checkFormReady()) {
             return ;
@@ -195,7 +195,7 @@ export default class extends PageBase {
     }
 
     restoreInputForm() {
-        const elUsername = document.getElementById('registUsername');
+        const elUsername = document.getElementById('registerUsername');
         const tmpValueUsername = sessionStorage.getItem('username');
         const tmpValueIsConfirm = sessionStorage.getItem('isConfirm');
         if (tmpValueUsername) {

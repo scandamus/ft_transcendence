@@ -74,7 +74,7 @@ export default class extends PageBase {
             password: sessionStorage.getItem('password')
         };
 
-        fetch('https://localhost/api/players/regist/', {
+        fetch('https://localhost/api/players/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

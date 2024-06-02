@@ -37,7 +37,7 @@ const addErrorMessageCustom = (errWrapper, errorKey) => {
 const checkInputValid = (elInput) => {
     const errWrapper = elInput.parentNode.querySelector('.listError');
     const errWrapperPasswordConfirm =
-        document.getElementById('registPasswordConfirm').parentNode.querySelector('.listError');
+        document.getElementById('registerPasswordConfirm').parentNode.querySelector('.listError');
 
     //validate OK
     const validityState = elInput.validity;
@@ -68,7 +68,7 @@ const checkInputValid = (elInput) => {
                     }
                 }
             } else {
-                const targetLi = (elInput.id === 'registPassword' || elInput.id === 'registPasswordConfirm') ?
+                const targetLi = (elInput.id === 'registerPassword' || elInput.id === 'registerPasswordConfirm') ?
                     Array.from(errWrapperPasswordConfirm.querySelectorAll('li[data-error-type]')).find(li => li.getAttribute('data-error-custom')) :
                     Array.from(listLiError).find(li => li.getAttribute('data-error-custom'));
                 if (targetLi) {
