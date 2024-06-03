@@ -248,14 +248,14 @@ class PongConsumer(AsyncWebsocketConsumer):
     
     async def start_game(self):
         logger.info(f'Starting game for match_id {self.match_id}')
+        await self.send(text_data=json.dumps({
+            'type': 'startGame',
+            'message': 'The pong match is starting!'
+        }))
         return # これを消すとゲームが始まります
         # クライアント側でonopenが発火したらループを開始する
         self.is_active = True
         if not self.ready:
             self.ready = True
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
-        
-        await self.send(text_data=json.dumps({
-            'type': 'startGame',
-            'message': 'The pong match is starting!'
-        }))
+            
