@@ -3,36 +3,17 @@
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
 import { showModal } from '../modules/modal.js';
-import { webSocketManager } from '../modules/websocket.js';
-import { pongHandler } from '../modules/WebsocketHandler.js';
-import { getValidToken } from '../modules/token.js';
+import { join_game } from '../modules/match.js';
 
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.accessToken = { token: null, error: null };
         this.labelMatch = '対戦する';
         this.labelCancel = 'キャンセル';
         this.setTitle(`USER: ${this.userName}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
-    }
-
-    async init() {
-        console.log('init in');
-        try {
-            const tokenResult = await getValidToken('accessToken');
-            console.log('tokenResult: ', tokenResult);
-            if (tokenResult.token) {
-                this.accessToken = tokenResult;
-                console.log('accessToken: ', this.accessToken.token);
-            } else {
-                console.error('Token error: ', tokenResult.error);
-            }
-        } catch (error) {
-            console.error('Error user page init: ', error);
-        }
     }
 
     async renderHtml() {
@@ -63,7 +44,6 @@ export default class extends PageBase {
     }
 
     showUserList() {
-        this.init();
         const listFriendsWrapper = document.querySelector('.listFriends');
         getUserList()
             .then(data => {
@@ -114,37 +94,11 @@ export default class extends PageBase {
                 </div>
             </section>
         `;
-        showModal(elHtml);
+
         //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-        this.join_game();
-        const btnCancel = document.querySelector('.blockBtnCancel_button');
-        btnCancel.addEventListener('click', this.cancel_game.bind(this));
-    }
-
-    async join_game() {
-        try {
-            await this.init();
-            await webSocketManager.openWebSocket('lounge', pongHandler);
-            webSocketManager.sendWebSocketMessage('lounge', {
-                action: 'join_game',
-                token: this.accessToken.token
+        join_game()
+            .then(r => {
+                showModal(elHtml);
             });
-            console.log('Request join_game sent to backend.');
-        } catch (error) {
-            console.error('Failed to open or send throught WebSocket: ', error);
-        }
-    }
-
-    async cancel_game() {
-        try {
-            console.log('Cancelling the game...');
-            webSocketManager.sendWebSocketMessage('lounge', {
-                action: 'cancel',
-                token: this.accessToken.token
-            });
-            console.log('Cancel request sent to backend.');
-        } catch {
-            console.error('Failed to send cancel request.');
-        }
     }
 }
