@@ -74,4 +74,21 @@ const getValidToken = async (nameToken) => {
     return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
 }
 
-export { getToken, refreshAccessToken, isTokenExpired, getValidToken };
+const initToken = async () => {
+    console.log('init in');
+    try {
+        const tokenResult = await getValidToken('accessToken');
+        console.log('tokenResult: ', tokenResult);
+        if (tokenResult.token) {
+            console.log('accessToken: ', tokenResult.token);
+            return tokenResult;
+        } else {
+            console.error('Token error: ', tokenResult.error);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error user page initToken: ', error);
+    }
+}
+
+export { getToken, refreshAccessToken, isTokenExpired, getValidToken, initToken };

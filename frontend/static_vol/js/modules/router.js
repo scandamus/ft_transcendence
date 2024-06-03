@@ -13,7 +13,7 @@ import GameMatch from '../components/GameMatch.js';
 import TournamentEntry from '../components/TournamentEntry.js';
 import TournamentMatch from '../components/TournamentMatch.js';
 import { getToken } from './token.js';
-import { closeModal } from './modal.js';
+import { closeModalOnCancel } from './modal.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = {
@@ -78,7 +78,7 @@ const replaceView = async (matchRoute) => {
         //todo: openModal後のフローに組み込む方がよさそう
         const elModal = document.querySelector('.blockModal');
         if (elModal) {
-            closeModal();
+            closeModalOnCancel();
         }
 
         //前画面のeventListenerをrm
@@ -134,7 +134,6 @@ const router = async (accessToken) => {
             result: routes.user.path
         };
     }
-
     await replaceView(matchRoute);
 };
 
