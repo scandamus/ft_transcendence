@@ -8,3 +8,4 @@ daphne
 channels
 channels_redis
 timedelta==2020.12.3
+requests
