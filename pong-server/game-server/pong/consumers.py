@@ -11,8 +11,8 @@ from django.contrib.auth.models import User
 from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from game.models import Match
 from django.conf import settings
+from .api_access import get_match_from_api
 #from .models import Match
 
 logger = logging.getLogger(__name__)
@@ -29,12 +29,14 @@ class PongConsumer(AsyncWebsocketConsumer):
     ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
     is_active = False
     ready = False
+    players_ids = set()
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.match_id = None
         self.room_group_name = None
-        self.user_id = None
+    #    self.user_id = None
+        self.players_id = None
         self.username = None
     #    self.authenticated = False
 
@@ -50,11 +52,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             await self.accept()
 
-            # クライアント側でonopenが発火したらループを開始する
-            self.is_active = True
-            if not self.ready:
-                self.ready = True
-                self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
+            # # クライアント側でonopenが発火したらループを開始する
+            # self.is_active = True
+            # if not self.ready:
+            #     self.ready = True
+            #     self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
 
         except Exception as e:
             logger.error(f"Error connecting: {e}")
@@ -75,9 +77,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if action == 'authenticate':
             jwt = text_data_json.get('jwt')
-            user_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
+            players_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
 
-            if not user_id or not username or not jwt_match_id:
+            if not players_id or not username or not jwt_match_id:
                 logger.error('Error occured while decoding JWT')
                 await self.send(text_data=json.dumps({
                     'type': 'authenticationFailed',
@@ -93,12 +95,18 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }))
                 return
 
-            self.user_id = int(user_id)
             self.username = username
             match = await self.get_match(self.match_id)
-            if match and await self.is_user_in_match(self.user_id, match):
+            if match and await self.is_player_in_match(players_id, match):
+                logger.info(f'player:{players_id} is in match {self.match_id}!!')
                 self.room_group_name = f'pong_{self.match_id}'
                 await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+                self.players_id = players_id
+                self.players_ids.add(players_id)
+                if len(self.players_ids) == 2: # 2人に決め打ち
+                    await self.start_game()
+                # TODO: 2人揃わない場合のタイムアウト処理
+                # クライアント側からリクエストする？
             else:
                 logger.error('Match data not found or user is not for this match')
                 self.close(code=5000)
@@ -212,26 +220,42 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             token_backend = TokenBackend(algorithm='HS256', signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
             validated_token = token_backend.decode(jwt, verify=True)
+            logger.info(f'validated_token= {validated_token}')
             user_id = validated_token['user_id']
             username = validated_token['username']
+            players_id = validated_token['players_id']
             match_id = validated_token['match_id']
-            return user_id, username, match_id
+            logger.info(f'authenticate_jwt: user_id={user_id}, username={username}, players_id={players_id}, match_id={match_id}')
+            return players_id, username, match_id
         except InvalidToken as e:
             logger.error('Error: invalid token in jwt')
             return None, None
 
-    # TODO: API経由に変更
     @database_sync_to_async
     def get_match(self, match_id):
-        try:
-            return Match.objects.get(id=match_id)
-        except Match.DoesNotExist:
-            return None
+        return get_match_from_api(match_id)
     
-    # TODO: API経由に変更
     @database_sync_to_async
-    def is_user_in_match(self, user_id, match):
-        result = user_id == match.player1.user.id or user_id == match.player2.user.id
-        logger.debug(f'Checking if user {self.username} (id: {user_id}) is in match {match.id}: {result}')
-        logger.debug(f'username: {self.username} user_id: {user_id} match.player1.user.id: {match.player1.user.id}, match.player2.user.id: {match.player2.user.id}')
-        return result
+    def is_player_in_match(self, players_id, match):
+        try:
+            player1_id = match.get('player1')
+            player2_id = match.get('player2')
+            logger.info(f'Checking if player_id:{players_id} is in the match with player1:{player1_id} or player2:{player2_id}')
+            return players_id in [player1_id, player2_id]
+        except Exception as e:
+            logger.error(f'Error: is_user_in_match {str(e)}')
+            return False
+    
+    async def start_game(self):
+        logger.info(f'Starting game for match_id {self.match_id}')
+        return # これを消すとゲームが始まります
+        # クライアント側でonopenが発火したらループを開始する
+        self.is_active = True
+        if not self.ready:
+            self.ready = True
+            self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
+        
+        await self.send(text_data=json.dumps({
+            'type': 'startGame',
+            'message': 'The pong match is starting!'
+        }))
