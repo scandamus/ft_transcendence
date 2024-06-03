@@ -40,6 +40,10 @@ for i in {30..0}; do
         echo "backend OK"
 	    break;
     fi
+    if [ $i -eq 0 ]; then
+        echo "bakcend not reachable"
+        exit 1
+    fi
     sleep 1
 done
 
@@ -48,6 +52,10 @@ for i in {30..0}; do
     if nc -z pong-server 8002; then
         echo "pong-server OK"
 	    break;
+    fi
+	if [ $i -eq 0 ]; then
+        echo "pong-server not reachable"
+        exit 1
     fi
     sleep 1
 done
