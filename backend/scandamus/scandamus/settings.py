@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware', DRFでは直接APIにPOSTアクセスするので、CSRFはOFFにする
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -138,8 +138,8 @@ AUTHENTICATION_BACKENDS = (
 SIMPLE_JWT = {
     'SIGNING_KEY': get_env_var('BACKEND_JWT_SIGNING_KEY'),
     'ALGORITHM': 'HS256',
- #   'ENCODE': 'utf-8',
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'ENCODE': 'utf-8',
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
     'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化

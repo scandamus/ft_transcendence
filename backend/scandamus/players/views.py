@@ -14,7 +14,6 @@ from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # from django.http import JsonResponse
-# from .models import UserProfile
 # from django.views.decorators.csrf import csrf_exempt
 # from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.hashers import make_password
