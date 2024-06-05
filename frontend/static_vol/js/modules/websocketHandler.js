@@ -1,6 +1,6 @@
 import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
-import { routes } from "./router.js";
+import { router, routes } from "./router.js";
 
 export const pongHandler = (event, containerId) => {
     let data;
@@ -21,7 +21,7 @@ export const pongHandler = (event, containerId) => {
     }
 }
 
-const pongGameHandler = (event, containerId) => {
+const pongGameHandler = async (event, containerId) => {
     let data;
     try {
         data = JSON.parse(event.data);
@@ -31,7 +31,7 @@ const pongGameHandler = (event, containerId) => {
     if (data.type === 'startGame') {
         console.log('game starting');
         window.history.pushState({}, null, routes.gamePlay.path);
-        window.location.reload();
+        await router(true);
     }
     if (data.type === 'error') {
         console.error(data.message);
