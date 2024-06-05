@@ -1,5 +1,6 @@
 import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
+import { routes } from "./router.js";
 
 export const pongHandler = (event, containerId) => {
     let data;
@@ -26,6 +27,11 @@ const pongGameHandler = (event, containerId) => {
         data = JSON.parse(event.data);
     } catch {
         console.error(`Error parsing data from ${containerId}: `, error);
+    }
+    if (data.type === 'startGame') {
+        console.log('game starting');
+        window.history.pushState({}, null, routes.gamePlay.path);
+        window.location.reload();
     }
     if (data.type === 'error') {
         console.error(data.message);
