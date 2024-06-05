@@ -41,8 +41,10 @@ class LoungeSession(AsyncWebsocketConsumer):
             if action == 'join_game':
                 user, error = await self.authenticate_token(token)
                 if user:
+                    player = await self.get_player_from_user(user)
                     self.players[user.username] = {
                         'user': user,
+                        'players_id': player.id,
                         'websocket': self
                     }
                     logger.info(f"user={user.username} requesting new game match")
@@ -52,7 +54,7 @@ class LoungeSession(AsyncWebsocketConsumer):
                         player2 = await self.get_player_from_user(players_list[1]['user'])
                         match = await self.create_match(player1, player2)
                         for player in players_list:
-                            game_token = await self.issue_jwt(player['user'], match.id)
+                            game_token = await self.issue_jwt(player['user'], player['players_id'], match.id)
                             await player['websocket'].send(text_data=json.dumps({
                                 'type': 'gameSession',
                                 'jwt': game_token,
@@ -92,11 +94,12 @@ class LoungeSession(AsyncWebsocketConsumer):
             return None
 
     @database_sync_to_async
-    def issue_jwt(self, user, match_id):
+    def issue_jwt(self, user, players_id, match_id):
         expire = datetime.utcnow() + timedelta(minutes=1)
         payload = {
             'user_id': user.id,
             'username': user.username,
+            'players_id': players_id,
             'match_id': match_id,
             'iat': datetime.utcnow(),
             'exp': expire,

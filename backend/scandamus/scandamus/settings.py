@@ -36,8 +36,7 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['backend', 'pong-server', 'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
 
@@ -120,6 +119,7 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'scandamus.authentication.InternalNetworkAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'players.auth.CustomJWTAuthentication',
     ],
@@ -241,6 +241,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'scandamus' : {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
         'django.channels': {
             'handlers': ['console'],

@@ -55,8 +55,7 @@ const loadGameContent = async (data) => {
                 action: 'authenticate',
                 jwt: jwt
             });
-            console.log('Token sent to pong-server, stopping further process.');
-            return; // ←これを取るとpong-serverからゲームの通信が流れてきます
+            console.log('Token sent to pong-server');
             // TODO: ゲーム画面に変遷してゲーム続行
 
         } else {
