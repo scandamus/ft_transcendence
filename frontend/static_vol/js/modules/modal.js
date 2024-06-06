@@ -2,6 +2,7 @@
 
 import { cancel_game } from "./match.js";
 import { initToken } from "./token.js";
+import { receiveRequest } from "./modalContents.js";
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -56,4 +57,12 @@ const closeModalOnCancel = () => {
         });
 }
 
-export { showModal, closeModalOnCancel };
+const contModal = {
+    receiveRequest: receiveRequest,
+};
+
+const getModalHtml = (modalType, args) => {
+    return contModal[modalType](args);
+}
+
+export { showModal, closeModalOnCancel, getModalHtml };
