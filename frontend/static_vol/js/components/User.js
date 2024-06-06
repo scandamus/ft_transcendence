@@ -9,7 +9,8 @@ import { join_game } from '../modules/match.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.labelMatch = '対戦する';
+        this.labelSendReqMatch = '対戦する';
+        this.labelReceiveReqMatch = 'accept';
         this.setTitle(`USER: ${this.userName}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
@@ -54,29 +55,31 @@ export default class extends PageBase {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <p class="unitFriendButton unitFriend_button-match">
-                            <button type="submit" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button>
+                            <button type="submit" class="unitFriendButton_sendReqMatch unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelSendReqMatch}</button>
+                            <button type="submit" class="unitFriendButton_receiveReqMatch unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelReceiveReqMatch}</button>
                         </p>
                     </section>
                   `);
                 listFriendsWrapper.innerHTML = userElements.join('');
             })
             .then(()=> {
-                this.listenRequestMatch();
+                this.listenSendReqMatch();
+                this.listenReceiveReqMatch();
             })
             .catch(error => {
                 console.error('getUserInfo failed:', error);
             })
     }
 
-    listenRequestMatch() {
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
+    listenSendReqMatch() {
+        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_sendReqMatch');
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', this.showModalMatchRequest.bind(this));
-            this.addListenEvent(btn, this.showModalMatchRequest, 'click');//todo: rm 確認
+            btn.addEventListener('click', this.showModalSendReqMatch.bind(this));
+            this.addListenEvent(btn, this.showModalSendReqMatch, 'click');//todo: rm 確認
         });
     }
 
-    showModalMatchRequest(ev) {
+    showModalSendReqMatch(ev) {
         const button = ev.target;
         const args = {
             titleModal: '対戦を申し込みました',
@@ -84,8 +87,32 @@ export default class extends PageBase {
             avatar: button.dataset.avatar,
             labelCancel: 'キャンセル',
         }
-        const elHtml = getModalHtml('receiveRequest', args);
+        const elHtml = getModalHtml('sendMatchRequest', args);
         //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
+        join_game()
+            .then(r => {
+                showModal(elHtml);
+            });
+    }
+
+    listenReceiveReqMatch() {
+        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_receiveReqMatch');
+        btnMatchRequest.forEach((btn) => {
+            btn.addEventListener('click', this.showModalReceiveReqMatch.bind(this));
+            this.addListenEvent(btn, this.showModalReceiveReqMatch, 'click');
+        });
+    }
+
+    showModalReceiveReqMatch(ev) {
+        const button = ev.target;
+        const args = {
+            titleModal: '対戦申し込みがありました',
+            username: button.dataset.name,
+            avatar: button.dataset.avatar,
+            labelAccept: 'Accept',
+            labelReject: 'Reject'
+        }
+        const elHtml = getModalHtml('receiveMatchRequest', args);
         join_game()
             .then(r => {
                 showModal(elHtml);

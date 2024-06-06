@@ -365,6 +365,20 @@ hr {
   font-size: 1.2rem;
 }
 
+/* unitListBtn */
+.unitListBtn {
+  display: flex;
+  list-style: none;
+}
+
+.unitListBtn-ar {
+  justify-content: flex-end;
+}
+
+.unitListBtn_btn:not(:last-child) {
+  margin-right: 10px;
+}
+
 /* unitIndicator */
 .unitIndicator {
   height: 30px;
@@ -822,4 +836,8 @@ input.has-input:invalid {
 .blockModal .blockBtnCancel {
   padding-bottom: 10px;
   text-align: right;
+}
+
+.blockModal .unitListBtn {
+  padding-bottom: 10px;
 }
