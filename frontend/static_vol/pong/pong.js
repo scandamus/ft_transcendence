@@ -10,6 +10,14 @@ const pongSocket = new WebSocket(
     + '/'
 );
 
+function sendSocketOpen() {
+    let data = {
+        message: 'socket_status',
+        status: true,
+    }
+    pongSocket.send(JSON.stringify(data));
+}
+
 pongSocket.onopen = function(e) {
     console.log('WebSocket is now open:', pongSocket.readyState);
     sendSocketOpen();
@@ -58,14 +66,10 @@ function updateGameObjects(ball, paddle1, paddle2, game_status) {
         console.log("Game Over");
         alert('GAME OVER');
         // ここでゲームをリセットする処理を追加するか、ページをリロードする
-        document.location.reload();
+        //document.location.reload();
+        // TODO 勝敗を記録など
     }
 }
-
-// 押されたとき
-document.addEventListener("keydown", keyDownHandler, false);
-// 離れたとき
-document.addEventListener("keyup", keyUpHandler, false);
 
 function keyDownHandler (e) {
     // send event to django websocket
@@ -73,12 +77,14 @@ function keyDownHandler (e) {
         sendKeyEvent(e.key, true);
     }
 }
+document.addEventListener("keydown", keyDownHandler, false);
 function keyUpHandler (e) {
     // send event to django websocket
     if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
         sendKeyEvent(e.key, false);
     }
 }
+document.addEventListener("keyup", keyUpHandler, false);
 
 function sendKeyEvent(key, is_pressed) {
     let data = {
@@ -89,20 +95,12 @@ function sendKeyEvent(key, is_pressed) {
     pongSocket.send(JSON.stringify(data));
 }
 
-function sendSocketOpen() {
-    let data = {
-        message: 'socket_status',
-        status: true,
-    }
-    pongSocket.send(JSON.stringify(data));
-}
-
 pongSocket.onmessage = function(e) {
     try {
         const data = JSON.parse(e.data);
-//        document.querySelector('#pong-log').value += (data.message + '\n');
+        //  document.querySelector('#pong-log').value += (data.message + '\n');
         console.log('received_data -> ', data);
-        console.log("updateGameObjects() called");
+        //console.log("updateGameObjects() called");
         updateGameObjects(data.ball, data.paddle1, data.paddle2, data.game_status);
     } catch (error) {
         console.error('Error parsing message data:', error);

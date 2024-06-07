@@ -1,6 +1,6 @@
 import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
-import { router, routes } from "./router.js";
+import { router } from "./router.js";
 
 export const pongHandler = (event, containerId) => {
     let data;
@@ -30,13 +30,11 @@ const pongGameHandler = async (event, containerId) => {
     }
     if (data.type === 'startGame') {
         console.log('game starting');
-        window.history.pushState({}, null, routes.gamePlay.path);
-        await router(true);
     }
-    if (data.type === 'error') {
+    else if (data.type === 'error') {
         console.error(data.message);
     }
-    if (data.type === 'authenticationFailed') {
+    else if (data.type === 'authenticationFailed') {
         console.error(data.error);
         refreshAccessToken();
     }
@@ -63,12 +61,12 @@ const loadGameContent = async (data) => {
             });
             console.log('Token sent to pong-server');
             // TODO: ゲーム画面に変遷してゲーム続行
-
+            window.history.pushState({}, null, `/game/play:${gameMatchId}`);
+            await router(true);
         } else {
             console.error('WebSocket is not in OPEN state.');
         }
     } catch (error) {
-        console.error('Error loadGameContent fails initializing WebSocket.');
-    
+        console.error('Error loadGameContent fails initializing WebSocket.', error);
     }
 }
