@@ -52,7 +52,8 @@ export default class extends PageBase {
         ev.preventDefault();
         const formLogin = document.getElementById('formLogin');
         if (!formLogin.checkValidity()) {
-            throw new Error(this.textLoginError1);
+            this.handleValidationError(this.textLoginError1);
+            return;
         }
 
         const username = document.getElementById('loginUsername').value;
@@ -91,7 +92,12 @@ export default class extends PageBase {
                 router(true);
             })
             .catch(error => {
-                console.error('Login failed:', error);
+                //console.error('Login failed:', error);
+                this.handleValidationError(error);
             });
+    }
+
+    handleValidationError(error) {
+        console.error('///handleValidationError:', error);
     }
 }
