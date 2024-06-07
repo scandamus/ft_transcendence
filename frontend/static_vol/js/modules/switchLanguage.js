@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
 const switchLanguage = (language) => {
-    const languageSelect = document.getElementById("languageSelect");
+    const languageSelect = document.getElementById('languageSelect');
 
     // 言語が変更されたときの処理
-    languageSelect.addEventListener("change", () => {
+    languageSelect.addEventListener('change', () => {
         const selectedLanguage = languageSelect.value;
-        console.log("!selectedLanguage! " + selectedLanguage);
-        localStorage.setItem("configLang", selectedLanguage);
+        console.log('!selectedLanguage! ' + selectedLanguage);
+        localStorage.setItem('configLang', selectedLanguage);
     });
 }
 

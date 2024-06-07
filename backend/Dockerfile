@@ -1,6 +1,8 @@
 FROM python:3.12
 
-RUN apt-get update && apt-get install -y netcat-traditional
+RUN apt-get update && \
+    apt-get install -y netcat-traditional postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY tools/requirements.txt .
 RUN pip install -r requirements.txt

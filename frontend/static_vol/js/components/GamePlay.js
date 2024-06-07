@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-import PageBase from "./PageBase.js";
+import PageBase from './PageBase.js';
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle("GamePlay");
-        this.player1 = "player1人目"; // TODO json
-        this.player2 = "player2人目";
+        this.setTitle('GamePlay');
+        this.player1 = 'player1人目'; // TODO json
+        this.player2 = 'player2人目';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
     }
