@@ -23,7 +23,7 @@ const routes = {
     registerConfirm: {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
     registerComplete: {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
     user: {path: '/user', view: User, isProtected: true},
-    gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
+    gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
     gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
     tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
     tournamentMatch: {path: '/tournament/match', view: TournamentMatch, isProtected: true},

@@ -43,7 +43,7 @@ const handleLogout = (ev) => {
             //token rm
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
-            webSocketManager.closeWebSocket('louunge');
+            webSocketManager.closeWebSocket('lounge');
             webSocketManager.closeWebSocket('pong');
             switchDisplayAccount(null);//not return
             router(false);//not return
