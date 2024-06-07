@@ -13,7 +13,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
 from .api_access import get_match_from_api
-from .consts import CANVAS_WIDTH, CANVAS_HEIGHT
+from .consts import CANVAS_WIDTH, CANVAS_HEIGHT, PADDLE_LENGTH, PADDLE_THICKNESS, PADDING, BALL_SIZE
 #from .models import Match
 
 logger = logging.getLogger(__name__)
@@ -23,9 +23,10 @@ logger = logging.getLogger(__name__)
 class PongConsumer(AsyncWebsocketConsumer):
     players = 0
     scheduled_task = None
-    paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
-    paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
-    ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
+    right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
+                          PADDLE_THICKNESS, PADDLE_LENGTH)
+    left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
+    ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
     is_active = False
     ready = False
     players_ids = set()
@@ -143,51 +144,59 @@ class PongConsumer(AsyncWebsocketConsumer):
         # キー入力によってパドルを操作
         if key and is_pressed:
             if key == "ArrowUp":
-                self.paddle1.speed = -10
+                self.right_paddle.speed = -10
             elif key == "ArrowDown":
-                self.paddle1.speed = 10
+                self.right_paddle.speed = 10
             elif key == "w":
-                self.paddle2.speed = -10
+                self.left_paddle.speed = -10
             elif key == "s":
-                self.paddle2.speed = 10
+                self.left_paddle.speed = 10
         else:
             if key == "ArrowUp":
-                self.paddle1.speed = 0
+                self.right_paddle.speed = 0
             elif key == "ArrowDown":
-                self.paddle1.speed = 0
+                self.right_paddle.speed = 0
             elif key == "w":
-                self.paddle2.speed = 0
+                self.left_paddle.speed = 0
             elif key == "s":
-                self.paddle2.speed = 0
+                self.left_paddle.speed = 0
 
         # Send message to WebSocket
         # await self.send_game_data(True, message=message, timestamp=timestamp)
 
     async def schedule_ball_update(self):
+        self.game_continue = True
         try:
-            while self.is_active:
+            while self.game_continue:
                 #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                await asyncio.sleep(1/60)  # 60Hz
-                await self.update_ball_and_send_data()
+                await asyncio.sleep(1 / 60)  # 60Hz
+                self.game_continue = await self.update_ball_and_send_data()
+                if not self.game_continue:
+                    await self.channel_layer.group_send(self.room_group_name, {
+                        "type": "send_game_over_message",
+                        "message": "GameOver",
+                    })
+
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
             # 今は特に書いていないのでpass
             pass
 
     async def update_ball_and_send_data(self):
-        self.paddle1.move("", CANVAS_HEIGHT)
-        self.paddle2.move("", CANVAS_HEIGHT)
-        self.is_active = self.ball.move(self.paddle1, self.paddle2, CANVAS_WIDTH, CANVAS_HEIGHT)
+        self.right_paddle.move()
+        self.left_paddle.move()
+        game_continue = self.ball.move(self.right_paddle, self.left_paddle)
         await self.channel_layer.group_send(self.room_group_name, {
             "type": "ball.message",
             "message": "update_ball_pos",
             "timestamp": dt.utcnow().isoformat(),
         })
+        return game_continue
 
     async def ball_message(self, data):
         message = data["message"]
         timestamp = data["timestamp"]
-        await self.send_game_data(game_status=self.is_active, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
 
     async def send_game_data(self, game_status, message, timestamp):
         await self.send(text_data=json.dumps({
@@ -198,21 +207,28 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "y": self.ball.y,
                 "dx": self.ball.dx,
                 "dy": self.ball.dy,
-                "radius": self.ball.radius,
+                "size": self.ball.size,
             },
-            "paddle1": {
-                "x": self.paddle1.x,
-                "y": self.paddle1.y,
-                "width": self.paddle1.width,
-                "height": self.paddle1.height
+            "right_paddle": {
+                "x": self.right_paddle.x,
+                "y": self.right_paddle.y,
+                "horizontal": self.right_paddle.thickness,
+                "vertical": self.right_paddle.length,
+                "score": self.right_paddle.score,
             },
-            "paddle2": {
-                "x": self.paddle2.x,
-                "y": self.paddle2.y,
-                "width": self.paddle2.width,
-                "height": self.paddle2.height
+            "left_paddle": {
+                "x": self.left_paddle.x,
+                "y": self.left_paddle.y,
+                "horizontal": self.left_paddle.thickness,
+                "vertical": self.left_paddle.length,
+                "score": self.left_paddle.score,
             },
         }))
+
+    async def send_game_over_message(self, event):
+        message = event["message"]
+        timestamp = dt.utcnow().isoformat()
+        await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
 
     @database_sync_to_async
     def auhtnticate_jwt(self, jwt):

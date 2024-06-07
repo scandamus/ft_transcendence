@@ -1,25 +1,49 @@
 import random
 import math
-from .consts import CANVAS_WIDTH, CANVAS_HEIGHT, REFLECTION_ANGLE
+from .consts import (CANVAS_WIDTH, CANVAS_HEIGHT, REFLECTION_ANGLE)
 
 
-def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier):
+def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier, orientation='vertical'):
     angle_radians = angle_degrees * (math.pi / 180)
-    cos_value = math.cos(angle_radians)
-    sin_value = math.sin(angle_radians)
-    speed = random.randint(8, 9)
-    return {
-        "dx": speed * direction_multiplier * cos_value,
-        "dy": speed * -sin_value,
-    }
+    speed = random.randint(10, 10)
+    if orientation == 'vertical':
+        cos_value = math.cos(angle_radians)
+        sin_value = math.sin(angle_radians)
+        return {
+            "dx": speed * direction_multiplier * cos_value,
+            "dy": speed * -sin_value,
+        }
+    elif orientation == 'horizontal':
+        cos_value = math.cos(angle_radians)
+        sin_value = math.sin(angle_radians)
+        return {
+            "dx": speed * -sin_value,
+            "dy": speed * direction_multiplier * cos_value,
+        }
 
 
-class Paddle:
-    def __init__(self, x, y, height, width):
+class Block:
+    def __init__(self, x, y, horizontal, vertical, orientation='vertical', position=None):
         self.x = x
         self.y = y
-        self.height = height
-        self.width = width
+        # 垂直方向のpaddleは厚さが横,長さが縦
+        # 垂直方向のpaddleは厚さが縦,長さが横
+        # これによって変数名でより視覚的にpaddleを管理できるように(二人対戦のときはデフォルトでvertical)
+        if orientation == 'vertical':
+            self.thickness = horizontal
+            self.length = vertical
+        elif orientation == 'horizontal':
+            self.thickness = vertical
+            self.length = horizontal
+        self.orientation = orientation
+        # RIGHT, LEFT, UPPER, LOWER
+        self.position = position
+
+
+class Paddle(Block):
+    # 第三引数:horizontal->横の長さ   第四引数:vertical->縦の長さ   第五引数:orientation->paddleの移動方向
+    def __init__(self, x, y, horizontal, vertical, orientation='vertical'):
+        super().__init__(x, y, horizontal, vertical, orientation)
         self.speed = 0
         self.score = 0
 
@@ -27,39 +51,38 @@ class Paddle:
         self.y += self.speed
         if self.y < 0:
             self.y = 0
-        if self.y + self.height > CANVAS_HEIGHT:
-            self.y = CANVAS_HEIGHT - self.height
+        elif self.y + self.length > CANVAS_HEIGHT:
+            self.y = CANVAS_HEIGHT - self.length
 
     def increment_score(self):
         self.score += 1
 
+    def decrement_score(self):
+        self.score -= 1
+
 
 class Ball:
     def __init__(self, x, y, size):
-        tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
+        tmp = get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.size = size
-        self.flag = True  # 衝突判定を  True: する   False: しない
+        self.flag = True  # 衝突判定を True:する False:しない
 
     def reset(self, x, y):
-        tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
+        tmp = get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
         self.dy = tmp['dy']
-        self.flag = True  # 衝突判定を  True: する   False: しない
+        self.flag = True
 
     def move(self, paddle1, paddle2):
         # 上下の壁との衝突判定 # if 上 or 下
         if self.y + self.dy < 0 or self.y + self.size + self.dy > CANVAS_HEIGHT:
             self.dy = -self.dy
-        # if self.flag:
-        #     hit_paddle = collision_detection(self, paddle1, paddle2)
-        #     if not hit_paddle:
-        #         self.flag = False
         collision_with_paddle1 = False
         collision_with_paddle2 = False
         # 衝突判定
@@ -79,40 +102,85 @@ class Ball:
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
             return paddle2.score < 10
         # 衝突判定がTrueの場合はpaddleにballを接触させるように
-        if collision_with_paddle1:
+        # x座標の操作
+        if collision_with_paddle1 == "collision_front":
+            self.reflect_ball(paddle1, "RIGHT")
             self.x = paddle1.x - self.size
-        elif collision_with_paddle2:
-            self.x = paddle2.x + paddle2.width
+        elif collision_with_paddle1 == "collision_side":
+            self.dy = -self.dy
+            self.x += self.dx
+        elif collision_with_paddle2 == "collision_front":
+            self.reflect_ball(paddle2, "LEFT")
+            self.x = paddle2.x + paddle2.thickness
+        elif collision_with_paddle2 == "collision_side":
+            self.dy = -self.dy
+            self.x += self.dx
         else:
             self.x += self.dx
-        self.y += self.dy
-
+        # y座標の操作
+        if self.y + self.dy < 0:
+            self.y = 0
+            self.dy -= self.dy
+        elif CANVAS_HEIGHT < self.y + self.size:
+            self.y = CANVAS_HEIGHT - self.size
+            self.dy -= self.dy
+        else:
+            self.y += self.dy
+        if (self.y == 0 or self.y == CANVAS_HEIGHT - self.size) and self.dy == 0:
+            tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
+            self.dx = tmp["dx"]
+            self.dy = tmp["dy"]
         return True
 
-    def collision_detection(self, paddle, paddle_side):
+    def collision_detection(self, obj, obj_side):
         next_x = self.x + self.dx
         next_y = self.y + self.dy
+        collision_type = False
+        if obj_side == "RIGHT" and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
+            if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
+                if self.x + self.size <= obj.x:
+                    collision_type = "collision_front"
+                elif obj.x < self.x + self.size:
+                    collision_type = "collision_side"
+                return collision_type
+        elif obj_side == "LEFT" and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
+            if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
+                if obj.x + obj.thickness <= self.x:
+                    collision_type = "collision_front"
+                elif self.x < obj.x:
+                    collision_type = "collision_side"
+                return collision_type
+        elif obj_side == "UPPER" and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
+            if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
+                if obj.y + obj.thickness <= self.y:
+                    collision_type = "collision_front"
+                elif self.y < obj.y + obj.thickness:
+                    collision_type = "collision_side"
+                return collision_type
+        elif obj_side == "LOWER" and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
+            if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
+                if self.y + self.size <= obj.y:
+                    collision_type = "collision_front"
+                elif obj.y < self.y + self.size:
+                    collision_type = "collision_side"
+                return collision_type
+        return collision_type
 
-        if paddle_side == "RIGHT" and paddle.x <= next_x + self.size <= paddle.x + paddle.width:
-            if paddle.y <= next_y + self.size and next_y <= paddle.y + paddle.height:
-                self.reflect_ball(paddle, paddle_side)
-                return True
-        elif paddle_side == "LEFT" and paddle.x <= next_x <= paddle.x + paddle.width:
-            if paddle.y <= next_y + self.size and next_y <= paddle.y + paddle.height:
-                self.reflect_ball(paddle, paddle_side)
-                return True
-        return False
-
-    def reflect_ball(self, paddle, paddle_side):
-        distance_from_paddle_center = (paddle.y + (paddle.height / 2)) - self.y
-        # 最大の反射角を45°に設定した場合
-        # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
-        # 角度 / paddleの大きさ で修正
-        normalize = REFLECTION_ANGLE / (paddle.height / 2)
-        angle_degrees = distance_from_paddle_center * normalize
-        # 左右で方向を逆に
-        ball_direction = 1 if paddle_side == "LEFT" else -1
-        new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction)
+    def reflect_ball(self, obj, obj_side):
+        normalize = REFLECTION_ANGLE / (obj.length / 2)
+        if obj_side == "RIGHT" or obj_side == "LEFT":
+            distance_from_paddle_center = (obj.y + (obj.length / 2)) - self.y
+            # 最大の反射角を45°に設定した場合
+            # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
+            # 角度 / paddleの大きさ で修正
+            angle_degrees = distance_from_paddle_center * normalize
+            # 左右で方向を逆に
+            ball_direction = 1 if obj_side == "LEFT" else -1
+            new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction)
+        else:
+            distance_from_paddle_center = (obj.x + (obj.length / 2)) - self.x
+            angle_degrees = distance_from_paddle_center * normalize
+            ball_direction = 1 if obj_side == "UPPER" else -1
+            new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction, "horizontal")
         self.dx = new_direction["dx"]
         self.dy = new_direction["dy"]
-
