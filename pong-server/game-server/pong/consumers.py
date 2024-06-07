@@ -13,12 +13,11 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
 from .api_access import get_match_from_api
+from .consts import CANVAS_WIDTH, CANVAS_HEIGHT
 #from .models import Match
 
 logger = logging.getLogger(__name__)
 
-CANVAS_WIDTH = 600
-CANVAS_HEIGHT = 300
 
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
