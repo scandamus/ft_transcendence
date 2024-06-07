@@ -63,7 +63,7 @@ export default class extends PageBase {
 
                 if (!game_status) {
                     console.log("Game Over");
-                    alert('GAME OVER');
+                    //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
                     // TODO 勝敗を記録など

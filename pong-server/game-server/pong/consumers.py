@@ -189,6 +189,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         })
 
         if not self.is_active:
+            logger.info("gameover")
             self.paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
             self.paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
             self.ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
@@ -203,8 +204,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send_game_data(game_status=self.is_active, message=message, timestamp=timestamp)
 
     async def send_game_data(self, game_status, message, timestamp):
-        if game_status is False:
-            logger.info("game over")
         await self.send(text_data=json.dumps({
             "message": message + f'\n{timestamp}\n\n',
             "game_status": game_status,
