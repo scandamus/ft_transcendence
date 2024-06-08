@@ -11,6 +11,7 @@ export default class extends PageBase {
         super(params);
         this.setTitle(`Dashboard`);
         this.labelMatch = '対戦する';
+        this.labelRmFriend = '友達解除';
         this.labelCancel = 'キャンセル';
         this.labelAccept = '承諾';
         this.labelReject = '拒絶';
@@ -67,7 +68,41 @@ export default class extends PageBase {
                     </section>
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">Friends</h3>
+                        <!-- ↓ showUserList() で取得 -->
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <!-- ↓ オンライン状況ごとのstyleサンプル -->
+                        <div class="blockFriends_friends listFriends listLineDivide">
+                            <section class="unitFriend unitFriend-online">
+                                <header class="unitFriend_header">
+                                    <h4 class="unitFriend_name">username</h4>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                </header>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelMatch}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
+                                </ul>
+                            </section>
+                            <section class="unitFriend unitFriend-offline">
+                                <header class="unitFriend_header">
+                                    <h4 class="unitFriend_name">username</h4>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                </header>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept" disabled>${this.labelMatch}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
+                                </ul>
+                            </section>
+                            <section class="unitFriend unitFriend-busy">
+                                <header class="unitFriend_header">
+                                    <h4 class="unitFriend_name">username</h4>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                </header>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept" disabled>${this.labelMatch}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
+                                </ul>
+                            </section>
+                        </div>
                         <p><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockMatchLog">

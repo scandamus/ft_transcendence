@@ -20,10 +20,14 @@
   --color-black-alpha: rgba(0, 0, 0, 0.5);
   --color-black-alpha2: rgba(0, 0, 0, 0.2);
   --color-black-alpha3: rgba(0, 0, 0, 0.8);
+  --color-gray: #666666;
   --color-error1: rgba(243, 0, 67, 0.7);
   --color-error1-alpha: rgba(243, 0, 67, 0.1);
   --color-error2: rgb(250, 216, 228);
   --color-error2-alpha: rgba(250, 216, 228, 0.7);
+  --color-online: var(--content-color1);
+  --color-offline: var(--color-gray);
+  --color-busy: var(--content-color2);
 
   font-family: "Chakra Petch", sans-serif;
   font-style: normal;
@@ -173,6 +177,7 @@ hr {
 /* mainContainer */
 .mainContainer {
   flex: 1 0 auto;
+  padding-bottom: 30px;
 }
 
 .mainContainerHeader {
@@ -181,7 +186,7 @@ hr {
 }
 
 .mainContainerHeader_title {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   font-size: 1.8rem;
 }
 
@@ -689,7 +694,7 @@ input.has-input:invalid {
 }
 
 .blockPlayerDetail_profile {
-  margin-bottom: 40px;
+  margin-bottom: 80px;
 }
 
 .blockPlayerDetail_detail {
@@ -730,7 +735,7 @@ input.has-input:invalid {
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
-  padding-right: 20px;
+  padding-right: 0.5em;
 }
 
 .unitFriend_name {
@@ -739,6 +744,7 @@ input.has-input:invalid {
 }
 
 .unitFriend_thumb {
+  position: relative;
   flex: 0 0 64px;
   margin-right: 14px;
   line-height: 0;
@@ -758,6 +764,37 @@ input.has-input:invalid {
 
 .unitFriendButton_button {
   word-break: keep-all;
+}
+
+.unitFriend-offline .unitFriend_thumb img,
+.unitFriend-offline .unitFriend_name {
+  opacity: 0.4;
+}
+
+.unitFriend-online .unitFriend_thumb::after,
+.unitFriend-offline .unitFriend_thumb::after,
+.unitFriend-busy .unitFriend_thumb::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--color-black-alpha);
+}
+
+.unitFriend-online .unitFriend_thumb::after {
+  background-color: var(--color-online);
+}
+
+.unitFriend-offline .unitFriend_thumb::after {
+  background-color: var(--color-offline);
+}
+
+.unitFriend-busy .unitFriend_thumb::after {
+  background-color: var(--color-busy);
 }
 
 /*.blockFriendRequest*/
