@@ -12,7 +12,6 @@ export default class extends PageBase {
         this.playerNameTmp = 'playername';
         this.setTitle(`Dashboard: ${this.playerNameTmp}`);
         this.labelMatch = '対戦する';
-        this.labelRmFriend = '友達解除';
         this.labelCancel = 'キャンセル';
         this.labelAccept = '承諾';
         this.labelReject = '拒絶';
@@ -80,7 +79,6 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelMatch}</button></li>
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend unitFriend-offline">
@@ -90,7 +88,6 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept" disabled>${this.labelMatch}</button></li>
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend unitFriend-busy">
@@ -100,7 +97,6 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept" disabled>${this.labelMatch}</button></li>
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
                                 </ul>
                             </section>
                         </div>
