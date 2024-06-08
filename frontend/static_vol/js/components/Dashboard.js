@@ -103,7 +103,7 @@ export default class extends PageBase {
                                 </ul>
                             </section>
                         </div>
-                        <p><a href="/friends" class="unitLink" data-link>View all friends</a></p>
+                        <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockMatchLog">
                         <h3 class="blockMatchLog_title unitTitle1">Tournament Log</h3>

@@ -495,6 +495,49 @@ hr {
   align-items: center;
 }
 
+/* unitLinkText */
+.unitLinkText {
+
+}
+
+.unitLinkText a {
+  color: var(--color-white);
+}
+
+.unitLinkText a:hover {
+  /*text-shadow: -0.06em -0.06em var(--content-color1), 0.05em 0.07em var(--content-color2);*/
+  animation: 0.2s ease-out linkHover1;
+  opacity: 1;
+}
+
+.unitLinkText a::after {
+  content: ">";
+  display: inline-block;
+  margin-left: 0.3em;
+  transition: translate ease 0.1s;
+}
+
+.unitLinkText a:hover::after {
+  translate: 0.1em 0;
+}
+
+.unitLinkText-right {
+  text-align: right;
+}
+
+@keyframes linkHover1 {
+  0% {
+    text-shadow: 0.06em 0.06em var(--content-color1), -0.05em -0.07em var(--content-color2);
+  }
+  50% {
+    text-shadow: 0.14em 0.06em var(--content-color1), -0.14em -0.07em var(--content-color2);
+  }
+  100% {
+    text-shadow: 0.06em 0.06em var(--content-color1), -0.05em -0.07em var(--content-color2);
+  }
+}
+
+
 /* unitIndicator */
 .unitIndicator {
   height: 30px;
@@ -718,6 +761,10 @@ input.has-input:invalid {
 
 .blockFriends {
   margin-bottom: 50px;
+}
+
+.blockFriends_link {
+  font-size: 1.3rem;
 }
 
 .listFriends {
