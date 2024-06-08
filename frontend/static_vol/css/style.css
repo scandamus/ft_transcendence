@@ -308,6 +308,66 @@ hr {
   content: normal;
 }
 
+.unitButtonReject {
+  position: relative;
+  margin-left: 10px;
+  padding: 0.2em 0.8em;
+  background-color: transparent;
+  border: none;
+  text-shadow:
+          0.06em 0.06em var(--content-color1),
+          -0.05em -0.07em var(--content-color2);
+  font-size: 1.1rem;
+  color: var(--color-white);
+}
+
+.unitButtonReject::before,
+.unitButtonReject::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  translate: 0 0;
+  border: 1px solid var(--color-error1);
+}
+
+.unitButtonReject:hover::before {
+  animation: 0.4s ease-out btnHover3;
+}
+
+.unitButtonReject:hover::after {
+  animation: 0.4s ease-out btnHover4;
+}
+
+@keyframes btnHover3 {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 2px 2px;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+@keyframes btnHover4 {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: -1px -1px;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+
 /* unitTitle */
 .unitTitle1 {
   position: relative;
@@ -422,6 +482,12 @@ hr {
   display: block;
   padding: 0.3em 0;
   text-align: center;
+}
+
+.unitListBtn-horizontal {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 /* unitIndicator */

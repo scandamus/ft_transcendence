@@ -38,36 +38,37 @@ export default class extends PageBase {
                                     <h4 class="unitFriend_name">username</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
-                                <p class="unitFriendButton unitFriend_button-match">
-                                    <button type="button" class="unitFriendButton_matchRequest unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">${this.labelAccept}</button>
-                                    <button type="button" class="unitFriendButton_matchRequest unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">${this.labelReject}</button>
-                                </p>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelAccept}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelReject}</button></li>
+                                </ul>
                             </section>
                             <section class="unitFriend">
                                 <header class="unitFriend_header">
                                     <h4 class="unitFriend_name">username</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
-                                <p class="unitFriendButton unitFriend_button-match">
-                                    <button type="button" class="unitFriendButton_matchRequest unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">${this.labelAccept}</button>
-                                    <button type="button" class="unitFriendButton_matchRequest unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">${this.labelReject}</button>
-                                </p>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelAccept}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelReject}</button></li>
+                                </ul>
                             </section>
                             <section class="unitFriend">
                                 <header class="unitFriend_header">
                                     <h4 class="unitFriend_name">username</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
-                                <p class="unitFriendButton unitFriend_button-match">
-                                    <button type="button" class="unitFriendButton_matchRequest unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">${this.labelAccept}</button>
-                                    <button type="button" class="unitFriendButton_matchRequest unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">${this.labelReject}</button>
-                                </p>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelAccept}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelReject}</button></li>
+                                </ul>
                             </section>
                         </div>
                     </section>
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">Friends</h3>
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <p><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockMatchLog">
                         <h3 class="blockMatchLog_title unitTitle1">Tournament Log</h3>
