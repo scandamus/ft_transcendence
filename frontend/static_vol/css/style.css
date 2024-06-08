@@ -80,6 +80,7 @@ hr {
           radial-gradient(circle, rgba(120, 130, 130, 1), rgba(60, 70, 70, 1) 80%),
           repeating-linear-gradient(0deg, #a8a8a8, #a8a8a8 2px, transparent 2px, transparent 5px);
   background-color: #3c4748;
+  background-attachment: fixed;
   overflow: hidden;
 }
 
@@ -181,7 +182,7 @@ hr {
 }
 
 .mainContainerHeader {
-  padding-top: 60px;
+  padding-top: 80px;
   text-align: center;
 }
 
@@ -629,9 +630,6 @@ input.has-input:invalid {
   line-height: 0;
 }
 
-.thumb img {
-  border-radius: 50%;
-}
 
 /* list */
 .listButton {

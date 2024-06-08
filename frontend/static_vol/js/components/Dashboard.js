@@ -9,7 +9,8 @@ import { join_game } from '../modules/match.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle(`Dashboard`);
+        this.playerNameTmp = 'playername';
+        this.setTitle(`Dashboard: ${this.playerNameTmp}`);
         this.labelMatch = '対戦する';
         this.labelRmFriend = '友達解除';
         this.labelCancel = 'キャンセル';
@@ -75,7 +76,7 @@ export default class extends PageBase {
                             <section class="unitFriend unitFriend-online">
                                 <header class="unitFriend_header">
                                     <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[ONLINE]" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelMatch}</button></li>
@@ -85,7 +86,7 @@ export default class extends PageBase {
                             <section class="unitFriend unitFriend-offline">
                                 <header class="unitFriend_header">
                                     <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[OFFLINE]" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept" disabled>${this.labelMatch}</button></li>
@@ -95,7 +96,7 @@ export default class extends PageBase {
                             <section class="unitFriend unitFriend-busy">
                                 <header class="unitFriend_header">
                                     <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[BUSY]" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept" disabled>${this.labelMatch}</button></li>
@@ -109,16 +110,12 @@ export default class extends PageBase {
                         <h3 class="blockMatchLog_title unitTitle1">Tournament Log</h3>
                         <ul class="blockMatchLog_log listMatchLog listLineDivide">
                             <li class="listMatchLog_item"><strong>RANK: 4</strong> <span>(2024/4/2 tournament52)</span></li>
-                            <li class="listMatchLog_item"><strong>RANK: 6</strong> <span>(2024/4/1 tournament45)</span></li>
-                            <li class="listMatchLog_item"><strong>RANK: 4</strong> <span>(2024/3/24 tournament42)</span></li>
                         </ul>
                     </section>
                     <section class="blockMatchLog">
                         <h3 class="blockMatchLog_title unitTitle1">Match Log</h3>
                         <ul class="blockMatchLog_log listMatchLog listLineDivide">
                             <li class="listMatchLog_item"><strong>RANK: 4</strong> <span>(2024/4/2 tournament52)</span></li>
-                            <li class="listMatchLog_item"><strong>RANK: 6</strong> <span>(2024/4/1 tournament45)</span></li>
-                            <li class="listMatchLog_item"><strong>RANK: 4</strong> <span>(2024/3/24 tournament42)</span></li>
                         </ul>
                     </section>
                 </div>
