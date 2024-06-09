@@ -38,8 +38,8 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -48,8 +48,8 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -58,8 +58,8 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
                                 </ul>
                             </section>
                         </div>
@@ -73,7 +73,7 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -82,7 +82,7 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -91,7 +91,7 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -100,7 +100,7 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -109,7 +109,7 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -118,7 +118,7 @@ export default class extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnAccept">${this.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
                         </div>
@@ -144,8 +144,8 @@ export default class extends PageBase {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="submit" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
+                            <li><button type="button" class="unitFriendButton_matchReject unitButtonReject btnReject">${this.labelRmFriend}</button></li>
                         </ul>
                     </section>
                   `);
@@ -177,7 +177,7 @@ export default class extends PageBase {
                     <p class="blockOpponent_thumb"><img src="${button.dataset.avatar}" alt="" width="200" height="200"></p>
                 </section>
                 <p class="blockBtnCancel">
-                    <button type="submit" class="blockBtnCancel_button unitButton unitButton-small">${this.labelCancel}</button>
+                    <button type="button" class="blockBtnCancel_button unitButton unitButton-small">${this.labelCancel}</button>
                 </p>
                 <div id="indicator" class="blockModal_indicator unitIndicator">
                     <div class="unitIndicator_bar"></div>
