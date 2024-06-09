@@ -2,6 +2,7 @@
 
 import { cancel_game } from "./match.js";
 import { initToken } from "./token.js";
+import * as mc from "./modalContents.js";
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -18,7 +19,22 @@ const showModal = (elHtml) => {
 
     //キャンセルボタンにaddEventListener
     const btnCancel = document.querySelector('.blockBtnCancel_button');
-    btnCancel.addEventListener('click', closeModalOnCancel);
+    if (btnCancel) {
+        btnCancel.addEventListener('click', closeModalOnCancel);
+    }
+
+    //AcceptボタンにaddEventListener
+    const btnAccept = document.querySelector('.blockBtnAccept_button');
+    if (btnAccept) {
+        btnAccept.addEventListener('click', closeModalOnAccept);
+    }
+
+    //RejectボタンにaddEventListener
+    const btnReject = document.querySelector('.blockBtnReject_button');
+    if (btnReject) {
+        //todo: Reject特化の関数が必要か検討
+        btnReject.addEventListener('click', closeModalOnCancel);
+    }
 
     //インディケータがあれば進行、終了でcloseModalOnCancel
     const indicator = document.getElementById('indicator');
@@ -36,9 +52,15 @@ const showModal = (elHtml) => {
 const closeModalOnCancel = () => {
     initToken()
         .then((accessToken) => {
-            //キャンセルボタンremoveEventListener
+            //btnCancel, btnReject removeEventListener
             const btnCancel = document.querySelector('.blockBtnCancel_button');
-            btnCancel.removeEventListener('click', closeModalOnCancel);
+            if (btnCancel) {
+                btnCancel.removeEventListener('click', closeModalOnCancel);
+            }
+            const btnReject = document.querySelector('.blockBtnReject_button');
+            if (btnReject) {
+                btnReject.addEventListener('click', closeModalOnCancel);
+            }
             //indicator removeEventListener
             const indicator = document.getElementById('indicator');
             if (indicator) {
@@ -49,11 +71,40 @@ const closeModalOnCancel = () => {
             cancel_game();
         })
         .then(() => {
-            //modal close
-            const elModal = document.getElementById('wrapModal');
-            elModal.classList.remove('is-show');
-            elModal.innerHTML = '';
+            closeModal();
         });
 }
 
-export { showModal, closeModalOnCancel };
+const closeModalOnAccept = () => {
+    initToken()
+        .then((accessToken) => {
+            //AcceptボタンremoveEventListener
+            const btnAccept = document.querySelector('.blockBtnAccept_button');
+            btnAccept.removeEventListener('click', closeModalOnAccept);
+            //indicator removeEventListener
+            const btnReject = document.querySelector('.blockBtnReject_button');
+            btnReject.addEventListener('click', closeModalOnCancel);
+            //todo:start game
+            console.log('start game');
+        })
+        .then(() => {
+            closeModal();
+        });
+}
+
+const closeModal = () => {
+    const elModal = document.getElementById('wrapModal');
+    elModal.classList.remove('is-show');
+    elModal.innerHTML = '';
+}
+
+const contModal = {
+    sendMatchRequest: mc.sendMatchRequest,
+    receiveMatchRequest: mc.receiveMatchRequest,
+};
+
+const getModalHtml = (modalType, args) => {
+    return contModal[modalType](args);
+}
+
+export { showModal, closeModalOnCancel, getModalHtml };

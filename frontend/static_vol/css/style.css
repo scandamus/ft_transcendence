@@ -469,6 +469,7 @@ hr {
 
 /* unitListBtn */
 .unitListBtn {
+  /*display: flex;*/
   list-style: none;
 }
 
@@ -495,6 +496,14 @@ hr {
   justify-content: flex-end;
   align-items: center;
 }
+
+.unitListBtn-horizontal li:not(:last-child) {
+  margin-right: 10px;
+}
+
+/*.unitListBtn-ar {*/
+/*  justify-content: flex-end;*/
+/*}*/
 
 /* unitLinkText */
 .unitLinkText {
@@ -537,7 +546,6 @@ hr {
     text-shadow: 0.06em 0.06em var(--content-color1), -0.05em -0.07em var(--content-color2);
   }
 }
-
 
 /* unitIndicator */
 .unitIndicator {
@@ -1106,4 +1114,8 @@ input.has-input:invalid {
 .blockModal .blockBtnCancel {
   padding-bottom: 10px;
   text-align: right;
+}
+
+.blockModal .unitListBtn {
+  padding-bottom: 10px;
 }
