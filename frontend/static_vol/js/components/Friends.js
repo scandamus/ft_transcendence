@@ -44,7 +44,7 @@ export default class extends PageBase {
                             </section>
                             <section class="unitFriend">
                                 <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
+                                    <h4 class="unitFriend_name">01234567890123456789012345678901</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
@@ -54,7 +54,7 @@ export default class extends PageBase {
                             </section>
                             <section class="unitFriend">
                                 <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
+                                    <h4 class="unitFriend_name">012</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
@@ -78,7 +78,7 @@ export default class extends PageBase {
                             </section>
                             <section class="unitFriend">
                                 <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
+                                    <h4 class="unitFriend_name">01234567890123456789012345678901</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
@@ -87,7 +87,7 @@ export default class extends PageBase {
                             </section>
                             <section class="unitFriend">
                                 <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
+                                    <h4 class="unitFriend_name">012</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
@@ -138,26 +138,6 @@ export default class extends PageBase {
             .then(data => {
                 listFriendsWrapper.innerHTML = '';
                 const userElements = data.map(user => `
-                    <section class="unitFriend">
-                        <header class="unitFriend_header">
-                            <h4 class="unitFriend_name">${user.username}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                        </header>
-                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="submit" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
-                        </ul>
-                    </section>
-                    <section class="unitFriend">
-                        <header class="unitFriend_header">
-                            <h4 class="unitFriend_name">${user.username}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                        </header>
-                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="submit" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButtonReject btnReject">${this.labelRmFriend}</button></li>
-                        </ul>
-                    </section>
                     <section class="unitFriend">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${user.username}</h4>
