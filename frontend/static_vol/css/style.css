@@ -899,6 +899,36 @@ input.has-input:invalid {
   font-size: 1.2rem;
 }
 
+/* Friends */
+.blockUsers {
+
+}
+
+.blockUsers_column {
+
+}
+
+.blockUsers_column .blockFriends_friends {
+  overflow-y: scroll;
+  height: 40vh;
+}
+
+@media screen and (min-width: 768px) {
+  .blockUsers {
+    display: flex;
+    justify-content: space-between
+  }
+
+  .blockUsers_column {
+    flex: 0 0 calc(50% - 20px);
+  }
+
+  .blockUsers_column .blockFriends_friends {
+    overflow-y: visible;
+    height: inherit;
+  }
+}
+
 /*UserRegister*/
 .formUserRegister {
   width: 70%;
