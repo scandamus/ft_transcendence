@@ -680,11 +680,13 @@ input.has-input:invalid {
   margin: 0 10px;
 }
 
+.listLineDivide > div,
 .listLineDivide > li,
 .listLineDivide > section {
   border-bottom: 2px dotted var(--color-white-alpha2);
 }
 
+.listLineDivide > div:last-child,
 .listLineDivide > li:last-child,
 .listLineDivide > section:last-child {
   border-bottom: none;
@@ -982,6 +984,39 @@ input.has-input:invalid {
   padding: 0.5em;
   text-align: center;
   font-size: 1.8rem;
+}
+
+/* unitMatch */
+.unitMatch {
+  padding: 10px 0;
+}
+
+.unitMatch_list {
+  display: flex;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.unitPlayer {
+  flex: 1 0 50%;
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.unitPlayer_thumb {
+  flex: 0 0 42px;
+  margin-right: 8px;
+  line-height: 0;
+}
+
+.unitPlayer_thumb img {
+  width: 100%;
+  height: auto;
+}
+
+.unitPlayer_name {
+  font-size: 1.3rem;
 }
 
 /* GamePlay */
