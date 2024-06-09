@@ -125,6 +125,10 @@ export default class extends PageBase {
                     </section>
                 </div>
             </div>
+            <ol class="breadcrumb">
+            <li><a href="/">dashboard</a></li>
+            <li>Friends</li>
+            </ol>
         `;
     }
 

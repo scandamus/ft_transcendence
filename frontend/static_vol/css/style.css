@@ -630,6 +630,35 @@ input.has-input:invalid {
   line-height: 0;
 }
 
+/* .breadcrumb */
+.breadcrumb {
+  display: flex;
+  padding: 0 1em;
+  list-style: none;
+  background: var(--color-black-alpha2);
+  line-height: 2.2;
+}
+
+/*.breadcrumb li:first-child::before {*/
+/*  content: "■";*/
+/*  margin-right: 0.4em;*/
+/*}*/
+
+.breadcrumb li:not(:last-child)::after {
+  content: ">";
+  margin: 0 0.6em;
+}
+
+.breadcrumb a {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+.breadcrumb a:hover {
+  animation: 0.2s ease-out linkHover1;
+  opacity: 1;
+}
+
 
 /* list */
 .listButton {
