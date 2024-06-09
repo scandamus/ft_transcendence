@@ -2,8 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
-import { showModal, getModalHtml } from '../modules/modal.js';
-import { join_game } from '../modules/match.js';
+import { showModalMatchRequest } from '../modules/modal.js';
 
 
 export default class extends PageBase {
@@ -12,7 +11,6 @@ export default class extends PageBase {
         this.playerNameTmp = 'playername';
         this.setTitle(`Dashboard: ${this.playerNameTmp}`);
         this.labelMatch = '対戦する';
-        this.labelCancel = 'キャンセル';
         this.labelAccept = '承諾';
         this.labelReject = '拒絶';
         //afterRenderにmethod追加
@@ -148,24 +146,8 @@ export default class extends PageBase {
     listenRequestMatch() {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', this.showModalMatchRequest.bind(this));
-            this.addListenEvent(btn, this.showModalMatchRequest, 'click');//todo: rm 確認
+            btn.addEventListener('click', showModalMatchRequest.bind(this));
+            this.addListenEvent(btn, showModalMatchRequest, 'click');//todo: rm 確認
         });
-    }
-
-    showModalMatchRequest(ev) {
-        const button = ev.target;
-        const args = {
-            titleModal: '対戦を申し込みました',
-            username: button.dataset.name,
-            avatar: button.dataset.avatar,
-            labelCancel: 'キャンセル',
-        }
-        const elHtml = getModalHtml('sendMatchRequest', args);
-        //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-        join_game()
-            .then(r => {
-                showModal(elHtml);
-            });
     }
 }

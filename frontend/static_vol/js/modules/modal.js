@@ -1,6 +1,6 @@
 'use strict';
 
-import { cancel_game } from "./match.js";
+import { cancel_game, join_game } from "./match.js";
 import { initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 
@@ -107,4 +107,38 @@ const getModalHtml = (modalType, args) => {
     return contModal[modalType](args);
 }
 
-export { showModal, closeModalOnCancel, getModalHtml };
+
+
+const showModalMatchRequest = (ev) => {
+    const button = ev.target;
+    const args = {
+        titleModal: '対戦を申し込みました',
+        username: button.dataset.name,
+        avatar: button.dataset.avatar,
+        labelCancel: 'キャンセル',
+    }
+    const elHtml = getModalHtml('sendMatchRequest', args);
+    //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
+    join_game()
+        .then(r => {
+            showModal(elHtml);
+        });
+}
+
+const showModalReceiveReqMatch = (ev) => {
+    const button = ev.target;
+    const args = {
+        titleModal: '対戦申し込みがありました',
+        username: button.dataset.name,
+        avatar: button.dataset.avatar,
+        labelAccept: 'Accept',
+        labelReject: 'Reject'
+    }
+    const elHtml = getModalHtml('receiveMatchRequest', args);
+    join_game()
+        .then(r => {
+            showModal(elHtml);
+        });
+}
+
+export { showModal, closeModalOnCancel, getModalHtml, showModalMatchRequest, showModalReceiveReqMatch };
