@@ -101,6 +101,8 @@ const closeModal = () => {
 const contModal = {
     sendMatchRequest: mc.sendMatchRequest,
     receiveMatchRequest: mc.receiveMatchRequest,
+    waitForOpponentDual: mc.waitForOpponentDual,
+    waitForOpponentQuad: mc.waitForOpponentQuad,
 };
 
 const getModalHtml = (modalType, args) => {
@@ -141,4 +143,18 @@ const showModalReceiveReqMatch = (ev) => {
         });
 }
 
-export { showModal, closeModalOnCancel, getModalHtml, showModalMatchRequest, showModalReceiveReqMatch };
+const showModalWaitForOpponent = (ev, gameType) => {
+    // const button = ev.target;
+    const args = {
+        titleModal: 'Waiting...',
+        labelCancel: 'キャンセル'
+    }
+    const modalTypeForGame = (gameType === 'dual') ? 'waitForOpponentDual' : 'waitForOpponentQuad';
+    const elHtml = getModalHtml(modalTypeForGame, args);
+    join_game()
+        .then(r => {
+            showModal(elHtml);
+        });
+}
+
+export { showModal, closeModalOnCancel, getModalHtml, showModalMatchRequest, showModalReceiveReqMatch, showModalWaitForOpponent };

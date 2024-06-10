@@ -1,8 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { getUserList } from "../modules/users.js";
-import { showModalMatchRequest } from '../modules/modal.js';
+import { showModalWaitForOpponent } from "../modules/modal.js";
 
 export default class extends PageBase {
     constructor(params) {
@@ -12,6 +11,8 @@ export default class extends PageBase {
         this.labelCreateRoom = 'ルーム作成';
         this.labelDualGame = '2人対戦';
         this.labelQuadGame = '4人対戦';
+        //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.listenCreateRoom.bind(this));
     }
 
     async renderHtml() {
@@ -19,8 +20,8 @@ export default class extends PageBase {
             <div class="blockUsers">
                 <form class="formCreateRoom blockForm unitBox" action="" method="post">
                     <ul class="formCreateRoom_list blockForm_list">
-                        <li><input type="radio" id="dualGame" name="gameType" value="${this.labelDualGame}" checked /><label for="dualGame">${this.labelDualGame}</label></li>
-                        <li><input type="radio" id="quadGame" name="gameType" value="${this.labelQuadGame}" /><label for="quadGame">${this.labelQuadGame}</label></li>
+                        <li><input type="radio" id="dualGame" name="gameType" value="dual" checked /><label for="dualGame">${this.labelDualGame}</label></li>
+                        <li><input type="radio" id="quadGame" name="gameType" value="quad" /><label for="quadGame">${this.labelQuadGame}</label></li>
                     </ul>
                     <p class="formCreateRoom_button blockForm_button"><button type="submit" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
                 </form>
@@ -198,5 +199,19 @@ export default class extends PageBase {
             <li>Lounge</li>
             </ol>
         `;
+    }
+
+    listenCreateRoom() {
+        const btnCreateRoom = document.getElementById('btnCreateRoom');
+        btnCreateRoom.addEventListener('click', this.handleCreateRoom.bind(this));
+        this.addListenEvent(btnCreateRoom, this.handleCreateRoom, 'click');
+    }
+
+    handleCreateRoom(ev) {
+        ev.preventDefault();
+        //todo: ルーム作成し、モーダル開いて対戦相手が現れるのを待機
+        console.log('handleCreateRoom');
+        const gameType = document.querySelector('input[name="gameType"]:checked').value;
+        showModalWaitForOpponent(ev, gameType);
     }
 }

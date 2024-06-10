@@ -31,4 +31,46 @@ const receiveMatchRequest = (args) => `
     </section>
 `;
 
-export { sendMatchRequest, receiveMatchRequest };
+const waitForOpponentDual = (args) => `
+    <section class="blockModal">
+        <h2 class="blockModal_title">${args.titleModal}</h2>
+        <section class="blockOpponent">
+            <h4 class="blockOpponent_name">???</h4>
+            <p class="blockOpponent_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="200" height="200"></p>
+        </section>
+        <p class="blockBtnCancel">
+            <button type="button" class="blockBtnCancel_button unitButton unitButton-small">${args.labelCancel}</button>
+        </p>
+        <div id="indicator" class="blockModal_indicator unitIndicator">
+            <div class="unitIndicator_bar"></div>
+        </div>
+    </section>
+`;
+
+const waitForOpponentQuad = (args) => `
+    <section class="blockModal">
+        <h2 class="blockModal_title">${args.titleModal}</h2>
+        <div class="blockOpponentWrap">
+            <section class="blockOpponent">
+                <h4 class="blockOpponent_name">???</h4>
+                <p class="blockOpponent_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="200" height="200"></p>
+            </section>
+            <section class="blockOpponent">
+                <h4 class="blockOpponent_name">???</h4>
+                <p class="blockOpponent_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="200" height="200"></p>
+            </section>
+            <section class="blockOpponent">
+                <h4 class="blockOpponent_name">???</h4>
+                <p class="blockOpponent_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="200" height="200"></p>
+            </section>
+        </div>
+        <p class="blockBtnCancel">
+            <button type="button" class="blockBtnCancel_button unitButton unitButton-small">${args.labelCancel}</button>
+        </p>
+        <div id="indicator" class="blockModal_indicator unitIndicator">
+            <div class="unitIndicator_bar"></div>
+        </div>
+    </section>
+`;
+
+export { sendMatchRequest, receiveMatchRequest, waitForOpponentDual, waitForOpponentQuad };

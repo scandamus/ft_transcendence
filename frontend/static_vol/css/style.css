@@ -1154,11 +1154,20 @@ input.has-input:invalid {
   text-align: center;
 }
 
+.blockModal .blockOpponentWrap {
+  display: flex;
+  justify-content: center;
+}
+
 .blockModal .blockOpponent {
   display: flex;
   flex-direction: column-reverse;
   padding: 50px 0;
   text-align: center;
+}
+
+.blockModal .blockOpponent + .blockOpponent {
+  margin-left: 20px;
 }
 
 .blockModal .blockOpponent_name {
