@@ -20,24 +20,27 @@ logger = logging.getLogger(__name__)
 CANVAS_WIDTH = 600
 CANVAS_HEIGHT = 300
 
+
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
-    paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
-    paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
-    ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
-    is_active = False
-    scheduled_task = None
-    ready = False
-    players_ids = set()
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.match_id = None
         self.room_group_name = None
-    #    self.user_id = None
+        #self.user_id = None
         self.players_id = None
         self.username = None
-    #    self.authenticated = False
+        #self.authenticated = False
+        self.is_active = False
+
+        self.paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
+        self.paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
+        self.ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
+        self.is_active = False
+        self.scheduled_task = None
+        self.ready = False
+        self.players_ids = set()
 
     async def connect(self):
         try:
@@ -61,15 +64,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f"Error connecting: {e}")
 
     async def disconnect(self, close_code):
+        return  # ここを消すと中断するように
         # Leave room group
         self.is_active = False
         if self.scheduled_task:
             self.scheduled_task.cancel()
         if not self.room_group_name:
             self.room_group_name = f'pong_{self.match_id}'
-        await self.channel_layer.group_discard(
-            self.room_group_name, self.channel_name
-        )
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data=None, bytes_data=None):
@@ -103,8 +105,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.room_group_name = f'pong_{self.match_id}'
                 await self.channel_layer.group_add(self.room_group_name, self.channel_name)
                 self.players_id = players_id
-                self.players_ids.add(players_id)
-                if len(self.players_ids) == 2: # 2人に決め打ち
+                global players_ids
+                players_ids.add(players_id)
+                if len(players_ids) == 2: # 2人に決め打ち
                     await self.start_game()
                 # TODO: 2人揃わない場合のタイムアウト処理
                 # クライアント側からリクエストする？
@@ -179,6 +182,9 @@ class PongConsumer(AsyncWebsocketConsumer):
             pass
 
     async def update_ball_and_send_data(self):
+        self.paddle1 = paddle1
+        self.paddle2 = paddle2
+        self.ball = ball
         self.paddle1.move("", CANVAS_HEIGHT)
         self.paddle2.move("", CANVAS_HEIGHT)
         self.is_active = self.ball.move(self.paddle1, self.paddle2, CANVAS_WIDTH, CANVAS_HEIGHT)
@@ -190,12 +196,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if not self.is_active:
             logger.info("gameover")
-            self.paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
-            self.paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
-            self.ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
-            self.is_active = False
-            self.scheduled_task = None
-            self.ready = False
 
 
     async def ball_message(self, data):
@@ -268,7 +268,17 @@ class PongConsumer(AsyncWebsocketConsumer):
         # return # これを消すとゲームが始まります
         # クライアント側でonopenが発火したらループを開始する
         self.is_active = True
-        if not self.ready:
-            self.ready = True
-            self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
-            
+        # if not self.ready:
+        self.ready = True
+
+        global paddle1, paddle2, ball, is_active, scheduled_task, ready, players_ids
+
+        self.paddle1 = Paddle(CANVAS_WIDTH - 10, (CANVAS_HEIGHT - 75) / 2, 75, 10)
+        self.paddle2 = Paddle(0, (CANVAS_HEIGHT - 75) / 2, 75, 10)
+        self.ball = Ball(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 10)
+        self.is_active = True
+        self.scheduled_task = None
+        self.ready = True
+        self.players_ids = set()
+
+        self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
