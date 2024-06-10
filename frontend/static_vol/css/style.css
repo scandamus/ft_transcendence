@@ -569,7 +569,8 @@ hr {
 
 
 /* form */
-input {
+input[type=text],
+input[type=password] {
   padding: 0.2em 0.5em;
   font-size: 1.4rem;
   background-color: var(--color-black-alpha);
@@ -605,8 +606,17 @@ input.has-input:invalid {
   width: 100%;
 }
 
-.blockForm_button {
-  margin-top: 50px;
+.blockForm_list {
+  display: flex;
+  list-style: none;
+}
+
+.blockForm_list li {
+  font-size: 1.4rem;
+}
+
+.blockForm_list li:not(:last-child) {
+  margin-right: 1.5em;
 }
 
 .unitFormInput {
@@ -984,6 +994,21 @@ input.has-input:invalid {
   padding: 0.5em;
   text-align: center;
   font-size: 1.8rem;
+}
+
+/* formCreateRoom */
+.formCreateRoom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 80%;
+  margin: 0 auto 50px;
+  padding: 30px 10px;
+}
+
+.formCreateRoom_list {
+  margin-right: 40px;
 }
 
 /* unitMatch */

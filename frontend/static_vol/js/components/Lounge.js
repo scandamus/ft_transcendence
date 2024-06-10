@@ -8,11 +8,23 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('Lounge');
-        this.labelMatch = '対戦';
+        this.labelMatch = '対戦する';
+        this.labelCreateRoom = 'ルーム作成';
+        this.labelDualGame = '2人対戦';
+        this.labelQuadGame = '4人対戦';
     }
 
     async renderHtml() {
         return `
+            <div class="blockUsers">
+                <form class="formCreateRoom blockForm unitBox" action="" method="post">
+                    <ul class="formCreateRoom_list blockForm_list">
+                        <li><input type="radio" id="dualGame" name="gameType" value="${this.labelDualGame}" checked /><label for="dualGame">${this.labelDualGame}</label></li>
+                        <li><input type="radio" id="quadGame" name="gameType" value="${this.labelQuadGame}" /><label for="quadGame">${this.labelQuadGame}</label></li>
+                    </ul>
+                    <p class="formCreateRoom_button blockForm_button"><button type="submit" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
+                </form>
+            </div>
             <div class="blockUsers">
                 <div class="blockUsers_column">
                     <section class="blockMatch">
