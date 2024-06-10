@@ -469,7 +469,6 @@ hr {
 
 /* unitListBtn */
 .unitListBtn {
-  /*display: flex;*/
   list-style: none;
 }
 
@@ -500,10 +499,6 @@ hr {
 .unitListBtn-horizontal li:not(:last-child) {
   margin-right: 10px;
 }
-
-/*.unitListBtn-ar {*/
-/*  justify-content: flex-end;*/
-/*}*/
 
 /* unitLinkText */
 .unitLinkText {
