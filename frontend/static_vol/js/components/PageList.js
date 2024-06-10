@@ -1,7 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { showModalReceiveReqMatch } from '../modules/modal.js';
+import { showModalReceiveMatchRequest } from '../modules/modal.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -36,8 +36,8 @@ export default class extends PageBase {
     listenReceiveReqMatch() {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_receiveReqMatch');
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', showModalReceiveReqMatch.bind(this));
-            this.addListenEvent(btn, showModalReceiveReqMatch, 'click');
+            btn.addEventListener('click', showModalReceiveMatchRequest.bind(this));
+            this.addListenEvent(btn, showModalReceiveMatchRequest, 'click');
         });
     }
 }

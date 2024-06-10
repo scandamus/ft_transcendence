@@ -109,7 +109,7 @@ const getModalHtml = (modalType, args) => {
 
 
 
-const showModalMatchRequest = (ev) => {
+const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
     const args = {
         titleModal: '対戦を申し込みました',
@@ -125,7 +125,7 @@ const showModalMatchRequest = (ev) => {
         });
 }
 
-const showModalReceiveReqMatch = (ev) => {
+const showModalReceiveMatchRequest = (ev) => {
     const button = ev.target;
     const args = {
         titleModal: '対戦申し込みがありました',
@@ -141,4 +141,4 @@ const showModalReceiveReqMatch = (ev) => {
         });
 }
 
-export { showModal, closeModalOnCancel, getModalHtml, showModalMatchRequest, showModalReceiveReqMatch };
+export { closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest };
