@@ -1002,13 +1002,19 @@ input.has-input:invalid {
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: 80%;
+  flex-wrap: wrap;
+  width: 640px;
+  max-width: 100%;
   margin: 0 auto 50px;
-  padding: 30px 10px;
+  padding: 30px 0;
 }
 
 .formCreateRoom_list {
-  margin-right: 40px;
+  margin: 0 20px;
+}
+
+.formCreateRoom_button {
+  margin: 10px 20px;
 }
 
 /* unitMatch */
@@ -1023,7 +1029,7 @@ input.has-input:invalid {
 }
 
 .unitPlayer {
-  flex: 1 0 50%;
+  flex: 1 1 50%;
   display: flex;
   align-items: center;
   padding: 6px 0;
@@ -1042,6 +1048,7 @@ input.has-input:invalid {
 
 .unitPlayer_name {
   font-size: 1.3rem;
+  word-break: break-all;
 }
 
 /* GamePlay */
