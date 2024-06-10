@@ -18,12 +18,12 @@ export default class extends PageBase {
     async renderHtml() {
         return `
             <div class="blockUsers">
-                <form class="formCreateRoom blockForm unitBox" action="" method="post">
+                <form class="formCreateRoom blockForm unitBox">
                     <ul class="formCreateRoom_list blockForm_list">
                         <li><input type="radio" id="dualGame" name="gameType" value="dual" checked /><label for="dualGame">${this.labelDualGame}</label></li>
                         <li><input type="radio" id="quadGame" name="gameType" value="quad" /><label for="quadGame">${this.labelQuadGame}</label></li>
                     </ul>
-                    <p class="formCreateRoom_button blockForm_button"><button type="submit" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
+                    <p class="formCreateRoom_button blockForm_button"><button type="button" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
                 </form>
             </div>
             <div class="blockUsers">
@@ -203,15 +203,7 @@ export default class extends PageBase {
 
     listenCreateRoom() {
         const btnCreateRoom = document.getElementById('btnCreateRoom');
-        btnCreateRoom.addEventListener('click', this.handleCreateRoom.bind(this));
-        this.addListenEvent(btnCreateRoom, this.handleCreateRoom, 'click');
-    }
-
-    handleCreateRoom(ev) {
-        ev.preventDefault();
-        //todo: ルーム作成し、モーダル開いて対戦相手が現れるのを待機
-        console.log('handleCreateRoom');
-        const gameType = document.querySelector('input[name="gameType"]:checked').value;
-        showModalWaitForOpponent(ev, gameType);
+        btnCreateRoom.addEventListener('click', showModalWaitForOpponent.bind(this));
+        this.addListenEvent(btnCreateRoom, showModalWaitForOpponent, 'click');
     }
 }
