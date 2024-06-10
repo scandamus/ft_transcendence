@@ -569,8 +569,9 @@ hr {
 
 
 /* form */
-input[type=text],
-input[type=password] {
+input[type="text"],
+input[type="password"],
+input[type="datetime-local"] {
   padding: 0.2em 0.5em;
   font-size: 1.4rem;
   background-color: var(--color-black-alpha);
@@ -579,6 +580,10 @@ input[type=password] {
   box-shadow:
           1px 1px var(--content-color1),
           -1px -1px var(--content-color2);
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
 }
 
 input.has-input:invalid {
