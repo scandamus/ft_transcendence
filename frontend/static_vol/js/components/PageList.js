@@ -15,7 +15,8 @@ export default class extends PageBase {
                 <li><a href="/register" data-link>SIGN UP</a></li>
                 <li><a href="/register/confirm" data-link>SIGN UP - confirm</a></li>
                 <li><a href="/register/complete" data-link>SIGN UP - complete</a></li>
-                <li><a href="/user" data-link>user</a></li>
+                <li><a href="/dashboard" data-link>dashboard</a></li>
+                <li><a href="/friends" data-link>friends</a></li>
                 <li><a href="/game/play" data-link>game(play)</a></li>
                 <li><a href="/game/match" data-link>game(match)</a></li>
                 <li><a href="/tournament/entry" data-link>tournament(entry)</a></li>
