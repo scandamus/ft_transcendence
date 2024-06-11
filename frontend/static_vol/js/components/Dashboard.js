@@ -2,7 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
-import { showModalMatchRequest } from '../modules/modal.js';
+import { showModalSendMatchRequest } from '../modules/modal.js';
 
 
 export default class extends PageBase {
@@ -146,8 +146,8 @@ export default class extends PageBase {
     listenRequestMatch() {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', showModalMatchRequest.bind(this));
-            this.addListenEvent(btn, showModalMatchRequest, 'click');//todo: rm 確認
+            btn.addEventListener('click', showModalSendMatchRequest.bind(this));
+            this.addListenEvent(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
         });
     }
 }
