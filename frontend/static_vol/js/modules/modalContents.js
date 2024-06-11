@@ -31,4 +31,26 @@ const receiveMatchRequest = (args) => `
     </section>
 `;
 
-export { sendMatchRequest, receiveMatchRequest };
+const waitForOpponent = (args) => `
+    <section class="blockModal">
+        <h2 class="blockModal_title">${args.titleModal}</h2>
+        <ul class="blockModal_capacity unitCapacity">
+            <li class="unitCapacity_numerator">
+                <small>${args.labelAvailable}</small>
+                <span>1</span>
+            </li>
+            <li class="unitCapacity_denominator">
+                <small>${args.labelCapacity}</small>
+                <span>${args.labelCapacityNum}</span>
+            </li>
+        </ul>
+        <p class="blockBtnCancel">
+            <button type="button" class="blockBtnCancel_button unitButton unitButton-small">${args.labelCancel}</button>
+        </p>
+        <div id="indicator" class="blockModal_indicator unitIndicator">
+            <div class="unitIndicator_bar"></div>
+        </div>
+    </section>
+`;
+
+export { sendMatchRequest, receiveMatchRequest, waitForOpponent };

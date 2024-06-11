@@ -314,9 +314,9 @@ hr {
   content: normal;
 }
 
-.unitButtonReject {
+.unitButtonDecline {
   position: relative;
-  margin-left: 10px;
+  margin-left: 30px;
   padding: 0.2em 0.8em;
   background-color: transparent;
   border: none;
@@ -327,8 +327,17 @@ hr {
   color: var(--color-white);
 }
 
-.unitButtonReject::before,
-.unitButtonReject::after {
+.unitButtonDecline-ico {
+  line-height: 0;
+  padding: 5px;
+}
+
+.unitButtonDecline-ico img {
+  width: 16px;
+}
+
+.unitButtonDecline::before,
+.unitButtonDecline::after {
   content: "";
   box-sizing: border-box;
   position: absolute;
@@ -341,11 +350,11 @@ hr {
   border: 1px solid var(--color-error1);
 }
 
-.unitButtonReject:hover::before {
+.unitButtonDecline:hover::before {
   animation: 0.4s ease-out btnHover3;
 }
 
-.unitButtonReject:hover::after {
+.unitButtonDecline:hover::after {
   animation: 0.4s ease-out btnHover4;
 }
 
@@ -564,7 +573,8 @@ hr {
 
 
 /* form */
-input {
+input[type=text],
+input[type=password] {
   padding: 0.2em 0.5em;
   font-size: 1.4rem;
   background-color: var(--color-black-alpha);
@@ -600,8 +610,17 @@ input.has-input:invalid {
   width: 100%;
 }
 
-.blockForm_button {
-  margin-top: 50px;
+.blockForm_list {
+  display: flex;
+  list-style: none;
+}
+
+.blockForm_list li {
+  font-size: 1.4rem;
+}
+
+.blockForm_list li:not(:last-child) {
+  margin-right: 1.5em;
 }
 
 .unitFormInput {
@@ -675,11 +694,13 @@ input.has-input:invalid {
   margin: 0 10px;
 }
 
+.listLineDivide > div,
 .listLineDivide > li,
 .listLineDivide > section {
   border-bottom: 2px dotted var(--color-white-alpha2);
 }
 
+.listLineDivide > div:last-child,
 .listLineDivide > li:last-child,
 .listLineDivide > section:last-child {
   border-bottom: none;
@@ -979,6 +1000,25 @@ input.has-input:invalid {
   font-size: 1.8rem;
 }
 
+/* formCreateRoom */
+.formCreateRoom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  margin-bottom: 50px;
+  padding: 30px 0;
+}
+
+.formCreateRoom_list {
+  margin: 0 20px;
+}
+
+.formCreateRoom_button {
+  margin: 10px 20px;
+}
+
 /* GamePlay */
 .playBoardWrap {
   padding-top: 50px;
@@ -997,7 +1037,7 @@ input.has-input:invalid {
   background-color: var(--color-black);
 }
 
-/* GameMatch */
+/* listPlayers */
 .listPlayers {
 }
 
@@ -1020,7 +1060,64 @@ input.has-input:invalid {
   margin: 0 1em;
 }
 
-/* GameMatch */
+/* Lounge */
+.blockMatch .formCreateRoom,
+.blockMatch .blockMatch_listWrap {
+  width: 640px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+
+.blockMatch .formCreateRoom + .blockMatch_listWrap {
+  margin-top: 50px;
+}
+
+.unitMatch {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.unitMatch_capacity {
+  flex: 1 0 auto;
+}
+
+.unitMatch_button {
+  flex: 0 0 200px;
+  text-align: right;
+}
+
+.unitCapacity {
+  list-style: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.unitCapacity small {
+  font-size: 1.1rem;
+}
+
+.unitCapacity small::after {
+  content: ":";
+  margin: 0 0.6em 0 0.4em;
+}
+
+.unitCapacity_numerator {
+  font-size: 2rem;
+}
+
+.unitCapacity_denominator {
+  font-size: 1.3rem;
+}
+
+.unitCapacity_denominator::before {
+  content: "/";
+  margin: 0 0.3em 0 1em;
+}
+
+/* Tournament */
 .unitTournamentName {
   display: flex;
   align-items: center;
@@ -1089,11 +1186,24 @@ input.has-input:invalid {
   text-align: center;
 }
 
+.blockModal_capacity {
+  margin: 70px 0 50px;
+}
+
+.blockModal .blockOpponentWrap {
+  display: flex;
+  justify-content: center;
+}
+
 .blockModal .blockOpponent {
   display: flex;
   flex-direction: column-reverse;
   padding: 50px 0;
   text-align: center;
+}
+
+.blockModal .blockOpponent + .blockOpponent {
+  margin-left: 20px;
 }
 
 .blockModal .blockOpponent_name {

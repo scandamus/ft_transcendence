@@ -11,7 +11,7 @@ export default class extends PageBase {
         this.labelMatch = '対戦する';
         this.labelRmFriend = '友達解除';
         this.labelAccept = '承諾';
-        this.labelReject = '拒絶';
+        this.labelDecline = '削除';
         this.labelApply = '友達申請';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
@@ -37,7 +37,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -47,7 +47,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -57,7 +57,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                         </div>
@@ -143,7 +143,7 @@ export default class extends PageBase {
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                             <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
-                            <li><button type="button" class="unitFriendButton_matchReject unitButtonReject btnReject">${this.labelRmFriend}</button></li>
+                            <li><button type="button" class="unitFriendButton_removeFriend unitButtonDecline">${this.labelRmFriend}</button></li>
                         </ul>
                     </section>
                   `);
