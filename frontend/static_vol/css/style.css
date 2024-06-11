@@ -1057,10 +1057,16 @@ input.has-input:invalid {
 }
 
 /* Lounge */
-.blockMatch {
+.blockMatch .formCreateRoom,
+.blockMatch .blockMatch_listWrap {
   width: 640px;
   max-width: 100%;
   margin: 0 auto;
+}
+
+
+.blockMatch .formCreateRoom + .blockMatch_listWrap {
+  margin-top: 50px;
 }
 
 .unitMatch {

@@ -27,8 +27,9 @@ export default class extends PageBase {
                     </ul>
                     <p class="formCreateRoom_button blockForm_button"><button type="button" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
                 </form>
-                <h3 class="blockMatch_title unitTitle1">Waiting</h3>
-                <div class="blockMatch_list listMatch listLineDivide">
+                <div class="blockMatch_listWrap">
+                    <h3 class="blockMatch_title unitTitle1">Waiting</h3>
+                    <div class="blockMatch_list listMatch listLineDivide">
                     <div class="unitMatch unitMatch-dual">
                         <ul class="unitMatch_capacity unitCapacity">
                             <li class="unitCapacity_numerator">
@@ -89,6 +90,7 @@ export default class extends PageBase {
                             <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
                         </ul>
                     </div>
+                </div>
                 </div>
             </section>
             <ol class="breadcrumb">
