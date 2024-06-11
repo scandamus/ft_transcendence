@@ -317,10 +317,9 @@ hr {
 .unitButtonDecline {
   position: relative;
   margin-left: 30px;
-  padding: 5px;
+  padding: 0.2em 0.8em;
   background-color: transparent;
   border: none;
-  line-height: 0;
   text-shadow:
           0.06em 0.06em var(--content-color1),
           -0.05em -0.07em var(--content-color2);
@@ -328,7 +327,12 @@ hr {
   color: var(--color-white);
 }
 
-.unitButtonDecline img {
+.unitButtonDecline-ico {
+  line-height: 0;
+  padding: 5px;
+}
+
+.unitButtonDecline-ico img {
   width: 16px;
 }
 
@@ -635,6 +639,35 @@ input.has-input:invalid {
   line-height: 0;
 }
 
+/* .breadcrumb */
+.breadcrumb {
+  display: flex;
+  padding: 0 1em;
+  list-style: none;
+  background: var(--color-black-alpha2);
+  line-height: 2.2;
+}
+
+/*.breadcrumb li:first-child::before {*/
+/*  content: "■";*/
+/*  margin-right: 0.4em;*/
+/*}*/
+
+.breadcrumb li:not(:last-child)::after {
+  content: ">";
+  margin: 0 0.6em;
+}
+
+.breadcrumb a {
+  color: var(--color-white);
+  text-decoration: underline;
+}
+
+.breadcrumb a:hover {
+  animation: 0.2s ease-out linkHover1;
+  opacity: 1;
+}
+
 
 /* list */
 .listButton {
@@ -902,6 +935,58 @@ input.has-input:invalid {
 
 .listMatchLog_item span {
   font-size: 1.2rem;
+}
+
+/* Friends */
+.blockUsers {
+
+}
+
+.blockUsers_column {
+
+}
+
+.blockUsers_column .blockFriends_friends {
+  overflow-y: scroll;
+  height: 40vh;
+}
+
+@media screen and (min-width: 768px) {
+  .blockUsers {
+    display: flex;
+    justify-content: space-between
+  }
+
+  .blockUsers_column {
+    flex: 0 0 calc(50% - 20px);
+  }
+
+  .blockUsers_column .blockFriends_friends {
+    overflow-y: visible;
+    height: inherit;
+  }
+}
+
+/* .blockSearchFriend */
+.blockSearchFriend {
+  margin-bottom: 50px;
+}
+
+.blockSearchFriend_form {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+
+.blockSearchFriend_form .blockForm_input {
+  flex: 1 0 auto;
+}
+
+.blockSearchFriend_form .blockForm_input input {
+  width: 100%;
+}
+.blockSearchFriend_form .blockForm_button {
+  margin: 0 0 0 20px;
 }
 
 /*UserRegister*/

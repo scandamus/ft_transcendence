@@ -41,7 +41,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline btnDecline"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -51,7 +51,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline btnDecline"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -61,7 +61,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline btnDecline"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                         </div>
