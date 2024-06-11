@@ -314,9 +314,9 @@ hr {
   content: normal;
 }
 
-.unitButtonReject {
+.unitButtonDecline {
   position: relative;
-  margin-left: 10px;
+  margin-left: 30px;
   padding: 0.2em 0.8em;
   background-color: transparent;
   border: none;
@@ -327,8 +327,17 @@ hr {
   color: var(--color-white);
 }
 
-.unitButtonReject::before,
-.unitButtonReject::after {
+.unitButtonDecline-ico {
+  line-height: 0;
+  padding: 5px;
+}
+
+.unitButtonDecline-ico img {
+  width: 16px;
+}
+
+.unitButtonDecline::before,
+.unitButtonDecline::after {
   content: "";
   box-sizing: border-box;
   position: absolute;
@@ -341,11 +350,11 @@ hr {
   border: 1px solid var(--color-error1);
 }
 
-.unitButtonReject:hover::before {
+.unitButtonDecline:hover::before {
   animation: 0.4s ease-out btnHover3;
 }
 
-.unitButtonReject:hover::after {
+.unitButtonDecline:hover::after {
   animation: 0.4s ease-out btnHover4;
 }
 
