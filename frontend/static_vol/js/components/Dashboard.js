@@ -14,7 +14,7 @@ export default class extends PageBase {
         this.labelMatch = '対戦する';
         this.labelCancel = 'キャンセル';
         this.labelAccept = '承諾';
-        this.labelReject = '拒絶';
+        this.labelDecline = '削除';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
     }
@@ -41,7 +41,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline btnDecline"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -51,7 +51,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline btnDecline"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -61,7 +61,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline btnDecline"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                         </div>

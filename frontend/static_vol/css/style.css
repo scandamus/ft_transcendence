@@ -314,12 +314,13 @@ hr {
   content: normal;
 }
 
-.unitButtonReject {
+.unitButtonDecline {
   position: relative;
-  margin-left: 10px;
-  padding: 0.2em 0.8em;
+  margin-left: 30px;
+  padding: 5px;
   background-color: transparent;
   border: none;
+  line-height: 0;
   text-shadow:
           0.06em 0.06em var(--content-color1),
           -0.05em -0.07em var(--content-color2);
@@ -327,8 +328,12 @@ hr {
   color: var(--color-white);
 }
 
-.unitButtonReject::before,
-.unitButtonReject::after {
+.unitButtonDecline img {
+  width: 16px;
+}
+
+.unitButtonDecline::before,
+.unitButtonDecline::after {
   content: "";
   box-sizing: border-box;
   position: absolute;
@@ -341,11 +346,11 @@ hr {
   border: 1px solid var(--color-error1);
 }
 
-.unitButtonReject:hover::before {
+.unitButtonDecline:hover::before {
   animation: 0.4s ease-out btnHover3;
 }
 
-.unitButtonReject:hover::after {
+.unitButtonDecline:hover::after {
   animation: 0.4s ease-out btnHover4;
 }
 
