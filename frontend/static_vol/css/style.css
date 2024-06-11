@@ -1071,7 +1071,6 @@ input.has-input:invalid {
 
 .unitMatch_capacity {
   flex: 1 0 auto;
-  justify-content: center;
 }
 
 .unitMatch_button {
@@ -1082,7 +1081,8 @@ input.has-input:invalid {
 .unitCapacity {
   list-style: none;
   display: flex;
-  align-items: flex-end
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .unitCapacity small {
@@ -1174,6 +1174,10 @@ input.has-input:invalid {
   max-width: 80%;
   margin: 0 auto;
   text-align: center;
+}
+
+.blockModal_capacity {
+  margin: 70px 0 50px;
 }
 
 .blockModal .blockOpponentWrap {

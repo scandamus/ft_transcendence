@@ -101,8 +101,7 @@ const closeModal = () => {
 const contModal = {
     sendMatchRequest: mc.sendMatchRequest,
     receiveMatchRequest: mc.receiveMatchRequest,
-    waitForOpponentDual: mc.waitForOpponentDual,
-    waitForOpponentQuad: mc.waitForOpponentQuad,
+    waitForOpponent: mc.waitForOpponent
 };
 
 const getModalHtml = (modalType, args) => {
@@ -151,10 +150,12 @@ const showModalWaitForOpponent = (ev) => {
     });
     const args = {
         titleModal: 'Waiting...',
-        labelCancel: 'キャンセル'
+        labelCancel: 'キャンセル',
+        labelCapacity: '定員',
+        labelAvailable: '募集中',
     }
-    const modalTypeForGame = (data['gameType'] === 'dual') ? 'waitForOpponentDual' : 'waitForOpponentQuad';
-    const elHtml = getModalHtml(modalTypeForGame, args);
+    args.labelCapacityNum = (data['gameType'] === 'dual') ? 2 : 4;
+    const elHtml = getModalHtml('waitForOpponent', args);
     join_game()
         .then(r => {
             showModal(elHtml);
