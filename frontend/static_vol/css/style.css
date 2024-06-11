@@ -1003,9 +1003,7 @@ input.has-input:invalid {
   justify-content: center;
   box-sizing: border-box;
   flex-wrap: wrap;
-  width: 640px;
-  max-width: 100%;
-  margin: 0 auto 50px;
+  margin-bottom: 50px;
   padding: 30px 0;
 }
 
@@ -1015,40 +1013,6 @@ input.has-input:invalid {
 
 .formCreateRoom_button {
   margin: 10px 20px;
-}
-
-/* unitMatch */
-.unitMatch {
-  padding: 10px 0;
-}
-
-.unitMatch_list {
-  display: flex;
-  list-style: none;
-  flex-wrap: wrap;
-}
-
-.unitPlayer {
-  flex: 1 1 50%;
-  display: flex;
-  align-items: center;
-  padding: 6px 0;
-}
-
-.unitPlayer_thumb {
-  flex: 0 0 42px;
-  margin-right: 8px;
-  line-height: 0;
-}
-
-.unitPlayer_thumb img {
-  width: 100%;
-  height: auto;
-}
-
-.unitPlayer_name {
-  font-size: 1.3rem;
-  word-break: break-all;
 }
 
 /* GamePlay */
@@ -1069,7 +1033,7 @@ input.has-input:invalid {
   background-color: var(--color-black);
 }
 
-/* GameMatch */
+/* listPlayers */
 .listPlayers {
 }
 
@@ -1092,7 +1056,58 @@ input.has-input:invalid {
   margin: 0 1em;
 }
 
-/* GameMatch */
+/* Lounge */
+.blockMatch {
+  width: 640px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.unitMatch {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.unitMatch_capacity {
+  flex: 1 0 auto;
+  justify-content: center;
+}
+
+.unitMatch_button {
+  flex: 0 0 200px;
+  text-align: right;
+}
+
+.unitCapacity {
+  list-style: none;
+  display: flex;
+  align-items: flex-end
+}
+
+.unitCapacity small {
+  font-size: 1.1rem;
+}
+
+.unitCapacity small::after {
+  content: ":";
+  margin: 0 0.6em 0 0.4em;
+}
+
+.unitCapacity_numerator {
+  font-size: 2rem;
+}
+
+.unitCapacity_denominator {
+  font-size: 1.3rem;
+}
+
+.unitCapacity_denominator::before {
+  content: "/";
+  margin: 0 0.3em 0 1em;
+}
+
+/* Tournament */
 .unitTournamentName {
   display: flex;
   align-items: center;
