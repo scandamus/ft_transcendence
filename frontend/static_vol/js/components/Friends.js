@@ -15,6 +15,7 @@ export default class extends PageBase {
         this.labelAccept = '承諾';
         this.labelDecline = '削除';
         this.labelApply = '友達申請';
+        this.labelSearch = '検索';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
     }
@@ -64,6 +65,33 @@ export default class extends PageBase {
                             </section>
                         </div>
                     </section>
+                    <section class="blockSearchFriend">
+                        <h3 class="blockSearchFriend_title unitTitle1">Search Friends</h3>
+                        <form action="" method="post" class="blockSearchFriend_form blockForm">
+                            <p class="blockForm_input"><input type="text" id="inputFriendsName" placeholder="Enter friend's name" minlength="3" maxlength="32"></p>
+                            <p class="blockForm_button"><button type="submit" id="btnPlayerSearch" class="unitButton">${this.labelSearch}</button></p>
+                        </form>
+                        <div class="blockFriendRecommended_friends listFriends listLineDivide">
+                            <section class="unitFriend">
+                                <header class="unitFriend_header">
+                                    <h4 class="unitFriend_name">username</h4>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                </header>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
+                                </ul>
+                            </section>
+                            <section class="unitFriend">
+                                <header class="unitFriend_header">
+                                    <h4 class="unitFriend_name">username</h4>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                </header>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
+                                </ul>
+                            </section>
+                        </div>
+                    </section>
                     <section class="blockFriendRecommended">
                         <h3 class="blockFriendRecommended_title unitTitle1">Recommended</h3>
                         <div class="blockFriendRecommended_friends listFriends listLineDivide">
@@ -88,33 +116,6 @@ export default class extends PageBase {
                             <section class="unitFriend">
                                 <header class="unitFriend_header">
                                     <h4 class="unitFriend_name">012</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">

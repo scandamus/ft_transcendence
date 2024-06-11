@@ -967,6 +967,28 @@ input.has-input:invalid {
   }
 }
 
+/* .blockSearchFriend */
+.blockSearchFriend {
+  margin-bottom: 50px;
+}
+
+.blockSearchFriend_form {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0;
+}
+
+.blockSearchFriend_form .blockForm_input {
+  flex: 1 0 auto;
+}
+
+.blockSearchFriend_form .blockForm_input input {
+  width: 100%;
+}
+.blockSearchFriend_form .blockForm_button {
+  margin: 0 0 0 20px;
+}
+
 /*UserRegister*/
 .formUserRegister {
   width: 70%;
