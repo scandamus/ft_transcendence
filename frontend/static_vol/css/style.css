@@ -317,10 +317,9 @@ hr {
 .unitButtonDecline {
   position: relative;
   margin-left: 30px;
-  padding: 5px;
+  padding: 0.2em 0.8em;
   background-color: transparent;
   border: none;
-  line-height: 0;
   text-shadow:
           0.06em 0.06em var(--content-color1),
           -0.05em -0.07em var(--content-color2);
@@ -328,7 +327,12 @@ hr {
   color: var(--color-white);
 }
 
-.unitButtonDecline img {
+.unitButtonDecline-ico {
+  line-height: 0;
+  padding: 5px;
+}
+
+.unitButtonDecline-ico img {
   width: 16px;
 }
 
