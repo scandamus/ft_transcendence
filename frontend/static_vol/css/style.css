@@ -508,7 +508,14 @@ hr {
   align-items: center;
 }
 
-.unitListBtn-horizontal li:not(:last-child) {
+.unitListBtn-horizontal-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.unitListBtn-horizontal li:not(:last-child),
+.unitListBtn-horizontal-center li:not(:last-child) {
   margin-right: 10px;
 }
 
@@ -1281,6 +1288,7 @@ input.has-input:invalid {
   position: fixed;
   width: 70%;
   min-height: 300px;
+  max-width: 800px;
   inset: 50% auto auto 50%;
   translate: -50% -50%;
   padding: 30px;
@@ -1313,6 +1321,24 @@ input.has-input:invalid {
 .blockModal_title {
   max-width: 80%;
   margin: 0 auto;
+  text-align: center;
+}
+
+.blockModal_title small {
+  font-size: 0.8rem;
+}
+
+.blockModal_title strong {
+  font-size: 2rem;
+  line-height: 2;
+}
+
+.blockModal_header {
+  margin-bottom: 40px;
+}
+
+.blockModal_date {
+  font-size: 1.2rem;
   text-align: center;
 }
 
@@ -1353,4 +1379,10 @@ input.has-input:invalid {
 
 .blockModal .unitListBtn {
   padding-bottom: 10px;
+}
+
+.blockModal .blockForm_el {
+  width: 100%;
+  max-width: 480px;
+  min-width: initial;
 }

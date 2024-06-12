@@ -1,6 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 
 export default class extends PageBase {
     constructor(params) {
@@ -16,6 +17,8 @@ export default class extends PageBase {
         this.labelTitleRecent = 'Recent';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
+        this.addAfterRenderHandler(this.listenCancelTournament.bind(this));
+        this.addAfterRenderHandler(this.listenEntryTournament.bind(this));
     }
 
     async renderHtml() {
@@ -49,9 +52,10 @@ export default class extends PageBase {
                                 <p class="unitTournament_start">2024/07/3 13:00</p>
                             </header>
                             <p class="unitTournament_nickname">(as 01234567890123456789012345678901)</p>
-                            <form class="unitTournament_form">
+                            <form class="unitTournament_form" action="" method="post">
+                                <input type="hidden" name="idTitle" value="1">
                                 <input type="hidden" name="title" value="TournamentTitle">
-                                <input type="hidden" name="date" value="2024/05/3 13:00">
+                                <input type="hidden" name="start" value="2024/05/3 13:00">
                                 <input type="hidden" name="nickname" value="nickname6">
                                 <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${this.labelCancelEntry}</button></p>
                             </form>
@@ -62,9 +66,10 @@ export default class extends PageBase {
                                 <p class="unitTournament_start">2024/07/3 13:00</p>
                             </header>
                             <p class="unitTournament_nickname">(as 012)</p>
-                            <form class="unitTournament_form">
+                            <form class="unitTournament_form" action="" method="post">
+                                <input type="hidden" name="idTitle" value="2">
                                 <input type="hidden" name="title" value="TournamentTitle">
-                                <input type="hidden" name="date" value="2024/05/3 13:00">
+                                <input type="hidden" name="start" value="2024/05/3 13:00">
                                 <input type="hidden" name="nickname" value="nickname6">
                                 <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${this.labelCancelEntry}</button></p>
                             </form>
@@ -74,10 +79,11 @@ export default class extends PageBase {
                                 <h4 class="unitTournament_title">TournamentTitle2</h4>
                                 <p class="unitTournament_start">2024/07/5 21:00</p>
                             </header>
-                            <form class="unitTournament_form">
+                            <form class="unitTournament_form" action="" method="post">
+                                <input type="hidden" name="idTitle" value="3">
                                 <input type="hidden" name="title" value="TournamentTitle2">
-                                <input type="hidden" name="date" value="2024/07/5 21:00">
-                                <p class="blockForm_button"><button type="submit" class="unitButton">${this.labelEntry}</button></p>
+                                <input type="hidden" name="start" value="2024/07/5 21:00">
+                                <p class="blockForm_button"><button type="button" class="unitButton">${this.labelEntry}</button></p>
                             </form>
                         </section>
                     </div>
@@ -144,5 +150,27 @@ export default class extends PageBase {
         ev.preventDefault();
         console.log("handleCreateTournament");
         //todo: CreateTournament
+    }
+
+    listenCancelTournament() {
+        const btnCancelTournament = document.querySelectorAll('.unitTournament_form .unitButtonDecline');
+        btnCancelTournament.forEach((btn) => {
+            btn.addEventListener('click', this.handleCancelTournament.bind(this));
+            this.addListenEvent(btn, this.handleCancelTournament, 'click');
+        });
+    }
+
+    handleCancelTournament(ev) {
+        ev.preventDefault();
+        console.log("handleCancelTournament");
+        //todo: CancelTournament
+    }
+
+    listenEntryTournament() {
+        const btnEntryTournament = document.querySelectorAll('.unitTournament_form .unitButton');
+        btnEntryTournament.forEach((btn) => {
+            btn.addEventListener('click', showModalEntryTournament.bind(this));
+            this.addListenEvent(btn, showModalEntryTournament, 'click');//todo: rm 確認
+        });
     }
 }
