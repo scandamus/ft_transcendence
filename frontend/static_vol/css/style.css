@@ -316,7 +316,6 @@ hr {
 
 .unitButtonDecline {
   position: relative;
-  margin-left: 30px;
   padding: 0.2em 0.8em;
   background-color: transparent;
   border: none;
@@ -325,6 +324,10 @@ hr {
           -0.05em -0.07em var(--content-color2);
   font-size: 1.1rem;
   color: var(--color-white);
+}
+
+.unitListBtn-horizontal .unitButtonDecline {
+  margin-left: 30px;
 }
 
 .unitButtonDecline-ico {
@@ -1207,6 +1210,7 @@ input.has-input:invalid {
 
 .unitTournament_nickname {
   flex: 100 1 auto;
+  /*flex: 1 1 auto;*/
   padding-left: 1em;
   font-size: 1.2rem;
   text-align: right;
@@ -1216,6 +1220,10 @@ input.has-input:invalid {
 .unitTournament_form {
   flex: 1 1 auto;
   text-align: right;
+}
+
+.unitTournament_form .blockForm_button {
+  margin-left: 16px;
 }
 
 /* formCreateTournament */
