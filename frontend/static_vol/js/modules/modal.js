@@ -101,8 +101,7 @@ const closeModal = () => {
 const contModal = {
     sendMatchRequest: mc.sendMatchRequest,
     receiveMatchRequest: mc.receiveMatchRequest,
-    waitForOpponentDual: mc.waitForOpponentDual,
-    waitForOpponentQuad: mc.waitForOpponentQuad,
+    waitForOpponent: mc.waitForOpponent
 };
 
 const getModalHtml = (modalType, args) => {
@@ -111,7 +110,7 @@ const getModalHtml = (modalType, args) => {
 
 
 
-const showModalMatchRequest = (ev) => {
+const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
     const args = {
         titleModal: '対戦を申し込みました',
@@ -127,7 +126,7 @@ const showModalMatchRequest = (ev) => {
         });
 }
 
-const showModalReceiveReqMatch = (ev) => {
+const showModalReceiveMatchRequest = (ev) => {
     const button = ev.target;
     const args = {
         titleModal: '対戦申し込みがありました',
@@ -151,14 +150,17 @@ const showModalWaitForOpponent = (ev) => {
     });
     const args = {
         titleModal: 'Waiting...',
-        labelCancel: 'キャンセル'
+        labelCancel: 'キャンセル',
+        labelCapacity: '定員',
+        labelAvailable: '募集中',
     }
-    const modalTypeForGame = (data['gameType'] === 'dual') ? 'waitForOpponentDual' : 'waitForOpponentQuad';
-    const elHtml = getModalHtml(modalTypeForGame, args);
+    args.labelCapacityNum = (data['gameType'] === 'dual') ? 2 : 4;
+    const elHtml = getModalHtml('waitForOpponent', args);
     join_game()
         .then(r => {
             showModal(elHtml);
         });
 }
 
-export { showModal, closeModalOnCancel, getModalHtml, showModalMatchRequest, showModalReceiveReqMatch, showModalWaitForOpponent };
+export { closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent };
+

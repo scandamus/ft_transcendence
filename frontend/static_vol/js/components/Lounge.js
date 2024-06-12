@@ -7,17 +7,19 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('Lounge');
-        this.labelMatch = '対戦する';
+        this.labelMatch = 'ルームに入る';
         this.labelCreateRoom = 'ルーム作成';
         this.labelDualGame = '2人対戦';
         this.labelQuadGame = '4人対戦';
+        this.labelCapacity = '定員';
+        this.labelAvailable = '募集中';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateRoom.bind(this));
     }
 
     async renderHtml() {
         return `
-            <div class="blockUsers">
+            <div class="blockMatch">
                 <form class="formCreateRoom blockForm unitBox">
                     <ul class="formCreateRoom_list blockForm_list">
                         <li><input type="radio" id="dualGame" name="gameType" value="dual" checked /><label for="dualGame">${this.labelDualGame}</label></li>
@@ -25,175 +27,72 @@ export default class extends PageBase {
                     </ul>
                     <p class="formCreateRoom_button blockForm_button"><button type="button" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
                 </form>
-            </div>
-            <div class="blockUsers">
-                <div class="blockUsers_column">
-                    <section class="blockMatch">
-                        <h3 class="blockMatch_title unitTitle1">Waiting</h3>
-                        <div class="blockMatch_list listMatch listLineDivide">
-                            <div class="unitMatch unitMatch-dual">
-                                <ul class="unitMatch_list unitMatch_list-dual">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">???</p>
-                                    </li>
-                                </ul>
-                                <ul class="unitMatchButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                                </ul>
-                            </div>
-                            <div class="unitMatch unitMatch-quad">
-                                <ul class="unitMatch_list">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">???</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">???</p>
-                                    </li>
-                                </ul>
-                                <ul class="unitMatchButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                                </ul>
-                            </div>
-                            <div class="unitMatch unitMatch-quad">
-                                <ul class="unitMatch_list">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">???</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">???</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">???</p>
-                                    </li>
-                                </ul>
-                                <ul class="unitMatchButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                                </ul>
-                            </div>
-                            <div class="unitMatch unitMatch-dual">
-                                <ul class="unitMatch_list unitMatch_list-dual">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=?&background=ccc&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">???</p>
-                                    </li>
-                                </ul>
-                                <ul class="unitMatchButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
+                <div class="blockMatch_listWrap">
+                    <h3 class="blockMatch_title unitTitle1">Waiting</h3>
+                    <div class="blockMatch_list listMatch listLineDivide">
+                    <div class="unitMatch unitMatch-dual">
+                        <ul class="unitMatch_capacity unitCapacity">
+                            <li class="unitCapacity_numerator">
+                                <small>${this.labelAvailable}</small>
+                                <span>1</span>
+                            </li>
+                            <li class="unitCapacity_denominator">
+                                <small>${this.labelCapacity}</small>
+                                <span>2</span>
+                            </li>
+                        </ul>
+                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
+                        </ul>
+                    </div>
+                    <div class="unitMatch unitMatch-quad">
+                        <ul class="unitMatch_capacity unitCapacity">
+                            <li class="unitCapacity_numerator">
+                                <small>${this.labelAvailable}</small>
+                                <span>1</span>
+                            </li>
+                            <li class="unitCapacity_denominator">
+                                <small>${this.labelCapacity}</small>
+                                <span>4</span>
+                            </li>
+                        </ul>
+                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
+                        </ul>
+                    </div>
+                    <div class="unitMatch unitMatch-quad">
+                        <ul class="unitMatch_capacity unitCapacity">
+                            <li class="unitCapacity_numerator">
+                                <small>${this.labelAvailable}</small>
+                                <span>1</span>
+                            </li>
+                            <li class="unitCapacity_denominator">
+                                <small>${this.labelCapacity}</small>
+                                <span>4</span>
+                            </li>
+                        </ul>
+                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
+                        </ul>
+                    </div>
+                    <div class="unitMatch unitMatch-dual">
+                        <ul class="unitMatch_capacity unitCapacity">
+                            <li class="unitCapacity_numerator">
+                                <small>${this.labelAvailable}</small>
+                                <span>1</span>
+                            </li>
+                            <li class="unitCapacity_denominator">
+                                <small>${this.labelCapacity}</small>
+                                <span>2</span>
+                            </li>
+                        </ul>
+                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="blockUsers_column">
-                    <section class="blockFriendRecommended">
-                        <h3 class="blockFriendRecommended_title unitTitle1">in play</h3>
-                        <div class="blockFriendRecommended_friends listFriends listLineDivide">
-                            <div class="unitMatch unitMatch-quad">
-                                <ul class="unitMatch_list">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="42" height="42"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="unitMatch unitMatch-dual">
-                                <ul class="unitMatch_list unitMatch_list-dual">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="unitMatch unitMatch-dual">
-                                <ul class="unitMatch_list unitMatch_list-dual">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="unitMatch unitMatch-dual">
-                                <ul class="unitMatch_list unitMatch_list-dual">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="unitMatch unitMatch-quad">
-                                <ul class="unitMatch_list">
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                    <li class="unitPlayer">
-                                        <p class="unitPlayer_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="40" height="40"></p>
-                                        <p class="unitPlayer_name">username</p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
                 </div>
-            </div>
+            </section>
             <ol class="breadcrumb">
             <li><a href="/">dashboard</a></li>
             <li>Lounge</li>
