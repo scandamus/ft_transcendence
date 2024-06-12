@@ -1046,40 +1046,6 @@ input.has-input:invalid {
   margin: 10px 20px;
 }
 
-/* formCreateTournament */
-.formCreateTournament {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  box-sizing: border-box;
-  flex-wrap: wrap;
-  margin-bottom: 50px;
-  padding: 30px 50px;
-}
-
-.formCreateTournament_elInput-title {
-  width: 100%;
-  min-width: initial;
-}
-
-.formCreateTournament_elInput-start {
-  width: auto;
-  min-width: 0;
-  margin-bottom: 0;
-  margin-left: 0;
-}
-
-.formCreateTournament_elInput-start input[type="datetime-local"] {
-  width: 13em;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.formCreateTournament_button {
-  margin-top: 30px;
-  margin-bottom: 0;
-}
-
 /* GamePlay */
 .playBoardWrap {
   padding-top: 50px;
@@ -1179,18 +1145,113 @@ input.has-input:invalid {
 }
 
 /* Tournament */
-.unitTournamentName {
-  display: flex;
-  align-items: center;
+.wrapTournament {
 }
 
-.unitTournamentName p {
+.blockTournamentList {
+  margin-bottom: 30px;
+}
+
+.unitTournament:not(.unitTournament-link),
+.unitTournament-link a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 12px 0;
+}
+
+.unitTournament-link a {
+  position: relative;
+  padding-right: 36px;
+  color: var(--color-white);
+}
+
+.unitTournament-link a::after {
+  content: ">";
+  position: absolute;
+  right: 0;
   margin-left: 1em;
   font-size: 1.4rem;
+  translate: -0.3em 0;
+  transition: translate 0.1s ease;
 }
 
-.unitTournamentInfo p + p {
-  margin-top: 0.5em;
+.unitTournament-link a:hover {
+  animation: 0.2s ease-out linkHover1;
+  opacity: 1;
+}
+
+.unitTournament-link a:hover::after {
+  translate: 0 0;
+}
+
+.unitTournament_header {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 0.5em;
+}
+
+.unitTournament_title {
+  font-size: 1.7rem;
+  word-break: break-all;
+}
+
+.unitTournament_start {
+  margin-right: 1.5em;
+  font-size: 1.2rem;
+}
+
+.unitTournament_nickname {
+  flex: 100 1 auto;
+  padding-left: 1em;
+  font-size: 1.2rem;
+  text-align: right;
+  word-break: break-all;
+}
+
+.unitTournament_form {
+  flex: 1 1 auto;
+  text-align: right;
+}
+
+/* formCreateTournament */
+.formCreateTournament {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  width: 640px;
+  max-width: 100%;
+  margin: 0 auto 50px;
+  padding: 30px 50px;
+}
+
+.formCreateTournament_elInput-title {
+  width: 100%;
+  min-width: initial;
+}
+
+.formCreateTournament_elInput-start {
+  width: auto;
+  min-width: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+}
+
+.formCreateTournament_elInput-start input[type="datetime-local"] {
+  width: 13em;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.formCreateTournament_button {
+  margin-top: 30px;
+  margin-bottom: 0;
 }
 
 /* modal */
