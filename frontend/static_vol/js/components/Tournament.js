@@ -6,22 +6,22 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('Tournament');
-        this.labelButton = 'エントリー'; // TODO json
-        this.txtDeadline = 'エントリー解除';
-        this.labelCreateRoom = 'トーナメント作成';
-        this.labelTournamentTitle = 'トーナメント名';
-        this.labelStart = '開始時間';
+        this.labelCreateTournament = 'Create Tournament'; // TODO json
+        this.labelTournamentTitle = 'Tournament Title';
+        this.labelStart = 'Start Time';
+        //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
     }
 
     async renderHtml() {
         return `
             <div>
-                <form class="formCreateRoom blockForm unitBox">
-                    <dl class="blockForm_el">
+                <form id="formCreateTournament" class="formCreateTournament blockForm unitBox" action="" method="post">
+                    <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-title">
                         <dt>${this.labelTournamentTitle}</dt>
-                        <dd><input type="text" id="" placeholder="" /></dd>
+                        <dd><input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" required /></dd>
                     </dl>
-                    <dl class="blockForm_el">
+                    <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-start">
                         <dt>${this.labelStart}</dt>
                         <dd>
                             <input
@@ -33,7 +33,7 @@ export default class extends PageBase {
                               max="2024-08-01T21:00" />
                         </dd>
                     </dl>
-                    <p class="formCreateRoom_button blockForm_button"><button type="button" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
+                    <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton">${this.labelCreateTournament}</button></p>
                 </form>
             </div>
             <div class="listTournaments">
@@ -44,5 +44,17 @@ export default class extends PageBase {
                 <li>Tournament</li>
             </ol>
         `;
+    }
+
+    listenCreateTournament() {
+        const btnCreateTournament = document.getElementById('btnCreateTournament');
+        btnCreateTournament.addEventListener('click', this.handleCreateTournament.bind(this));
+        this.addListenEvent(btnCreateTournament, this.handleCreateTournament, 'click');
+    }
+
+    handleCreateTournament(ev) {
+        ev.preventDefault();
+        console.log("handleCreateTournament");
+        //todo: CreateTournament
     }
 }
