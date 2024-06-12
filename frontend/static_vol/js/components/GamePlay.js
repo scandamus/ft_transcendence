@@ -2,6 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { webSocketManager } from "../modules/websocket.js";
+import { router } from "../modules/router.js";
 
 export default class extends PageBase {
     constructor(params) {
@@ -91,12 +92,15 @@ export default class extends PageBase {
                 // 左
                 drawPaddle(data.left_paddle);
 
-                if (!game_status) {
+                if (!data.game_status) {
                     console.log("Game Over");
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
                     // TODO 勝敗を記録など
+                    webSocketManager.closeWebSocket(containerId);
+                    window.history.pushState({}, null, "/user");
+                    router(true);
                 }
             }
 
