@@ -11,8 +11,9 @@ export default class extends PageBase {
         this.labelMatch = '対戦する';
         this.labelRmFriend = '友達解除';
         this.labelAccept = '承諾';
-        this.labelReject = '拒絶';
+        this.labelDecline = '削除';
         this.labelApply = '友達申請';
+        this.labelSearch = '検索';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
     }
@@ -37,7 +38,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -47,7 +48,7 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -57,7 +58,34 @@ export default class extends PageBase {
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                                     <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendReject unitButtonReject btnReject">${this.labelReject}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
+                                </ul>
+                            </section>
+                        </div>
+                    </section>
+                    <section class="blockSearchFriend">
+                        <h3 class="blockSearchFriend_title unitTitle1">Search Friends</h3>
+                        <form action="" method="post" class="blockSearchFriend_form blockForm">
+                            <p class="blockForm_input"><input type="text" id="inputFriendsName" placeholder="Enter friend's name" minlength="3" maxlength="32"></p>
+                            <p class="blockForm_button"><button type="submit" id="btnPlayerSearch" class="unitButton">${this.labelSearch}</button></p>
+                        </form>
+                        <div class="blockFriendRecommended_friends listFriends listLineDivide">
+                            <section class="unitFriend">
+                                <header class="unitFriend_header">
+                                    <h4 class="unitFriend_name">username</h4>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                </header>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
+                                </ul>
+                            </section>
+                            <section class="unitFriend">
+                                <header class="unitFriend_header">
+                                    <h4 class="unitFriend_name">username</h4>
+                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                                </header>
+                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
                         </div>
@@ -92,33 +120,6 @@ export default class extends PageBase {
                                     <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
                                 </ul>
                             </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendApply unitButton btnApply">${this.labelApply}</button></li>
-                                </ul>
-                            </section>
                         </div>
                     </section>
                 </div>
@@ -143,7 +144,7 @@ export default class extends PageBase {
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                             <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
-                            <li><button type="button" class="unitFriendButton_matchReject unitButtonReject btnReject">${this.labelRmFriend}</button></li>
+                            <li><button type="button" class="unitFriendButton_removeFriend unitButtonDecline">${this.labelRmFriend}</button></li>
                         </ul>
                     </section>
                   `);
