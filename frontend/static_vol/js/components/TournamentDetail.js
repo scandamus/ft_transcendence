@@ -303,13 +303,12 @@ export default class extends PageBase {
                                 <p class="unitMatchPlayer_result">win</p>
                             </section>
                         </div>
-                        <section class="blockSeededPlayers">
-                            <h4 class="blockSeededPlayers_title">Seeded players</h4>
-                            <ul class="blockSeededPlayers_list">
-                                <li><img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">aaa</li>
-                                <li><img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">aaa</li>
-                                <li><img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">aaa</li>
-                            </ul>
+                        <section class="blockSeededPlayer">
+                            <h4 class="blockSeededPlayer_title">Seeded player</h4>
+                            <p class="blockSeededPlayer_player">
+                                <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                username
+                            </p>
                         </section>
                     </div>
                 </section>

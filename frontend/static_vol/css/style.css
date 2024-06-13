@@ -1442,25 +1442,20 @@ input.has-input:invalid {
   content: "";
 }
 
-.blockSeededPlayers {
+.blockSeededPlayer {
 }
 
-.blockSeededPlayers_title {
+.blockSeededPlayer_title {
   padding: 1em 0 0.8em;
   font-size: 1.4rem;
 }
 
-.blockSeededPlayers_list {
-  display: flex;
-  list-style: none;
-}
-
-.blockSeededPlayers_list li {
+.blockSeededPlayer_player {
   font-size: 1.2rem;
   margin-right: 30px;
 }
 
-.blockSeededPlayers_list li img {
+.blockSeededPlayer_player img {
   vertical-align: middle;
   margin-right: 8px;
 }
