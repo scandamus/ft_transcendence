@@ -56,10 +56,11 @@ const addLinkPageEvClick = (linkPages) => {
     linkPages.forEach((linkPage) => {
         linkPage.addEventListener('click', async (ev) => {
             ev.preventDefault();
-            if (window.location.href === ev.target.href) {
+            const link = (ev.target.tagName === 'a') ? ev.target.href : ev.target.closest('a').href;
+            if (window.location.href === ev.target.href || !link) {
                 return;
             }
-            history.pushState(null, null, ev.target.href);
+            history.pushState(null, null, link);
             try {
                 await router(getToken('accessToken'));
             } catch (error) {
