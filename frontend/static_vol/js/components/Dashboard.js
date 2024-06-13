@@ -2,8 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
-import { showModal } from '../modules/modal.js';
-import { join_game } from '../modules/match.js';
+import { showModalSendMatchRequest } from '../modules/modal.js';
 
 
 export default class extends PageBase {
@@ -12,7 +11,6 @@ export default class extends PageBase {
         this.playerNameTmp = 'playername';
         this.setTitle(`Dashboard: ${this.playerNameTmp}`);
         this.labelMatch = '対戦する';
-        this.labelCancel = 'キャンセル';
         this.labelAccept = '承諾';
         this.labelDecline = '削除';
         //afterRenderにmethod追加
@@ -148,33 +146,8 @@ export default class extends PageBase {
     listenRequestMatch() {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', this.showModalMatchRequest.bind(this));
-            this.addListenEvent(btn, this.showModalMatchRequest, 'click');//todo: rm 確認
+            btn.addEventListener('click', showModalSendMatchRequest.bind(this));
+            this.addListenEvent(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
         });
-    }
-
-    showModalMatchRequest(ev) {
-        const button = ev.target;
-        const elHtml = `
-            <section class="blockModal">
-                <h2 class="blockModal_title">対戦を申し込みました</h2>
-                <section class="blockOpponent">
-                    <h4 class="blockOpponent_name">${button.dataset.name}</h4>
-                    <p class="blockOpponent_thumb"><img src="${button.dataset.avatar}" alt="" width="200" height="200"></p>
-                </section>
-                <p class="blockBtnCancel">
-                    <button type="submit" class="blockBtnCancel_button unitButton unitButton-small">${this.labelCancel}</button>
-                </p>
-                <div id="indicator" class="blockModal_indicator unitIndicator">
-                    <div class="unitIndicator_bar"></div>
-                </div>
-            </section>
-        `;
-
-        //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-        join_game()
-            .then(r => {
-                showModal(elHtml);
-            });
     }
 }

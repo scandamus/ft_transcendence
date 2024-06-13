@@ -1,11 +1,14 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { showModalReceiveMatchRequest } from '../modules/modal.js';
 
 export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('PageList');
+        //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.listenReceiveReqMatch.bind(this));
     }
 
     async renderHtml() {
@@ -23,6 +26,18 @@ export default class extends PageBase {
 <!--            <li><a href="/tournament/entry/input" data-link>tournament(entry-input)</a></li>-->
                 <li><a href="/tournament/match" data-link>tournament(match)</a></li>
             </ul>
+            <ul>
+                <li><button type="submit" class="unitFriendButton_receiveReqMatch unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">対戦を受ける</button></li>
+            </ul>
         `;
+    }
+
+
+    listenReceiveReqMatch() {
+        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_receiveReqMatch');
+        btnMatchRequest.forEach((btn) => {
+            btn.addEventListener('click', showModalReceiveMatchRequest.bind(this));
+            this.addListenEvent(btn, showModalReceiveMatchRequest, 'click');
+        });
     }
 }
