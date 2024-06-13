@@ -16,15 +16,24 @@ export default class extends PageBase {
                 <div class="blockTournamentRanking unitBox">
                     <dl class="unitRanker">
                         <dt class="unitRanker_rank unitRanker_rank-1">Rank <strong>1</strong></dt>
-                        <dd class="unitRanker_user">username</dd>
+                        <dd class="unitRanker_user">
+                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                            username
+                        </dd>
                     </dl>
                     <dl class="unitRanker">
                         <dt class="unitRanker_rank unitRanker_rank-2">Rank <strong>2</strong></dt>
-                        <dd class="unitRanker_user">012</dd>
+                        <dd class="unitRanker_user">
+                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                            012
+                        </dd>
                     </dl>
                     <dl class="unitRanker">
                         <dt class="unitRanker_rank unitRanker_rank-3">Rank <strong>3</strong></dt>
-                        <dd class="unitRanker_user">01234567890123456789012345678901</dd>
+                        <dd class="unitRanker_user">
+                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                            01234567890123456789012345678901
+                        </dd>
                     </dl>
                 </div>
                 <section class="blockTournamentList">
