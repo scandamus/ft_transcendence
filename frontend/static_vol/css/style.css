@@ -1370,8 +1370,21 @@ input.has-input:invalid {
 }
 
 .blockTournamentMatch_vs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   letter-spacing: 0.1em;
   font-size: 1.4rem;
+}
+
+.blockTournamentMatch_vs::before,
+.blockTournamentMatch_vs::after {
+  content: "";
+  display: block;
+  width: 2em;
+  height: 1px;
+  margin: 0 0.5em;
+  background-color: var(--color-white);
 }
 
 .unitMatchPlayer {
@@ -1420,6 +1433,11 @@ input.has-input:invalid {
   .blockTournamentMatch_vs {
     width: 60px;
     text-align: center;
+  }
+
+  .blockTournamentMatch_vs::before,
+  .blockTournamentMatch_vs::after {
+    content: normal;
   }
 
   .unitMatchPlayer {
