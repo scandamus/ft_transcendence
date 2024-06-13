@@ -15,6 +15,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
 from .api_access import get_match_from_api
+
 #from .models import Match
 
 logger = logging.getLogger(__name__)
@@ -35,9 +36,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         super().__init__(args, kwargs)
         self.match_id = None
         self.room_group_name = None
-    #    self.user_id = None
+        #    self.user_id = None
         self.players_id = None
         self.username = None
+
     #    self.authenticated = False
 
     async def connect(self):
@@ -79,6 +81,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if action == 'authenticate':
             jwt = text_data_json.get('jwt')
+            player_name = text_data_json.get('player_name')
             players_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
 
             if not players_id or not username or not jwt_match_id:
@@ -88,7 +91,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'message': 'Authentication failed. please log in again.'
                 }))
                 return
-            
+
             if int(self.match_id) != int(jwt_match_id):
                 logger.error(f'Error: match ID conflict jwt match_id: {jwt_match_id}, URL match_id: {self.match_id}')
                 await self.send(text_data=json.dumps({
@@ -105,8 +108,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_add(self.room_group_name, self.channel_name)
                 self.players_id = players_id
                 self.players_ids.add(players_id)
-                if len(self.players_ids) == 2: # 2人に決め打ち
-                    await self.start_game()
+                if len(self.players_ids) == 2:  # 2人に決め打ち
+                    await self.start_game(player_name)
                 # TODO: 2人揃わない場合のタイムアウト処理
                 # クライアント側からリクエストする？
             else:
@@ -116,13 +119,13 @@ class PongConsumer(AsyncWebsocketConsumer):
         else:
             await self.handle_game_message(text_data)
 
-
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        message = text_data_json.get("message")
         if message == 'key_event':
             key = text_data_json['key']
             is_pressed = text_data_json['is_pressed']
+            player_name = text_data_json['player_name']
             print(f"Key event received: {key}" f"\tis_pressed: {is_pressed}")  # コンソールにキーイベントを出力
 
             # Send message to room group
@@ -134,6 +137,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "message": message,
                 "key": key,
                 "is_pressed": is_pressed,
+                "player_name": player_name,
             })
         else:
             logger.info("unknown message:", text_data)
@@ -144,26 +148,31 @@ class PongConsumer(AsyncWebsocketConsumer):
         message = data["message"]
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
+        player_name = data.get('player_name')
 
         # キー入力によってパドルを操作
         if key and is_pressed:
-            if key == "ArrowUp":
-                self.right_paddle.speed = -10
-            elif key == "ArrowDown":
-                self.right_paddle.speed = 10
-            elif key == "w":
-                self.left_paddle.speed = -10
-            elif key == "s":
-                self.left_paddle.speed = 10
+            if player_name == 'player2':
+                if key == "ArrowUp":
+                    self.right_paddle.speed = -10
+                elif key == "ArrowDown":
+                    self.right_paddle.speed = 10
+            elif player_name == 'player1':
+                if key == "w":
+                    self.left_paddle.speed = -10
+                elif key == "s":
+                    self.left_paddle.speed = 10
         else:
-            if key == "ArrowUp":
-                self.right_paddle.speed = 0
-            elif key == "ArrowDown":
-                self.right_paddle.speed = 0
-            elif key == "w":
-                self.left_paddle.speed = 0
-            elif key == "s":
-                self.left_paddle.speed = 0
+            if player_name == 'player2':
+                if key == "ArrowUp":
+                    self.right_paddle.speed = 0
+                elif key == "ArrowDown":
+                    self.right_paddle.speed = 0
+            elif player_name == 'player1':
+                if key == "w":
+                    self.left_paddle.speed = 0
+                elif key == "s":
+                    self.left_paddle.speed = 0
 
         # Send message to WebSocket
         # await self.send_game_data(True, message=message, timestamp=timestamp)
@@ -173,7 +182,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while self.game_continue:
                 #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                await asyncio.sleep(0.1)  # 60Hz
+                await asyncio.sleep(1)  # 60Hz
                 # await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
@@ -244,7 +253,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             username = validated_token['username']
             players_id = validated_token['players_id']
             match_id = validated_token['match_id']
-            logger.info(f'authenticate_jwt: user_id={user_id}, username={username}, players_id={players_id}, match_id={match_id}')
+            logger.info(
+                f'authenticate_jwt: user_id={user_id}, username={username}, players_id={players_id}, match_id={match_id}')
             return players_id, username, match_id
         except InvalidToken as e:
             logger.error('Error: invalid token in jwt')
@@ -253,23 +263,25 @@ class PongConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_match(self, match_id):
         return get_match_from_api(match_id)
-    
+
     @database_sync_to_async
     def is_player_in_match(self, players_id, match):
         try:
             player1_id = match.get('player1')
             player2_id = match.get('player2')
-            logger.info(f'Checking if player_id:{players_id} is in the match with player1:{player1_id} or player2:{player2_id}')
+            logger.info(
+                f'Checking if player_id:{players_id} is in the match with player1:{player1_id} or player2:{player2_id}')
             return players_id in [player1_id, player2_id]
         except Exception as e:
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
-    
-    async def start_game(self):
+
+    async def start_game(self, player_name):
         logger.info(f'Starting game for match_id {self.match_id}')
         await self.send(text_data=json.dumps({
             'type': 'startGame',
-            'message': 'The pong match is starting!'
+            'message': 'The pong match is starting!',
+            'player_game': player_name,
         }))
         # return # これを消すとゲームが始まります
         # クライアント側でonopenが発火したらループを開始する
@@ -277,4 +289,3 @@ class PongConsumer(AsyncWebsocketConsumer):
         if not self.ready:
             self.ready = True
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
-            

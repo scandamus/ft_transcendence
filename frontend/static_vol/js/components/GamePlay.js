@@ -3,6 +3,7 @@
 import PageBase from './PageBase.js';
 import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
+import { initToken } from '../modules/token.js';
 
 export default class extends PageBase {
     constructor(params) {
@@ -11,7 +12,11 @@ export default class extends PageBase {
         this.player1 = 'player1人目'; // TODO json
         this.player2 = 'player2人目';
         //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.initGame.bind(this));
+        if (history.state && history.state.player_name) {
+            this.player_name = history.state.player_name;
+            console.log('player name: ', this.player_name);
+        }
+        this.addAfterRenderHandler(this.initGame(this.player_name));
     }
 
     async renderHtml() {
@@ -26,7 +31,7 @@ export default class extends PageBase {
         `;
     }
 
-    async initGame() {
+    async initGame(player_name) {
         try {
             const gameMatchId = this.params['id'].substr(1);
             const containerId = `pong/${gameMatchId}`;
@@ -77,7 +82,7 @@ export default class extends PageBase {
                 ctx.closePath();
             }
 
-            function updateGameObjects(data) {
+            async function updateGameObjects(data) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // 背景色
                 drawBackground();
@@ -98,9 +103,21 @@ export default class extends PageBase {
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
                     // TODO 勝敗を記録など
+                    const accessToken = await initToken();
+                    const loungeSocket = await webSocketManager.openWebSocket('lounge');
+                    loungeSocket.send(JSON.stringify({
+                        action: 'end_game',
+                        token: accessToken.token,
+                        match_id: gameMatchId,
+
+                    }));
+                    pongSocket.send(JSON.stringify({
+                        action: 'end_game',
+                        match_id: gameMatchId,
+                    }));
                     webSocketManager.closeWebSocket(containerId);
                     window.history.pushState({}, null, "/user");
-                    router(true);
+                    await router(true);
                 }
             }
 
@@ -124,15 +141,18 @@ export default class extends PageBase {
             }
 
             function sendKeyEvent(key, is_pressed) {
+                console.log("======= ", player_name, " =======");
                 let data = {
                     message: 'key_event',
                     key: key,
                     is_pressed: is_pressed,
+                    player_name: player_name,
                 };
                 pongSocket.send(JSON.stringify(data));
             }
 
             pongSocket.onmessage = function (e) {
+                console.log("======= ", player_name, " =======");
                 try {
                     const data = JSON.parse(e.data);
                     // document.querySelector('#pong-log').value += (data.message + '\n');

@@ -42,10 +42,10 @@ const pongGameHandler = async (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { jwt, match_id, username } = data;
+    const { jwt, match_id, username, player_name } = data;
 
     console.log(`Loading pong content with JWT: `, jwt);
-    console.log(`match_id: ${match_id}, Username: ${username}`);
+    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}`);
 
     const gameMatchId = match_id; 
     const containerId = `pong/${gameMatchId}`;
@@ -57,11 +57,11 @@ const loadGameContent = async (data) => {
         if (socket.readyState === WebSocket.OPEN) {
             webSocketManager.sendWebSocketMessage(containerId, {
                 action: 'authenticate',
-                jwt: jwt
+                jwt: jwt,
             });
             console.log('Token sent to pong-server');
             // TODO: ゲーム画面に変遷してゲーム続行
-            window.history.pushState({}, null, `/game/play:${gameMatchId}`);
+            window.history.pushState({player_name}, null, `/game/play:${gameMatchId}`);
             await router(true);
         } else {
             console.error('WebSocket is not in OPEN state.');
