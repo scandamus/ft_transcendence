@@ -13,6 +13,20 @@ export default class extends PageBase {
     async renderHtml() {
         return `
             <div class="wrapTournament">
+                <div class="blockTournamentRanking unitBox">
+                    <dl class="unitRanker">
+                        <dt class="unitRanker_rank unitRanker_rank-1">Rank <strong>1</strong></dt>
+                        <dd class="unitRanker_user">username</dd>
+                    </dl>
+                    <dl class="unitRanker">
+                        <dt class="unitRanker_rank unitRanker_rank-2">Rank <strong>2</strong></dt>
+                        <dd class="unitRanker_user">012</dd>
+                    </dl>
+                    <dl class="unitRanker">
+                        <dt class="unitRanker_rank unitRanker_rank-3">Rank <strong>3</strong></dt>
+                        <dd class="unitRanker_user">01234567890123456789012345678901</dd>
+                    </dl>
+                </div>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${this.labelTitleRecent}</h3>
                     <div class="blockTournamentList_list listLineDivide">

@@ -1269,6 +1269,74 @@ input.has-input:invalid {
   margin-bottom: 0;
 }
 
+.blockTournamentRanking {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  width: 640px;
+  max-width: 100%;
+  margin: 0 auto 50px;
+  padding: 30px 50px;
+}
+
+.unitRanker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.unitRanker_rank  {
+  font-size: 1.4rem;
+  text-shadow: 0.09em 0.05em var(--content-color1), -0.09em -0.05em var(--content-color2);
+}
+
+.unitRanker_rank::before  {
+  content: "\01F732";
+  display: inline-block;
+  width: 50px;
+  margin-right: 5px;
+  text-align: center;
+  text-shadow: 0.03em 0.03em var(--content-color1), -0.02em -0.04em var(--content-color2);
+  vertical-align: -2px;
+  line-height: 1;
+  font-family: "Noto Sans Symbols", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 1.8rem;
+}
+
+.unitRanker_rank-1::before  {
+  color: #f6be02;
+  font-size: 2.6rem;
+}
+
+.unitRanker_rank-2::before  {
+  color: #898b9c;
+}
+
+.unitRanker_rank-3::before  {
+  color: #d08726;
+}
+
+.unitRanker_rank::after  {
+  content: ":";
+  margin-left: 0.5em;
+}
+
+.unitRanker_rank strong  {
+  font-size: 120%;
+}
+
+.unitRanker_user  {
+  margin-left: 1em;
+  font-size: 1.6rem;
+  word-break: break-all;
+}
+
 /* modal */
 .wrapModal {
   position: fixed;
