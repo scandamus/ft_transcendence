@@ -13,6 +13,7 @@ export default class extends PageBase {
     async renderHtml() {
         return `
             <div class="wrapTournament">
+                <p class="blockTournamentStart">2024/07/3 13:00 START</p>
                 <div class="blockTournamentRanking unitBox">
                     <dl class="unitRanker">
                         <dt class="unitRanker_rank unitRanker_rank-1">Rank <strong>1</strong></dt>
@@ -36,25 +37,279 @@ export default class extends PageBase {
                         </dd>
                     </dl>
                 </div>
-                <section class="blockTournamentList">
-                    <h3 class="blockTournamentList_title unitTitle1">${this.labelTitleRecent}</h3>
-                    <div class="blockTournamentList_list listLineDivide">
-                        <section class="unitTournament unitTournament-link">
-                            <a href="/tournament/detail_id" data-link>
-                                <header class="unitTournament_header">
-                                    <h4 class="unitTournament_title">TournamentTitle1</h4>
-                                    <p class="unitTournament_start">2024/07/3 13:00</p>
+                <section class="blockTournamentRound">
+                    <h3 class="blockTournamentList_title unitTitle1">final round</h3>
+                    <div class="blockTournamentRound_listMatch listLineDivide">
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
                                 </header>
-                                <p class="unitTournament_nickname">(as 01234567890123456789012345678901)</p>
-                            </a>
-                        </section>
-                        <section class="unitTournament unitTournament-link">
-                            <a href="/tournament/detail_id" data-link>
-                                <header class="unitTournament_header">
-                                    <h4 class="unitTournament_title">TournamentTitle2</h4>
-                                    <p class="unitTournament_start">2024/07/5 21:00</p>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
                                 </header>
-                            </a>
+                                <p class="unitMatchPlayer_score">3</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                    </div>
+                </section>
+                <section class="blockTournamentRound">
+                    <h3 class="blockTournamentList_title unitTitle1">second round</h3>
+                    <div class="blockTournamentRound_listMatch listLineDivide">
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">3</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="blockTournamentRound">
+                    <h3 class="blockTournamentList_title unitTitle1">first round</h3>
+                    <div class="blockTournamentRound_listMatch listLineDivide">
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">3</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">3</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">3</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">3</p>
+                            </section>
+                        </div>
+                        <div class="blockTournamentMatch">
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    01234567890123456789012345678901
+                                </header>
+                                <p class="unitMatchPlayer_score">5</p>
+                            </section>
+                            <p class="blockTournamentMatch_vs">VS</p>
+                            <section class="blockTournamentMatch_player unitMatchPlayer">
+                                <header class="unitMatchPlayer_header">
+                                    <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                    username
+                                </header>
+                                <p class="unitMatchPlayer_score">10</p>
+                                <p class="unitMatchPlayer_result">win</p>
+                            </section>
+                        </div>
+                        <section class="blockSeededPlayers">
+                            <h4 class="blockSeededPlayers_title">Seeded players</h4>
+                            <ul class="blockSeededPlayers_list">
+                                <li><img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">aaa</li>
+                                <li><img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">aaa</li>
+                                <li><img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">aaa</li>
+                            </ul>
                         </section>
                     </div>
                 </section>
