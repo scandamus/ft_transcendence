@@ -1388,22 +1388,22 @@ input.has-input:invalid {
   padding-right: 66px; /* for unitMatchPlayer_result */
 }
 
-.unitMatchPlayer_header {
+.unitMatchPlayer_title {
   display: flex;
   align-items: center;
   font-size: 1.4rem;
   word-break: break-all;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header {
+.unitMatchPlayer:first-child .unitMatchPlayer_title {
   flex-direction: row-reverse;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header img {
+.unitMatchPlayer:first-child .unitMatchPlayer_title img {
   margin-left: 10px;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_header img {
+.unitMatchPlayer:last-child .unitMatchPlayer_title img {
   margin-right: 10px;
 }
 
