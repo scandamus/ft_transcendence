@@ -167,6 +167,10 @@ const showModalEntryTournament = (ev) => {
     formData.forEach((value, key) => {
         data[key] = value;
     });
+    if (Object.keys(data).length === 0) {
+        //formから取得するデータが無い
+        return;
+    }
     const args = {
         titleModal: 'Entry Tournament',
         labelNickname: 'NickName',

@@ -59,6 +59,7 @@ export default class extends PageBase {
                                 <input type="hidden" name="nickname" value="nickname6">
                                 <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${this.labelCancelEntry}</button></p>
                             </form>
+                            <p class="unitTournament_capacity"><strong>6</strong> / 50</p>
                         </section>
                         <section class="unitTournament">
                             <header class="unitTournament_header">
@@ -73,6 +74,7 @@ export default class extends PageBase {
                                 <input type="hidden" name="nickname" value="nickname6">
                                 <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${this.labelCancelEntry}</button></p>
                             </form>
+                            <p class="unitTournament_capacity"><strong>6</strong> / 50</p>
                         </section>
                         <section class="unitTournament">
                             <header class="unitTournament_header">
@@ -85,6 +87,18 @@ export default class extends PageBase {
                                 <input type="hidden" name="start" value="2024/07/5 21:00">
                                 <p class="blockForm_button"><button type="button" class="unitButton">${this.labelEntry}</button></p>
                             </form>
+                            <p class="unitTournament_capacity"><strong>6</strong> / 50</p>
+                        </section>
+                        <section class="unitTournament">
+                            <header class="unitTournament_header">
+                                <h4 class="unitTournament_title">TournamentTitle2</h4>
+                                <p class="unitTournament_start">2024/07/5 21:00</p>
+                            </header>
+                            <form class="unitTournament_form">
+                                <!-- todo: 満員の場合、フォーム要素なしにしておく -->
+                                <p class="blockForm_button"><button type="button" class="unitButton" disabled>${this.labelEntry}</button></p>
+                            </form>
+                            <p class="unitTournament_capacity"><strong>50</strong> / 50</p>
                         </section>
                     </div>
                 </section>

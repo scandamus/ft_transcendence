@@ -1229,6 +1229,15 @@ input.has-input:invalid {
   text-align: right;
 }
 
+.unitTournament_capacity {
+  width: 4.5em;
+  text-align: right;
+}
+
+.unitTournament_capacity strong {
+  font-size: 1.4rem;
+}
+
 .unitTournament_form .blockForm_button {
   margin-left: 16px;
 }
