@@ -50,10 +50,14 @@ const closeModalOnCancel = () => {
         })
         .then(() => {
             //modal close
-            const elModal = document.getElementById('wrapModal');
-            elModal.classList.remove('is-show');
-            elModal.innerHTML = '';
+            closeModal();
         });
 }
 
-export { showModal, closeModalOnCancel };
+const closeModal = () => {
+    const elModal = document.getElementById('wrapModal');
+    elModal.classList.remove('is-show');
+    elModal.innerHTML = '';
+}
+
+export { showModal, closeModalOnCancel, closeModal };
