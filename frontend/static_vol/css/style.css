@@ -6,6 +6,7 @@
 ----- */
 :root {
   --heightMainHeader: 60px;
+  --widthCont: 800px;
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
@@ -28,6 +29,7 @@
   --color-online: var(--content-color1);
   --color-offline: var(--color-gray);
   --color-busy: var(--content-color2);
+  --color-notice-bg1: rgba(4, 229, 143, 0.2);
 
   font-family: "Chakra Petch", sans-serif;
   font-style: normal;
@@ -1245,4 +1247,64 @@ input.has-input:invalid {
 
 .blockModal .unitListBtn {
   padding-bottom: 10px;
+}
+
+
+/* modal */
+.wrapNotice {
+  position: fixed;
+  width: var(--widthCont);
+  top: calc(var(--heightMainHeader) + 5px);
+  right: 0;
+  left: 0;
+  margin: auto;
+  list-style: none;
+}
+
+.unitNotice {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  padding: 3px;
+  background-color: var(--color-black-alpha3);
+  border: 1px solid var(--content-color1);
+  box-shadow: -1px -1px var(--content-color1),
+  1px 1px var(--content-color2);
+}
+
+.unitNotice-error {
+  border: 1px solid var(--color-error1);
+}
+
+.unitNotice::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-notice-bg1);
+}
+
+.unitNotice-error::before {
+  background-color: var(--color-error1-alpha);
+}
+
+.unitNotice:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.unitNotice p,
+.unitNotice button {
+  position: relative;
+}
+
+.unitNotice p {
+}
+
+.unitNotice button {
+  background-color: transparent;
+  border: none;
 }
