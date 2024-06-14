@@ -77,8 +77,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.is_active = False
         if self.scheduled_task:
             self.scheduled_task.cancel()
-        if not self.room_group_name:
-            self.room_group_name = f'pong_{self.match_id}'
+        if self.players_id in self.players_ids:
+            self.players_ids.remove(self.players_id)
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
