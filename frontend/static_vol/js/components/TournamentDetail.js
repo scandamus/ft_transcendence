@@ -42,35 +42,35 @@ export default class extends PageBase {
                     <div class="blockTournamentRound_listMatch listLineDivide">
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">3</p>
                             </section>
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -83,35 +83,35 @@ export default class extends PageBase {
                     <div class="blockTournamentRound_listMatch listLineDivide">
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">3</p>
                             </section>
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -119,17 +119,17 @@ export default class extends PageBase {
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -137,17 +137,17 @@ export default class extends PageBase {
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -161,35 +161,35 @@ export default class extends PageBase {
                     <div class="blockTournamentRound_listMatch listLineDivide">
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">3</p>
                             </section>
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -197,35 +197,35 @@ export default class extends PageBase {
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">3</p>
                             </section>
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -233,35 +233,35 @@ export default class extends PageBase {
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">3</p>
                             </section>
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -269,35 +269,35 @@ export default class extends PageBase {
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">3</p>
                             </section>
                         </div>
                         <div class="blockTournamentMatch">
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    01234567890123456789012345678901
+                                    <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">5</p>
                             </section>
                             <p class="blockTournamentMatch_vs">VS</p>
                             <section class="blockTournamentMatch_player unitMatchPlayer">
-                                <h4 class="unitMatchPlayer_title">
+                                <h4 class="unitMatchPlayer_header">
                                     <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                    username
+                                    <h4 class="unitMatchPlayer_title">username</h4>
                                 </h4>
                                 <p class="unitMatchPlayer_score">10</p>
                                 <p class="unitMatchPlayer_result">win</p>
@@ -307,7 +307,7 @@ export default class extends PageBase {
                             <h4 class="blockSeededPlayer_title">Seeded player</h4>
                             <p class="blockSeededPlayer_player">
                                 <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                username
+                                <span>username</span>
                             </p>
                         </section>
                     </div>
