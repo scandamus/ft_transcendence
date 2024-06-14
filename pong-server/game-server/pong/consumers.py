@@ -23,13 +23,13 @@ logger = logging.getLogger(__name__)
 
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
-    scheduled_task = None
-    right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
-                          PADDLE_THICKNESS, PADDLE_LENGTH)
-    left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
-    ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
-    ready = False
-    game_continue = False
+    # scheduled_task = None
+    # right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
+    #                       PADDLE_THICKNESS, PADDLE_LENGTH)
+    # left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
+    # ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
+    # ready = False
+    # game_continue = False
     players_ids = set()
 
     def __init__(self, *args, **kwargs):
@@ -39,6 +39,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         #    self.user_id = None
         self.players_id = None
         self.username = None
+        self.player_name = None
+
+        self.scheduled_task = None
+        self.right_paddle = None
+        self.left_paddle = None
+        self.ball = None
+        self.reset_game_data()
+        self.ready = False
+        self.game_continue = False
 
     #    self.authenticated = False
 
@@ -81,7 +90,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if action == 'authenticate':
             jwt = text_data_json.get('jwt')
-            player_name = text_data_json.get('player_name')
+            self.player_name = text_data_json.get('player_name')
             players_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
 
             if not players_id or not username or not jwt_match_id:
@@ -109,23 +118,27 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.players_id = players_id
                 self.players_ids.add(players_id)
                 if len(self.players_ids) == 2:  # 2人に決め打ち
-                    await self.start_game(player_name)
+                    self.reset_game_data()
+                    # await self.channel_layer.group_send(self.room_group_name, {
+                    #     'type': 'hoge',
+                    #     'player_name': self.player_name,
+                    # })
+                    await self.start_game()
                 # TODO: 2人揃わない場合のタイムアウト処理
                 # クライアント側からリクエストする？
             else:
                 logger.error('Match data not found or user is not for this match')
                 self.close(code=5000)
                 return
-        else:
+        elif action == 'key_event':
             await self.handle_game_message(text_data)
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json.get("message")
-        if message == 'key_event':
+        action = text_data_json.get("action")
+        if action == 'key_event':
             key = text_data_json['key']
             is_pressed = text_data_json['is_pressed']
-            player_name = text_data_json['player_name']
             print(f"Key event received: {key}" f"\tis_pressed: {is_pressed}")  # コンソールにキーイベントを出力
 
             # Send message to room group
@@ -134,10 +147,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "type": "pong.message",
                 # ここで二つのキーを渡すことでpong_message内で辞書としてアクセスできる
                 "timestamp": dt.utcnow().isoformat(),
-                "message": message,
+                "action": action,
                 "key": key,
                 "is_pressed": is_pressed,
-                "player_name": player_name,
+                "player_name": self.player_name,
             })
         else:
             logger.info("unknown message:", text_data)
@@ -145,34 +158,35 @@ class PongConsumer(AsyncWebsocketConsumer):
     # Receive message from room group
     async def pong_message(self, data):
         timestamp = data["timestamp"]
-        message = data["message"]
+        action = data["action"]
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
         player_name = data.get('player_name')
 
         # キー入力によってパドルを操作
-        if key and is_pressed:
-            if player_name == 'player2':
-                if key == "ArrowUp":
-                    self.right_paddle.speed = -10
-                elif key == "ArrowDown":
-                    self.right_paddle.speed = 10
-            elif player_name == 'player1':
-                if key == "w":
-                    self.left_paddle.speed = -10
-                elif key == "s":
-                    self.left_paddle.speed = 10
-        else:
-            if player_name == 'player2':
-                if key == "ArrowUp":
-                    self.right_paddle.speed = 0
-                elif key == "ArrowDown":
-                    self.right_paddle.speed = 0
-            elif player_name == 'player1':
-                if key == "w":
-                    self.left_paddle.speed = 0
-                elif key == "s":
-                    self.left_paddle.speed = 0
+        if self.player_name == 'player1':
+            if key and is_pressed:
+                if player_name == 'player2':
+                    if key == "ArrowUp":
+                        self.right_paddle.speed = -10
+                    elif key == "ArrowDown":
+                        self.right_paddle.speed = 10
+                elif player_name == 'player1':
+                    if key == "w":
+                        self.left_paddle.speed = -10
+                    elif key == "s":
+                        self.left_paddle.speed = 10
+            else:
+                if player_name == 'player2':
+                    if key == "ArrowUp":
+                        self.right_paddle.speed = 0
+                    elif key == "ArrowDown":
+                        self.right_paddle.speed = 0
+                elif player_name == 'player1':
+                    if key == "w":
+                        self.left_paddle.speed = 0
+                    elif key == "s":
+                        self.left_paddle.speed = 0
 
         # Send message to WebSocket
         # await self.send_game_data(True, message=message, timestamp=timestamp)
@@ -182,7 +196,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while self.game_continue:
                 #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                await asyncio.sleep(1)  # 60Hz
+                await asyncio.sleep(0.1)  # 60Hz
                 # await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
@@ -198,22 +212,54 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def send_game_over_message(self, event):
         message = event["message"]
         timestamp = dt.utcnow().isoformat()
+        if self.player_name == 'player2':
+            self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
 
     async def update_ball_and_send_data(self):
-        self.right_paddle.move()
-        self.left_paddle.move()
-        game_continue = self.ball.move(self.right_paddle, self.left_paddle)
+        game_continue = True
+        if self.player_name == 'player1':
+            self.right_paddle.move()
+            self.left_paddle.move()
+            game_continue = self.ball.move(self.right_paddle, self.left_paddle)
+            ball_tmp = {
+                "x": self.ball.x,
+                "y": self.ball.y,
+                "dx": self.ball.dx,
+                "dy": self.ball.dy,
+                "size": self.ball.size,
+            }
+            right_paddle_tmp = {
+                "x": self.right_paddle.x,
+                "y": self.right_paddle.y,
+                "horizontal": self.right_paddle.thickness,
+                "vertical": self.right_paddle.length,
+                "score": self.right_paddle.score,
+            }
+            left_paddle_tmp = {
+                "x": self.left_paddle.x,
+                "y": self.left_paddle.y,
+                "horizontal": self.left_paddle.thickness,
+                "vertical": self.left_paddle.length,
+                "score": self.left_paddle.score,
+            }
+        else:
+            ball_tmp, right_paddle_tmp, left_paddle_tmp = None, None, None
         await self.channel_layer.group_send(self.room_group_name, {
             "type": "ball.message",
             "message": "update_ball_pos",
             "timestamp": dt.utcnow().isoformat(),
+            "ball": ball_tmp,
+            "right_paddle": right_paddle_tmp,
+            "left_paddle": left_paddle_tmp,
         })
         return game_continue
 
     async def ball_message(self, data):
         message = data["message"]
         timestamp = data["timestamp"]
+        if self.player_name == 'player2':
+            await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
 
     async def send_game_data(self, game_status, message, timestamp):
@@ -242,6 +288,41 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "score": self.left_paddle.score,
             },
         }))
+
+    def reset_game_data(self):
+        self.scheduled_task = None
+        self.right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
+                                   PADDLE_THICKNESS, PADDLE_LENGTH)
+        self.right_paddle.reset()
+        self.left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
+        self.left_paddle.reset()
+        self.ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
+        self.ready = False
+        self.game_continue = False
+
+    async def init_game_state_into_self(self, data):
+        # player1からオブジェクトを受け取る
+        # ball
+        ball_data = data['ball']
+        self.ball.x = ball_data['x']
+        self.ball.y = ball_data['y']
+        self.ball.dx = ball_data['dx']
+        self.ball.dy = ball_data['dy']
+        self.ball.size = ball_data['size']
+        # right_paddle
+        right_paddle_data = data['right_paddle']
+        self.right_paddle.x = right_paddle_data['x']
+        self.right_paddle.y = right_paddle_data['y']
+        self.right_paddle.thickness = right_paddle_data['horizontal']
+        self.right_paddle.length = right_paddle_data['vertical']
+        self.right_paddle.score = right_paddle_data['score']
+        # left_paddle
+        left_paddle_data = data['left_paddle']
+        self.left_paddle.x = left_paddle_data['x']
+        self.left_paddle.y = left_paddle_data['y']
+        self.left_paddle.thickness = left_paddle_data['horizontal']
+        self.left_paddle.length = left_paddle_data['vertical']
+        self.left_paddle.score = left_paddle_data['score']
 
     @database_sync_to_async
     def auhtnticate_jwt(self, jwt):
@@ -276,13 +357,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
 
-    async def start_game(self, player_name):
+    async def start_game(self):
         logger.info(f'Starting game for match_id {self.match_id}')
-        await self.send(text_data=json.dumps({
-            'type': 'startGame',
-            'message': 'The pong match is starting!',
-            'player_game': player_name,
-        }))
+        # await self.send(text_data=json.dumps({
+        #     'type': 'startGame',
+        #     'message': 'The pong match is starting!',
+        # }))
         # return # これを消すとゲームが始まります
         # クライアント側でonopenが発火したらループを開始する
         self.is_active = True
