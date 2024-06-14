@@ -249,6 +249,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             "type": "ball.message",
             "message": "update_ball_pos",
             "timestamp": dt.utcnow().isoformat(),
+            "player_name": self.player_name,
             "ball": ball_tmp,
             "right_paddle": right_paddle_tmp,
             "left_paddle": left_paddle_tmp,
@@ -302,27 +303,29 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def init_game_state_into_self(self, data):
         # player1からオブジェクトを受け取る
-        # ball
         ball_data = data['ball']
-        self.ball.x = ball_data['x']
-        self.ball.y = ball_data['y']
-        self.ball.dx = ball_data['dx']
-        self.ball.dy = ball_data['dy']
-        self.ball.size = ball_data['size']
+        if ball_data is not None:
+            self.ball.x = ball_data['x']
+            self.ball.y = ball_data['y']
+            self.ball.dx = ball_data['dx']
+            self.ball.dy = ball_data['dy']
+            self.ball.size = ball_data['size']
         # right_paddle
         right_paddle_data = data['right_paddle']
-        self.right_paddle.x = right_paddle_data['x']
-        self.right_paddle.y = right_paddle_data['y']
-        self.right_paddle.thickness = right_paddle_data['horizontal']
-        self.right_paddle.length = right_paddle_data['vertical']
-        self.right_paddle.score = right_paddle_data['score']
+        if right_paddle_data is not None:
+            self.right_paddle.x = right_paddle_data['x']
+            self.right_paddle.y = right_paddle_data['y']
+            self.right_paddle.thickness = right_paddle_data['horizontal']
+            self.right_paddle.length = right_paddle_data['vertical']
+            self.right_paddle.score = right_paddle_data['score']
         # left_paddle
         left_paddle_data = data['left_paddle']
-        self.left_paddle.x = left_paddle_data['x']
-        self.left_paddle.y = left_paddle_data['y']
-        self.left_paddle.thickness = left_paddle_data['horizontal']
-        self.left_paddle.length = left_paddle_data['vertical']
-        self.left_paddle.score = left_paddle_data['score']
+        if left_paddle_data is not None:
+            self.left_paddle.x = left_paddle_data['x']
+            self.left_paddle.y = left_paddle_data['y']
+            self.left_paddle.thickness = left_paddle_data['horizontal']
+            self.left_paddle.length = left_paddle_data['vertical']
+            self.left_paddle.score = left_paddle_data['score']
 
     @database_sync_to_async
     def auhtnticate_jwt(self, jwt):
