@@ -75,6 +75,9 @@ class Paddle(Block):
     def decrement_score(self):
         self.score -= 1
 
+    def reset(self):
+        self.score = 0
+
 
 class Ball:
     def __init__(self, x, y, size):
@@ -110,12 +113,12 @@ class Ball:
         if self.x + self.size + self.dx < 0:
             paddle1.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle1.score < 10
+            return paddle1.score < 1
         # 右の壁との衝突判定
         elif self.x + self.dx > CANVAS_WIDTH:
             paddle2.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle2.score < 10
+            return paddle2.score < 1
         # 衝突判定がTrueの場合はpaddleにballを接触させるように
         # x座標の操作
         if collision_with_paddle1 == "collision_front":

@@ -12,11 +12,7 @@ export default class extends PageBase {
         this.player1 = 'player1人目'; // TODO json
         this.player2 = 'player2人目';
         //afterRenderにmethod追加
-        if (history.state && history.state.player_name) {
-            this.player_name = history.state.player_name;
-            console.log('player name: ', this.player_name);
-        }
-        this.addAfterRenderHandler(this.initGame(this.player_name));
+        this.addAfterRenderHandler(this.initGame.bind(this));
     }
 
     async renderHtml() {
@@ -31,7 +27,7 @@ export default class extends PageBase {
         `;
     }
 
-    async initGame(player_name) {
+    async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
             const containerId = `pong/${gameMatchId}`;
@@ -141,18 +137,15 @@ export default class extends PageBase {
             }
 
             function sendKeyEvent(key, is_pressed) {
-                console.log("======= ", player_name, " =======");
                 let data = {
-                    message: 'key_event',
+                    action: 'key_event',
                     key: key,
                     is_pressed: is_pressed,
-                    player_name: player_name,
                 };
                 pongSocket.send(JSON.stringify(data));
             }
 
             pongSocket.onmessage = function (e) {
-                console.log("======= ", player_name, " =======");
                 try {
                     const data = JSON.parse(e.data);
                     // document.querySelector('#pong-log').value += (data.message + '\n');
