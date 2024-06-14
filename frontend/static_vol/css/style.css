@@ -1367,86 +1367,127 @@ input.has-input:invalid {
 }
 
 .blockTournamentMatch {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .blockTournamentMatch_vs {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding-top: 12px;
+  width: 60px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
   letter-spacing: 0.1em;
   font-size: 1.4rem;
 }
 
-.blockTournamentMatch_vs::before,
-.blockTournamentMatch_vs::after {
-  content: "";
-  display: block;
-  width: 2em;
-  height: 1px;
-  margin: 0 0.5em;
-  background-color: var(--color-white);
-}
-
 .unitMatchPlayer {
+  position: relative;
   display: flex;
-  align-items: center;
+  flex: 0 0 calc(50% - 30px);/* blockTournamentMatch_vs width: 60px */
   justify-content: space-between;
   padding: 12px 0;
 }
 
-.unitMatchPlayer_title {
+.unitMatchPlayer:first-child {
+  flex-direction: row-reverse;
+  /*padding-left: 66px; !* for unitMatchPlayer_result *!*/
+}
+
+.unitMatchPlayer:last-child {
+  /*padding-right: 66px; !* for unitMatchPlayer_result *!*/
+}
+
+.unitMatchPlayer_header {
+  position: relative;
   flex: 0 0 calc(100% - 110px);
-  display: flex;
-  align-items: center;
   font-size: 1.4rem;
   word-break: break-all;
 }
 
-.unitMatchPlayer_title img {
-  margin-right: 10px;
+.unitMatchPlayer:first-child .unitMatchPlayer_header {
+  text-align: right;
+}
+
+.unitMatchPlayer:last-child .unitMatchPlayer_header {
+
+}
+
+.unitMatchPlayer_title {
+
+}
+
+.unitMatchPlayer:first-child .unitMatchPlayer_title {
+  margin-left: -110px;
+}
+
+.unitMatchPlayer:last-child .unitMatchPlayer_title {
+  margin-right: -110px;
+}
+
+.unitMatchPlayer_header img {
+  display: block;
+}
+
+.unitMatchPlayer:first-child .unitMatchPlayer_header img {
+  margin: 0 0 0 auto;
 }
 
 .unitMatchPlayer_result {
   background-color: var(--content-color2);
   width: 55px;
+  height: 1.5em;
+  line-height: 1.5;
+  margin-top: 10px;
   text-align: center;
   font-size: 1.2rem;
 }
 
+.unitMatchPlayer:first-child .unitMatchPlayer_result {
+  left: 0;
+}
+
+.unitMatchPlayer:last-child .unitMatchPlayer_result {
+  right: 0;
+}
+
 .unitMatchPlayer_score {
-  width: 42px;
+  flex: 0 0 42px;
+  height: 50px;
   font-size: 2.1rem;
+}
+
+.unitMatchPlayer:first-child .unitMatchPlayer_score {
+
+}
+
+.unitMatchPlayer:last-child .unitMatchPlayer_score {
   text-align: right;
 }
 
-.unitMatchPlayer_score:last-child {
+.unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+  margin-left: 62px;
+}
+
+.unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
   margin-right: 62px;
 }
 
 @media screen and (min-width: 768px) {
   .blockTournamentMatch {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
   }
 
   .blockTournamentMatch_vs {
-    width: 60px;
-    text-align: center;
-  }
-
-  .blockTournamentMatch_vs::before,
-  .blockTournamentMatch_vs::after {
-    content: normal;
+    padding-top: 0;
   }
 
   .unitMatchPlayer {
-    position: relative;
-    flex: 0 0 calc(50% - 30px);/* blockTournamentMatch_vs width: 60px */
+    align-items: center;
   }
 
   .unitMatchPlayer:first-child {
-    flex-direction: row-reverse;
     padding-left: 66px; /* for unitMatchPlayer_result */
   }
 
@@ -1454,20 +1495,35 @@ input.has-input:invalid {
     padding-right: 66px; /* for unitMatchPlayer_result */
   }
 
-  .unitMatchPlayer_title {
+  .unitMatchPlayer_header {
     flex: 1 1 auto;
+    display: flex;
+    align-items: center;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_title {
+  .unitMatchPlayer:first-child .unitMatchPlayer_header {
     flex-direction: row-reverse;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_title img {
+  .unitMatchPlayer_header img {
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .unitMatchPlayer:first-child .unitMatchPlayer_header img {
     margin-right: 0;
     margin-left: 10px;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_title img {
+  .unitMatchPlayer_title {
+
+  }
+
+  .unitMatchPlayer:first-child .unitMatchPlayer_title {
+    margin-left: 10px;
+  }
+
+  .unitMatchPlayer:last-child .unitMatchPlayer_title {
     margin-right: 10px;
   }
 
@@ -1475,30 +1531,12 @@ input.has-input:invalid {
     position: absolute;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_result {
-    left: 0;
+  .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+    margin-left: 0;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_result {
-    right: 0;
-  }
-
-  .unitMatchPlayer_score {
-    display: flex;
-    justify-content: space-between;
-    flex: 0 0 42px;
-  }
-
-  .unitMatchPlayer_score:last-child {
+  .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
     margin-right: 0;
-  }
-
-  .unitMatchPlayer:first-child .unitMatchPlayer_score:after {
-    content: "";
-  }
-
-  .unitMatchPlayer:last-child .unitMatchPlayer_score:before {
-    content: "";
   }
 }
 
