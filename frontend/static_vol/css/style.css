@@ -1270,7 +1270,20 @@ input.has-input:invalid {
   background-color: var(--color-black-alpha3);
   border: 1px solid var(--content-color1);
   box-shadow: -1px -1px var(--content-color1),
-  1px 1px var(--content-color2);
+    1px 1px var(--content-color2);
+  translate: 100px 0;
+  opacity: 0;
+  transition: translate 0.3s ease, opacity 0.4s ease;
+}
+
+.unitNotice-appear {
+  translate: 0 0;
+  opacity: 1;
+}
+
+.unitNotice-disappear {
+  translate: -100px 0;
+  opacity: 0;
 }
 
 .unitNotice-error {

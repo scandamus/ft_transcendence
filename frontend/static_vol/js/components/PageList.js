@@ -2,6 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { showModalReceiveMatchRequest } from '../modules/modal.js';
+import { addNotice } from "../modules/notice.js";
 
 export default class extends PageBase {
     constructor(params) {
@@ -9,6 +10,7 @@ export default class extends PageBase {
         this.setTitle('PageList');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenReceiveReqMatch.bind(this));
+        this.addAfterRenderHandler(this.listenAddNotice.bind(this));
     }
 
     async renderHtml() {
@@ -27,6 +29,8 @@ export default class extends PageBase {
                 <li><a href="/tournament/match" data-link>tournament(match)</a></li>
             </ul>
             <ul>
+            
+                <li><a class="addNotice" href="#">addNotice</a></li>
                 <li><button type="submit" class="unitFriendButton_receiveReqMatch unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">対戦を受ける</button></li>
             </ul>
         `;
@@ -39,5 +43,11 @@ export default class extends PageBase {
             btn.addEventListener('click', showModalReceiveMatchRequest.bind(this));
             this.addListenEvent(btn, showModalReceiveMatchRequest, 'click');
         });
+    }
+
+    listenAddNotice() {
+        const btnAddNotice = document.querySelector('.addNotice');
+        btnAddNotice.addEventListener('click', addNotice.bind(this));
+        this.addListenEvent(btnAddNotice, addNotice, 'click');
     }
 }
