@@ -6,6 +6,7 @@
 ----- */
 :root {
   --heightMainHeader: 60px;
+  --baseContentWidth: 1000px;
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
@@ -193,7 +194,7 @@ hr {
 
 .mainContainer_content {/* #app */
   width: 90%;
-  max-width: 800px;
+  max-width: var(--baseContentWidth);
   margin: 0 auto;
 }
 
@@ -1577,7 +1578,7 @@ input.has-input:invalid {
   position: fixed;
   width: 70%;
   min-height: 300px;
-  max-width: 800px;
+  max-width: var(--baseContentWidth);
   inset: 50% auto auto 50%;
   translate: -50% -50%;
   padding: 30px;
