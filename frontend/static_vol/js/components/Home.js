@@ -72,7 +72,14 @@ export default class extends PageBase {
             .then(data => {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
-                webSocketManager.openWebSocket('lounge', pongHandler);
+                webSocketManager.openWebSocket('lounge', pongHandler)
+                    .then(() => {
+                        //return webSocketManager.sendAccessToken('lounge');
+                        return;
+                    })
+                    .catch((error) => {
+                        console.error('WebSocket connection or token send failed', error);
+                    });
                 return getUserInfo();
             })
             .then((userData) => {
