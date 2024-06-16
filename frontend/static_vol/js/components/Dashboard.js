@@ -8,11 +8,15 @@ import { showModalSendMatchRequest } from '../modules/modal.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
+
         this.playerNameTmp = 'playername';
-        this.setTitle(`Dashboard: ${this.playerNameTmp}`);
+        this.title = `Dashboard: ${this.playerNameTmp}`;
         this.labelMatch = '対戦する';
         this.labelAccept = '承諾';
         this.labelDecline = '削除';
+
+        this.setTitle(this.title);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
     }

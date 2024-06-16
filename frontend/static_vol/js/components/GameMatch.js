@@ -5,8 +5,12 @@ import PageBase from './PageBase.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('GameMatch');
+
+        this.title = 'GameMatch';
         this.labelButton = '対戦を申し込む'; // TODO json
+
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
     }
 
     // async getListPlayers() {

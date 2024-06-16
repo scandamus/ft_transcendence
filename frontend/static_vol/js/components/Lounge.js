@@ -6,13 +6,18 @@ import { showModalWaitForOpponent } from "../modules/modal.js";
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('Lounge');
+
+        this.title = 'Lounge';
         this.labelMatch = 'ルームに入る';
         this.labelCreateRoom = 'ルーム作成';
         this.labelDualGame = '2人対戦';
         this.labelQuadGame = '4人対戦';
         this.labelCapacity = '定員';
         this.labelAvailable = '募集中';
+
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateRoom.bind(this));
     }
@@ -93,10 +98,6 @@ export default class extends PageBase {
                     </div>
                 </section>
             </div>
-            <ol class="breadcrumb">
-            <li><a href="/">dashboard</a></li>
-            <li>Lounge</li>
-            </ol>
         `;
     }
 

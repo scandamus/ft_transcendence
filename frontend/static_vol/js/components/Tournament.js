@@ -6,7 +6,8 @@ import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('Tournament');
+
+        this.title = 'Tournament';
         this.labelCreateTournament = 'Create Tournament'; // TODO json
         this.labelTournamentTitle = 'Tournament Title';
         this.labelStart = 'Start Time';
@@ -15,6 +16,10 @@ export default class extends PageBase {
         this.labelTitleUpcoming = 'Upcoming';
         this.labelTitleInPlay = 'InPlay';
         this.labelTitleRecent = 'Recent';
+
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
         this.addAfterRenderHandler(this.listenCancelTournament.bind(this));
@@ -147,10 +152,6 @@ export default class extends PageBase {
                     </div>
                 </section>
             </div>
-            <ol class="breadcrumb">
-                <li><a href="/">dashboard</a></li>
-                <li>Tournament</li>
-            </ol>
         `;
     }
 

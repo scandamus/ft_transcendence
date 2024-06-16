@@ -10,10 +10,14 @@ import { pongHandler } from '../modules/WebsocketHandler.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('LOGIN');
+
+        this.title = 'LOGIN';
         this.labelButtonLogin = 'LOGIN'; // TODO json
         this.txtSignUp = 'Don\'t have an account?'; // TODO json
         this.labelLinkSignUp = 'SIGN UP'; // TODO json
+
+        this.setTitle(this.title);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
     }

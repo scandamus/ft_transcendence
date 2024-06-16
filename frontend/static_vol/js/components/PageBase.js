@@ -1,5 +1,7 @@
 'use strict';
 
+import { addLinkPageEvClick } from "../modules/router.js";
+
 export default class PageBase {
     static instance = null;
 
@@ -8,11 +10,28 @@ export default class PageBase {
         this.params = params;
         this.listAfterRenderHandlers = [];
         this.listEventListeners = [];
+        this.title = '';
+        this.breadcrumbLinks = [
+            { href: '/', text: 'dashboard' }
+        ];
     }
 
     setTitle(title) {
         document.title = title;
         document.getElementById('titlePage').innerText = title;
+    }
+
+    generateBreadcrumb(title, breadcrumbLinks) {
+        const breadcrumbWrapper = document.getElementById('navBreadcrumb');
+        let olHtml = '<ol class="breadcrumb">';
+        breadcrumbLinks.forEach((link, index) => {
+            olHtml += `<li><a href="${link.href}" data-link>${link.text}</a></li>`;
+        });
+        olHtml += `<li>${title}</li>`
+        olHtml += '</ol>';
+        breadcrumbWrapper.innerHTML = olHtml;
+        const linkBreadcrumb = document.querySelectorAll('#navBreadcrumb a[data-link]');
+        addLinkPageEvClick(linkBreadcrumb);
     }
 
     async renderHtml() {

@@ -6,7 +6,11 @@ import { showModalReceiveMatchRequest } from '../modules/modal.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('PageList');
+
+        this.title = 'PageList';
+
+        this.setTitle(this.title);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenReceiveReqMatch.bind(this));
     }

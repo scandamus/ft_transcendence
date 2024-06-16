@@ -6,8 +6,12 @@ import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('TournamentTitle1');
-        this.labelTitleRecent = 'Recent';
+
+        this.title = 'TournamentTitle1';
+        this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
+
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
     }
 
     async renderHtml() {
@@ -313,11 +317,6 @@ export default class extends PageBase {
                     </div>
                 </section>
             </div>
-            <ol class="breadcrumb">
-                <li><a href="/" data-link>dashboard</a></li>
-                <li><a href="/tournament" data-link>Tournament</a></li>
-                <li>unitTournament_title</li>
-            </ol>
         `;
     }
 }

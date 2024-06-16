@@ -7,11 +7,15 @@ import { addErrorMessageCustom, checkInputValid } from '../modules/form.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('SIGN UP');
+
+        this.title = 'SIGN UP';
         this.labelButton = '確認する'; // TODO json
         this.descUsername = ['[使用可能]半角英小文字,半角数字,記号(_)','[必須]半角英小文字,半角数字のいずれか','3〜32文字'];
         this.descPassword = ['[使用可能]半角英数字と記号(@_#$%&!.,+*~\')','[必須]英小文字,英大文字,数字,記号,それぞれ1文字','8〜24文字'];
         this.descPasswordConfirm = '確認のためパスワードをもう一度入力してください';
+
+        this.setTitle(this.title);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenConfirm.bind(this));
         this.addAfterRenderHandler(this.restoreInputForm.bind(this));

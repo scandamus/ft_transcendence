@@ -6,9 +6,13 @@ import { router, routes } from '../modules/router.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('SIGN UP');
+
+        this.title = 'SIGN UP';
         this.message = '登録完了しました'; // TODO json
         this.labelButtonLogin = 'LOGIN'; // TODO json
+
+        this.setTitle(this.title);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.checkRegisterFlow.bind(this));
     }

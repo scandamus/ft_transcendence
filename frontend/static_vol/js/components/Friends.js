@@ -7,13 +7,18 @@ import { showModalSendMatchRequest } from '../modules/modal.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('Friends');
+
+        this.title = 'Friends';
         this.labelMatch = '対戦する';
         this.labelRmFriend = '友達解除';
         this.labelAccept = '承諾';
         this.labelDecline = '削除';
         this.labelApply = '友達申請';
         this.labelSearch = '検索';
+
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
     }
@@ -124,10 +129,6 @@ export default class extends PageBase {
                     </section>
                 </div>
             </div>
-            <ol class="breadcrumb">
-            <li><a href="/">dashboard</a></li>
-            <li>Friends</li>
-            </ol>
         `;
     }
 
