@@ -14,7 +14,6 @@ export default class extends PageBase {
         this.labelAccept = '承諾';
         this.labelDecline = '削除';
         this.labelApply = '友達申請';
-        this.labelSearch = '検索';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
         this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
@@ -69,7 +68,7 @@ export default class extends PageBase {
                         <h3 class="blockSearchFriend_title unitTitle1">Search Friends</h3>
                         <form action="" method="post" class="blockSearchFriend_form blockForm">
                             <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required></p>
-                            <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${this.labelSearch}</button></p>
+                            <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${this.labelApply}</button></p>
                             <ul class="listError"></ul>
                         </form>
                     </section>

@@ -1003,18 +1003,20 @@ input.has-input:invalid {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  padding: 20px 0;
+  padding: 8px 0 20px;
 }
 
 .blockSearchFriend_form .blockForm_input {
   flex: 1 0 auto;
+  margin: 12px 0 0;
+  padding-right: 5px;
 }
 
 .blockSearchFriend_form .blockForm_input input {
   width: 100%;
 }
 .blockSearchFriend_form .blockForm_button {
-  margin: 0 0 0 20px;
+  margin: 12px 0 0;
 }
 
 .blockSearchFriend_form .listError {
