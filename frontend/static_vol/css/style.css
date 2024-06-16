@@ -233,6 +233,7 @@ hr {
           -0.05em -0.07em var(--content-color2);
   font-size: 1.3rem;
   color: var(--color-white);
+  word-break: keep-all;
 }
 
 .unitButton:hover {
@@ -992,6 +993,8 @@ input.has-input:invalid {
 .blockSearchFriend_form {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   padding: 20px 0;
 }
 
@@ -1004,6 +1007,10 @@ input.has-input:invalid {
 }
 .blockSearchFriend_form .blockForm_button {
   margin: 0 0 0 20px;
+}
+
+.blockSearchFriend_form .listError {
+  flex: 0 0 100%;
 }
 
 /*UserRegister*/

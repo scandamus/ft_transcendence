@@ -3,6 +3,7 @@
 import PageBase from './PageBase.js';
 import { getUserList } from "../modules/users.js";
 import { showModalSendMatchRequest } from '../modules/modal.js';
+import { checkSimpleInputValid } from "../modules/form.js";
 
 export default class extends PageBase {
     constructor(params) {
@@ -16,6 +17,7 @@ export default class extends PageBase {
         this.labelSearch = '検索';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
     }
 
     async renderHtml() {
@@ -66,8 +68,9 @@ export default class extends PageBase {
                     <section class="blockSearchFriend">
                         <h3 class="blockSearchFriend_title unitTitle1">Search Friends</h3>
                         <form action="" method="post" class="blockSearchFriend_form blockForm">
-                            <p class="blockForm_input"><input type="text" id="inputFriendsName" placeholder="Enter friend's name" minlength="3" maxlength="32"></p>
-                            <p class="blockForm_button"><button type="submit" id="btnPlayerSearch" class="unitButton">${this.labelSearch}</button></p>
+                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" minlength="3" maxlength="32" required></p>
+                            <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${this.labelSearch}</button></p>
+                            <ul class="listError"></ul>
                         </form>
                     </section>
                     <section class="blockFriendRecommended">
@@ -144,5 +147,28 @@ export default class extends PageBase {
             btn.addEventListener('click', showModalSendMatchRequest.bind(this));
             this.addListenEvent(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
         });
+    }
+
+    listenSearchFriends() {
+        const btnSearchFriend = document.getElementById('btnSearchFriend');
+        btnSearchFriend.addEventListener('click', this.searchAndSendFriendRequest.bind(this));
+        this.addListenEvent(btnSearchFriend, this.searchAndSendFriendRequest, 'click');//todo: rm 確認
+    }
+
+    searchAndSendFriendRequest(ev) {
+        ev.preventDefault();
+
+        const inputFriendsName = document.getElementById('inputFriendsName');
+        checkSimpleInputValid(inputFriendsName);
+        if (!ev.target.closest('form').checkValidity()) {
+            return;
+        }
+        if (inputFriendsName.value === "000") {
+            console.log("〜に友達申請を送りました");
+        } else if (inputFriendsName.value === "111") {
+            console.log("〜は存在しません");
+        } else {
+            console.log("〜はすでに友達です");
+        }
     }
 }
