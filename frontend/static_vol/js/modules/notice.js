@@ -11,8 +11,10 @@ const addNoticeMod = async　(textNotice, isError) => {
     `;
     elNoticeWrap.insertAdjacentHTML('beforeend', elNoticeHtml);
     const newNotice = elNoticeWrap.lastElementChild;
+    newNotice.querySelector('.unitNotice_button')
+        .addEventListener('click', ()=>{removeNoticeMod(newNotice)}, { once: true });
     setTimeout(() => {
-    newNotice.classList.add('unitNotice-appear');
+        newNotice.classList.add('unitNotice-appear');
     }, 5);
     await new Promise(resolve => {
         newNotice.addEventListener('transitionend', resolve, { once: true });
@@ -22,10 +24,12 @@ const addNoticeMod = async　(textNotice, isError) => {
 }
 
 const removeNoticeMod =　(elNotice) => {
-    elNotice.classList.add('unitNotice-disappear');
-    elNotice.addEventListener('transitionend', () => {
-        elNotice.remove();
-    }, { once: true });
+    if (elNotice && document.body.contains(elNotice)) {
+        elNotice.classList.add('unitNotice-disappear');
+        elNotice.addEventListener('transitionend', () => {
+            elNotice.remove();
+        }, { once: true });
+    }
 }
 
 export { addNoticeMod, removeNoticeMod };
