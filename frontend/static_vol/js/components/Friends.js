@@ -1,9 +1,9 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { getUserList } from "../modules/users.js";
-import { join_game } from "../modules/match.js";
-import { showModal } from "../modules/modal.js";
+//import { getUserList } from "../modules/users.js";
+//import { join_game } from "../modules/match.js";
+//import { showModal } from "../modules/modal.js";
 import { webSocketManager } from '../modules/websocket.js';
 import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
@@ -11,17 +11,17 @@ import { fetchFriends, fetchFriendRequests } from '../modules/friendsApi.js';
 import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend } from '../modules/friendsRequest.js';
 import { labels } from '../modules/labels.js';
 import { pageInstances } from '../modules/pageInstances.js';
+import { showModalSendMatchRequest } from '../modules/modal.js';
 
 export default class Friends extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('Friends');
-
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
         pageInstances.setInstance('Friends', this);
 
-        this.showModalMatchRequestBound = this.showModalMatchRequest.bind(this);
+        this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
         this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
         this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
         this.removeFriendHandlerBound = this.removeFriendHandler.bind(this);
@@ -169,6 +169,10 @@ export default class Friends extends PageBase {
         }
     }
 
+    showModalSendMatchRequestHandler(ev) {
+        showModalSendMatchRequest(ev);
+    }
+
     acceptFriendRequestHandler(requestId) {
         acceptFriendRequest(requestId);
     }
@@ -184,7 +188,7 @@ export default class Friends extends PageBase {
     removeEventListeners() {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
         btnMatchRequest.forEach((btn) => {
-            btn.removeEventListener('click', this.showModalMatchRequestBound);
+            btn.removeEventListener('click', this.showModalSendMatchRequestHandlerBound);
             console.log(`Removed match request listener from ${btn.dataset.username}`);
         });
     
@@ -216,7 +220,7 @@ export default class Friends extends PageBase {
 
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', this.showModalMatchRequestBound);
+            btn.addEventListener('click', this.showModalSendMatchRequestHandlerBound);
             this.addListenEvent(btn, this.showModalMatchRequest, 'click');
             console.log(`Added match request listener to ${btn.dataset.username}`);
         });
@@ -278,30 +282,5 @@ export default class Friends extends PageBase {
         } finally {
             document.getElementById('inputFriendsName').value = '';
         }
-    }
-
-    showModalMatchRequest(ev) {
-        const button = ev.target;
-        const elHtml = `
-            <section class="blockModal">
-                <h2 class="blockModal_title">対戦を申し込みました</h2>
-                <section class="blockOpponent">
-                    <h4 class="blockOpponent_name">${button.dataset.username}</h4>
-                    <p class="blockOpponent_thumb"><img src="${button.dataset.avatar}" alt="" width="200" height="200"></p>
-                </section>
-                <p class="blockBtnCancel">
-                    <button type="button" class="blockBtnCancel_button unitButton unitButton-small">${labels.labelCancel}</button>
-                </p>
-                <div id="indicator" class="blockModal_indicator unitIndicator">
-                    <div class="unitIndicator_bar"></div>
-                </div>
-            </section>
-        `;
-
-        //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-        join_game()
-            .then(r => {
-                showModal(elHtml);
-            });
     }
 }

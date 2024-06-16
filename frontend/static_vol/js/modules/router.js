@@ -6,6 +6,7 @@ import Home from '../components/Home.js';
 import PageList from '../components/PageList.js';
 import Dashboard from '../components/Dashboard.js';
 import Friends from '../components/Friends.js';
+import Lounge from '../components/Lounge.js';
 import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
@@ -26,6 +27,7 @@ const routes = {
     registerComplete: {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
     dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
     friends:  { path: '/friends', view: Friends, isProtected: true },
+    lounge: {path: '/lounge', view: Lounge, isProtected: true},
     gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
     gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
     tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
