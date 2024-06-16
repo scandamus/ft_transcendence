@@ -4,7 +4,9 @@
 import PageBase from '../components/PageBase.js';
 import Home from '../components/Home.js';
 import PageList from '../components/PageList.js';
-import User from '../components/User.js';
+import Dashboard from '../components/Dashboard.js';
+import Friends from '../components/Friends.js';
+import Lounge from '../components/Lounge.js';
 import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
@@ -22,12 +24,13 @@ const routes = {
     register: {path: '/register', view: UserRegister, isProtected: false},
     registerConfirm: {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
     registerComplete: {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
-    user: {path: '/user', view: User, isProtected: true},
+    dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
+    friends:  { path: '/friends', view: Friends, isProtected: true },
+    lounge: {path: '/lounge', view: Lounge, isProtected: true},
     gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
     gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
     tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
     tournamentMatch: {path: '/tournament/match', view: TournamentMatch, isProtected: true},
-    //userId:  { path: '/user/:id', components: user },
 };
 
 //認証の必要なページ
@@ -64,11 +67,6 @@ const addLinkPageEvClick = (linkPages) => {
             }
         });
     });
-}
-
-//認証の必要なページかチェック(protectedRoutesに定義したディレクトリ名始まりか判定)
-const checkProtectedRoute = (path) => {
-    return (protectedRoutes.some(route => route.test(path)));
 }
 
 const replaceView = async (matchRoute) => {
@@ -128,10 +126,10 @@ const router = async (accessToken) => {
         };
     } else if (accessToken && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
-        window.history.pushState({}, '', routes.user.path);
+        window.history.pushState({}, '', routes.dashboard.path);
         matchRoute = {
-            route: routes.user,
-            result: routes.user.path
+            route: routes.dashboard,
+            result: routes.dashboard.path
         };
     }
     await replaceView(matchRoute);
