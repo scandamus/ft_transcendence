@@ -162,12 +162,13 @@ export default class extends PageBase {
         if (!ev.target.closest('form').checkValidity()) {
             return;
         }
-        if (inputFriendsName.value === "000") {
-            this.addNotice("〜に友達申請を送りました", false);
-        } else if (inputFriendsName.value === "111") {
-            this.addNotice("〜は存在しません", true);
+        const friendsName = inputFriendsName.value;
+        if (friendsName === "000") {
+            this.addNotice(`${friendsName}に友達申請を送りました`, false);
+        } else if (friendsName === "111") {
+            this.addNotice(`${friendsName}は存在しません`, true);
         } else {
-            this.addNotice("〜はすでに友達です", true);
+            this.addNotice(`${friendsName}はすでに友達です`, true);
         }
         inputFriendsName.value = '';
     }
