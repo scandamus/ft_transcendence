@@ -21,16 +21,21 @@ async def handle_join_game(consumer, token):
     user, error = await authenticate_token(token)
     if user:
         player = await get_player_from_user(user)
-        consumer.players[user.username] = {
+        if not player:
+            logger.error(f"No player found for user: {user.username}")
+        consumer.gamePlayers[user.username] = {
             'user': user,
             'players_id': player.id,
             'websocket': consumer
         }
         logger.info(f"user={user.username} requesting new game match")
-        if len(consumer.players) == 2:
-            players_list = list(consumer.players.values())
+        if len(consumer.gamePlayers) == 2:
+            logger.debug("Two players found, starting match creation process")
+            players_list = list(consumer.gamePlayers.values())
+            logger.info(f'Players list: {players_list}')
             player1 = await get_player_from_user(players_list[0]['user'])
             player2 = await get_player_from_user(players_list[1]['user'])
+            logger.debug(f"Player 1: {player1.id}, Player 2: {player2.id}")
             match = await create_match(player1, player2)
             for player in players_list:
                 game_token = await issue_jwt(player['user'], player['players_id'], match.id)
@@ -40,7 +45,7 @@ async def handle_join_game(consumer, token):
                     'username': player['user'].username,
                     'match_id': match.id
                 }))
-                consumer.players.clear()
+                consumer.gamePlayers.clear()
     else:
         logger.error('Error: Authentication Failed')
         logger.error(f'error={error}')
@@ -50,8 +55,8 @@ async def handle_join_game(consumer, token):
         }))
         
 async def handle_join_game_cancel(consumer):
-    if hasattr(consumer, 'user') and consumer.user.username in consumer.players:
-        del consumer.players[consumer.user.username]
+    if hasattr(consumer, 'user') and consumer.user.username in consumer.gamePlayers:
+        del consumer.gamePlayers[consumer.user.username]
         logger.info(f'{consumer.user.username}: cancel accepted.')
 
 @database_sync_to_async

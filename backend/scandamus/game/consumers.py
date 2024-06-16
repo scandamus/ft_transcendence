@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 class LoungeSession(AsyncWebsocketConsumer):
     players = {}
+    gamePlayers = {}
 
     async def connect(self):
         await self.accept()

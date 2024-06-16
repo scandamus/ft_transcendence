@@ -34,14 +34,19 @@ class WebSocketManager {
                 console.log(`WebSocket for ${containerId} is open now.`);
                 this.sockets[containerId] = socket;
                 this.messageHandlers[containerId] = messageHandler || this.defaultMessageHandler(this, containerId);
-                this.sendAccessToken(containerId)
-                    .then(() => {
-                        resolve(socket);
-                    })
-                    .catch((error) => {
-                        console.error(`Failed to send access token for ${containerId}: `, error);
-                        reject(error);
-                    });
+                if (containerId === 'lounge') {
+                    this.sendAccessToken(containerId)
+                        .then(() => {
+                            console.log(`Sent access token to ${containerId}`);
+                            resolve(socket);
+                        })
+                        .catch((error) => {
+                            console.error(`Failed to send access token for ${containerId}: `, error);
+                            reject(error);
+                        });
+                } else {
+                    resolve(socket);
+                }
             };
 
             socket.onmessage = (event) => {
