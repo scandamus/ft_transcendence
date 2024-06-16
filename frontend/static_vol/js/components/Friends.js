@@ -68,7 +68,7 @@ export default class extends PageBase {
                     <section class="blockSearchFriend">
                         <h3 class="blockSearchFriend_title unitTitle1">Search Friends</h3>
                         <form action="" method="post" class="blockSearchFriend_form blockForm">
-                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" minlength="3" maxlength="32" required></p>
+                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required></p>
                             <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${this.labelSearch}</button></p>
                             <ul class="listError"></ul>
                         </form>
