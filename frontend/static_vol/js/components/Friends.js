@@ -157,18 +157,18 @@ export default class extends PageBase {
 
     searchAndSendFriendRequest(ev) {
         ev.preventDefault();
-
         const inputFriendsName = document.getElementById('inputFriendsName');
         checkSimpleInputValid(inputFriendsName);
         if (!ev.target.closest('form').checkValidity()) {
             return;
         }
         if (inputFriendsName.value === "000") {
-            console.log("〜に友達申請を送りました");
+            this.addNotice("〜に友達申請を送りました", false);
         } else if (inputFriendsName.value === "111") {
-            console.log("〜は存在しません");
+            this.addNotice("〜は存在しません", true);
         } else {
-            console.log("〜はすでに友達です");
+            this.addNotice("〜はすでに友達です", true);
         }
+        inputFriendsName.value = '';
     }
 }
