@@ -211,7 +211,7 @@ export default class Dashboard extends PageBase {
             <section class="blockModal">
                 <h2 class="blockModal_title">対戦を申し込みました</h2>
                 <section class="blockOpponent">
-                    <h4 class="blockOpponent_name">${button.dataset.name}</h4>
+                    <h4 class="blockOpponent_name">${button.dataset.username}</h4>
                     <p class="blockOpponent_thumb"><img src="${button.dataset.avatar}" alt="" width="200" height="200"></p>
                 </section>
                 <p class="blockBtnCancel">
