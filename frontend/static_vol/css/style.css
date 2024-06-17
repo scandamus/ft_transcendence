@@ -605,8 +605,7 @@ input.has-input:invalid {
 }
 
 .blockForm_el {
-  width: 50%;
-  min-width: 20em;
+  width: 100%;
   margin: 0 auto 1.2em;
   font-size: 2.6rem;
 }
@@ -655,6 +654,13 @@ input.has-input:invalid {
   padding: 0 0.5em;
   font-size: 2.6rem;
   background-color: var(--color-black-alpha2);
+}
+
+@media screen and (min-width: 768px) {
+  .blockForm_el {
+    width: 50%;
+    min-width: 20em;
+  }
 }
 
 /* .thumb */
@@ -1007,7 +1013,7 @@ input.has-input:invalid {
 
 /*UserRegister*/
 .formUserRegister {
-  width: 70%;
+  width: 100%;
   margin: 0 auto;
   text-align: center;
   font-size: 1.8rem;
@@ -1022,6 +1028,12 @@ input.has-input:invalid {
   padding: 0.5em;
   text-align: center;
   font-size: 2.9rem;;
+}
+
+@media screen and (min-width: 768px) {
+  .formUserRegister {
+    width: 70%;
+  }
 }
 
 /* formCreateRoom */
