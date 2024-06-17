@@ -63,8 +63,9 @@ a {
   color: var(--color-white);
 }
 
-a:hover {
-  opacity: 0.7;
+a:not(.unitButton):hover {
+  animation: 0.2s ease-out linkHover1;
+  opacity: 1;
 }
 
 button {
@@ -528,12 +529,6 @@ hr {
 
 }
 
-.unitLinkText a:hover {
-  /*text-shadow: -0.06em -0.06em var(--content-color1), 0.05em 0.07em var(--content-color2);*/
-  animation: 0.2s ease-out linkHover1;
-  opacity: 1;
-}
-
 .unitLinkText a::after {
   content: ">";
   display: inline-block;
@@ -551,13 +546,13 @@ hr {
 
 @keyframes linkHover1 {
   0% {
-    text-shadow: 0.06em 0.06em var(--content-color1), -0.05em -0.07em var(--content-color2);
+    text-shadow: 1.3px 1.2px var(--content-color1), -1.2px -1.3px var(--content-color2);
   }
   50% {
-    text-shadow: 0.14em 0.06em var(--content-color1), -0.14em -0.07em var(--content-color2);
+    text-shadow: 3px 2px var(--content-color1), -3px -2px var(--content-color2);
   }
   100% {
-    text-shadow: 0.06em 0.06em var(--content-color1), -0.05em -0.07em var(--content-color2);
+    text-shadow: 1.3px 1.2px var(--content-color1), -1.2px -1.3px var(--content-color2);
   }
 }
 
@@ -685,11 +680,6 @@ input.has-input:invalid {
 
 .breadcrumb a {
   text-decoration: underline;
-}
-
-.breadcrumb a:hover {
-  animation: 0.2s ease-out linkHover1;
-  opacity: 1;
 }
 
 
@@ -1183,7 +1173,7 @@ input.has-input:invalid {
   transition: translate 0.1s ease;
 }
 
-.unitTournament-link a:hover {
+.unitTournament-link a:hover .unitTournament_title {
   animation: 0.2s ease-out linkHover1;
   opacity: 1;
 }
