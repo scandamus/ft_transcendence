@@ -62,6 +62,11 @@ export default class PageBase {
     // eventListeners解除
     // todo:解除確認
     destroy() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+
         this.listEventListeners.forEach(listener => {
             listener.element.removeEventListener(listener.event, listener.callback);
         });
