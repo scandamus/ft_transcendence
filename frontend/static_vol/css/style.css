@@ -50,10 +50,23 @@ ul, ol {
   padding: 0;
 }
 
-a, li, p, dt, dd, h1, h2, h3, h4, h5, h6, button, label, small, strong, span {
+li, p, dt, dd, h3, h4, h5, h6, button, label, small, span, a.unitButton {
   text-shadow:
-          0.06em 0.06em var(--content-color1),
-          -0.05em -0.07em var(--content-color2);
+          0.055em 0.05em var(--content-color1),
+          -0.05em -0.055em var(--content-color2);
+}
+
+h1, h2, strong,
+.unitTitle1, .unitTitle2,
+.blockForm_el dt,
+.blockPlayerDetail_score,
+.unitRanker_rank::before,
+.unitRanker_user,
+.unitMatchPlayer_score,
+.unitTextComplete {
+  text-shadow:
+          0.04em 0.04em var(--content-color1),
+          -0.03em -0.05em var(--content-color2);
 }
 
 a {
@@ -401,9 +414,6 @@ hr {
   position: relative;
   padding: 0.2em 0.8em;
   background-color: var(--color-burn2);
-  text-shadow:
-          0.06em 0.06em var(--content-color1),
-          -0.05em -0.07em var(--content-color2);
   font-size: 2.6rem;
 }
 
@@ -433,9 +443,6 @@ hr {
   position: relative;
   margin-top: 0.5em;
   padding: 0.2em 0.8em 0 0.6em;
-  text-shadow:
-          0.06em 0.06em var(--content-color1),
-          -0.05em -0.07em var(--content-color2);
   font-size: 2.6rem;
 }
 
@@ -1024,6 +1031,7 @@ input.has-input:invalid {
   width: 70%;
   margin: 0 auto;
   text-align: center;
+  font-size: 1.8rem;
 }
 
 .formUserRegister_button {
@@ -1303,7 +1311,7 @@ input.has-input:invalid {
   align-items: center;
   width: 145px;
   font-size: 2.2rem;;
-  text-shadow: 0.09em 0.05em var(--content-color1), -0.09em -0.05em var(--content-color2);
+  /*text-shadow: 0.09em 0.05em var(--content-color1), -0.09em -0.05em var(--content-color2);*/
 }
 
 .unitRanker_rank::before  {
@@ -1311,7 +1319,6 @@ input.has-input:invalid {
   flex: 0 0 50px;
   margin-right: 5px;
   text-align: center;
-  text-shadow: 0.03em 0.03em var(--content-color1), -0.02em -0.04em var(--content-color2);
   line-height: 1;
   font-family: "Noto Sans Symbols", sans-serif;
   font-optical-sizing: auto;
@@ -1549,7 +1556,7 @@ input.has-input:invalid {
 }
 
 .blockSeededPlayer_player {
-  font-size: 1.9rem;
+  font-size: 2rem;
   margin-right: 30px;
 }
 
