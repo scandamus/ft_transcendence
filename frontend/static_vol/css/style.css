@@ -39,7 +39,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-shadow: 0.06em 0.06em var(--content-color1), -0.05em -0.07em var(--content-color2);
 }
 
 html {
@@ -51,8 +50,15 @@ ul, ol {
   padding: 0;
 }
 
+a, li, p, dt, dd, h1, h2, h3, h4, h5, h6, button, label, small, strong, span {
+  text-shadow:
+          0.06em 0.06em var(--content-color1),
+          -0.05em -0.07em var(--content-color2);
+}
+
 a {
   text-decoration: none;
+  color: var(--color-white);
 }
 
 a:hover {
@@ -121,10 +127,6 @@ hr {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 3px 10px rgba(24, 28, 28, 0.6);
-}
-
-.mainHeader a {
-  color: var(--color-white);
 }
 
 .mainHeader_title {
@@ -219,7 +221,6 @@ hr {
   line-height: 40px;
   padding: 0 20px;
   border-top: 1px solid var(--color-black-alpha);
-  color: var(--color-white);
   text-align: right;
   font-size: 2rem;
 }
@@ -238,9 +239,6 @@ hr {
   padding: 0.2em 0.8em;
   background-color: var(--color-burn1);
   border: none;
-  text-shadow:
-          0.06em 0.06em var(--content-color1),
-          -0.05em -0.07em var(--content-color2);
   font-size: 2rem;
   color: var(--color-white);
 }
@@ -407,7 +405,6 @@ hr {
           0.06em 0.06em var(--content-color1),
           -0.05em -0.07em var(--content-color2);
   font-size: 2.6rem;
-  color: var(--color-white);
 }
 
 .unitTitle1::before,
@@ -440,7 +437,6 @@ hr {
           0.06em 0.06em var(--content-color1),
           -0.05em -0.07em var(--content-color2);
   font-size: 2.6rem;
-  color: var(--color-white);
 }
 
 .unitTitle2::before,
@@ -534,10 +530,6 @@ hr {
 /* unitLinkText */
 .unitLinkText {
 
-}
-
-.unitLinkText a {
-  color: var(--color-white);
 }
 
 .unitLinkText a:hover {
@@ -696,7 +688,6 @@ input.has-input:invalid {
 }
 
 .breadcrumb a {
-  color: var(--color-white);
   text-decoration: underline;
 }
 
@@ -1183,7 +1174,6 @@ input.has-input:invalid {
 .unitTournament-link a {
   position: relative;
   padding-right: 36px;
-  color: var(--color-white);
 }
 
 .unitTournament-link a::after {
