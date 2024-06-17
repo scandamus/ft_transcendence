@@ -17,7 +17,7 @@ export default class extends PageBase {
 
     async renderHtml() {
         return `
-            <ul>
+            <ul style="font-size: 2rem">
                 <li><a href="/" data-link>login</a></li>
                 <li><a href="/register" data-link>SIGN UP</a></li>
                 <li><a href="/register/confirm" data-link>SIGN UP - confirm</a></li>
