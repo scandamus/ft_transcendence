@@ -16,6 +16,7 @@ export default class extends PageBase {
         this.labelDecline = '削除';
 
         this.setTitle(this.title);
+        this.clearBreadcrumb();
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));

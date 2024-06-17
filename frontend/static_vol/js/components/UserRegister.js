@@ -15,6 +15,7 @@ export default class extends PageBase {
         this.descPasswordConfirm = '確認のためパスワードをもう一度入力してください';
 
         this.setTitle(this.title);
+        this.clearBreadcrumb();
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenConfirm.bind(this));

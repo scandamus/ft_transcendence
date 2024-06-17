@@ -13,6 +13,7 @@ export default class extends PageBase {
         this.textConfirm = '下記の内容で登録します';
 
         this.setTitle(this.title);
+        this.clearBreadcrumb();
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.displayInputData.bind(this));

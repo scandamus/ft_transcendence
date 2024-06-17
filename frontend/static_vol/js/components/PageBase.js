@@ -34,6 +34,11 @@ export default class PageBase {
         addLinkPageEvClick(linkBreadcrumb);
     }
 
+    clearBreadcrumb() {
+        const breadcrumbWrapper = document.getElementById('navBreadcrumb');
+        breadcrumbWrapper.innerHTML = '';
+    }
+
     async renderHtml() {
         return '';
     }

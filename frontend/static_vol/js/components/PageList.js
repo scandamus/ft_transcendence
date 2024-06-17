@@ -10,6 +10,7 @@ export default class extends PageBase {
         this.title = 'PageList';
 
         this.setTitle(this.title);
+        this.clearBreadcrumb();
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenReceiveReqMatch.bind(this));

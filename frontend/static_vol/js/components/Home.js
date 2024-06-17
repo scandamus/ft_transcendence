@@ -17,6 +17,7 @@ export default class extends PageBase {
         this.labelLinkSignUp = 'SIGN UP'; // TODO json
 
         this.setTitle(this.title);
+        this.clearBreadcrumb();
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
