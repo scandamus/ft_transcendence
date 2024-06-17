@@ -50,23 +50,12 @@ ul, ol {
   padding: 0;
 }
 
-li, p, dt, dd, h3, h4, h5, h6, button, label, small, span, a.unitButton {
-  text-shadow:
-          0.055em 0.05em var(--content-color1),
-          -0.05em -0.055em var(--content-color2);
-}
-
-h1, h2, strong,
+li, p, strong, dt, dd, h1, h2, h3, h4, h5, h6, button, label, small, span,
 .unitTitle1, .unitTitle2,
-.blockForm_el dt,
-.blockPlayerDetail_score,
-.unitRanker_rank::before,
-.unitRanker_user,
-.unitMatchPlayer_score,
-.unitTextComplete {
+a.unitButton {
   text-shadow:
-          0.04em 0.04em var(--content-color1),
-          -0.03em -0.05em var(--content-color2);
+          1.3px 1.2px var(--content-color1),
+          -1.2px -1.3px var(--content-color2);
 }
 
 a {
