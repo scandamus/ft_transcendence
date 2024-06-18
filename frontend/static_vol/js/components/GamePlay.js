@@ -30,6 +30,7 @@ export default class extends PageBase {
     async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
+            console.log("============ ", gameMatchId, " ============");
             const containerId = `pong/${gameMatchId}`;
             console.log(`URL = ${containerId}`);
             const pongSocket = await webSocketManager.openWebSocket(containerId);
@@ -111,6 +112,8 @@ export default class extends PageBase {
                         action: 'end_game',
                         match_id: gameMatchId,
                     }));
+                    document.removeEventListener("keydown", keyDownHandler, false);
+                    document.removeEventListener("keyup", keyUpHandler, false);
                     webSocketManager.closeWebSocket(containerId);
                     window.history.pushState({}, null, "/user");
                     await router(true);
@@ -142,7 +145,7 @@ export default class extends PageBase {
                     key: key,
                     is_pressed: is_pressed,
                 };
-                pongSocket.send(JSON.stringify(data));
+                webSocketManager.sendWebSocketMessage(containerId, data);
             }
 
             pongSocket.onmessage = function (e) {
