@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
-    players_ids = set()
+    players_ids = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -57,8 +57,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         # Leave room group
         if self.scheduled_task:
             self.scheduled_task.cancel()
-        if self.players_id in self.players_ids:
-            self.players_ids.remove(self.players_id)
+        if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
+            logger.info(f"remove: players_ids[{self.match_id}]: {self.players_id}")
+            self.players_ids[self.match_id].remove(self.players_id)
+            if not self.players_ids[self.match_id]:
+                logger.info(f"del: {self.players_ids}[{self.match_id}]")
+                del self.players_ids[self.match_id]
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
@@ -95,8 +99,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.room_group_name = f'pong_{self.match_id}'
                 await self.channel_layer.group_add(self.room_group_name, self.channel_name)
                 self.players_id = players_id
-                self.players_ids.add(players_id)
-                if len(self.players_ids) == 2:  # 2人に決め打ち
+                if self.match_id not in self.players_ids:
+                    self.players_ids[self.match_id] = set()
+                self.players_ids[self.match_id].add(self.players_id)
+                if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'start.game',
                     })
@@ -108,6 +114,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 return
         elif action == 'key_event':
             await self.handle_game_message(text_data)
+
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
