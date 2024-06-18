@@ -22,9 +22,8 @@ export default class extends PageBase {
                 <li><a href="/friends" data-link>friends</a></li>
                 <li><a href="/game/play" data-link>game(play)</a></li>
                 <li><a href="/game/match" data-link>game(match)</a></li>
-                <li><a href="/tournament/entry" data-link>tournament(entry)</a></li>
-<!--            <li><a href="/tournament/entry/input" data-link>tournament(entry-input)</a></li>-->
-                <li><a href="/tournament/match" data-link>tournament(match)</a></li>
+                <li><a href="/tournament" data-link>tournament</a></li>
+                <li><a href="/tournament/detail_id" data-link>tournament_detail</a></li>
             </ul>
             <ul>
                 <li><button type="submit" class="unitFriendButton_receiveReqMatch unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">対戦を受ける</button></li>

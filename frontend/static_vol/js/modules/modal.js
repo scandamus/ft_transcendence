@@ -101,14 +101,13 @@ const closeModal = () => {
 const contModal = {
     sendMatchRequest: mc.sendMatchRequest,
     receiveMatchRequest: mc.receiveMatchRequest,
-    waitForOpponent: mc.waitForOpponent
+    waitForOpponent: mc.waitForOpponent,
+    entryTournament: mc.entryTournament
 };
 
 const getModalHtml = (modalType, args) => {
     return contModal[modalType](args);
 }
-
-
 
 const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
@@ -162,5 +161,32 @@ const showModalWaitForOpponent = (ev) => {
         });
 }
 
-export { closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent };
+const showModalEntryTournament = (ev) => {
+    const formData = new FormData(ev.target.closest('form'));
+    const data = {};
+    formData.forEach((value, key) => {
+        data[key] = value;
+    });
+    if (Object.keys(data).length === 0) {
+        //formから取得するデータが無い
+        return;
+    }
+    const args = {
+        titleModal: 'Entry Tournament',
+        labelNickname: 'NickName',
+        labelEntry: 'Entry',
+        labelCancel: 'Cancel',
+        labelTournamentId: data['idTitle'],
+        labelTournamentTitle: data['title'],
+        labelTournamentStart: data['start'],
+    }
+    //args.labelTournamentTitle = data['title'];
+    const elHtml = getModalHtml('entryTournament', args);
+    join_game()
+        .then(r => {
+            showModal(elHtml);
+        });
+}
+
+export { closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament };
 

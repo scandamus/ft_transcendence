@@ -53,4 +53,26 @@ const waitForOpponent = (args) => `
     </section>
 `;
 
-export { sendMatchRequest, receiveMatchRequest, waitForOpponent };
+const entryTournament = (args) => `
+    <section class="blockModal">
+        <header class="blockModal_header">
+            <h2 class="blockModal_title">${args.titleModal}: <strong>${args.labelTournamentTitle}</strong></h2>
+            <p class="blockModal_date">(${args.labelTournamentStart})</p>
+        </header>
+
+        <form id="formEntryTournament" class="formEntryTournament blockForm" action="" method="post">
+            <dl class="blockForm_el">
+                <dt>${args.labelNickname}</dt>
+                <dd><input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required /></dd>
+            </dl>
+            <input type="hidden" name="idTitle" value="${args.labelTournamentId}">
+            
+            <ul class="unitListBtn unitListBtn-horizontal-center">
+                <li><button type="submit" id="btnCreateTournament" class="unitButton">${args.labelEntry}</button></li>
+                <li><button type="button" class="blockBtnCancel_button unitButtonDecline unitButton-small">${args.labelCancel}</button></li>
+            </ul>
+        </form>
+    </section>
+`;
+
+export { sendMatchRequest, receiveMatchRequest, waitForOpponent, entryTournament };
