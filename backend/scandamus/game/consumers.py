@@ -75,11 +75,11 @@ class LoungeSession(AsyncWebsocketConsumer):
             elif action == 'end_game':
                 logger.info("received action:  \'end_game\'")
                 user, error = await self.authenticate_token(token)
-                logger.info(f"==================== {user} ====================")
                 match_id = text_data_json.get('match_id')
-                logger.info(f"==================== {match_id} ====================")
-                # match = Match.objects.get(id=match_id)
-
+                score1 = text_data_json.get('score1')
+                score2 = text_data_json.get('score2')
+                status = text_data_json.get('status')
+                await self.update_match(match_id, score1, score2, status)
             elif action == 'cancel':
                 if hasattr(self, 'user') and self.user.username in self.players:
                     del self.players[self.user.username]
@@ -137,6 +137,16 @@ class LoungeSession(AsyncWebsocketConsumer):
             )
         logger.info(f'Match created, {match}, ID: {match.id}, Player1: {match.player1}, Player2: {match.player2}')
         return match
+
+    @database_sync_to_async
+    def update_match(self, match_id, score1, score2, status='after'):
+        with transaction.atomic():
+            match = Match.objects.get(id=match_id)
+            match.score1 = score1
+            match.score2 = score2
+            match.status = status
+            match.save()
+        logger.info(f"Match updated, ID: {match_id}, score1: {score1}, score2: {score2}, status: {status}")
 
     @database_sync_to_async
     def authenticate_token(self, token):
