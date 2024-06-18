@@ -20,7 +20,6 @@ export default class Friends extends PageBase {
         this.setTitle('Friends');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
-        //this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
         pageInstances.setInstance('Friends', this);
 
         this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
@@ -277,16 +276,16 @@ export default class Friends extends PageBase {
         console.log(`Added friend search form listener`);
     }
 
-    async handleSearchFriend(event) {
-        event.preventDefault();
-        const inputFriendsName = document.getElementById('inputFriendsName').value;
-        if (inputFriendsName === '') {
-            alert(labels.msgNoUsername);
+    async handleSearchFriend(ev) {
+        ev.preventDefault();
+        const inputFriendsName = document.getElementById('inputFriendsName');
+        checkSimpleInputValid(inputFriendsName);
+        if (!ev.target.closest('form').checkValidity()) {
             return;
         }
         const message = {
             action: 'requestByUsername',
-            username: inputFriendsName,
+            username: inputFriendsName.value,
         };
         try {
             const accessToken = await initToken();
@@ -295,31 +294,7 @@ export default class Friends extends PageBase {
         } catch (error) {
             console.error('Failed to open or send through WebSocket: ', error);
         } finally {
-            document.getElementById('inputFriendsName').value = '';
+            inputFriendsName.value = '';
         }
-    }
-
-    listenSearchFriends() {
-        const btnSearchFriend = document.getElementById('btnSearchFriend');
-        btnSearchFriend.addEventListener('click', this.searchAndSendFriendRequest.bind(this));
-        this.addListenEvent(btnSearchFriend, this.searchAndSendFriendRequest, 'click');//todo: rm 確認
-    }
-
-    searchAndSendFriendRequest(ev) {
-        ev.preventDefault();
-        const inputFriendsName = document.getElementById('inputFriendsName');
-        checkSimpleInputValid(inputFriendsName);
-        if (!ev.target.closest('form').checkValidity()) {
-            return;
-        }
-        const friendsName = inputFriendsName.value;
-        if (friendsName === "000") {
-            this.addNotice(`${friendsName}に友達申請を送りました`, false);
-        } else if (friendsName === "111") {
-            this.addNotice(`${friendsName}は存在しません`, true);
-        } else {
-            this.addNotice(`${friendsName}はすでに友達です`, true);
-        }
-        inputFriendsName.value = '';
     }
 }

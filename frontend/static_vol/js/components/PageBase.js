@@ -1,7 +1,5 @@
 'use strict';
 
-import { addNoticeMod, removeNoticeMod } from "../modules/notice.js";
-
 export default class PageBase {
     static instance = null;
 
@@ -47,15 +45,5 @@ export default class PageBase {
         //     console.log('Listeners all clear')
         // else
         //     console.log('Listeners' + this.listEventListeners.length + 'left')
-    }
-
-    addNotice (message, isError) {
-        addNoticeMod(message, isError)
-            .then((elNotice) => {
-                removeNoticeMod(elNotice);
-            })
-            .catch(error => {
-                console.error('addNotice failed:', error);
-            })
     }
 }

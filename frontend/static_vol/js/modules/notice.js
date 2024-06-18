@@ -32,4 +32,14 @@ const removeNoticeMod =　(elNotice) => {
     }
 }
 
-export { addNoticeMod, removeNoticeMod };
+const addNotice = (message, isError) => {
+    addNoticeMod(message, isError)
+        .then((elNotice) => {
+            removeNoticeMod(elNotice);
+        })
+        .catch(error => {
+            console.error('addNotice failed:', error);
+        })
+}
+
+export { addNotice };
