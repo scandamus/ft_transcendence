@@ -15,7 +15,7 @@ const addNoticeMod = async　(textNotice, isError) => {
         .addEventListener('click', ()=>{removeNoticeMod(newNotice)}, { once: true });
     setTimeout(() => {
         newNotice.classList.add('unitNotice-appear');
-    }, 5);
+    }, 100);
     await new Promise(resolve => {
         newNotice.addEventListener('transitionend', resolve, { once: true });
     });
