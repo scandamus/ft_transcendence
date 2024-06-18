@@ -2,19 +2,27 @@
 
 import PageBase from './PageBase.js';
 import { getUserList } from '../modules/users.js';
+//import { showModal } from '../modules/modal.js';
+//import { join_game } from '../modules/match.js';
+import { fetchFriends, fetchFriendRequests } from '../modules/friendsApi.js';
+import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend } from '../modules/friendsRequest.js';
+import { labels } from '../modules/labels.js';
+import { pageInstances } from '../modules/pageInstances.js';
 import { showModalSendMatchRequest } from '../modules/modal.js';
 
 
-export default class extends PageBase {
+export default class Dashboard extends PageBase {
     constructor(params) {
         super(params);
         this.playerNameTmp = 'playername';
         this.setTitle(`Dashboard: ${this.playerNameTmp}`);
-        this.labelMatch = '対戦する';
-        this.labelAccept = '承諾';
-        this.labelDecline = '削除';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
+        pageInstances.setInstance('Dashboard', this);
+
+        this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
+        this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
+        this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
     }
 
     async renderHtml() {
@@ -31,74 +39,11 @@ export default class extends PageBase {
                 <div class="blockPlayerDetail_detail">
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">Received friend request</h3>
-                        <div class="blockFriendRequest_friends listFriends listLineDivide">
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
-                                </ul>
-                            </section>
-                        </div>
+                        <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
                     </section>
                     <section class="blockFriends">
-                        <h3 class="blockFriends_title unitTitle1">Friends</h3>
-                        <!-- ↓ showUserList() で取得 -->
+                        <h3 class="blockFriends_title unitTitle1">Your Friends</h3>
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
-                        <!-- ↓ オンライン状況ごとのstyleサンプル -->
-                        <div class="blockFriends_friends listFriends listLineDivide">
-                            <section class="unitFriend unitFriend-online">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[ONLINE]" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend unitFriend-offline">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[OFFLINE]" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton" disabled>${this.labelMatch}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend unitFriend-busy">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[BUSY]" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton" disabled>${this.labelMatch}</button></li>
-                                </ul>
-                            </section>
-                        </div>
-                        <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockMatchLog">
                         <h3 class="blockMatchLog_title unitTitle1">Tournament Log</h3>
@@ -117,30 +62,75 @@ export default class extends PageBase {
         `;
     }
 
-    showUserList() {
-        const listFriendsWrapper = document.querySelector('.blockFriends_friends');
-        getUserList()
-            .then(data => {
-                listFriendsWrapper.innerHTML = '';
-                const userElements = data.map(user => `
+    updateFriendsList = async () => {
+        console.log('updateFriendList in');
+        try {
+            const friends = await fetchFriends();
+            const listFriendsWrappr = document.querySelector('.blockFriends_friends');
+            listFriendsWrappr.innerHTML = '';
+    
+            friends.forEach(friend => {
+                const friendElement = `
                     <section class="unitFriend">
                         <header class="unitFriend_header">
-                            <h4 class="unitFriend_name">${user.username}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                            <h4 class="unitFriend_name">${friend.username}</h4>
+                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>
                         </ul>
                     </section>
-                  `);
-                listFriendsWrapper.innerHTML = userElements.join('');
-            })
-            .then(()=> {
-                this.listenRequestMatch();
-            })
+                `;
+                listFriendsWrappr.innerHTML += friendElement;
+            });
+        } catch (error) {
+            console.error('Failed to update friends list: ', error);
+        }
+    }
+    
+    updateFriendRequestList = async () => {
+        console.log('updateFriendRequestList in');
+        try {
+            const requests = await fetchFriendRequests();
+            const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
+            listRequestWrapper.innerHTML = '';
+    
+            requests.forEach(request => {
+                const requestElement = `
+                    <section class="unitFriend">
+                        <header class="unitFriend_header">
+                            <h4 class="unitFriend_name">${request.from_user}</h4>
+                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${request.from_user}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                        </header>
+                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                            <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.labelAccept}</button></li>
+                            <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico" data-username="${request.from_user}" data-id="${request.id}"><img src="/images/ico-cross.svg" alt="${labels.labelDecline}" width="16px" height="16px"></button></li>
+                        </ul>
+                    </section>
+                `;
+                listRequestWrapper.innerHTML += requestElement;
+            });
+        } catch (error) {
+            console.error('Failed to update friend requests: ', error);
+        }
+    }
+
+    showUserList() {
+        this.updateLists()
             .catch(error => {
-                console.error('getUserInfo failed:', error);
-            })
+                    console.error('Failed to update lists: ', error);
+            });
+    }
+
+    async updateLists() {
+        try {
+            await this.updateFriendsList();
+            await this.updateFriendRequestList();
+            this.listenRequest();
+        } catch (error) {
+            console.error('Failed to update lists: ', error);
+            throw error;
+        }
     }
 
     listenRequestMatch() {
@@ -148,6 +138,75 @@ export default class extends PageBase {
         btnMatchRequest.forEach((btn) => {
             btn.addEventListener('click', showModalSendMatchRequest.bind(this));
             this.addListenEvent(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
+        });
+    }
+
+    showModalSendMatchRequestHandler(ev) {
+        showModalSendMatchRequest(ev);
+    }
+
+    acceptFriendRequestHandler(requestId) {
+        acceptFriendRequest(requestId);
+    }
+
+    declineFriendRequestHandler(requestId) {
+        declineFriendRequest(requestId);
+    }
+
+    removeFriendHandler(username) {
+        removeFriend(username);
+    }
+
+    removeEventListeners() {
+        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
+        btnMatchRequest.forEach((btn) => {
+            btn.removeEventListener('click', this.showModalSendMatchRequestHandlerBound);
+            console.log(`Removed match request listener from ${btn.dataset.username}`);
+        });
+    
+        const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
+        btnAcceptFriendRequest.forEach((btn) => {
+            btn.removeEventListener('click', this.acceptFriendRequestHandlerBound);
+            console.log(`Removed accept friend request listener from ${btn.dataset.username}`);
+        });
+
+        const btnDeclineFriendRequest = document.querySelectorAll('.unitFriendButton_friendDecline');
+        btnDeclineFriendRequest.forEach((btn) => {
+            btn.removeEventListener('click', this.declineFriendRequestHandlerBound);
+            console.log(`Removed decline friend request listener from ${btn.dataset.username}`);
+        });
+    }
+
+    listenRequest() {
+        this.removeEventListeners();
+
+        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
+        btnMatchRequest.forEach((btn) => {
+            btn.addEventListener('click', this.showModalSendMatchRequestHandlerBound);
+            this.addListenEvent(btn, this.showModalMatchRequest, 'click');
+            console.log(`Added match request listener to ${btn.dataset.username}`);
+        });
+
+        const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
+        btnAcceptFriendRequest.forEach((btn) => {
+            btn.addEventListener('click', (event) => {
+                const username = event.target.dataset.username;
+                const requestId = event.target.dataset.id;
+                this.acceptFriendRequestHandlerBound(requestId);
+                console.log(`Accept friend request from ${username} with id ${requestId}`)
+            });
+            console.log(`Add accept friend request listner to ${btn.dataset.username}`);
+        });
+
+        const btnDeclineFriendRequest = document.querySelectorAll('.unitFriendButton_friendDecline');
+        btnDeclineFriendRequest.forEach((btn) => {
+            btn.addEventListener('click', (event) => {
+                const username =event.target.dataset.username;
+                const requestId = event.target.dataset.id;
+                this.declineFriendRequestHandlerBound(requestId);
+                console.log(`Decline friend request from ${username} with id ${requestId}`);
+            })
+            console.log(`Add decline friend request listner to ${btn.dataset.username}`);
         });
     }
 }
