@@ -23,33 +23,21 @@ logger = logging.getLogger(__name__)
 
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
-    # scheduled_task = None
-    # right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
-    #                       PADDLE_THICKNESS, PADDLE_LENGTH)
-    # left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
-    # ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
-    # ready = False
-    # game_continue = False
     players_ids = set()
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.match_id = None
         self.room_group_name = None
-        #    self.user_id = None
         self.players_id = None
         self.username = None
         self.player_name = None
-
         self.scheduled_task = None
         self.right_paddle = None
         self.left_paddle = None
         self.ball = None
         self.reset_game_data()
-        self.ready = False
         self.game_continue = False
-
-    #    self.authenticated = False
 
     async def connect(self):
         try:
@@ -60,21 +48,13 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await self.close(code=4200)
                 return
             logger.info('match_id exists')
-
             await self.accept()
-
-            # # クライアント側でonopenが発火したらループを開始する
-            # self.is_active = True
-            # if not self.ready:
-            #     self.ready = True
-            #     self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
 
         except Exception as e:
             logger.error(f"Error connecting: {e}")
 
     async def disconnect(self, close_code):
         # Leave room group
-        self.is_active = False
         if self.scheduled_task:
             self.scheduled_task.cancel()
         if self.players_id in self.players_ids:
@@ -83,7 +63,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.room_group_name, self.channel_name
         )
 
-    # Receive message from WebSocket
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         action = text_data_json.get('action')
@@ -125,7 +104,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # クライアント側からリクエストする？
             else:
                 logger.error('Match data not found or user is not for this match')
-                self.close(code=5000)
+                await self.close(code=5000)
                 return
         elif action == 'key_event':
             await self.handle_game_message(text_data)
@@ -143,8 +122,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # typeキーはgroup_send メソッド内で指定されるキーで、どのハンドラ関数をトリガするかを指定する
                 "type": "pong.message",
                 # ここで二つのキーを渡すことでpong_message内で辞書としてアクセスできる
-                "timestamp": dt.utcnow().isoformat(),
-                "action": action,
                 "key": key,
                 "is_pressed": is_pressed,
                 "player_name": self.player_name,
@@ -154,8 +131,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     # Receive message from room group
     async def pong_message(self, data):
-        timestamp = data["timestamp"]
-        action = data["action"]
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
         player_name = data.get('player_name')
@@ -185,9 +160,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                     elif key == "s":
                         self.left_paddle.speed = 0
 
-        # Send message to WebSocket
-        # await self.send_game_data(True, message=message, timestamp=timestamp)
-
     async def schedule_ball_update(self):
         self.game_continue = True
         try:
@@ -214,7 +186,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
 
     async def update_ball_and_send_data(self):
-        game_continue = True
         self.right_paddle.move()
         self.left_paddle.move()
         game_continue = self.ball.move(self.right_paddle, self.left_paddle)
@@ -253,7 +224,6 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def ball_message(self, data):
         message = data["message"]
         timestamp = data["timestamp"]
-        player_name = data["player_name"]
         if self.player_name != 'player1':
             await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
@@ -293,7 +263,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
         self.left_paddle.reset()
         self.ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
-        self.ready = False
         self.game_continue = False
 
     async def init_game_state_into_self(self, data):
@@ -353,15 +322,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             return False
 
     async def start_game(self, event):
-        logger.info(f'Starting game for match_id {self.match_id}')
-        # await self.send(text_data=json.dumps({
-        #     'type': 'startGame',
-        #     'message': 'The pong match is starting!',
-        # }))
-        # return # これを消すとゲームが始まります
-        # クライアント側でonopenが発火したらループを開始する
-        self.is_active = True
-        if not self.ready and self.player_name == 'player1':
-            self.ready = True
+        if self.player_name == 'player1':
             self.reset_game_data()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
