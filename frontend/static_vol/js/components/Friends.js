@@ -21,13 +21,13 @@ export default class Friends extends PageBase {
         this.setTitle('Friends');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
         pageInstances.setInstance('Friends', this);
 
         this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
         this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
         this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
         this.removeFriendHandlerBound = this.removeFriendHandler.bind(this);
-        this.handleSearchFriendBound = this.handleSearchFriend.bind(this);
 
         //ページ破棄のタイミングでイベントリスナーを削除
 //        window.addEventListener('beforeunload', this.cleanup.bind(this));
@@ -159,10 +159,6 @@ export default class Friends extends PageBase {
             btn.removeEventListener('click', this.removeFriendHandlerBound);
             console.log(`Removed remove friend listener from ${btn.dataset.username}`);
         });
-    
-        const friendSearchForm = document.getElementById('friendSearchForm');
-        friendSearchForm.removeEventListener('submit', this.handleSearchFriendBound);
-        console.log(`Removed friend search form listener`);
     }
 
     listenRequest() {
@@ -206,10 +202,12 @@ export default class Friends extends PageBase {
             });
             console.log(`Added remove friend listener to ${btn.dataset.username}`);
         });
+    }
 
-        const friendSearchForm = document.getElementById('friendSearchForm');
-        friendSearchForm.addEventListener('submit', this.handleSearchFriendBound);
-        console.log(`Added friend search form listener`);
+    listenSearchFriends() {
+        const btnSearchFriend = document.getElementById('btnSearchFriend');
+        btnSearchFriend.addEventListener('click', this.handleSearchFriend.bind(this));
+        this.addListenEvent(btnSearchFriend, this.handleSearchFriend, 'click');//todo: rm 確認
     }
 
     async handleSearchFriend(ev) {
