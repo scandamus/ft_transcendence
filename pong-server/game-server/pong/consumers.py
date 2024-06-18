@@ -118,12 +118,16 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.players_id = players_id
                 self.players_ids.add(players_id)
                 if len(self.players_ids) == 2:  # 2人に決め打ち
-                    self.reset_game_data()
-                    # await self.channel_layer.group_send(self.room_group_name, {
-                    #     'type': 'hoge',
-                    #     'player_name': self.player_name,
-                    # })
-                    await self.start_game()
+                    # if self.player_name == 'player1':
+                    #     self.reset_game_data()
+                    #     await self.channel_layer.group_send(self.room_group_name, {
+                    #         'type': 'hoge',
+                    #         'player_name': self.player_name,
+                    #     })
+                    # await self.start_game()
+                    await self.channel_layer.group_send(self.room_group_name, {
+                        'type': 'start.game',
+                    })
                 # TODO: 2人揃わない場合のタイムアウト処理
                 # クライアント側からリクエストする？
             else:
@@ -259,8 +263,6 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def ball_message(self, data):
         message = data["message"]
         timestamp = data["timestamp"]
-        if self.player_name == 'player2':
-            await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
 
     async def send_game_data(self, game_status, message, timestamp):
@@ -304,28 +306,25 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def init_game_state_into_self(self, data):
         # player1からオブジェクトを受け取る
         ball_data = data['ball']
-        if ball_data is not None:
-            self.ball.x = ball_data['x']
-            self.ball.y = ball_data['y']
-            self.ball.dx = ball_data['dx']
-            self.ball.dy = ball_data['dy']
-            self.ball.size = ball_data['size']
+        self.ball.x = ball_data['x']
+        self.ball.y = ball_data['y']
+        self.ball.dx = ball_data['dx']
+        self.ball.dy = ball_data['dy']
+        self.ball.size = ball_data['size']
         # right_paddle
         right_paddle_data = data['right_paddle']
-        if right_paddle_data is not None:
-            self.right_paddle.x = right_paddle_data['x']
-            self.right_paddle.y = right_paddle_data['y']
-            self.right_paddle.thickness = right_paddle_data['horizontal']
-            self.right_paddle.length = right_paddle_data['vertical']
-            self.right_paddle.score = right_paddle_data['score']
+        self.right_paddle.x = right_paddle_data['x']
+        self.right_paddle.y = right_paddle_data['y']
+        self.right_paddle.thickness = right_paddle_data['horizontal']
+        self.right_paddle.length = right_paddle_data['vertical']
+        self.right_paddle.score = right_paddle_data['score']
         # left_paddle
         left_paddle_data = data['left_paddle']
-        if left_paddle_data is not None:
-            self.left_paddle.x = left_paddle_data['x']
-            self.left_paddle.y = left_paddle_data['y']
-            self.left_paddle.thickness = left_paddle_data['horizontal']
-            self.left_paddle.length = left_paddle_data['vertical']
-            self.left_paddle.score = left_paddle_data['score']
+        self.left_paddle.x = left_paddle_data['x']
+        self.left_paddle.y = left_paddle_data['y']
+        self.left_paddle.thickness = left_paddle_data['horizontal']
+        self.left_paddle.length = left_paddle_data['vertical']
+        self.left_paddle.score = left_paddle_data['score']
 
     @database_sync_to_async
     def auhtnticate_jwt(self, jwt):
@@ -360,7 +359,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
 
-    async def start_game(self):
+    async def start_game(self, event):
         logger.info(f'Starting game for match_id {self.match_id}')
         # await self.send(text_data=json.dumps({
         #     'type': 'startGame',
@@ -369,6 +368,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         # return # これを消すとゲームが始まります
         # クライアント側でonopenが発火したらループを開始する
         self.is_active = True
-        if not self.ready:
+        if not self.ready and self.player_name == 'player1':
             self.ready = True
+            self.reset_game_data()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
