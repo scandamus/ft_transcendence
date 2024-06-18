@@ -12,8 +12,8 @@ import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
 import GamePlay from '../components/GamePlay.js';
 import GameMatch from '../components/GameMatch.js';
-import TournamentEntry from '../components/TournamentEntry.js';
-import TournamentMatch from '../components/TournamentMatch.js';
+import Tournament from '../components/Tournament.js';
+import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
 import { closeModalOnCancel } from './modal.js';
 
@@ -29,8 +29,8 @@ const routes = {
     lounge: {path: '/lounge', view: Lounge, isProtected: true},
     gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
     gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
-    tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
-    tournamentMatch: {path: '/tournament/match', view: TournamentMatch, isProtected: true},
+    tournament: {path: '/tournament', view: Tournament, isProtected: true},
+    TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
 };
 
 //認証の必要なページ
@@ -56,10 +56,11 @@ const addLinkPageEvClick = (linkPages) => {
     linkPages.forEach((linkPage) => {
         linkPage.addEventListener('click', async (ev) => {
             ev.preventDefault();
-            if (window.location.href === ev.target.href) {
+            const link = (ev.target.tagName === 'a') ? ev.target.href : ev.target.closest('a').href;
+            if (window.location.href === ev.target.href || !link) {
                 return;
             }
-            history.pushState(null, null, ev.target.href);
+            history.pushState(null, null, link);
             try {
                 await router(getToken('accessToken'));
             } catch (error) {
