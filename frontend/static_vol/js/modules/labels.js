@@ -7,4 +7,5 @@ export const labels = {
     labelApply: '友達申請',
     labelSearch: '友達申請',
     msgNoUsername: '友達申請を送るユーザー名を入力してください',
+    msgNoFriends: '友達はまだいません',
 };

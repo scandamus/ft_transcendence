@@ -926,6 +926,10 @@ input.has-input:invalid {
   margin: 0 0 50px;
 }
 
+.blockFriendRequest.is-noRequest {
+  display: none;
+}
+
 .blockFriendRequest_title {
   line-height: 0;
 }

@@ -44,6 +44,7 @@ export default class Dashboard extends PageBase {
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">Your Friends</h3>
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockMatchLog">
                         <h3 class="blockMatchLog_title unitTitle1">Tournament Log</h3>
