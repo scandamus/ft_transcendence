@@ -113,7 +113,7 @@ const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
     const args = {
         titleModal: '対戦を申し込みました',
-        username: button.dataset.name,
+        username: button.dataset.username,
         avatar: button.dataset.avatar,
         labelCancel: 'キャンセル',
     }

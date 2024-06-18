@@ -61,6 +61,7 @@ class Player(models.Model):
         auto_now_add=True,
         verbose_name="登録日時"
     )
+    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username}"
@@ -70,3 +71,11 @@ class Player(models.Model):
 def create_player(sender, instance, created, **kwargs):
     if created:
         Player.objects.create(user=instance)
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(Player, related_name='sent_requests', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(Player, related_name='receive_requests', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.from_user} -> {self.to_user}'
