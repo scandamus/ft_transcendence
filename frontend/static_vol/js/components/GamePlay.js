@@ -106,7 +106,9 @@ export default class extends PageBase {
                         action: 'end_game',
                         token: accessToken.token,
                         match_id: gameMatchId,
-
+                        score1: data.left_paddle.score,
+                        score2: data.right_paddle.score,
+                        status: 'after',
                     }));
                     pongSocket.send(JSON.stringify({
                         action: 'end_game',
