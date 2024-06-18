@@ -2,6 +2,7 @@ import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
 import { pageInstances } from "./pageInstances.js";
 import { addNotice } from "./notice.js";
+import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 
 export const pongHandler = (event, containerId) => {
     let data;
@@ -23,7 +24,7 @@ export const pongHandler = (event, containerId) => {
         else if (data.type === 'ack') {
             handleFriendRequestAck(data);
         }
-    } catch {
+    } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
     }
 }
@@ -32,7 +33,7 @@ const pongGameHandler = (event, containerId) => {
     let data;
     try {
         data = JSON.parse(event.data);
-    } catch {
+    } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
     }
     if (data.type === 'error') {
@@ -94,7 +95,7 @@ const handleFriendRequestAck = (data) => {
         console.log('Friend request by username is sent to ', data.to_username);
         addNotice(`${data.to_username}さんに友達申請が送信されました`, false);
         if (currentPage) {
-            currentPage.updateFriendRequestList()
+            updateFriendRequestList()
                 .then(() => {
                     currentPage.listenRequest();
                 });
@@ -103,8 +104,8 @@ const handleFriendRequestAck = (data) => {
         console.log('Accept friend request is successfully done');
         addNotice(`${data.from_username}さんと友達になりました`, false);
         if (currentPage) {
-            currentPage.updateFriendRequestList();
-            currentPage.updateFriendsList()
+            updateFriendRequestList();
+            updateFriendsList()
                 .then(() => {
                     currentPage.listenRequest();
                 });
@@ -112,7 +113,7 @@ const handleFriendRequestAck = (data) => {
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
         if (currentPage) {
-            currentPage.updateFriendRequestList()
+            updateFriendRequestList()
                 .then(() => {
                     currentPage.listenRequest();
                 });
@@ -121,7 +122,7 @@ const handleFriendRequestAck = (data) => {
         console.log('Remove Successfully done');
         addNotice(`${data.username}さんとの友達を解除しました`, false);
         if (currentPage) {
-            currentPage.updateFriendsList()
+            updateFriendsList()
                 .then(() => {
                     currentPage.listenRequest();
                 });
@@ -136,7 +137,7 @@ const handleFriendRequestReceived = (data) => {
     if (data.action === 'received') {
         addNotice(`${data.from_username}さんから友達申請が来ました`, false);
         if (currentPage) {
-            currentPage.updateFriendRequestList()
+            updateFriendRequestList()
                 .then(() => {
                     currentPage.listenRequest();
                 });
@@ -145,8 +146,8 @@ const handleFriendRequestReceived = (data) => {
         addNotice(`${data.from_username}さんが友達申請を承認しました`, false);
         if (currentPage) {
             Promise.all([
-                currentPage.updateFriendRequestList(),
-                currentPage.updateFriendsList()
+                updateFriendRequestList(),
+                updateFriendsList()
             ])
                 .then(() => {
                     currentPage.listenRequest();
@@ -156,7 +157,7 @@ const handleFriendRequestReceived = (data) => {
     } else if (data.action === 'removed') {
         //rmられは通知されない
         if (currentPage) {
-            currentPage.updateFriendsList()
+            updateFriendsList()
                 .then(() => {
                     currentPage.listenRequest();
                 });

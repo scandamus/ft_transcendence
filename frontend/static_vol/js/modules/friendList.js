@@ -1,0 +1,72 @@
+'use strict';
+
+import { fetchFriendRequests, fetchFriends } from "./friendsApi.js";
+import { labels } from "./labels.js";
+
+const updateFriendsList = async () => {
+    console.log('updateFriendList in');
+    try {
+        const friends = await fetchFriends();
+        const listFriendsWrappr = document.querySelector('.blockFriends_friends');
+        if (friends.length === 0) {
+            listFriendsWrappr.innerHTML = `<p>${labels.msgNoFriends}</p>`
+        } else {
+            listFriendsWrappr.innerHTML = '';
+            friends.forEach(friend => {
+                const friendElement = `
+                    <section class="unitFriend">
+                        <header class="unitFriend_header">
+                            <h4 class="unitFriend_name">${friend.username}</h4>
+                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                        </header>
+                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>
+                            <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.labelRmFriend}</button></li>
+                        </ul>
+                    </section>
+                `;
+                listFriendsWrappr.innerHTML += friendElement;
+            });
+        }
+    } catch (error) {
+        console.error('Failed to update friends list: ', error);
+    }
+}
+
+const updateFriendRequestList = async () => {
+    console.log('updateFriendRequestList in');
+    try {
+        const requests = await fetchFriendRequests();
+            const secRequestWrapper = document.querySelector('.blockFriendRequest');
+            const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
+        if (requests.length === 0) {
+            if (!secRequestWrapper.classList.contains('is-noRequest')) {
+                secRequestWrapper.classList.add('is-noRequest');
+            }
+        } else {
+            if (secRequestWrapper.classList.contains('is-noRequest')) {
+                secRequestWrapper.classList.remove('is-noRequest');
+            }
+            listRequestWrapper.innerHTML = '';
+            requests.forEach(request => {
+                const requestElement = `
+                    <section class="unitFriend">
+                        <header class="unitFriend_header">
+                            <h4 class="unitFriend_name">${request.from_user}</h4>
+                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${request.from_user}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                        </header>
+                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
+                            <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.labelAccept}</button></li>
+                            <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico" data-username="${request.from_user}" data-id="${request.id}"><img src="/images/ico-cross.svg" alt="${labels.labelDecline}" width="16px" height="16px"></button></li>
+                        </ul>
+                    </section>
+                `;
+                listRequestWrapper.innerHTML += requestElement;
+            });
+        }
+    } catch (error) {
+        console.error('Failed to update friend requests: ', error);
+    }
+}
+
+export { updateFriendsList, updateFriendRequestList }
