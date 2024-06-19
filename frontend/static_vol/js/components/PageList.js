@@ -40,4 +40,8 @@ export default class PageList extends PageBase {
             this.addListListenInInstance(btn, boundShowModalReceiveMatchRequest, 'click');
         });
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

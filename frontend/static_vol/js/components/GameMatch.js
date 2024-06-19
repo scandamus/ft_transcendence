@@ -47,4 +47,8 @@ export default class GameMatch extends PageBase {
     //         </div>
     //     `; // TODO json; 翻訳しやすくしたい
     // }
+
+    destroy() {
+        super.destroy();
+    }
 }

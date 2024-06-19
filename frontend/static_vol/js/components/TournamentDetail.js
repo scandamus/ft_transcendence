@@ -321,4 +321,8 @@ export default class TournamentDetail extends PageBase {
             </ol>
         `;
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

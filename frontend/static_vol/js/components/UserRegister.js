@@ -203,4 +203,8 @@ export default class SignUp extends PageBase {
             sessionStorage.removeItem('isConfirm');
         }
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

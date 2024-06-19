@@ -175,4 +175,8 @@ export default class GamePlay extends PageBase {
 
         let interval = setInterval(draw, 10);
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

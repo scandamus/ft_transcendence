@@ -106,4 +106,8 @@ export default class Lounge extends PageBase {
         const boundShowModalWaitForOpponent = showModalWaitForOpponent.bind(this);
         this.addListListenInInstance(btnCreateRoom, boundShowModalWaitForOpponent, 'click');
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

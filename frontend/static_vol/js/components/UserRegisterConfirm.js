@@ -97,4 +97,8 @@ export default class SignUpConfirm extends PageBase {
                 console.error('register failed:', error);
             });
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

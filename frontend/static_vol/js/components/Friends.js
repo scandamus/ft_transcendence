@@ -232,4 +232,8 @@ export default class Friends extends PageBase {
             inputFriendsName.value = '';
         }
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

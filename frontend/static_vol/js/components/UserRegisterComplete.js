@@ -35,4 +35,8 @@ export default class SignUpComplete extends PageBase {
                 sessionStorage.removeItem('password');
         }
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

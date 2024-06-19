@@ -91,4 +91,8 @@ export default class LogIn extends PageBase {
                 console.error('Login failed:', error);
             });
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

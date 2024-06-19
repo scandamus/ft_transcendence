@@ -160,4 +160,8 @@ export default class Dashboard extends PageBase {
             console.log(`Add decline friend request listner to ${btn.dataset.username}`);
         });
     }
+
+    destroy() {
+        super.destroy();
+    }
 }

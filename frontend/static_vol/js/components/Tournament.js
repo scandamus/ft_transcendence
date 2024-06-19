@@ -188,4 +188,8 @@ export default class Tournament extends PageBase {
             this.addListListenInInstance(btn, boundShowModalEntryTournament, 'click');//todo: rm 確認
         });
     }
+
+    destroy() {
+        super.destroy();
+    }
 }
