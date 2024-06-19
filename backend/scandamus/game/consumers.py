@@ -80,23 +80,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                             }))
                             del self.players[opponent_name]
                             del self.players[user.username]
-                    # if len(self.players) == 2:
-                    #     players_list = list(self.players.values())
-                    #     player1 = await self.get_player_from_user(players_list[0]['user'])
-                    #     player2 = await self.get_player_from_user(players_list[1]['user'])
-                    #     match = await self.create_match(player1, player2)
-                    #     for index, player in enumerate(players_list):
-                    #         game_token = await self.issue_jwt(player['user'], player['players_id'], match.id)
-                    #         # player1か2を決める
-                    #         player_name = "player1" if index == 0 else "player2"
-                    #         await player['websocket'].send(text_data=json.dumps({
-                    #             'type': 'gameSession',
-                    #             'jwt': game_token,
-                    #             'username': player['user'].username,
-                    #             'match_id': match.id,
-                    #             'player_name': player_name
-                    #         }))
-                    #     self.players.clear()
                 else:
                     logger.error('Error: Authentication Failed')
                     logger.error(f'error={error}')
