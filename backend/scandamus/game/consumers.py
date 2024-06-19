@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class LoungeSession(AsyncWebsocketConsumer):
     players = {}
+    opponents = {}
 
     async def connect(self):
         await self.accept()
@@ -42,29 +43,60 @@ class LoungeSession(AsyncWebsocketConsumer):
                 user, error = await self.authenticate_token(token)
                 if user:
                     player = await self.get_player_from_user(user)
+                    opponent_name = text_data_json.get('opponentName')
                     self.players[user.username] = {
                         'user': user,
                         'players_id': player.id,
+                        'opponent': opponent_name,
                         'websocket': self
                     }
-                    logger.info(f"user={user.username} requesting new game match")
-                    if len(self.players) == 2:
-                        players_list = list(self.players.values())
-                        player1 = await self.get_player_from_user(players_list[0]['user'])
-                        player2 = await self.get_player_from_user(players_list[1]['user'])
-                        match = await self.create_match(player1, player2)
-                        for index, player in enumerate(players_list):
-                            game_token = await self.issue_jwt(player['user'], player['players_id'], match.id)
-                            # player1か2を決める
-                            player_name = "player1" if index == 0 else "player2"
-                            await player['websocket'].send(text_data=json.dumps({
+                    logger.info(f"user={user.username} requesting new game match with opponent={opponent_name}")
+                    # 対戦相手の要素が辞書に存在するか
+                    if opponent_name in self.players:
+                        # 対戦相手の情報
+                        opponent_info = self.players[opponent_name]
+                        user_info = self.players[user.username]
+                        # 対戦相手がしていた相手が自分かどうか
+                        if opponent_info['opponent'] == self.user.username:
+                            logger.info(f"opponent_info['opponent_name']={opponent_info['opponent']} == self.user.username={self.user.username}")
+                            player1 = await self.get_player_from_user(opponent_info['user'])
+                            player2 = await self.get_player_from_user(user_info['user'])
+                            match = await self.create_match(player1, player2)
+                            game_token = await self.issue_jwt(opponent_info['user'], opponent_info['players_id'], match.id)
+                            await opponent_info['websocket'].send(text_data=json.dumps({
                                 'type': 'gameSession',
                                 'jwt': game_token,
-                                'username': player['user'].username,
+                                'username': opponent_info['user'].username,
                                 'match_id': match.id,
-                                'player_name': player_name
+                                'player_name': 'player1'
                             }))
-                        self.players.clear()
+                            game_token = await self.issue_jwt(user_info['user'], user_info['players_id'], match.id)
+                            await self.players[user.username]['websocket'].send(text_data=json.dumps({
+                                'type': 'gameSession',
+                                'jwt': game_token,
+                                'username': user_info['user'].username,
+                                'match_id': match.id,
+                                'player_name': 'player2'
+                            }))
+                            del self.players[opponent_name]
+                            del self.players[user.username]
+                    # if len(self.players) == 2:
+                    #     players_list = list(self.players.values())
+                    #     player1 = await self.get_player_from_user(players_list[0]['user'])
+                    #     player2 = await self.get_player_from_user(players_list[1]['user'])
+                    #     match = await self.create_match(player1, player2)
+                    #     for index, player in enumerate(players_list):
+                    #         game_token = await self.issue_jwt(player['user'], player['players_id'], match.id)
+                    #         # player1か2を決める
+                    #         player_name = "player1" if index == 0 else "player2"
+                    #         await player['websocket'].send(text_data=json.dumps({
+                    #             'type': 'gameSession',
+                    #             'jwt': game_token,
+                    #             'username': player['user'].username,
+                    #             'match_id': match.id,
+                    #             'player_name': player_name
+                    #         }))
+                    #     self.players.clear()
                 else:
                     logger.error('Error: Authentication Failed')
                     logger.error(f'error={error}')
