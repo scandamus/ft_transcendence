@@ -72,13 +72,13 @@ class LoungeSession(AsyncWebsocketConsumer):
                         'type': 'authenticationFailed',
                         'message': error
                     }))
-            elif action == 'end_game':
-                logger.info("received action:  \'end_game\'")
+            elif action == 'game_state':
                 user, error = await self.authenticate_token(token)
                 match_id = text_data_json.get('match_id')
                 score1 = text_data_json.get('score1')
                 score2 = text_data_json.get('score2')
                 status = text_data_json.get('status')
+                logger.info(f"received game_status:  \'{status}\'")
                 await self.update_match(match_id, score1, score2, status)
             elif action == 'cancel':
                 if hasattr(self, 'user') and self.user.username in self.players:
