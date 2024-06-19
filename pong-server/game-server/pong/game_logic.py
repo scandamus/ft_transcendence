@@ -6,7 +6,7 @@ from .consts import (CANVAS_WIDTH, CANVAS_HEIGHT, REFLECTION_ANGLE, CORNER_BLOCK
 
 def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier, orientation='vertical'):
     angle_radians = angle_degrees * (math.pi / 180)
-    speed = random.randint(10, 10)
+    speed = random.randint(7, 7)
     if orientation == 'vertical':
         cos_value = math.cos(angle_radians)
         sin_value = math.sin(angle_radians)
@@ -113,12 +113,12 @@ class Ball:
         if self.x + self.size + self.dx < 0:
             paddle1.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle1.score < 3
+            return paddle1.score < 10
         # 右の壁との衝突判定
         elif self.x + self.dx > CANVAS_WIDTH:
             paddle2.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle2.score < 3
+            return paddle2.score < 10
         # 衝突判定がTrueの場合はpaddleにballを接触させるように
         # x座標の操作
         if collision_with_paddle1 == "collision_front":
