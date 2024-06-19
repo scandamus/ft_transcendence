@@ -3,9 +3,10 @@
 import PageBase from './PageBase.js';
 import { showModalWaitForOpponent } from "../modules/modal.js";
 
-export default class extends PageBase {
+export default class Lounge extends PageBase {
     constructor(params) {
         super(params);
+        Lounge.instance = this;
         this.setTitle('Lounge');
         this.labelMatch = 'ルームに入る';
         this.labelCreateRoom = 'ルーム作成';

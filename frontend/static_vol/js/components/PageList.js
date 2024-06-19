@@ -3,9 +3,10 @@
 import PageBase from './PageBase.js';
 import { showModalReceiveMatchRequest } from '../modules/modal.js';
 
-export default class extends PageBase {
+export default class PageList extends PageBase {
     constructor(params) {
         super(params);
+        PageList.instance = this;
         this.setTitle('PageList');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenReceiveReqMatch.bind(this));

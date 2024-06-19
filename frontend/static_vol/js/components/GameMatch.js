@@ -2,9 +2,10 @@
 
 import PageBase from './PageBase.js';
 
-export default class extends PageBase {
+export default class GameMatch extends PageBase {
     constructor(params) {
         super(params);
+        GameMatch.instance = this;
         this.setTitle('GameMatch');
         this.labelButton = '対戦を申し込む'; // TODO json
     }

@@ -4,9 +4,10 @@ import PageBase from './PageBase.js';
 import { router } from '../modules/router.js';
 import { addErrorMessageCustom, checkInputValid } from '../modules/form.js';
 
-export default class extends PageBase {
+export default class SignUp extends PageBase {
     constructor(params) {
         super(params);
+        SignUp.instance = this;
         this.setTitle('SIGN UP');
         this.labelButton = '確認する'; // TODO json
         this.descUsername = ['[使用可能]半角英小文字,半角数字,記号(_)','[必須]半角英小文字,半角数字のいずれか','3〜32文字'];

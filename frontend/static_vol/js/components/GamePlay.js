@@ -2,9 +2,10 @@
 
 import PageBase from './PageBase.js';
 
-export default class extends PageBase {
+export default class GamePlay extends PageBase {
     constructor(params) {
         super(params);
+        GamePlay.instance = this;
         this.setTitle('GamePlay');
         this.player1 = 'player1人目'; // TODO json
         this.player2 = 'player2人目';

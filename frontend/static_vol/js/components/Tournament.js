@@ -3,9 +3,10 @@
 import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 
-export default class extends PageBase {
+export default class Tournament extends PageBase {
     constructor(params) {
         super(params);
+        Tournament.instance = this;
         this.setTitle('Tournament');
         this.labelCreateTournament = 'Create Tournament'; // TODO json
         this.labelTournamentTitle = 'Tournament Title';

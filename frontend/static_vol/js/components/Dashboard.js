@@ -15,6 +15,7 @@ import { updateFriendsList, updateFriendRequestList } from '../modules/friendLis
 export default class Dashboard extends PageBase {
     constructor(params) {
         super(params);
+        Dashboard.instance = this;
         this.playerNameTmp = 'playername';
         this.setTitle(`Dashboard: ${this.playerNameTmp}`);
         //afterRenderにmethod追加

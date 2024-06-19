@@ -7,9 +7,10 @@ import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
-export default class extends PageBase {
+export default class LogIn extends PageBase {
     constructor(params) {
         super(params);
+        LogIn.instance = this;
         this.setTitle('LOGIN');
         this.labelButtonLogin = 'LOGIN'; // TODO json
         this.txtSignUp = 'Don\'t have an account?'; // TODO json

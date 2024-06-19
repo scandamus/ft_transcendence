@@ -3,9 +3,10 @@
 import PageBase from './PageBase.js';
 import { router, routes } from '../modules/router.js';
 
-export default class extends PageBase {
+export default class SignUpComplete extends PageBase {
     constructor(params) {
         super(params);
+        SignUpComplete.instance = this;
         this.setTitle('SIGN UP');
         this.message = '登録完了しました'; // TODO json
         this.labelButtonLogin = 'LOGIN'; // TODO json

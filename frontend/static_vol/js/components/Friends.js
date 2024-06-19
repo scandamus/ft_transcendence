@@ -18,6 +18,7 @@ import { updateFriendsList, updateFriendRequestList } from '../modules/friendLis
 export default class Friends extends PageBase {
     constructor(params) {
         super(params);
+        Friends.instance = this;
         this.setTitle('Friends');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
