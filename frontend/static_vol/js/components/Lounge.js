@@ -102,7 +102,7 @@ export default class extends PageBase {
 
     listenCreateRoom() {
         const btnCreateRoom = document.getElementById('btnCreateRoom');
-        btnCreateRoom.addEventListener('click', showModalWaitForOpponent.bind(this));
-        this.addListenEvent(btnCreateRoom, showModalWaitForOpponent, 'click');
+        const boundShowModalWaitForOpponent = showModalWaitForOpponent.bind(this);
+        this.addListListenInInstance(btnCreateRoom, boundShowModalWaitForOpponent, 'click');
     }
 }

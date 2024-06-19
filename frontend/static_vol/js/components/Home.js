@@ -41,8 +41,8 @@ export default class extends PageBase {
 
     listenLogin() {
         const btnLogin = document.getElementById('btnLoginForm');
-        btnLogin.addEventListener('click', this.handleLogin.bind(this));
-        this.addListenEvent(btnLogin, this.handleLogin, 'click');
+        const boundHandleLogin = this.handleLogin.bind(this);
+        this.addListListenInInstance(btnLogin, boundHandleLogin, 'click');
     }
 
     handleLogin(ev) {

@@ -34,9 +34,9 @@ export default class extends PageBase {
 
     listenReceiveReqMatch() {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_receiveReqMatch');
+        const boundShowModalReceiveMatchRequest = showModalReceiveMatchRequest.bind(this)
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', showModalReceiveMatchRequest.bind(this));
-            this.addListenEvent(btn, showModalReceiveMatchRequest, 'click');
+            this.addListListenInInstance(btn, boundShowModalReceiveMatchRequest, 'click');
         });
     }
 }

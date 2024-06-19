@@ -87,7 +87,7 @@ export default class Dashboard extends PageBase {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
         btnMatchRequest.forEach((btn) => {
             btn.addEventListener('click', showModalSendMatchRequest.bind(this));
-            this.addListenEvent(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
+            this.addListListenInInstance(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
         });
     }
 
@@ -133,7 +133,7 @@ export default class Dashboard extends PageBase {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
         btnMatchRequest.forEach((btn) => {
             btn.addEventListener('click', this.showModalSendMatchRequestHandlerBound);
-            this.addListenEvent(btn, this.showModalMatchRequest, 'click');
+            this.addListListenInInstance(btn, this.showModalMatchRequest, 'click');
             console.log(`Added match request listener to ${btn.dataset.username}`);
         });
 

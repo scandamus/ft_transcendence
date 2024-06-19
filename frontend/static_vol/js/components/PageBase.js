@@ -7,7 +7,7 @@ export default class PageBase {
         PageBase.instance = this;
         this.params = params;
         this.listAfterRenderHandlers = [];
-        this.listEventListeners = [];
+        this.listListenInInstance = [];
     }
 
     setTitle(title) {
@@ -31,14 +31,15 @@ export default class PageBase {
 
 
     //継承クラスでeventListenersにmethodをpushする際に使う
-    addListenEvent(el, cb, ev) {
-        this.listEventListeners.push({element: el, callback: cb, event: ev});
+    addListListenInInstance(el, cb, ev) {
+        el.addEventListener(ev, cb);
+        this.listListenInInstance.push({element: el, callback: cb, event: ev});
     }
 
     // eventListeners解除
     // todo:解除確認
     destroy() {
-        this.listEventListeners.forEach(listener => {
+        this.listListenInInstance.forEach(listener => {
             listener.element.removeEventListener(listener.event, listener.callback);
         });
         // if (this.listEventListeners.length === 0)

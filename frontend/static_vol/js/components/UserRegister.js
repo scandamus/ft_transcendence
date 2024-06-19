@@ -63,20 +63,16 @@ export default class extends PageBase {
 
     listenConfirm() {
         const btnConfirm = document.getElementById('btnConfirmForm');
-        btnConfirm.addEventListener('click', this.handleConfirm.bind(this));
-        this.addListenEvent(btnConfirm, this.handleConfirm, 'click');
+        const boundHandleConfirm = this.handleConfirm.bind(this);
+        this.addListListenInInstance(btnConfirm, boundHandleConfirm, 'click');
 
         const elUsername = document.getElementById('registerUsername');
-        elUsername.addEventListener('blur', this.handleInput.bind(this));
-        this.addListenEvent(elUsername, this.handleInput, 'blur');
-
         const elPassword = document.getElementById('registerPassword');
-        elPassword.addEventListener('blur', this.handleInput.bind(this));
-        this.addListenEvent(elPassword, this.handleInput, 'blur');
-
         const elPasswordConfirm = document.getElementById('registerPasswordConfirm');
-        elPasswordConfirm.addEventListener('blur', this.handleInput.bind(this));
-        this.addListenEvent(elPasswordConfirm, this.handleInput, 'blur');
+        const boundHandleInput = this.handleInput.bind(this);
+        this.addListListenInInstance(elUsername, boundHandleInput, 'blur');
+        this.addListListenInInstance(elPassword, boundHandleInput, 'blur');
+        this.addListListenInInstance(elPasswordConfirm, boundHandleInput, 'blur');
     }
 
     checkFormReady() {
