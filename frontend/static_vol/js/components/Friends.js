@@ -10,7 +10,6 @@ import { pongHandler } from '../modules/websocketHandler.js';
 import { fetchFriends, fetchFriendRequests } from '../modules/friendsApi.js';
 import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend } from '../modules/friendsRequest.js';
 import { labels } from '../modules/labels.js';
-import { pageInstances } from '../modules/pageInstances.js';
 import { showModalSendMatchRequest } from '../modules/modal.js';
 import { checkSimpleInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
@@ -23,7 +22,6 @@ export default class Friends extends PageBase {
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
         this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
-        pageInstances.setInstance('Friends', this);
 
         this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
         this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);

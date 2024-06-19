@@ -39,17 +39,21 @@ export default class PageBase {
     addListListenInInstance(el, cb, ev) {
         el.addEventListener(ev, cb);
         this.listListenInInstance.push({element: el, callback: cb, event: ev});
+        console.log(`/*/*/ addListListenInInstance: ${this.listListenInInstance.length} `)
     }
 
     // eventListeners解除
     // todo:解除確認
     destroy() {
+        //console.log(`/*/*/ destroy: ${this.listListenInInstance.length} `)
         this.listListenInInstance.forEach(listener => {
+            //console.log(`/*/*/ removeEventListener ${listener.element} ${listener.event}`)
             listener.element.removeEventListener(listener.event, listener.callback);
         });
-        // if (this.listEventListeners.length === 0)
+        PageBase.instance = null;
+        // if (this.listListenInInstance.length === 0)
         //     console.log('Listeners all clear')
         // else
-        //     console.log('Listeners' + this.listEventListeners.length + 'left')
+        //     console.log('Listeners' + this.listListenInInstance.length + 'left')
     }
 }

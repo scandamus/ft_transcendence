@@ -1,6 +1,5 @@
 import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
-import { pageInstances } from "./pageInstances.js";
 import { addNotice } from "./notice.js";
 import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
@@ -132,7 +131,7 @@ const handleFriendRequestAck = (data) => {
 }
 
 const handleFriendRequestReceived = (data) => {
-    const currentPage = pageInstances.getInstance('Friends') || pageInstances.getInstance('Dashboard'); //|| pageInstances.getInstance('Home') // その他も
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard');
 
     console.log('handleFriendRepuestReceived: received');
     if (data.action === 'received') {

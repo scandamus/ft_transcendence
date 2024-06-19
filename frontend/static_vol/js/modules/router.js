@@ -16,7 +16,6 @@ import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
 import { closeModalOnCancel } from './modal.js';
-import { pageInstances } from './pageInstances.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = {
@@ -81,7 +80,6 @@ const replaceView = async (matchRoute) => {
             closeModalOnCancel();
         }
 
-        //前画面のeventListenerをrm
         const oldView = PageBase.instance;
         if (oldView) {
             oldView.destroy();
@@ -101,8 +99,6 @@ const router = async (accessToken) => {
     }
 
     console.log('router in');
-    pageInstances.cleanupAll();
-
     const mapRoutes = Object.keys(routes).map(key => {
         const route = routes[key];
         return {

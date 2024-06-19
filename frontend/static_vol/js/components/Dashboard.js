@@ -7,7 +7,6 @@ import { getUserList } from '../modules/users.js';
 import { fetchFriends, fetchFriendRequests } from '../modules/friendsApi.js';
 import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend } from '../modules/friendsRequest.js';
 import { labels } from '../modules/labels.js';
-import { pageInstances } from '../modules/pageInstances.js';
 import { showModalSendMatchRequest } from '../modules/modal.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 
@@ -20,7 +19,6 @@ export default class Dashboard extends PageBase {
         this.setTitle(`Dashboard: ${this.playerNameTmp}`);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
-        pageInstances.setInstance('Dashboard', this);
 
         this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
         this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
