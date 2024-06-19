@@ -3,6 +3,7 @@ import { webSocketManager } from "./websocket.js";
 import { pageInstances } from "./pageInstances.js";
 import { addNotice } from "./notice.js";
 import { updateFriendsList, updateFriendRequestList } from './friendList.js';
+import PageBase from "../components/PageBase.js";
 
 export const pongHandler = (event, containerId) => {
     let data;
@@ -77,7 +78,7 @@ const loadGameContent = async (data) => {
 }
 
 const handleFriendRequestAck = (data) => {
-    const currentPage = pageInstances.getInstance('Friends') || pageInstances.getInstance('Dashboard'); // その他も
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard');
 
     if (data.action === 'error') {
         if (data.error === 'alreadyFriends') {

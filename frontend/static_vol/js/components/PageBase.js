@@ -15,6 +15,11 @@ export default class PageBase {
         document.getElementById('titlePage').innerText = title;
     }
 
+    static isInstance(instance, className) {
+        return (instance &&
+                instance.constructor.name === className);
+    }
+
     async renderHtml() {
         return '';
     }
