@@ -1,6 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { labels } from '../modules/labels.js';
 
 export default class extends PageBase {
     constructor(params) {

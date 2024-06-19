@@ -2,6 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
+import { labels } from '../modules/labels.js';
 
 export default class extends PageBase {
     constructor(params) {

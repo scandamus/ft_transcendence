@@ -2,6 +2,7 @@
 
 import PageBase from './PageBase.js';
 import { router, routes } from '../modules/router.js';
+import { labels } from '../modules/labels.js';
 
 export default class extends PageBase {
     constructor(params) {

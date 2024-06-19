@@ -5,6 +5,7 @@ import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
+import { labels } from '../modules/labels.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class extends PageBase {

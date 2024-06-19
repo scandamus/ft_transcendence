@@ -3,6 +3,7 @@
 import PageBase from './PageBase.js';
 import { router } from '../modules/router.js';
 import { addErrorMessageCustom, checkInputValid } from '../modules/form.js';
+import { labels } from '../modules/labels.js';
 
 export default class extends PageBase {
     constructor(params) {
