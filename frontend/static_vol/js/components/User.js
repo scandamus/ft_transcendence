@@ -79,6 +79,7 @@ export default class extends PageBase {
 
     showModalMatchRequest(ev) {
         const button = ev.target;
+        const opponentName = button.dataset.name;
         const elHtml = `
             <section class="blockModal">
                 <h2 class="blockModal_title">対戦を申し込みました</h2>
@@ -96,7 +97,7 @@ export default class extends PageBase {
         `;
 
         //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-        join_game()
+        join_game(opponentName)
             .then(r => {
                 showModal(elHtml);
             });
