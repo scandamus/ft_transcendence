@@ -4,14 +4,15 @@ import { webSocketManager } from './websocket.js';
 import { pongHandler } from './websocketHandler.js';
 import { initToken } from './token.js';
 
-const join_game = async () => {
+const join_game = async (opponentName) => {
     console.log('join_game');
     try {
         const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             action: 'join_game',
-            token: accessToken.token
+            token: accessToken.token,
+            opponentName: opponentName,
         });
         console.log('Request join_game sent to backend.');
     } catch (error) {
