@@ -4,6 +4,7 @@ import { labels } from './labels.js';
 
 const errorTypes = ['valueMissing', 'patternMismatch', 'tooLong', 'tooShort', 'customError'];
 
+// TODO to labels
 const errorMessages = {
     'valueMissing': 'This field is required.',
     'patternMismatch': 'The character types used do not meet the requirement.',

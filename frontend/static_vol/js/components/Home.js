@@ -20,11 +20,11 @@ export default class extends PageBase {
         return `
             <form action="" method="post" class="blockForm blockForm-home">
                 <dl class="blockForm_el">
-                    <dt>username</dt>
+                    <dt>${labels.home.labelUsername}</dt>
                     <dd><input type="text" id="loginUsername" placeholder="Enter username"></dd>
                 </dl>
                 <dl class="blockForm_el">
-                    <dt>password</dt>
+                    <dt>${labels.home.labelPassword}</dt>
                     <dd><input type="password" id="loginPassword" placeholder="Enter password"></dd>
                 </dl>
                 <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>

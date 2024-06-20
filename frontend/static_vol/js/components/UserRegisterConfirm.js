@@ -19,11 +19,11 @@ export default class extends PageBase {
             <form class="formUserRegister blockForm" action="" method="post">
                 <p>${labels.register.textConfirm}</p>
                 <dl class="unitFormInput">
-                    <dt class="unitFormInput_label">username</label></dt>
+                    <dt class="unitFormInput_label">${labels.register.labelUsername}</label></dt>
                     <dd id="confirmUsername" class="unitFormInput_input unitFormInput_input-confirm"></dd>
                 </dl>
                 <dl class="unitFormInput">
-                    <dt class="unitFormInput_label">password</label></dt>
+                    <dt class="unitFormInput_label">${labels.register.labelPassword}</label></dt>
                     <dd class="unitFormInput_input unitFormInput_input-confirm">**********</dd>
                 </dl>
                 <ul class="listButton">

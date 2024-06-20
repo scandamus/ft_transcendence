@@ -141,8 +141,8 @@ export default class extends PageBase {
                 </section>
             </div>
             <ol class="breadcrumb">
-                <li><a href="/">dashboard</a></li>
-                <li>Tournament</li>
+                <li><a href="/">${labels.dashboard.title}</a></li>
+                <li>${labels.tournament.title}</li>
             </ol>
         `;
     }

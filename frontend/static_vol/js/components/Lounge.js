@@ -7,7 +7,7 @@ import { labels } from '../modules/labels.js';
 export default class extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('Lounge');
+        this.setTitle(labels.lounge.title);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateRoom.bind(this));
     }
@@ -23,17 +23,17 @@ export default class extends PageBase {
                     <p class="formCreateRoom_button blockForm_button"><button type="button" id="btnCreateRoom" class="unitButton">${labels.lounge.labelCreateRoom}</button></p>
                 </form>
                 <div class="blockMatch_listWrap">
-                    <h3 class="blockMatch_title unitTitle1">Waiting</h3>
+                    <h3 class="blockMatch_title unitTitle1">${labels.lounge.labelWaiting}</h3>
                     <div class="blockMatch_list listMatch listLineDivide">
                     <div class="unitMatch unitMatch-dual">
                         <ul class="unitMatch_capacity unitCapacity">
                             <li class="unitCapacity_numerator">
                                 <small>${labels.lounge.labelAvailable}</small>
-                                <span>1</span>
+                                <span>${1}</span>
                             </li>
                             <li class="unitCapacity_denominator">
                                 <small>${labels.lounge.labelCapacity}</small>
-                                <span>2</span>
+                                <span>${2}</span>
                             </li>
                         </ul>
                         <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
@@ -44,11 +44,11 @@ export default class extends PageBase {
                         <ul class="unitMatch_capacity unitCapacity">
                             <li class="unitCapacity_numerator">
                                 <small>${labels.lounge.labelAvailable}</small>
-                                <span>1</span>
+                                <span>${1}</span>
                             </li>
                             <li class="unitCapacity_denominator">
                                 <small>${labels.lounge.labelCapacity}</small>
-                                <span>4</span>
+                                <span>${4}</span>
                             </li>
                         </ul>
                         <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
@@ -59,11 +59,11 @@ export default class extends PageBase {
                         <ul class="unitMatch_capacity unitCapacity">
                             <li class="unitCapacity_numerator">
                                 <small>${labels.lounge.labelAvailable}</small>
-                                <span>1</span>
+                                <span>${1}</span>
                             </li>
                             <li class="unitCapacity_denominator">
                                 <small>${labels.lounge.labelCapacity}</small>
-                                <span>4</span>
+                                <span>${4}</span>
                             </li>
                         </ul>
                         <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
@@ -74,11 +74,11 @@ export default class extends PageBase {
                         <ul class="unitMatch_capacity unitCapacity">
                             <li class="unitCapacity_numerator">
                                 <small>${labels.lounge.labelAvailable}</small>
-                                <span>1</span>
+                                <span>${1}</span>
                             </li>
                             <li class="unitCapacity_denominator">
                                 <small>${labels.lounge.labelCapacity}</small>
-                                <span>2</span>
+                                <span>${2}</span>
                             </li>
                         </ul>
                         <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
@@ -89,8 +89,8 @@ export default class extends PageBase {
                 </div>
             </section>
             <ol class="breadcrumb">
-            <li><a href="/">dashboard</a></li>
-            <li>Lounge</li>
+            <li><a href="/">${labels.dashboard.title}</a></li>
+            <li>${labels.lounge.title}</li>
             </ol>
         `;
     }

@@ -27,7 +27,7 @@ export default class extends PageBase {
             <form id="formUserRegister" class="formUserRegister blockForm" action="" method="post">
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label">
-                        <label for="registerUsername">username</label>
+                        <label for="registerUsername">${labels.register.labelUsername}</label>
                     </dt>
                     <dd class="unitFormInput_input">
                         <input type="text" id="registerUsername" title="${labels.register.descUsername}" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required />
@@ -36,7 +36,7 @@ export default class extends PageBase {
                     </dd>
                 </dl>
                 <dl class="unitFormInput">
-                    <dt class="unitFormInput_label"><label for="registerPassword">password</label></dt>
+                    <dt class="unitFormInput_label"><label for="registerPassword">${labels.register.labelPassword}</label></dt>
                     <dd class="unitFormInput_input">
                         <input type="password" id="registerPassword" title="${labels.register.descPassword}" placeholder="Enter password"
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required />
@@ -45,7 +45,7 @@ export default class extends PageBase {
                     </dd>
                 </dl>
                 <dl class="unitFormInput">
-                    <dt class="unitFormInput_label"><label for="registerPasswordConfirm">password(confirm)</label></dt>
+                    <dt class="unitFormInput_label"><label for="registerPasswordConfirm">${labels.register.labelPasswordConfirm}</label></dt>
                     <dd class="unitFormInput_input">
                         <input type="password" id="registerPasswordConfirm" title="${labels.register.descPasswordConfirm}" placeholder="Enter password(confirm)"
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required />
@@ -53,7 +53,7 @@ export default class extends PageBase {
                         <ul class="listAnnotation"><li>${labels.register.descPasswordConfirm}</li></ul>
                     </dd>
                 </dl>
-                <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton" disabled>${labels.register.labelButton}</button>
+                <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton" disabled>${labels.register.labelButtonConfirm}</button>
             </form>
         `;
     }
