@@ -77,7 +77,8 @@ const loadGameContent = async (data) => {
 }
 
 const handleFriendRequestAck = (data) => {
-    const currentPage = PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard');
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+                                ? PageBase.instance : null;
 
     if (data.action === 'error') {
         if (data.error === 'alreadyFriends') {
@@ -131,7 +132,8 @@ const handleFriendRequestAck = (data) => {
 }
 
 const handleFriendRequestReceived = (data) => {
-    const currentPage = PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard');
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+                                ? PageBase.instance : null;
 
     console.log('handleFriendRepuestReceived: received');
     if (data.action === 'received') {
