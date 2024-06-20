@@ -136,11 +136,11 @@ const router = async (accessToken) => {
         // 2画面目以降
         console.log("/*/*/ oldView.constructor.name::" + oldView.constructor.name);
         oldView.destroy();
-    } else {
-        // 初回
-        await replaceView(matchRoute);
+    // } else {
+    //     // 初回
+    //     await replaceView(matchRoute);
     }
-    //await replaceView(matchRoute);
+    await replaceView(matchRoute);
 };
 
 export { addLinkPageEvClick, router, routes, linkSpa };
