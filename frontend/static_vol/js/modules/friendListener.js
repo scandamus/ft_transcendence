@@ -4,10 +4,6 @@ import { addListenerToList, removeListenerAndClearList } from './listenerCommon.
 import { showModalSendMatchRequest } from "./modal.js";
 import { acceptFriendRequest, declineFriendRequest, removeFriend, sendFriendRequest } from "./friendsRequest.js";
 
-const showModalSendMatchRequestHandler = (ev) => {
-    showModalSendMatchRequest(ev);
-}
-
 const sendFriendRequestHandler = (ev) => {
     const username = ev.target.dataset.username;
     sendFriendRequest(username);
@@ -55,7 +51,7 @@ const removeListenRemoveFriend = (pageInstance) => {
 
 const updateListenMatchRequest = (pageInstance) => {
     const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-    const boundShowModalSendMatchRequestHandler = showModalSendMatchRequestHandler.bind(pageInstance);
+    const boundShowModalSendMatchRequestHandler = showModalSendMatchRequest.bind(pageInstance);
     btnMatchRequest.forEach((btn) => {
         addListenerToList(
             pageInstance.listListenMatchRequest,

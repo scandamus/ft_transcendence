@@ -1,16 +1,10 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-//import { getUserList } from "../modules/users.js";
-//import { join_game } from "../modules/match.js";
-//import { showModal } from "../modules/modal.js";
 import { webSocketManager } from '../modules/websocket.js';
 import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
-import { fetchFriends, fetchFriendRequests } from '../modules/friendsApi.js';
-import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend } from '../modules/friendsRequest.js';
 import { labels } from '../modules/labels.js';
-import { showModalSendMatchRequest } from '../modules/modal.js';
 import { checkSimpleInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import {
@@ -68,7 +62,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="dummy1" data-id="dummyId1">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="playertest1" data-id="dummyId1">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -77,7 +71,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="dummy2" data-id="dummyId2">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="playertest1" data-id="dummyId2">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -86,7 +80,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="dummy3" data-id="dummyId3">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="playertest1" data-id="dummyId3">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                         </div>

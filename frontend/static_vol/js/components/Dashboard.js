@@ -1,13 +1,6 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { getUserList } from '../modules/users.js';
-//import { showModal } from '../modules/modal.js';
-//import { join_game } from '../modules/match.js';
-import { fetchFriends, fetchFriendRequests } from '../modules/friendsApi.js';
-import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend } from '../modules/friendsRequest.js';
-import { labels } from '../modules/labels.js';
-import { showModalSendMatchRequest } from '../modules/modal.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import {
     removeListenMatchRequest, updateListenMatchRequest,

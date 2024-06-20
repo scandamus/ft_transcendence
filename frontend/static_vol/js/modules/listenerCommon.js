@@ -1,12 +1,5 @@
 'use strict';
 
-//for debug. 呼び出し元を判別
-import {
-    removeListenAcceptFriendRequest,
-    removeListenMatchRequest,
-    removeListenRemoveFriend
-} from "./friendListener.js";
-
 const getCallerName = () => {
     const err = new Error();
     const stack = err.stack.split('\n');
