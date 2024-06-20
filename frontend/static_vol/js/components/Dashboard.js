@@ -89,14 +89,6 @@ export default class Dashboard extends PageBase {
         }
     }
 
-    listenRequestMatch() {
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-        btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', showModalSendMatchRequest.bind(this));
-            this.addListListenInInstance(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
-        });
-    }
-
     showModalSendMatchRequestHandler(ev) {
         showModalSendMatchRequest(ev);
     }

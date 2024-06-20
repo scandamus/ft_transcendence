@@ -7,6 +7,11 @@ const removeListenMatchRequest = (pageInstance) => {
     pageInstance.listListenMatchRequest = [];
 }
 
+const removeListenSendFriendRequest = (pageInstance) => {
+    removeListenerAndClearList(pageInstance.listListenSendFriendRequest);
+    pageInstance.listListenSendFriendRequest = [];
+}
+
 const removeListenAcceptFriendRequest = (pageInstance) => {
     removeListenerAndClearList(pageInstance.listListenAcceptFriendRequest);
     pageInstance.listListenAcceptFriendRequest = [];
@@ -33,6 +38,21 @@ const updateListenMatchRequest = (pageInstance) => {
             'click'
         );
         console.log(`[Add listener] match request to ${username}`);
+    });
+}
+
+const updateListenSendFriendRequest = (pageInstance) => {
+    const btnRequestFriend = document.querySelectorAll('.unitFriendButton_friendRequest');
+    btnRequestFriend.forEach((btn) => {
+        const username = btn.dataset.username;
+        const requestId = btn.dataset.id;
+        addListenerToList(
+            pageInstance.listListenSendFriendRequest,
+            btn,
+            pageInstance.sendFriendRequestHandlerBound(requestId),
+            'click'
+        );
+        console.log(`[Add listener] send friend request to ${username}`);
     });
 }
 
@@ -82,6 +102,7 @@ const updateListenRemoveFriend = (pageInstance) => {
 
 export {
     removeListenMatchRequest, updateListenMatchRequest,
+    removeListenSendFriendRequest, updateListenSendFriendRequest,
     removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
     removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
     removeListenRemoveFriend, updateListenRemoveFriend

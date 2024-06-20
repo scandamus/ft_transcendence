@@ -15,6 +15,7 @@ import { checkSimpleInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import {
     removeListenMatchRequest, updateListenMatchRequest,
+    removeListenSendFriendRequest, updateListenSendFriendRequest,
     removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
     removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
     removeListenRemoveFriend, updateListenRemoveFriend
@@ -30,10 +31,12 @@ export default class Friends extends PageBase {
         this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
 
         this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
+        this.sendFriendRequestHandlerBound = this.sendFriendRequestHandler.bind(this);
         this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
         this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
         this.removeFriendHandlerBound = this.removeFriendHandler.bind(this);
         this.listListenMatchRequest = [];
+        this.listListenSendFriendRequest = [];
         this.listListenAcceptFriendRequest = [];
         this.listListenDeclineFriendRequest = [];
         this.listListenRemoveFriend = [];
@@ -76,7 +79,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="dummy1" data-id="dummyId1">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="dummy1" data-id="dummyId1">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -85,7 +88,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="dummy2" data-id="dummyId2">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="dummy2" data-id="dummyId2">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -94,7 +97,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="dummy3" data-id="dummyId3">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_friendRequest unitButton btnApply" data-username="dummy3" data-id="dummyId3">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                         </div>
@@ -131,6 +134,10 @@ export default class Friends extends PageBase {
         showModalSendMatchRequest(ev);
     }
 
+    sendFriendRequestHandler(requestId) {
+        sendFriendRequest(requestId);
+    }
+
     acceptFriendRequestHandler(requestId) {
         acceptFriendRequest(requestId);
     }
@@ -145,6 +152,7 @@ export default class Friends extends PageBase {
 
     removeEventListeners() {
         removeListenMatchRequest(this);
+        removeListenSendFriendRequest(this);
         removeListenAcceptFriendRequest(this);
         removeListenDeclineFriendRequest(this);
         removeListenRemoveFriend(this);
@@ -154,6 +162,7 @@ export default class Friends extends PageBase {
         this.removeEventListeners();
 
         updateListenMatchRequest(this);
+        updateListenSendFriendRequest(this);
         updateListenAcceptFriendRequest(this);
         updateListenDeclineFriendRequest(this);
         updateListenRemoveFriend(this);

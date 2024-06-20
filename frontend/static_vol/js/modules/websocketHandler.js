@@ -92,7 +92,7 @@ const handleFriendRequestAck = (data) => {
             console.error(`Error: ${data.message}`);
         }
     } else if (data.action === 'sentRequestSuccess') {
-        console.log('Friend request by username is sent to ', data.to_username);
+        console.log(`Friend request is sent to ${data.to_username}`, );
         addNotice(`${data.to_username}さんに友達申請が送信されました`, false);
         if (currentPage) {
             updateFriendRequestList()
