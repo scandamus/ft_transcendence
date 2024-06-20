@@ -76,7 +76,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="dummy1" data-id="dummyId1">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -85,7 +85,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="dummy2" data-id="dummyId2">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -94,7 +94,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="dummy3" data-id="dummyId3">${labels.labelApply}</button></li>
                                 </ul>
                             </section>
                         </div>
