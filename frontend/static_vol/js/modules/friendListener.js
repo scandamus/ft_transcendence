@@ -45,11 +45,10 @@ const updateListenSendFriendRequest = (pageInstance) => {
     const btnRequestFriend = document.querySelectorAll('.unitFriendButton_friendRequest');
     btnRequestFriend.forEach((btn) => {
         const username = btn.dataset.username;
-        const requestId = btn.dataset.id;
         addListenerToList(
             pageInstance.listListenSendFriendRequest,
             btn,
-            pageInstance.sendFriendRequestHandlerBound(requestId),
+            pageInstance.sendFriendRequestHandlerBound(username),
             'click'
         );
         console.log(`[Add listener] send friend request to ${username}`);

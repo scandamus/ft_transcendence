@@ -4,14 +4,15 @@ import { webSocketManager } from './websocket.js';
 import { pongHandler } from './websocketHandler.js';
 import { initToken } from './token.js';
 
-const sendFriendRequest = async () => {
     console.log('sendFriendRequest');
+const sendFriendRequest = async (to_username) => {
     try {
 //        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'friendRequest',
             action: 'sendRequest',
+            username: to_username
         });
     } catch (error) {
         console.error('Failed to open or send through WebSocket: ', error);

@@ -134,8 +134,8 @@ export default class Friends extends PageBase {
         showModalSendMatchRequest(ev);
     }
 
-    sendFriendRequestHandler(requestId) {
-        sendFriendRequest(requestId);
+    sendFriendRequestHandler(username) {
+        sendFriendRequest(username);
     }
 
     acceptFriendRequestHandler(requestId) {
