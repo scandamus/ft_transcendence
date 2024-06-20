@@ -9,10 +9,6 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('SIGN UP');
-        this.labelButton = '確認する'; // TODO json
-        this.descUsername = ['[使用可能]半角英小文字,半角数字,記号(_)','[必須]半角英小文字,半角数字のいずれか','3〜32文字'];
-        this.descPassword = ['[使用可能]半角英数字と記号(@_#$%&!.,+*~\')','[必須]英小文字,英大文字,数字,記号,それぞれ1文字','8〜24文字'];
-        this.descPasswordConfirm = '確認のためパスワードをもう一度入力してください';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenConfirm.bind(this));
         this.addAfterRenderHandler(this.restoreInputForm.bind(this));
@@ -20,12 +16,12 @@ export default class extends PageBase {
 
     async renderHtml() {
         let listDescUsername = '';
-        for (let i = 0; i < this.descUsername.length; i++) {
-            listDescUsername += `<li>${this.descUsername[i]}</li>`;
+        for (let i = 0; i < labels.register.descUsername.length; i++) {
+            listDescUsername += `<li>${labels.register.descUsername[i]}</li>`;
         }
         let listDescPassword = '';
-        for (let i = 0; i < this.descPassword.length; i++) {
-            listDescPassword += `<li>${this.descPassword[i]}</li>`;
+        for (let i = 0; i < labels.register.descPassword.length; i++) {
+            listDescPassword += `<li>${labels.register.descPassword[i]}</li>`;
         }
         return `
             <form id="formUserRegister" class="formUserRegister blockForm" action="" method="post">
@@ -34,7 +30,7 @@ export default class extends PageBase {
                         <label for="registerUsername">username</label>
                     </dt>
                     <dd class="unitFormInput_input">
-                        <input type="text" id="registerUsername" title="${this.descUsername}" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required />
+                        <input type="text" id="registerUsername" title="${labels.register.descUsername}" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required />
                         <ul class="listError"></ul>
                         <ul class="listAnnotation">${listDescUsername}</ul>
                     </dd>
@@ -42,7 +38,7 @@ export default class extends PageBase {
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registerPassword">password</label></dt>
                     <dd class="unitFormInput_input">
-                        <input type="password" id="registerPassword" title="${this.descPassword}" placeholder="Enter password"
+                        <input type="password" id="registerPassword" title="${labels.register.descPassword}" placeholder="Enter password"
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required />
                         <ul class="listError"></ul>
                         <ul class="listAnnotation">${listDescPassword}</ul>
@@ -51,13 +47,13 @@ export default class extends PageBase {
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registerPasswordConfirm">password(confirm)</label></dt>
                     <dd class="unitFormInput_input">
-                        <input type="password" id="registerPasswordConfirm" title="${this.descPasswordConfirm}" placeholder="Enter password(confirm)"
+                        <input type="password" id="registerPasswordConfirm" title="${labels.register.descPasswordConfirm}" placeholder="Enter password(confirm)"
                             pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required />
                         <ul class="listError"></ul>
-                        <ul class="listAnnotation"><li>${this.descPasswordConfirm}</li></ul>
+                        <ul class="listAnnotation"><li>${labels.register.descPasswordConfirm}</li></ul>
                     </dd>
                 </dl>
-                <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton" disabled>${this.labelButton}</button>
+                <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton" disabled>${labels.register.labelButton}</button>
             </form>
         `;
     }

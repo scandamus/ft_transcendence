@@ -3,6 +3,7 @@
 import { cancel_game, join_game } from "./match.js";
 import { initToken } from "./token.js";
 import * as mc from "./modalContents.js";
+import { labels } from './labels.js';
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;

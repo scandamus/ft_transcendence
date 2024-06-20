@@ -53,7 +53,7 @@ export default class Friends extends PageBase {
                         <h3 class="blockSearchFriend_title unitTitle1">Search Friends</h3>
                         <form action="" method="post" class="blockSearchFriend_form blockForm" id="friendSearchForm">
                             <p class="blockForm_input"><input type="text" id="inputFriendsName" placeholder="Enter friend's name" minlength="3" maxlength="32"></p>
-                            <p class="blockForm_button"><button type="submit" id="btnPlayerSearch" class="unitButton">${labels.labelSearch}</button></p>
+                            <p class="blockForm_button"><button type="submit" id="btnPlayerSearch" class="unitButton">${labels.friends.labelSearch}</button></p>
                         </form>
                     </section>
                     <section class="blockFriendRecommended">
@@ -65,7 +65,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.friends.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -74,7 +74,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.friends.labelApply}</button></li>
                                 </ul>
                             </section>
                             <section class="unitFriend">
@@ -83,7 +83,7 @@ export default class Friends extends PageBase {
                                     <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                                 </header>
                                 <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.labelApply}</button></li>
+                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply">${labels.friends.labelApply}</button></li>
                                 </ul>
                             </section>
                         </div>
@@ -112,8 +112,8 @@ export default class Friends extends PageBase {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>
-                            <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.labelRmFriend}</button></li>
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.friends.labelMatch}</button></li>
+                            <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.friends.labelRmFriend}</button></li>
                         </ul>
                     </section>
                 `;
@@ -139,8 +139,8 @@ export default class Friends extends PageBase {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${request.from_user}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.labelAccept}</button></li>
-                            <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico" data-username="${request.from_user}" data-id="${request.id}"><img src="/images/ico-cross.svg" alt="${labels.labelDecline}" width="16px" height="16px"></button></li>
+                            <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.friends.labelAccept}</button></li>
+                            <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico" data-username="${request.from_user}" data-id="${request.id}"><img src="/images/ico-cross.svg" alt="${labels.friends.labelDecline}" width="16px" height="16px"></button></li>
                         </ul>
                     </section>
                 `;
@@ -266,7 +266,7 @@ export default class Friends extends PageBase {
         event.preventDefault();
         const inputFriendsName = document.getElementById('inputFriendsName').value;
         if (inputFriendsName === '') {
-            alert(labels.msgNoUsername);
+            alert(labels.friends.msgNoUsername);
             return;
         }
         const message = {

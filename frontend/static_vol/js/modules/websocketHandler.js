@@ -2,6 +2,8 @@ import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
 import { pageInstances } from "./pageInstances.js";
 
+import { labels } from './labels.js';
+
 export const pongHandler = (event, containerId) => {
     let data;
     try {

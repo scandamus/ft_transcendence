@@ -8,9 +8,6 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('SIGN UP');
-        this.labelButtonRegister = '登録する'; // TODO json
-        this.labelButtonBack = '修正する';
-        this.textConfirm = '下記の内容で登録します';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.displayInputData.bind(this));
         this.addAfterRenderHandler(this.listenLinkBack.bind(this));
@@ -20,7 +17,7 @@ export default class extends PageBase {
     async renderHtml() {
         return `
             <form class="formUserRegister blockForm" action="" method="post">
-                <p>${this.textConfirm}</p>
+                <p>${labels.register.textConfirm}</p>
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label">username</label></dt>
                     <dd id="confirmUsername" class="unitFormInput_input unitFormInput_input-confirm"></dd>
@@ -30,8 +27,8 @@ export default class extends PageBase {
                     <dd class="unitFormInput_input unitFormInput_input-confirm">**********</dd>
                 </dl>
                 <ul class="listButton">
-                    <li><button type="button" id="btnBackForm" class="formUserRegister_button unitButton">${this.labelButtonBack}</button></li>
-                    <li><button type="submit" id="btnRegisterForm" class="formUserRegister_button unitButton">${this.labelButtonRegister}</button></li>
+                    <li><button type="button" id="btnBackForm" class="formUserRegister_button unitButton">${labels.register.labelButtonBack}</button></li>
+                    <li><button type="submit" id="btnRegisterForm" class="formUserRegister_button unitButton">${labels.register.labelButtonRegister}</button></li>
                 </ul>
             </form>
         `;

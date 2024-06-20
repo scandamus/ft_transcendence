@@ -8,7 +8,7 @@ export default class extends PageBase {
     constructor(params) {
         super(params);
         this.setTitle('TournamentTitle1');
-        this.labelTitleRecent = 'Recent';
+        // labels.tournament.labelTitleRecent = 'Recent';
     }
 
     async renderHtml() {

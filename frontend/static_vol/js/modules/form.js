@@ -1,5 +1,7 @@
 'use strict';
 
+import { labels } from './labels.js';
+
 const errorTypes = ['valueMissing', 'patternMismatch', 'tooLong', 'tooShort', 'customError'];
 
 const errorMessages = {

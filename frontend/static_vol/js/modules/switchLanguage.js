@@ -1,5 +1,7 @@
 'use strict';
 
+import { labels } from './labels.js';
+
 const switchLanguage = (language) => {
     const languageSelect = document.getElementById('languageSelect');
 
