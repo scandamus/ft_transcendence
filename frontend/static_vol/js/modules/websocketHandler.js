@@ -1,8 +1,10 @@
 import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
 import { pageInstances } from "./pageInstances.js";
+import { closeModal, showModalReceiveMatchRequest } from "./modal.js";
 
 export const pongHandler = (event, containerId) => {
+    console.log(`pongHandler called for containerID: ${containerId}`)
     let data;
     try {
         data = JSON.parse(event.data);
@@ -16,13 +18,16 @@ export const pongHandler = (event, containerId) => {
         if (data.type === 'gameSession') {
             loadGameContent(data);
         }
+        else if (data.type === 'friendMatchRequest') {
+            handleFriendMatchRequestReceived(data);
+        }
         else if (data.type === 'friendRequest') {
             handleFriendRequestReceived(data);
         }
-        else if (data.type === 'ack') {
+        else if (data.type === 'ack') { // TODO: friendRequestAckに変更？
             handleFriendRequestAck(data);
         }
-    } catch {
+    } catch (error) {
         console.error(`Error parsing data from ${containerId}: `, error);
     }
 }
@@ -46,6 +51,8 @@ const pongGameHandler = (event, containerId) => {
 
 const loadGameContent = async (data) => {
     const { jwt, match_id, username } = data;
+
+    closeModal();
 
     console.log(`Loading pong content with JWT: `, jwt);
     console.log(`match_id: ${match_id}, Username: ${username}`);
@@ -160,5 +167,28 @@ const handleFriendRequestReceived = (data) => {
                     currentPage.listenRequest();
                 });
         }
+    }
+}
+
+const handleFriendMatchRequestReceived = (data) => {
+    if (data.action === 'requested') {
+        // TODO: すでに別のプレイヤーからのリクエストが来ている場合の処理
+        // alert(`${data.from}さんから対戦リクエストです！`);
+        showModalReceiveMatchRequest(data);
+    } else if (data.action === 'accepted') {
+        // 対戦相手がアクセプトボタンを押した
+        // alert(`対戦相手が承諾しました`)
+    } else if (data.action === 'cancelled') {
+        // 対戦を申し込んだ主がキャンセルボタンを押した
+        closeModal();
+        alert(`対戦相手にキャンセルされました`)
+    } else if (data.action === 'rejected') {
+        // 申し込んだ相手がリジェクトボタンを押した
+        // TODO: リジェクトされたメッセージを出す？
+        closeModal();
+        alert(`対戦相手にリジェクトされました`)
+    } else if (data.action === 'error') {
+        closeModal();
+        alert(`エラー：${data.message}`);
     }
 }
