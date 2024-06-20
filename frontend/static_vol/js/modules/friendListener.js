@@ -119,10 +119,26 @@ const updateListenRemoveFriend = (pageInstance) => {
     });
 }
 
+const resetListenerFriendList = (pageInstance) => {
+    removeListenMatchRequest(pageInstance);
+    removeListenRemoveFriend(pageInstance);
+
+    updateListenMatchRequest(pageInstance);
+    updateListenRemoveFriend(pageInstance);
+}
+const resetListenerFriendRequestList = (pageInstance) => {
+    removeListenAcceptFriendRequest(pageInstance);
+    removeListenDeclineFriendRequest(pageInstance);
+
+    updateListenAcceptFriendRequest(pageInstance);
+    updateListenDeclineFriendRequest(pageInstance);
+}
+
 export {
     removeListenMatchRequest, updateListenMatchRequest,
     removeListenSendFriendRequest, updateListenSendFriendRequest,
     removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
     removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
-    removeListenRemoveFriend, updateListenRemoveFriend
+    removeListenRemoveFriend, updateListenRemoveFriend,
+    resetListenerFriendList, resetListenerFriendRequestList
 }
