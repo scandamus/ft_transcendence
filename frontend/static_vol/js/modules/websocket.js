@@ -123,11 +123,13 @@ class WebSocketManager {
         try {
             const accessToken = await initToken();
 //            await webSocketManager.openWebSocket(containerId, this.messageHandlers[containerId]);
+            console.log('sendAccessToken: initToken() finish');
             const message = {
-                action: 'authWebSocket',
+                type: 'authWebSocket',
+                action: 'auth',
                 token: accessToken.token
             };
-            webSocketManager.sendWebSocketMessage(containerId, message);
+            this.sendWebSocketMessage(containerId, message);
             console.log('send access token to backend.');
         } catch (error) {
             console.error('Failed to open or send through WebSocket: ', error);
