@@ -44,8 +44,7 @@ export default class PageBase {
         this.listAfterRenderHandlers.push(handler);
     }
 
-
-    //継承クラスでeventListenersにmethodをpushする際に使う
+    //継承クラスでaddListenerのうえthis.listListenInInstanceにpushする際に使う
     addListListenInInstance(el, cb, ev) {
         el.addEventListener(ev, cb);
         this.listListenInInstance.push({element: el, callback: cb, event: ev});

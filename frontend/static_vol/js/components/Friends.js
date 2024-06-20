@@ -13,6 +13,12 @@ import { labels } from '../modules/labels.js';
 import { showModalSendMatchRequest } from '../modules/modal.js';
 import { checkSimpleInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
+import {
+    removeListenMatchRequest, updateListenMatchRequest,
+    removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
+    removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
+    removeListenRemoveFriend, updateListenRemoveFriend
+} from '../modules/friendListener.js';
 
 export default class Friends extends PageBase {
     constructor(params) {
@@ -27,7 +33,10 @@ export default class Friends extends PageBase {
         this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
         this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
         this.removeFriendHandlerBound = this.removeFriendHandler.bind(this);
-
+        this.listListenMatchRequest = [];
+        this.listListenAcceptFriendRequest = [];
+        this.listListenDeclineFriendRequest = [];
+        this.listListenRemoveFriend = [];
         //ページ破棄のタイミングでイベントリスナーを削除
 //        window.addEventListener('beforeunload', this.cleanup.bind(this));
     }
@@ -135,78 +144,25 @@ export default class Friends extends PageBase {
     }
 
     removeEventListeners() {
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-        btnMatchRequest.forEach((btn) => {
-            btn.removeEventListener('click', this.showModalSendMatchRequestHandlerBound);
-            console.log(`Removed match request listener from ${btn.dataset.username}`);
-        });
-    
-        const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
-        btnAcceptFriendRequest.forEach((btn) => {
-            btn.removeEventListener('click', this.acceptFriendRequestHandlerBound);
-            console.log(`Removed accept friend request listener from ${btn.dataset.username}`);
-        });
-    
-        const btnDeclineFriendRequest = document.querySelectorAll('.unitFriendButton_friendDecline');
-        btnDeclineFriendRequest.forEach((btn) => {
-            btn.removeEventListener('click', this.declineFriendRequestHandlerBound);
-            console.log(`Removed decline friend request listener from ${btn.dataset.username}`);
-        });
-    
-        const btnRemoveFriend = document.querySelectorAll('.unitFriendButton_removeFriend');
-        btnRemoveFriend.forEach((btn) => {
-            btn.removeEventListener('click', this.removeFriendHandlerBound);
-            console.log(`Removed remove friend listener from ${btn.dataset.username}`);
-        });
+        removeListenMatchRequest(this);
+        removeListenAcceptFriendRequest(this);
+        removeListenDeclineFriendRequest(this);
+        removeListenRemoveFriend(this);
     }
 
     listenRequest() {
         this.removeEventListeners();
 
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-        btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', this.showModalSendMatchRequestHandlerBound);
-            this.addListListenInInstance(btn, this.showModalMatchRequest, 'click');
-            console.log(`Added match request listener to ${btn.dataset.username}`);
-        });
-
-        const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
-        btnAcceptFriendRequest.forEach((btn) => {
-            btn.addEventListener('click', (event) => {
-                const username = event.target.dataset.username;
-                const requestId = event.target.dataset.id;
-                this.acceptFriendRequestHandlerBound(requestId);
-                console.log(`Accept friend request from ${username} with id ${requestId}`)
-            });
-            console.log(`Add accept friend request listner to ${btn.dataset.username}`);
-        });
-
-        const btnDeclineFriendRequest = document.querySelectorAll('.unitFriendButton_friendDecline');
-        btnDeclineFriendRequest.forEach((btn) => {
-            btn.addEventListener('click', (event) => {
-                const username =event.target.dataset.username;
-                const requestId = event.target.dataset.id;
-                this.declineFriendRequestHandlerBound(requestId);
-                console.log(`Decline friend request from ${username} with id ${requestId}`);
-            })
-            console.log(`Add decline friend request listner to ${btn.dataset.username}`);
-        });
-
-        const btnRemoveFriend = document.querySelectorAll('.unitFriendButton_removeFriend');
-        btnRemoveFriend.forEach((btn) => {
-            btn.addEventListener('click', (event) => {
-                const username = event.target.dataset.username;
-                this.removeFriendHandlerBound(username);
-                console.log(`Remove Friend ${username}`);
-            });
-            console.log(`Added remove friend listener to ${btn.dataset.username}`);
-        });
+        updateListenMatchRequest(this);
+        updateListenAcceptFriendRequest(this);
+        updateListenDeclineFriendRequest(this);
+        updateListenRemoveFriend(this);
     }
 
     listenSearchFriends() {
         const btnSearchFriend = document.getElementById('btnSearchFriend');
-        btnSearchFriend.addEventListener('click', this.handleSearchFriend.bind(this));
-        this.addListListenInInstance(btnSearchFriend, this.handleSearchFriend, 'click');//todo: rm 確認
+        const boundHandleSearchFriend = this.handleSearchFriend.bind(this);
+        this.addListListenInInstance(btnSearchFriend, boundHandleSearchFriend, 'click');
     }
 
     async handleSearchFriend(ev) {
