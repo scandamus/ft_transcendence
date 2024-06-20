@@ -104,9 +104,12 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.players_id = players_id
                 self.players_ids.add(players_id)
                 if len(self.players_ids) == 2: # 2人に決め打ち
-                    await self.start_game()
+                    # await self.start_game()
+                    await self.channel_layer.group_send(self.room_group_name,
+                        {
+                            'type': 'start.game',
+                        })
                 # TODO: 2人揃わない場合のタイムアウト処理
-                # クライアント側からリクエストする？
             else:
                 logger.error('Match data not found or user is not for this match')
                 self.close(code=5000)
@@ -246,7 +249,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
     
-    async def start_game(self):
+    async def start_game(self, event):
         logger.info(f'Starting game for match_id {self.match_id}')
         await self.send(text_data=json.dumps({
             'type': 'startGame',
