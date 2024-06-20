@@ -1,5 +1,7 @@
 'use strict';
 
+import { linkSpa } from "../modules/router.js";
+
 export default class PageBase {
     static instance = null;
 
@@ -8,6 +10,7 @@ export default class PageBase {
         this.params = params;
         this.listAfterRenderHandlers = [];
         this.listListenInInstance = [];
+        this.addAfterRenderHandler(this.addListenLinkPages.bind(this));
     }
 
     setTitle(title) {
@@ -18,6 +21,13 @@ export default class PageBase {
     static isInstance(instance, className) {
         return (instance &&
                 instance.constructor.name === className);
+    }
+
+    addListenLinkPages() {
+        const linkPages = document.querySelectorAll('#app a[data-link]');
+        linkPages.forEach((linkPage) => {
+            this.addListListenInInstance(linkPage, linkSpa, 'click');
+        });
     }
 
     async renderHtml() {
@@ -39,21 +49,28 @@ export default class PageBase {
     addListListenInInstance(el, cb, ev) {
         el.addEventListener(ev, cb);
         this.listListenInInstance.push({element: el, callback: cb, event: ev});
-        console.log(`/*/*/ addListListenInInstance: ${this.listListenInInstance.length} `)
     }
 
-    // eventListeners解除
-    // todo:解除確認
     destroy() {
-        //console.log(`/*/*/ destroy: ${this.listListenInInstance.length} `)
+        // remove eventListeners
+        let countListen = this.listListenInInstance.length;
+        console.log(`/*/ destroy:this.listListenInInstance.length: ${countListen}`);
         this.listListenInInstance.forEach(listener => {
-            //console.log(`/*/*/ removeEventListener ${listener.element} ${listener.event}`)
+            console.log(`/*/*/ removeEventListener ${listener.element} ${listener.event}`)
             listener.element.removeEventListener(listener.event, listener.callback);
+            countListen--;
         });
+        if (countListen === 0) {
+            console.log(`/*/*/*/ destroy:All event listeners have been removed. countListen:${countListen}`);
+        } else {
+            console.log(`/*/*/!!!!!/*/*/ destroy:Event listeners remain. countListen:${countListen}`);
+        }
+
+        // clear ar
+        this.listAfterRenderHandlers = [];
+        this.listListenInInstance = [];
+
+        // delete instance
         PageBase.instance = null;
-        // if (this.listListenInInstance.length === 0)
-        //     console.log('Listeners all clear')
-        // else
-        //     console.log('Listeners' + this.listListenInInstance.length + 'left')
     }
 }

@@ -52,21 +52,25 @@ const getParams = (matchRoute) => {
     }));
 };
 
+const linkSpa = async (ev) => {
+    console.log("call linkSpa")
+    ev.preventDefault();
+    const link = (ev.target.tagName === 'a') ? ev.target.href : ev.target.closest('a').href;
+    if (window.location.href === ev.target.href || !link) {
+        return;
+    }
+    history.pushState(null, null, link);
+    try {
+        await router(getToken('accessToken'));
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 const addLinkPageEvClick = (linkPages) => {
+    console.log(`length:${linkPages.length}`)
     linkPages.forEach((linkPage) => {
-        linkPage.addEventListener('click', async (ev) => {
-            ev.preventDefault();
-            const link = (ev.target.tagName === 'a') ? ev.target.href : ev.target.closest('a').href;
-            if (window.location.href === ev.target.href || !link) {
-                return;
-            }
-            history.pushState(null, null, link);
-            try {
-                await router(getToken('accessToken'));
-            } catch (error) {
-                console.error(error);
-            }
-        });
+        linkPage.addEventListener('click', linkSpa);
     });
 }
 
@@ -79,17 +83,9 @@ const replaceView = async (matchRoute) => {
         if (elModal) {
             closeModalOnCancel();
         }
-
-        const oldView = PageBase.instance;
-        if (oldView) {
-            oldView.destroy();
-        }
         //view更新
         document.getElementById('app').innerHTML = await view.renderHtml();
         view.afterRender();
-        //todo: ↓afterRenderに統合
-        const linkPages = document.querySelectorAll('#app a[data-link]');
-        addLinkPageEvClick(linkPages);
     }
 }
 
@@ -133,7 +129,18 @@ const router = async (accessToken) => {
             result: routes.dashboard.path
         };
     }
-    await replaceView(matchRoute);
+
+
+    const oldView = PageBase.instance;
+    if (oldView) {
+        // 2画面目以降
+        console.log("/*/*/ oldView.constructor.name::" + oldView.constructor.name);
+        oldView.destroy();
+    } else {
+        // 初回
+        await replaceView(matchRoute);
+    }
+    //await replaceView(matchRoute);
 };
 
-export { addLinkPageEvClick, router, routes };
+export { addLinkPageEvClick, router, routes, linkSpa };
