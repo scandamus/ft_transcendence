@@ -4,8 +4,7 @@
 import {
     removeListenAcceptFriendRequest,
     removeListenMatchRequest,
-    removeListenRemoveFriend,
-    updateListenRemoveFriend
+    removeListenRemoveFriend
 } from "./friendListener.js";
 
 const getCallerName = () => {

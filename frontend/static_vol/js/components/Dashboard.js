@@ -12,7 +12,8 @@ import { updateFriendsList, updateFriendRequestList } from '../modules/friendLis
 import {
     removeListenMatchRequest, updateListenMatchRequest,
     removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
-    removeListenDeclineFriendRequest, updateListenDeclineFriendRequest
+    removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
+    removeListenRemoveFriend, updateListenRemoveFriend
 } from '../modules/friendListener.js';
 
 export default class Dashboard extends PageBase {
@@ -24,12 +25,10 @@ export default class Dashboard extends PageBase {
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
 
-        this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
-        this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
-        this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
         this.listListenMatchRequest = [];
         this.listListenAcceptFriendRequest = [];
         this.listListenDeclineFriendRequest = [];
+        this.listListenRemoveFriend = [];
     }
 
     async renderHtml() {
@@ -70,7 +69,6 @@ export default class Dashboard extends PageBase {
         `;
     }
 
-
     showUserList() {
         this.updateLists()
             .catch(error => {
@@ -89,26 +87,11 @@ export default class Dashboard extends PageBase {
         }
     }
 
-    showModalSendMatchRequestHandler(ev) {
-        showModalSendMatchRequest(ev);
-    }
-
-    acceptFriendRequestHandler(requestId) {
-        acceptFriendRequest(requestId);
-    }
-
-    declineFriendRequestHandler(requestId) {
-        declineFriendRequest(requestId);
-    }
-
-    removeFriendHandler(username) {
-        removeFriend(username);
-    }
-
     removeEventListeners() {
         removeListenMatchRequest(this);
         removeListenAcceptFriendRequest(this);
         removeListenDeclineFriendRequest(this);
+        removeListenRemoveFriend(this);
     }
 
     listenRequest() {
@@ -117,6 +100,7 @@ export default class Dashboard extends PageBase {
         updateListenMatchRequest(this);
         updateListenAcceptFriendRequest(this);
         updateListenDeclineFriendRequest(this);
+        updateListenRemoveFriend(this);
     }
 
     destroy() {

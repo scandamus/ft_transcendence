@@ -30,24 +30,13 @@ export default class Friends extends PageBase {
         this.addAfterRenderHandler(this.showUserList.bind(this));
         this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
 
-        this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
-        this.sendFriendRequestHandlerBound = this.sendFriendRequestHandler.bind(this);
-        this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
-        this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
-        this.removeFriendHandlerBound = this.removeFriendHandler.bind(this);
         this.listListenMatchRequest = [];
         this.listListenSendFriendRequest = [];
         this.listListenAcceptFriendRequest = [];
         this.listListenDeclineFriendRequest = [];
         this.listListenRemoveFriend = [];
-        //ページ破棄のタイミングでイベントリスナーを削除
-//        window.addEventListener('beforeunload', this.cleanup.bind(this));
     }
 
-    // cleanup() {
-    //     this.removeEventListeners();
-    //     pageInstances.removeInstance('Friends');
-    // }
     async renderHtml() {
         return `
             <div class="blockUsers">
@@ -128,26 +117,6 @@ export default class Friends extends PageBase {
             console.error('Failed to update lists: ', error);
             throw error;
         }
-    }
-
-    showModalSendMatchRequestHandler(ev) {
-        showModalSendMatchRequest(ev);
-    }
-
-    sendFriendRequestHandler(username) {
-        sendFriendRequest(username);
-    }
-
-    acceptFriendRequestHandler(requestId) {
-        acceptFriendRequest(requestId);
-    }
-
-    declineFriendRequestHandler(requestId) {
-        declineFriendRequest(requestId);
-    }
-
-    removeFriendHandler(username) {
-        removeFriend(username);
     }
 
     removeEventListeners() {
