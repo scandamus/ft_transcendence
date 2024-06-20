@@ -1,11 +1,13 @@
-export const labels = {
+'use strict';
+
+const labels_ja = {
     home: {
         title: 'Home',
         labelUsername: 'ユーザー名', 
         labelPassword: 'パスワード', 
         labelButtonLogin: 'ログイン',
         labelButtonLogout: 'ログアウト',
-        textSignUp: "初めての方はこちら",
+        textSignUp: '初めての方はこちら',
         labelLinkSignUp: '登録',
     },
     register: {
@@ -96,9 +98,220 @@ export const labels = {
         titleEntryTournament:  'トーナメントに出場する',
     },
 };
-// valueMissing: 'This field is required.',
-// patternMismatch: 'The character types used do not meet the requirement.',
-// tooLong: 'Too many characters.',
-// tooShort: 'Too few characters.',
-// passwordIsNotSame: 'password do not match.',
-// isExists: 'This username already exists.',
+const labels_en = {
+    home: {
+        title: 'Home',
+        labelUsername: 'username', 
+        labelPassword: 'password', 
+        labelButtonLogin: 'log in',
+        labelButtonLogout: 'log out',
+        textSignUp: 'If you don\'t have an account:',
+        labelLinkSignUp: 'sign up',
+    },
+    register: {
+        title: 'Register',
+        labelUsername: 'username', 
+        labelPassword: 'password', 
+        labelPasswordConfirm: 'confirm password', 
+        descUsername: ['[english] english,english,english(_)', '[english] english,english english', '3english32english'],
+        descPassword: ['[english] english(@_#$%&!.,+*~\')', '[english] english,english,english,english english1english', '8english24english'],
+        descPasswordConfirm: 'english',
+        labelButtonConfirm: 'english',
+        textConfirm: 'english',
+        labelButtonRegister: 'english',
+        labelButtonBack: 'english',
+        textComplete: 'english',
+        labelButtonLogin: 'english',
+    },
+    formErrorMessages: {
+        valueMissing: 'This field is required.',
+        patternMismatch: 'Please check the character type requirement.',
+        tooLong: 'Too many characters.',
+        tooShort: 'Too few characters.',
+        passwordIsNotSame: 'The passwords do not match.',
+        isExists: 'This username already exists.',
+    },
+
+    dashboard: {
+        title: 'Dashboard',
+    },
+    friends: {
+        title: 'Friends',
+        labelMatch: 'english',
+        labelReceiveMatch: 'english',
+        labelCancel: 'english',
+        labelRmFriend: 'english',
+        labelAccept: 'english',
+        labelDecline: 'english',
+        labelApply: 'english',
+        labelSearch: 'english',
+        labelSendRequest: 'english',
+        msgNoUsername: 'english',
+        labelListFriends: 'english',
+        labelReceivedRequest: 'english',
+        labelRecommended: 'english',
+    },
+    lounge: {
+        title: 'Lounge',
+        labelMatch: 'english',
+        labelCreateRoom: 'english',
+        labelDualGame: '2english',
+        labelQuadGame: '4english',
+        labelCapacity: 'english',
+        labelAvailable: 'english',
+        labelWaiting: 'english',
+    },
+    match: {
+        title: '',
+        labelMatch: 'english',
+        labelReceiveMatch: 'english',
+        labelMatchLog: 'english',
+        labelWins: 'english',
+        labelLosses: 'english',
+    },
+    tournament: {
+        title: 'Tournament',
+        labelCreateTournament: 'english',
+        labelTournamentTitle: 'english',
+        labelStart: 'english',
+        labelEntry: 'english',
+        labelCancelEntry: 'english',
+        labelTitleUpcoming: 'english',
+        labelTitleInPlay: 'english',
+        labelTitleRecent: 'english',
+        labelTournamentLog: 'english',
+    },
+    modal: {
+        title: '',
+        labelNickname: 'english',
+        labelEntry: 'english',
+        labelCancel: 'english',
+        labelAccept: 'english',
+        labelReject: 'english',
+        labelCapacity: 'english',
+        labelAvailable: 'english',
+        titleSendMatchRequest: 'english',
+        titleReceiveMatchRequest: 'english',
+        titleWaitForOpponent: 'english...',
+        titleEntryTournament:  'english',
+    },
+};
+const labels_la = {
+    home: {
+        title: '',
+        labelUsername: '', 
+        labelPassword: '', 
+        labelButtonLogin: '',
+        labelButtonLogout: '',
+        textSignUp: '',
+        labelLinkSignUp: '',
+    },
+    register: {
+        title: '',
+        labelUsername: '', 
+        labelPassword: '', 
+        labelPasswordConfirm: '', 
+        descUsername: [''],
+        descPassword: [''],
+        descPasswordConfirm: '',
+        labelButtonConfirm: '',
+        textConfirm: '',
+        labelButtonRegister: '',
+        labelButtonBack: '',
+        textComplete: '',
+        labelButtonLogin: '',
+    },
+    formErrorMessages: {
+        valueMissing: '',
+        patternMismatch: '',
+        tooLong: '',
+        tooShort: '',
+        passwordIsNotSame: '',
+        isExists: '',
+    },
+
+    dashboard: {
+        title: '',
+    },
+    friends: {
+        title: '',
+        labelMatch: '',
+        labelReceiveMatch: '',
+        labelCancel: '',
+        labelRmFriend: '',
+        labelAccept: '',
+        labelDecline: '',
+        labelApply: '',
+        labelSearch: '',
+        labelSendRequest: '',
+        msgNoUsername: '',
+        labelListFriends: '',
+        labelReceivedRequest: '',
+        labelRecommended: '',
+    },
+    lounge: {
+        title: '',
+        labelMatch: '',
+        labelCreateRoom: '',
+        labelDualGame: '',
+        labelQuadGame: '',
+        labelCapacity: '',
+        labelAvailable: '',
+        labelWaiting: '',
+    },
+    match: {
+        title: '',
+        labelMatch: '',
+        labelReceiveMatch: '',
+        labelMatchLog: '',
+        labelWins: '',
+        labelLosses: '',
+    },
+    tournament: {
+        title: '',
+        labelCreateTournament: '',
+        labelTournamentTitle: '',
+        labelStart: '',
+        labelEntry: '',
+        labelCancelEntry: '',
+        labelTitleUpcoming: '',
+        labelTitleInPlay: '',
+        labelTitleRecent: '',
+        labelTournamentLog: '',
+    },
+    modal: {
+        title: '',
+        labelNickname: '',
+        labelEntry: '',
+        labelCancel: '',
+        labelAccept: '',
+        labelReject: '',
+        labelCapacity: '',
+        labelAvailable: '',
+        titleSendMatchRequest: '',
+        titleReceiveMatchRequest: '',
+        titleWaitForOpponent: '',
+        titleEntryTournament:  '',
+    },
+};
+const labels_fr = Object.getPrototypeOf(labels_la);
+const labels_he = Object.getPrototypeOf(labels_la);
+const languageLabels = {
+    'en': labels_en,
+    'ja': labels_ja,
+    'fr': labels_fr,
+    'la': labels_la,
+    'he': labels_he,
+};
+
+const switchLabels = (language) => {
+    Object.assign(labels, languageLabels[language]);
+};
+
+const getLanguage = () => {
+    return localStorage.getItem('configLang') || 'en';
+}
+
+const labels = languageLabels[getLanguage()];
+
+export { labels, switchLabels };

@@ -1,6 +1,7 @@
 'use strict';
 
-import { labels } from './labels.js';
+import { switchLabels } from './labels.js';
+import { router } from './router.js';
 
 const switchLanguage = (language) => {
     const languageSelect = document.getElementById('languageSelect');
@@ -10,11 +11,9 @@ const switchLanguage = (language) => {
         const selectedLanguage = languageSelect.value;
         console.log('!selectedLanguage! ' + selectedLanguage);
         localStorage.setItem('configLang', selectedLanguage);
+		switchLabels(selectedLanguage);
+		router();
     });
 }
 
-const getLanguage = () => {
-    return localStorage.getItem('configLang') || 'en';
-}
-
-export { switchLanguage, getLanguage };
+export { switchLanguage };
