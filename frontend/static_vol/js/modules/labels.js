@@ -45,6 +45,17 @@ export const labels = {
         labelTitleInPlay: 'InPlay',
         labelTitleRecent: 'Recent',
     },
-	modal: {
-	},
+    modal: {
+        labelNickname: 'ニックネーム',
+        labelEntry: '出場申込',
+        labelCancel: 'キャンセル',
+        labelAccept: 'Accept',
+        labelReject: 'Reject',
+        labelCapacity: '定員',
+        labelAvailable: '募集中',
+        titleSendMatchRequest: '対戦を申し込みました',
+        titleReceiveMatchRequest: '対戦申し込みがありました',
+        titleWaitForOpponent: '対戦相手を待っています...',
+        titleEntryTournament:  'Entry Tournament',
+    },
 };

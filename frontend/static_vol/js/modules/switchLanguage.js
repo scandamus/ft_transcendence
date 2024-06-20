@@ -14,7 +14,7 @@ const switchLanguage = (language) => {
 }
 
 const getLanguage = () => {
-	return localStorage.getItem('configLang') || 'en';
+    return localStorage.getItem('configLang') || 'en';
 }
 
 export { switchLanguage, getLanguage };
