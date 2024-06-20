@@ -21,7 +21,6 @@ logger = logging.getLogger(__name__)
 
 class LoungeSession(AsyncWebsocketConsumer):
     players = {}
-    opponents = {}
 
     async def connect(self):
         await self.accept()
