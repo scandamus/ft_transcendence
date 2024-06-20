@@ -104,6 +104,7 @@ export default class Dashboard extends PageBase {
     }
 
     destroy() {
+        this.removeEventListeners();
         super.destroy();
     }
 }

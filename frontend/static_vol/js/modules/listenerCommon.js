@@ -29,29 +29,30 @@ const addListenerToList = (list, el, cb, ev) => {
 const removeListenerAndClearList = (list) => {
     let countListen = list.length;
     const CallerName = getCallerName();//for debug
-    // console.log(`/*/ Call from ${CallerName}`);
-    // console.log(`/*/ removeListenerAndClearList:list.length: ${countListen}`);
+    //console.log(`/*/ removeListenerAndClearList:list.length: ${countListen} / Call from ${CallerName}`);
     list.forEach((listener) => {
         //console.log(`/*/*/ removeEventListener ${listener.element} ${listener.event}`)
         listener.element.removeEventListener(listener.event, listener.callback);
-        //countListen--;
+        countListen--;
 
         //put debug log
-        if (CallerName === 'removeListenMatchRequest') {
-            console.log(`[removeListenerAndClearList]Removed match request listener from ${listener.element.dataset.username}`);
-        } else if (CallerName === 'removeListenAcceptFriendRequest') {
-            console.log(`[removeListenerAndClearList]Removed accept friend request listener from ${listener.element.dataset.username}`);
-        } else if (CallerName === 'removeListenDeclineFriendRequest') {
-            console.log(`[removeListenerAndClearList]Removed decline friend request listener from ${listener.element.dataset.username}`);
-        } else if (CallerName === 'removeListenRemoveFriend') {
-            console.log(`[removeListenerAndClearList]Removed remove friend listener from ${listener.element.dataset.username}`);
-        }
+        // if (CallerName === 'removeListenMatchRequest') {
+        //     console.log(`[removeListenerAndClearList]Removed match request listener from ${listener.element.dataset.username}`);
+        // } else if (CallerName === 'removeListenAcceptFriendRequest') {
+        //     console.log(`[removeListenerAndClearList]Removed accept friend request listener from ${listener.element.dataset.username}`);
+        // } else if (CallerName === 'removeListenDeclineFriendRequest') {
+        //     console.log(`[removeListenerAndClearList]Removed decline friend request listener from ${listener.element.dataset.username}`);
+        // } else if (CallerName === 'removeListenRemoveFriend') {
+        //     console.log(`[removeListenerAndClearList]Removed remove friend listener from ${listener.element.dataset.username}`);
+        // } else if (CallerName === 'removeListenSendFriendRequest') {
+        //     console.log(`[removeListenerAndClearList]Removed send friend request for ${listener.element.dataset.username}`);
+        // }
     });
-    // if (countListen === 0) {
-    //     console.log(`/*/*/*/ removeListenerAndClearList:All event listeners have been removed. countListen:${countListen}`);
-    // } else {
-    //     console.log(`/*/*/!!!!!/*/*/ removeListenerAndClearList:Event listeners remain. countListen:${countListen}`);
-    // }
+    if (countListen === 0) {
+        console.log(`/*/ [${CallerName}]\nremoveListenerAndClearList:All event listeners have been removed.\ncountListen:${countListen}`);
+    } else {
+        console.log(`/*/*/!!!!!/*/*/  [${CallerName}]\nremoveListenerAndClearList:Event listeners remain.\ncountListen:${countListen}`);
+    }
 }
 
 export { addListenerToList, removeListenerAndClearList }

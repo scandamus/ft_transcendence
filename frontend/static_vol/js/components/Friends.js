@@ -166,6 +166,7 @@ export default class Friends extends PageBase {
     }
 
     destroy() {
+        this.removeEventListeners();
         super.destroy();
     }
 }
