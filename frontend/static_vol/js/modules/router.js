@@ -15,7 +15,8 @@ import GameMatch from '../components/GameMatch.js';
 import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
-import { closeModalOnCancel } from './modal.js';
+
+import { closeModalOnCancel, closeModal } from './modal.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = {
@@ -27,7 +28,7 @@ const routes = {
     dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
     friends:  { path: '/friends', view: Friends, isProtected: true },
     lounge: {path: '/lounge', view: Lounge, isProtected: true},
-    gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
+    gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
     gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
     tournament: {path: '/tournament', view: Tournament, isProtected: true},
     TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
@@ -81,7 +82,11 @@ const replaceView = async (matchRoute) => {
         //todo: openModal後のフローに組み込む方がよさそう
         const elModal = document.querySelector('.blockModal');
         if (elModal) {
+            if (matchRoute.route.path === routes.gamePlay.path) {
+                closeModal();
+            } else {
             closeModalOnCancel();
+            }
         }
         //view更新
         document.getElementById('app').innerHTML = await view.renderHtml();

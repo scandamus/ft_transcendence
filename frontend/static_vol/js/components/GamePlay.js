@@ -1,6 +1,9 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { webSocketManager } from "../modules/websocket.js";
+import { router } from "../modules/router.js";
+import { initToken } from '../modules/token.js';
 
 export default class GamePlay extends PageBase {
     constructor(params) {
@@ -11,6 +14,8 @@ export default class GamePlay extends PageBase {
         this.player2 = 'player2人目';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
+        this.score1 = 0;
+        this.score2 = 0;
     }
 
     async renderHtml() {
@@ -20,160 +25,139 @@ export default class GamePlay extends PageBase {
                     <li class="listPlayerActiveMatch_item">${this.player1}</li>
                     <li class="listPlayerActiveMatch_item">${this.player2}</li>
                 </ul>
-                <canvas id="playBoard" width="600" height="450"></canvas>
+                <canvas id="playBoard" width="650" height="450"></canvas>
             </div>
         `;
     }
 
-    initGame() {
-        // ノードを取得
-        const canvas = document.getElementById("playBoard");
-        // 2dの描画コンテキストにアクセスできるように
-        // キャンバスに描画するために使うツール
-        const ctx = canvas.getContext("2d");
-        let state = 1;
-        // TODO server side にするならこの辺を全部移植
-        let ball = {
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            dx: 1,
-            dy: 1,
-            Radius: 10,
-        };
-        //右
-        let paddle1 = {
-            x: (canvas.width - 10),
-            y: (canvas.height - 75) / 2,
-            Height: 75,
-            Width: 10,
-        };
-        // 左
-        let paddle2 = {
-            x: 0,
-            y: (canvas.height - 75) / 2,
-            Height: 75,
-            Width: 10,
-        };
+    async initGame() {
+        try {
+            const gameMatchId = this.params['id'].substr(1);
+            console.log("============ ", gameMatchId, " ============");
+            const containerId = `pong/${gameMatchId}`;
+            console.log(`URL = ${containerId}`);
+            const pongSocket = await webSocketManager.openWebSocket(containerId);
+            // ノードを取得
+            const canvas = document.getElementById("playBoard");
+            // 2dの描画コンテキストにアクセスできるように
+            // キャンバスに描画するために使うツール
+            const ctx = canvas.getContext("2d");
 
-        function drawBall(obj) {
-            ctx.beginPath();
-            ctx.arc(obj.x, obj.y, obj.Radius, 0, Math.PI * 2);
-            ctx.fillStyle = '#0095DD';
-            ctx.fill();
-            ctx.closePath();
-        }
+            function drawBackground() {
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
 
-        function drawPaddle(obj) {
-            ctx.beginPath();
-            ctx.rect(obj.x, obj.y, obj.Width, obj.Height);
-            ctx.fillStyle = '#0095DD';
-            ctx.fill();
-            ctx.closePath();
-        }
+            function drawLineDash() {
+                ctx.beginPath();
+                ctx.setLineDash([15, 15]);
+                ctx.lineWidth = 15;
+                ctx.strokeStyle = '#808080FF';
+                ctx.moveTo(325, 0);
+                ctx.lineTo(325, 450);
+                ctx.stroke();
+                ctx.closePath();
+            }
 
-        function collisionDetection() {
-            // この関数をpaddleに当たったかを判定する関数に修正する
-            // canvasの左半分か右半分かで処理を分岐する
-            // 左
-            if (ball.x - ball.Radius < paddle2.Width) {
-                // paddle2の幅の範囲内にballがあるかを確認する
-                if (ball.y > paddle2.y && ball.y < paddle2.y + paddle2.Height) {
-                    ball.dx = -ball.dx;
-                } else {
-                    state = 0;
+            function drawScore(left_paddle, right_paddle) {
+                ctx.font = '48px "Courier New"';
+                ctx.textAlign = "center";
+                ctx.fillStyle = '#808080FF';
+                ctx.fillText(`${left_paddle.score}   ${right_paddle.score}`, canvas.width / 2, 50);
+            }
+
+            function drawBall(obj) {
+                ctx.beginPath();
+                ctx.rect(obj.x, obj.y, obj.size, obj.size)
+                ctx.fillStyle = '#808080FF';
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            function drawPaddle(obj) {
+                ctx.beginPath();
+                ctx.rect(obj.x, obj.y, obj.horizontal, obj.vertical);
+                ctx.fillStyle = '#808080FF';
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            const updateGameObjects = async (data) => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // 背景色
+                drawBackground();
+                // 中央の波線
+                drawLineDash();
+                // スコア
+                drawScore(data.left_paddle, data.right_paddle);
+
+                drawBall(data.ball);
+                // 右
+                drawPaddle(data.right_paddle);
+                // 左
+                drawPaddle(data.left_paddle);
+
+                if (!data.game_status) {
+                    console.log("Game Over");
+                    //alert('GAME OVER');
+                    // ここでゲームをリセットする処理を追加するか、ページをリロードする
+                    //document.location.reload();
+                    // TODO 勝敗を記録など
+                    pongSocket.send(JSON.stringify({
+                        action: 'end_game',
+                        match_id: gameMatchId,
+                    }));
+                    document.removeEventListener("keydown", keyDownHandler, false);
+                    document.removeEventListener("keyup", keyUpHandler, false);
+                    webSocketManager.closeWebSocket(containerId);
+                    window.history.pushState({}, null, "/dashboard");
+                    await router(true);
                 }
             }
-            // 右
-            else if (ball.x + ball.Radius > canvas.width - paddle1.Width) {
-                if (ball.y > paddle1.y && ball.y < paddle1.y + paddle1.Height) {
-                    ball.dx = -ball.dx;
-                } else {
-                    state = 0;
+
+            // 押されたとき
+            document.addEventListener("keydown", keyDownHandler, false);
+            // 離れたとき
+            document.addEventListener("keyup", keyUpHandler, false);
+
+            function keyDownHandler(e) {
+                // send event to django websocket
+                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+                    sendKeyEvent(e.key, true);
                 }
             }
+
+            function keyUpHandler(e) {
+                // send event to django websocket
+                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+                    sendKeyEvent(e.key, false);
+                }
+            }
+
+            function sendKeyEvent(key, is_pressed) {
+                console.log("Error: ", key, " ----")
+                let data = {
+                    action: 'key_event',
+                    key: key,
+                    is_pressed: is_pressed,
+                };
+                webSocketManager.sendWebSocketMessage(containerId, data);
+            }
+
+            pongSocket.onmessage = function (e) {
+                try {
+                    const data = JSON.parse(e.data);
+                    // document.querySelector('#pong-log').value += (data.message + '\n');
+                    console.log('received_data -> ', data);
+                    console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
+                    updateGameObjects(data);
+                } catch (error) {
+                    console.error('Error parsing message data:', error);
+                }
+            }
+        } catch (error) {
+        console.error('Error initializing game', error);
         }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBall(ball);
-            drawPaddle(paddle1);
-            drawPaddle(paddle2);
-            if (state === 1) {
-                collisionDetection();
-            }
-            if (ball.y + ball.dy > canvas.height - ball.Radius ||
-                ball.y + ball.dy < ball.Radius) {
-                ball.dy = -ball.dy;
-            }
-            if (paddle1UpPressed) {
-                paddle1.y -= 7;
-                if (paddle1.y < 0) {
-                    paddle1.y = 0;
-                }
-            }
-            if (paddle1DownPressed) {
-                paddle1.y += 7;
-                if (paddle1.y + paddle1.Height > canvas.height) {
-                    paddle1.y = canvas.height - paddle1.Height;
-                }
-            }
-            if (paddle2UpPressed) {
-                paddle2.y -= 7;
-                if (paddle2.y < 0) {
-                    paddle2.y = 0;
-                }
-            }
-            if (paddle2DownPressed) {
-                paddle2.y += 7;
-                if (paddle2.y + paddle2.Height > canvas.height) {
-                    paddle2.y = canvas.height - paddle2.Height;
-                }
-            }
-            if (ball.x < ball.Radius || ball.x > canvas.width - ball.Radius) {
-                alert('GAME OVER');
-                document.location.reload();
-                clearInterval(interval);
-            }
-            ball.x += ball.dx;
-            ball.y += ball.dy;
-        }
-
-        // 押されたとき
-        document.addEventListener("keydown", keyDownHandler, false);
-        // 離れたとき
-        document.addEventListener("keyup", keyUpHandler, false);
-        // 右
-        let paddle1UpPressed = false;
-        let paddle1DownPressed = false;
-        // 左
-        let paddle2UpPressed = false;
-        let paddle2DownPressed = false;
-
-        function keyDownHandler(e) {
-            if (e.key === "ArrowUp") {
-                paddle1UpPressed = true;
-            } else if (e.key === "ArrowDown") {
-                paddle1DownPressed = true;
-            } else if (e.key === "w") {
-                paddle2UpPressed = true;
-            } else if (e.key === "s") {
-                paddle2DownPressed = true;
-            }
-        }
-
-        function keyUpHandler(e) {
-            if (e.key === "ArrowUp") {
-                paddle1UpPressed = false;
-            } else if (e.key === "ArrowDown") {
-                paddle1DownPressed = false;
-            } else if (e.key === "w") {
-                paddle2UpPressed = false;
-            } else if (e.key === "s") {
-                paddle2DownPressed = false;
-            }
-        }
-
-        let interval = setInterval(draw, 10);
     }
 
     destroy() {

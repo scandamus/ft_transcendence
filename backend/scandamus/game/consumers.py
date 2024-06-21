@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from .utils import generate_game_jwt
 import logging
-from .join_game import handle_join_game, handle_join_game_cancel
+from .join_game import handle_join_game, handle_join_game_cancel, handle_game_state
 from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
 from players.auth import handle_auth
 
@@ -29,11 +29,14 @@ class LoungeSession(AsyncWebsocketConsumer):
             token = text_data_json.get('token')
             logger.info(f"Action: {action}")
             logger.info(f"token={token}")
+            # logger.info(f"------------------------------------ {text_data_json['opponentName']}")
 
             if action == 'authWebSocket':
                 await handle_auth(self, token)
             if action == 'joinGame':
-                await handle_join_game(self, token)
+                await handle_join_game(self, token, text_data_json['opponentName'])
+            # elif action == 'gameState':
+            #     await handle_game_state(self, token, text_data_json['match_id'], text_data_json['score1'], text_data_json['score2'], text_data_json['status'])
             elif action == 'cancel':
                 await handle_join_game_cancel(self)
             elif action == 'requestByUsername':
