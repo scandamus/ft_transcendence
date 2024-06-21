@@ -30,7 +30,7 @@ export default class Dashboard extends PageBase {
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">
                     <p class="blockPlayerDetail_thumb thumb"><img src="//ui-avatars.com/api/?name=Gg Hh&background=872bac&color=ffffff" alt="" width="200" height="200"></p>
-                    <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${70}${labels.match.labelWins}${20}${labels.match.labelLosses}</p>
+                    <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${70} ${labels.match.labelWins}, ${20} ${labels.match.labelLosses}</p>
                     <ul class="unitListBtn unitListBtn-w100">
                         <li><a href="/lounge" class="unitButton" data-link>${labels.lounge.title}</a></li>
                         <li><a href="/tournament" class="unitButton" data-link>${labels.tournament.title}</a></li>

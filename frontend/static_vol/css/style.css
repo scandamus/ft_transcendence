@@ -759,7 +759,7 @@ input.has-input:invalid {
 }
 
 .listAnnotation li::before {
-  content: "※";
+  content: "＊";
   margin-right: 0.2em;
 }
 

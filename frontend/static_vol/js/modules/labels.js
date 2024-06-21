@@ -294,7 +294,7 @@ const labels_la = {
         titleEntryTournament:  '',
     },
 };
-const labels_fr = Object.getPrototypeOf(labels_la);
+const labels_fr = labels_la;
 const labels_he = Object.getPrototypeOf(labels_la);
 const languageLabels = {
     'en': labels_en,
