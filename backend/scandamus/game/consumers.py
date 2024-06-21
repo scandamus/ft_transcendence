@@ -35,8 +35,8 @@ class LoungeSession(AsyncWebsocketConsumer):
                 await handle_auth(self, token)
             if action == 'joinGame':
                 await handle_join_game(self, token, text_data_json['opponentName'])
-            elif action == 'gameState':
-                await handle_game_state(self, token, text_data_json['match_id'], text_data_json['score1'], text_data_json['score2'], text_data_json['status'])
+            # elif action == 'gameState':
+            #     await handle_game_state(self, token, text_data_json['match_id'], text_data_json['score1'], text_data_json['score2'], text_data_json['status'])
             elif action == 'cancel':
                 await handle_join_game_cancel(self)
             elif action == 'requestByUsername':

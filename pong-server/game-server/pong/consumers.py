@@ -115,7 +115,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         elif action == 'key_event':
             await self.handle_game_message(text_data)
 
-
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json.get("action")

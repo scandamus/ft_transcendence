@@ -81,19 +81,6 @@ export default class extends PageBase {
                 ctx.closePath();
             }
 
-            async function sendGameState(left_paddle, right_paddle, status) {
-                const accessToken = await initToken();
-                const loungeSocket = await webSocketManager.openWebSocket('lounge');
-                loungeSocket.send(JSON.stringify({
-                    action: 'gameState',
-                    token: accessToken.token,
-                    match_id: gameMatchId,
-                    score1: left_paddle.score,
-                    score2: right_paddle.score,
-                    status: status,
-                }));
-            }
-
             const updateGameObjects = async (data) => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // 背景色
@@ -109,22 +96,12 @@ export default class extends PageBase {
                 // 左
                 drawPaddle(data.left_paddle);
 
-                if (this.score1 !== data.left_paddle.score) {
-                    this.score1 = data.left_paddle.score;
-                    await sendGameState(data.left_paddle, data.right_paddle, 'ongoing')
-                }
-                if (this.score2 !== data.right_paddle.score) {
-                    this.score2 = data.right_paddle.score;
-                    await sendGameState(data.left_paddle, data.right_paddle, 'ongoing')
-                }
-
                 if (!data.game_status) {
                     console.log("Game Over");
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
                     // TODO 勝敗を記録など
-                    await sendGameState(data.left_paddle, data.right_paddle, 'after')
                     pongSocket.send(JSON.stringify({
                         action: 'end_game',
                         match_id: gameMatchId,
@@ -157,6 +134,7 @@ export default class extends PageBase {
             }
 
             function sendKeyEvent(key, is_pressed) {
+                console.log("Error: ", key, " ----")
                 let data = {
                     action: 'key_event',
                     key: key,
