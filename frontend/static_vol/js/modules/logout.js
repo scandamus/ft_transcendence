@@ -33,6 +33,7 @@ const fetchLogout = async (isRefresh) => {
 }
 
 const handleLogout = (ev) => {
+    console.log('LOGOUT in');
     ev.preventDefault();
     fetchLogout(false)
         .catch(error => {

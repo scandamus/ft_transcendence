@@ -4,15 +4,18 @@
 import PageBase from '../components/PageBase.js';
 import Home from '../components/Home.js';
 import PageList from '../components/PageList.js';
-import User from '../components/User.js';
+import Dashboard from '../components/Dashboard.js';
+import Friends from '../components/Friends.js';
+import Lounge from '../components/Lounge.js';
 import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
 import GamePlay from '../components/GamePlay.js';
 import GameMatch from '../components/GameMatch.js';
-import TournamentEntry from '../components/TournamentEntry.js';
-import TournamentMatch from '../components/TournamentMatch.js';
+import Tournament from '../components/Tournament.js';
+import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
+import { pageInstances } from './pageInstances.js';
 import { closeModalOnCancel, closeModal } from './modal.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
@@ -22,12 +25,13 @@ const routes = {
     register: {path: '/register', view: UserRegister, isProtected: false},
     registerConfirm: {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
     registerComplete: {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
-    user: {path: '/user', view: User, isProtected: true},
+    dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
+    friends:  { path: '/friends', view: Friends, isProtected: true },
+    lounge: {path: '/lounge', view: Lounge, isProtected: true},
     gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
     gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
-    tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
-    tournamentMatch: {path: '/tournament/match', view: TournamentMatch, isProtected: true},
-    //userId:  { path: '/user/:id', components: user },
+    tournament: {path: '/tournament', view: Tournament, isProtected: true},
+    TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
 };
 
 //認証の必要なページ
@@ -53,10 +57,11 @@ const addLinkPageEvClick = (linkPages) => {
     linkPages.forEach((linkPage) => {
         linkPage.addEventListener('click', async (ev) => {
             ev.preventDefault();
-            if (window.location.href === ev.target.href) {
+            const link = (ev.target.tagName === 'a') ? ev.target.href : ev.target.closest('a').href;
+            if (window.location.href === ev.target.href || !link) {
                 return;
             }
-            history.pushState(null, null, ev.target.href);
+            history.pushState(null, null, link);
             try {
                 await router(getToken('accessToken'));
             } catch (error) {
@@ -64,11 +69,6 @@ const addLinkPageEvClick = (linkPages) => {
             }
         });
     });
-}
-
-//認証の必要なページかチェック(protectedRoutesに定義したディレクトリ名始まりか判定)
-const checkProtectedRoute = (path) => {
-    return (protectedRoutes.some(route => route.test(path)));
 }
 
 const replaceView = async (matchRoute) => {
@@ -104,6 +104,9 @@ const router = async (accessToken) => {
         accessToken = getToken('accessToken');
     }
 
+    console.log('router in');
+    pageInstances.cleanupAll();
+
     const mapRoutes = Object.keys(routes).map(key => {
         const route = routes[key];
         return {
@@ -132,10 +135,10 @@ const router = async (accessToken) => {
         };
     } else if (accessToken && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
-        window.history.pushState({}, '', routes.user.path);
+        window.history.pushState({}, '', routes.dashboard.path);
         matchRoute = {
-            route: routes.user,
-            result: routes.user.path
+            route: routes.dashboard,
+            result: routes.dashboard.path
         };
     }
     await replaceView(matchRoute);

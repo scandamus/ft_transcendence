@@ -4,19 +4,20 @@ import { webSocketManager } from './websocket.js';
 import { pongHandler } from './websocketHandler.js';
 import { initToken } from './token.js';
 
-const join_game = async (opponentName) => {
+const join_game = async (opponentName=null) => {
     console.log('join_game');
     try {
         const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
+        console.log("------------------------------", opponentName);
         webSocketManager.sendWebSocketMessage('lounge', {
-            action: 'join_game',
+            action: 'joinGame',
             token: accessToken.token,
             opponentName: opponentName,
         });
         console.log('Request join_game sent to backend.');
     } catch (error) {
-        console.error('Failed to open or send throught WebSocket: ', error);
+        console.error('Failed to open or send through WebSocket: ', error);
     }
 }
 

@@ -85,7 +85,7 @@ export default class extends PageBase {
                 const accessToken = await initToken();
                 const loungeSocket = await webSocketManager.openWebSocket('lounge');
                 loungeSocket.send(JSON.stringify({
-                    action: 'game_state',
+                    action: 'gameState',
                     token: accessToken.token,
                     match_id: gameMatchId,
                     score1: left_paddle.score,
@@ -132,7 +132,7 @@ export default class extends PageBase {
                     document.removeEventListener("keydown", keyDownHandler, false);
                     document.removeEventListener("keyup", keyUpHandler, false);
                     webSocketManager.closeWebSocket(containerId);
-                    window.history.pushState({}, null, "/user");
+                    window.history.pushState({}, null, "/lounge");
                     await router(true);
                 }
             }
