@@ -29,11 +29,6 @@ const removeListenMatchRequest = (pageInstance) => {
     pageInstance.listListenMatchRequest = [];
 }
 
-const removeListenSendFriendRequest = (pageInstance) => {
-    removeListenerAndClearList(pageInstance.listListenSendFriendRequest);
-    pageInstance.listListenSendFriendRequest = [];
-}
-
 const removeListenAcceptFriendRequest = (pageInstance) => {
     removeListenerAndClearList(pageInstance.listListenAcceptFriendRequest);
     pageInstance.listListenAcceptFriendRequest = [];
@@ -60,20 +55,6 @@ const addListenMatchRequest = (pageInstance) => {
             'click'
         );
         console.log(`[Add listener] match request to ${btn.dataset.username}`);
-    });
-}
-
-const addListenSendFriendRequest = (pageInstance) => {
-    const btnRequestFriend = document.querySelectorAll('.unitFriendButton_friendRequest');
-    btnRequestFriend.forEach((btn) => {
-        const boundSendFriendRequestHandler = sendFriendRequestHandler.bind(pageInstance);
-        addListenerToList(
-            pageInstance.listListenSendFriendRequest,
-            btn,
-            boundSendFriendRequestHandler,
-            'click'
-        );
-        console.log(`[Add listener] send friend request to ${btn.dataset.username}`);
     });
 }
 
@@ -119,7 +100,17 @@ const addListenRemoveFriend = (pageInstance) => {
     });
 }
 
+//RequestFriendは表示中の更新がないのでlistListenInInstance[]で管理
+const addListenSendFriendRequest = (pageInstance) => {
+    const btnRequestFriend = document.querySelectorAll('.unitFriendButton_friendRequest');
+    const boundSendFriendRequestHandler = sendFriendRequestHandler.bind(pageInstance);
+    btnRequestFriend.forEach((btn) => {
+        pageInstance.addListListenInInstance(btn, boundSendFriendRequestHandler, 'click');
+        console.log(`[Add listener] send friend request to ${btn.dataset.username}`);
+    });
+}
 
+//resetListener
 const removeListenFriendList = (pageInstance) => {
     removeListenMatchRequest(pageInstance);
     removeListenRemoveFriend(pageInstance);
@@ -154,10 +145,10 @@ const resetListenFriendRequestList = (pageInstance) => {
 }
 
 export {
-    removeListenMatchRequest, addListenMatchRequest,
-    removeListenSendFriendRequest, addListenSendFriendRequest,
-    removeListenAcceptFriendRequest, addListenAcceptFriendRequest,
-    removeListenDeclineFriendRequest, addListenDeclineFriendRequest,
-    removeListenRemoveFriend, addListenRemoveFriend,
+    removeListenMatchRequest,
+    removeListenAcceptFriendRequest,
+    removeListenDeclineFriendRequest,
+    removeListenRemoveFriend,
+    addListenSendFriendRequest,
     resetListenFriendList, resetListenFriendRequestList
 }

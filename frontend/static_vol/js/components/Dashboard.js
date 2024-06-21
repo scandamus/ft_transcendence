@@ -2,12 +2,8 @@
 
 import PageBase from './PageBase.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
-import {
-    removeListenMatchRequest, addListenMatchRequest,
-    removeListenAcceptFriendRequest, addListenAcceptFriendRequest,
-    removeListenDeclineFriendRequest, addListenDeclineFriendRequest,
-    removeListenRemoveFriend, addListenRemoveFriend
-} from '../modules/friendListener.js';
+import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend }
+    from '../modules/friendListener.js';
 
 export default class Dashboard extends PageBase {
     constructor(params) {

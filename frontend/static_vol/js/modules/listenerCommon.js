@@ -37,8 +37,6 @@ const removeListenerAndClearList = (list) => {
         //     console.log(`[removeListenerAndClearList]Removed decline friend request listener from ${listener.element.dataset.username}`);
         // } else if (CallerName === 'removeListenRemoveFriend') {
         //     console.log(`[removeListenerAndClearList]Removed remove friend listener from ${listener.element.dataset.username}`);
-        // } else if (CallerName === 'removeListenSendFriendRequest') {
-        //     console.log(`[removeListenerAndClearList]Removed send friend request for ${listener.element.dataset.username}`);
         // }
     });
     if (countListen === 0) {

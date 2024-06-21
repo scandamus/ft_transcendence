@@ -7,13 +7,8 @@ import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { checkSimpleInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
-import {
-    removeListenMatchRequest, addListenMatchRequest,
-    removeListenSendFriendRequest, addListenSendFriendRequest,
-    removeListenAcceptFriendRequest, addListenAcceptFriendRequest,
-    removeListenDeclineFriendRequest, addListenDeclineFriendRequest,
-    removeListenRemoveFriend, addListenRemoveFriend
-} from '../modules/friendListener.js';
+import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
+    from '../modules/friendListener.js';
 
 export default class Friends extends PageBase {
     constructor(params) {
@@ -29,8 +24,6 @@ export default class Friends extends PageBase {
         this.listListenRemoveFriend = [];
         this.listListenAcceptFriendRequest = [];
         this.listListenDeclineFriendRequest = [];
-
-        this.listListenSendFriendRequest = [];
     }
 
     async renderHtml() {
@@ -100,7 +93,7 @@ export default class Friends extends PageBase {
         try {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
-            //todo:reccomendedのaddListener
+            //recommendedのaddListener
             addListenSendFriendRequest(this);
         } catch (error) {
             console.error('Failed to update lists: ', error);
