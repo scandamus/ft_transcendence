@@ -132,7 +132,7 @@ export default class extends PageBase {
                     document.removeEventListener("keydown", keyDownHandler, false);
                     document.removeEventListener("keyup", keyUpHandler, false);
                     webSocketManager.closeWebSocket(containerId);
-                    window.history.pushState({}, null, "/lounge");
+                    window.history.pushState({}, null, "/dashboard");
                     await router(true);
                 }
             }
