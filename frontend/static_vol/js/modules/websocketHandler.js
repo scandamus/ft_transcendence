@@ -83,7 +83,7 @@ const loadGameContent = async (data) => {
 
 const handleFriendRequestAck = (data) => {
     const currentPage = pageInstances.getInstance('Friends') || pageInstances.getInstance('Dashboard'); // その他も
-
+    const isPageFriend = !!(pageInstances.getInstance('Friends'));
     if (data.action === 'error') {
         if (data.error === 'alreadyFriends') {
             addNotice(`${data.username}さんはすでに友達です`, true);
@@ -110,7 +110,7 @@ const handleFriendRequestAck = (data) => {
         addNotice(`${data.from_username}さんと友達になりました`, false);
         if (currentPage) {
             updateFriendRequestList();
-            updateFriendsList()
+            updateFriendsList(isPageFriend)
                 .then(() => {
                     currentPage.listenRequest();
                 });
@@ -127,7 +127,7 @@ const handleFriendRequestAck = (data) => {
         console.log('Remove Successfully done');
         addNotice(`${data.username}さんとの友達を解除しました`, false);
         if (currentPage) {
-            updateFriendsList()
+            updateFriendsList(isPageFriend)
                 .then(() => {
                     currentPage.listenRequest();
                 });
@@ -137,6 +137,7 @@ const handleFriendRequestAck = (data) => {
 
 const handleFriendRequestReceived = (data) => {
     const currentPage = pageInstances.getInstance('Friends') || pageInstances.getInstance('Dashboard'); //|| pageInstances.getInstance('Home') // その他も
+    const isPageFriend = !!(pageInstances.getInstance('Friends'));
 
     console.log('handleFriendRepuestReceived: received');
     if (data.action === 'received') {
@@ -152,7 +153,7 @@ const handleFriendRequestReceived = (data) => {
         if (currentPage) {
             Promise.all([
                 updateFriendRequestList(),
-                updateFriendsList()
+                updateFriendsList(isPageFriend)
             ])
                 .then(() => {
                     currentPage.listenRequest();
@@ -162,7 +163,7 @@ const handleFriendRequestReceived = (data) => {
     } else if (data.action === 'removed') {
         //rmられは通知されない
         if (currentPage) {
-            updateFriendsList()
+            updateFriendsList(isPageFriend)
                 .then(() => {
                     currentPage.listenRequest();
                 });

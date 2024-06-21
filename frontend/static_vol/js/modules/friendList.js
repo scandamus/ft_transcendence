@@ -3,7 +3,7 @@
 import { fetchFriendRequests, fetchFriends } from "./friendsApi.js";
 import { labels } from "./labels.js";
 
-const updateFriendsList = async () => {
+const updateFriendsList = async (isPageFriend) => {
     console.log('updateFriendList in');
     try {
         const friends = await fetchFriends();
@@ -13,16 +13,20 @@ const updateFriendsList = async () => {
         } else {
             listFriendsWrappr.innerHTML = '';
             friends.forEach(friend => {
-                const friendElement = `
+                let friendElement = `
                     <section class="unitFriend">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${friend.username}</h4>
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>`;
+                if (isPageFriend) {
+                    friendElement += `
                             <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.labelRmFriend}</button></li>
-                        </ul>
+                    `;
+                }
+                friendElement += `</ul>
                     </section>
                 `;
                 listFriendsWrappr.innerHTML += friendElement;

@@ -74,7 +74,7 @@ export default class Dashboard extends PageBase {
 
     async updateLists() {
         try {
-            await updateFriendsList();
+            await updateFriendsList(false);
             await updateFriendRequestList();
             this.listenRequest();
         } catch (error) {

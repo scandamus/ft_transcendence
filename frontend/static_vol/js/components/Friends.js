@@ -110,7 +110,7 @@ export default class Friends extends PageBase {
 
     async updateLists() {
         try {
-            await updateFriendsList();
+            await updateFriendsList(true);
             await updateFriendRequestList();
             this.listenRequest();
         } catch (error) {
