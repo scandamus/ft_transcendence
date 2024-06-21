@@ -1,6 +1,5 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-
 import json
 import jwt
 import logging
@@ -27,6 +26,7 @@ class CustomJWTAuthentication(JWTAuthentication):
         request.META['HTTP_REFRESH_TOKEN'] = refresh
         return super().get_header(request)
 
+
 async def handle_auth(consumer, token):
     user, error = await authenticate_token(token)
     if user:
@@ -44,8 +44,8 @@ async def handle_auth(consumer, token):
                     'message': 'Authentication successful'
                 }))
             except () as e:
-                logger.error(f'Error in handle_auth can not send')    
-            
+                logger.error(f'Error in handle_auth can not send')
+
         else:
             logger.error('Error: player not found')
             await consumer.send(text_data=json.dumps({
@@ -60,10 +60,12 @@ async def handle_auth(consumer, token):
             'message': error
         }))
 
+
 @database_sync_to_async
 def authenticate_token(token):
     try:
-        token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'], signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
+        token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'],
+                                     signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
         validated_token = token_backend.decode(token, verify=True)
         user_id = validated_token['user_id']
         user = User.objects.get(id=user_id)
