@@ -3,10 +3,6 @@ import { webSocketManager } from "./websocket.js";
 import { addNotice } from "./notice.js";
 import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
-import {
-    resetListenerFriendList,
-    resetListenerFriendRequestList
-} from './friendListener.js';
 
 export const pongHandler = (event, containerId) => {
     let data;
@@ -100,39 +96,25 @@ const handleFriendRequestAck = (data) => {
         console.log(`Friend request is sent to ${data.to_username}`, );
         addNotice(`${data.to_username}さんに友達申請が送信されました`, false);
         if (currentPage) {
-            updateFriendRequestList()
-                .then(() => {
-                    resetListenerFriendList(currentPage);
-                });
+            updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'acceptRequestSuccess') {
         console.log('Accept friend request is successfully done');
         addNotice(`${data.from_username}さんと友達になりました`, false);
         if (currentPage) {
-            Promise.all([
-                updateFriendRequestList(),
-                updateFriendsList()
-            ]).then(() => {
-                resetListenerFriendRequestList(currentPage);
-                resetListenerFriendList(currentPage);
-            });
+            updateFriendRequestList(currentPage).then(() => {});
+            updateFriendsList(currentPage).then(() => {});
         }
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
         if (currentPage) {
-            updateFriendRequestList()
-                .then(() => {
-                    resetListenerFriendRequestList(currentPage);
-                });
+            updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'removeSuccess') {
         console.log('Remove Successfully done');
         addNotice(`${data.username}さんとの友達を解除しました`, false);
         if (currentPage) {
-            updateFriendsList()
-                .then(() => {
-                    resetListenerFriendList(currentPage);
-                });
+            updateFriendsList(currentPage).then(() => {});
         }
     }
 }
@@ -145,30 +127,17 @@ const handleFriendRequestReceived = (data) => {
     if (data.action === 'received') {
         addNotice(`${data.from_username}さんから友達申請が来ました`, false);
         if (currentPage) {
-            updateFriendRequestList()
-                .then(() => {
-                    resetListenerFriendRequestList(currentPage);
-                });
+            updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'accepted') {
         addNotice(`${data.from_username}さんが友達申請を承認しました`, false);
         if (currentPage) {
-            Promise.all([
-                updateFriendRequestList(),
-                updateFriendsList()
-            ]).then(() => {
-                resetListenerFriendRequestList(currentPage);
-                resetListenerFriendList(currentPage);
-            });
+            updateFriendsList(currentPage).then(() => {});
         }
-
     } else if (data.action === 'removed') {
         //rmられは通知されない
         if (currentPage) {
-            updateFriendsList()
-                .then(() => {
-                    resetListenerFriendList(currentPage);
-                });
+            updateFriendsList(currentPage).then(() => {});
         }
     }
 }

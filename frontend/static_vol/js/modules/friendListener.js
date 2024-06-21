@@ -49,7 +49,7 @@ const removeListenRemoveFriend = (pageInstance) => {
     pageInstance.listListenRemoveFriend = [];
 }
 
-const updateListenMatchRequest = (pageInstance) => {
+const addListenMatchRequest = (pageInstance) => {
     const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
     const boundShowModalSendMatchRequestHandler = showModalSendMatchRequest.bind(pageInstance);
     btnMatchRequest.forEach((btn) => {
@@ -63,7 +63,7 @@ const updateListenMatchRequest = (pageInstance) => {
     });
 }
 
-const updateListenSendFriendRequest = (pageInstance) => {
+const addListenSendFriendRequest = (pageInstance) => {
     const btnRequestFriend = document.querySelectorAll('.unitFriendButton_friendRequest');
     btnRequestFriend.forEach((btn) => {
         const boundSendFriendRequestHandler = sendFriendRequestHandler.bind(pageInstance);
@@ -77,7 +77,7 @@ const updateListenSendFriendRequest = (pageInstance) => {
     });
 }
 
-const updateListenAcceptFriendRequest = (pageInstance) => {
+const addListenAcceptFriendRequest = (pageInstance) => {
     const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
     const boundAcceptFriendRequestHandler = acceptFriendRequestHandler.bind(pageInstance);
     btnAcceptFriendRequest.forEach((btn) => {
@@ -91,7 +91,7 @@ const updateListenAcceptFriendRequest = (pageInstance) => {
     });
 }
 
-const updateListenDeclineFriendRequest = (pageInstance) => {
+const addListenDeclineFriendRequest = (pageInstance) => {
     const btnDeclineFriendRequest = document.querySelectorAll('.unitFriendButton_friendDecline');
     const boundDeclineFriendRequestHandler = declineFriendRequestHandler.bind(pageInstance);
     btnDeclineFriendRequest.forEach((btn) => {
@@ -105,7 +105,7 @@ const updateListenDeclineFriendRequest = (pageInstance) => {
     });
 }
 
-const updateListenRemoveFriend = (pageInstance) => {
+const addListenRemoveFriend = (pageInstance) => {
     const btnRemoveFriend = document.querySelectorAll('.unitFriendButton_removeFriend');
     const boundRemoveFriendHandler = removeFriendHandler.bind(pageInstance);
     btnRemoveFriend.forEach((btn) => {
@@ -119,26 +119,45 @@ const updateListenRemoveFriend = (pageInstance) => {
     });
 }
 
-const resetListenerFriendList = (pageInstance) => {
+
+const removeListenFriendList = (pageInstance) => {
     removeListenMatchRequest(pageInstance);
     removeListenRemoveFriend(pageInstance);
-
-    updateListenMatchRequest(pageInstance);
-    updateListenRemoveFriend(pageInstance);
 }
-const resetListenerFriendRequestList = (pageInstance) => {
+
+const addListenFriendList = (pageInstance) => {
+    addListenMatchRequest(pageInstance);
+    addListenRemoveFriend(pageInstance);
+}
+
+const resetListenFriendList = (pageInstance) => {
+    removeListenFriendList(pageInstance);
+    addListenFriendList(pageInstance);
+}
+
+//updateFriendRequestList rm
+const removeListenFriendRequestList = (pageInstance) => {
     removeListenAcceptFriendRequest(pageInstance);
     removeListenDeclineFriendRequest(pageInstance);
+}
 
-    updateListenAcceptFriendRequest(pageInstance);
-    updateListenDeclineFriendRequest(pageInstance);
+//updateFriendRequestList add
+const addListenFriendRequestList = (pageInstance) => {
+    addListenAcceptFriendRequest(pageInstance);
+    addListenDeclineFriendRequest(pageInstance);
+}
+
+//updateFriendRequestList reset(rm + add)
+const resetListenFriendRequestList = (pageInstance) => {
+    removeListenFriendRequestList(pageInstance);
+    addListenFriendRequestList(pageInstance);
 }
 
 export {
-    removeListenMatchRequest, updateListenMatchRequest,
-    removeListenSendFriendRequest, updateListenSendFriendRequest,
-    removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
-    removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
-    removeListenRemoveFriend, updateListenRemoveFriend,
-    resetListenerFriendList, resetListenerFriendRequestList
+    removeListenMatchRequest, addListenMatchRequest,
+    removeListenSendFriendRequest, addListenSendFriendRequest,
+    removeListenAcceptFriendRequest, addListenAcceptFriendRequest,
+    removeListenDeclineFriendRequest, addListenDeclineFriendRequest,
+    removeListenRemoveFriend, addListenRemoveFriend,
+    resetListenFriendList, resetListenFriendRequestList
 }

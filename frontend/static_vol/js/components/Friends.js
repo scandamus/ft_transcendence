@@ -8,11 +8,11 @@ import { labels } from '../modules/labels.js';
 import { checkSimpleInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import {
-    removeListenMatchRequest, updateListenMatchRequest,
-    removeListenSendFriendRequest, updateListenSendFriendRequest,
-    removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
-    removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
-    removeListenRemoveFriend, updateListenRemoveFriend
+    removeListenMatchRequest, addListenMatchRequest,
+    removeListenSendFriendRequest, addListenSendFriendRequest,
+    removeListenAcceptFriendRequest, addListenAcceptFriendRequest,
+    removeListenDeclineFriendRequest, addListenDeclineFriendRequest,
+    removeListenRemoveFriend, addListenRemoveFriend
 } from '../modules/friendListener.js';
 
 export default class Friends extends PageBase {
@@ -21,14 +21,16 @@ export default class Friends extends PageBase {
         Friends.instance = this;
         this.setTitle('Friends');
         //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.addAfterRenderHandler(this.updateLists.bind(this));
         this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
 
+        //Instance固有のlistenerList
         this.listListenMatchRequest = [];
-        this.listListenSendFriendRequest = [];
+        this.listListenRemoveFriend = [];
         this.listListenAcceptFriendRequest = [];
         this.listListenDeclineFriendRequest = [];
-        this.listListenRemoveFriend = [];
+
+        this.listListenSendFriendRequest = [];
     }
 
     async renderHtml() {
@@ -94,41 +96,16 @@ export default class Friends extends PageBase {
         `;
     }
 
-    
-    showUserList() {
-        this.updateLists()
-            .catch(error => {
-                console.error('Failed to update lists: ', error);
-            });
-    }
-
-    async updateLists() {
+    updateLists() {
         try {
-            await updateFriendsList();
-            await updateFriendRequestList();
-            this.listenRequest();
+            updateFriendsList(this).then(() => {});
+            updateFriendRequestList(this).then(() => {});
+            //todo:reccomendedのaddListener
+            addListenSendFriendRequest(this);
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
         }
-    }
-
-    removeEventListeners() {
-        removeListenMatchRequest(this);
-        removeListenSendFriendRequest(this);
-        removeListenAcceptFriendRequest(this);
-        removeListenDeclineFriendRequest(this);
-        removeListenRemoveFriend(this);
-    }
-
-    listenRequest() {
-        this.removeEventListeners();
-
-        updateListenMatchRequest(this);
-        updateListenSendFriendRequest(this);
-        updateListenAcceptFriendRequest(this);
-        updateListenDeclineFriendRequest(this);
-        updateListenRemoveFriend(this);
     }
 
     listenSearchFriends() {
@@ -160,7 +137,13 @@ export default class Friends extends PageBase {
     }
 
     destroy() {
-        this.removeEventListeners();
+        //rmFriendsList
+        removeListenMatchRequest(this);
+        removeListenRemoveFriend(this);
+        //rmFriendRequestList
+        removeListenAcceptFriendRequest(this);
+        removeListenDeclineFriendRequest(this);
+
         super.destroy();
     }
 }

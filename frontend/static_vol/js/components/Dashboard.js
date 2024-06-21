@@ -3,10 +3,10 @@
 import PageBase from './PageBase.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import {
-    removeListenMatchRequest, updateListenMatchRequest,
-    removeListenAcceptFriendRequest, updateListenAcceptFriendRequest,
-    removeListenDeclineFriendRequest, updateListenDeclineFriendRequest,
-    removeListenRemoveFriend, updateListenRemoveFriend
+    removeListenMatchRequest, addListenMatchRequest,
+    removeListenAcceptFriendRequest, addListenAcceptFriendRequest,
+    removeListenDeclineFriendRequest, addListenDeclineFriendRequest,
+    removeListenRemoveFriend, addListenRemoveFriend
 } from '../modules/friendListener.js';
 
 export default class Dashboard extends PageBase {
@@ -16,12 +16,13 @@ export default class Dashboard extends PageBase {
         this.playerNameTmp = 'playername';
         this.setTitle(`Dashboard: ${this.playerNameTmp}`);
         //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.addAfterRenderHandler(this.updateLists.bind(this));
 
+        //Instance固有のlistenerList
         this.listListenMatchRequest = [];
+        this.listListenRemoveFriend = [];
         this.listListenAcceptFriendRequest = [];
         this.listListenDeclineFriendRequest = [];
-        this.listListenRemoveFriend = [];
     }
 
     async renderHtml() {
@@ -62,42 +63,24 @@ export default class Dashboard extends PageBase {
         `;
     }
 
-    showUserList() {
-        this.updateLists()
-            .catch(error => {
-                    console.error('Failed to update lists: ', error);
-            });
-    }
-
-    async updateLists() {
+    updateLists() {
         try {
-            await updateFriendsList();
-            await updateFriendRequestList();
-            this.listenRequest();
+            updateFriendsList(this).then(() => {});
+            updateFriendRequestList(this).then(() => {});
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
         }
     }
 
-    removeEventListeners() {
+    destroy() {
+        //rmFriendsList
         removeListenMatchRequest(this);
+        removeListenRemoveFriend(this);
+        //rmFriendRequestList
         removeListenAcceptFriendRequest(this);
         removeListenDeclineFriendRequest(this);
-        removeListenRemoveFriend(this);
-    }
 
-    listenRequest() {
-        this.removeEventListeners();
-
-        updateListenMatchRequest(this);
-        updateListenAcceptFriendRequest(this);
-        updateListenDeclineFriendRequest(this);
-        updateListenRemoveFriend(this);
-    }
-
-    destroy() {
-        this.removeEventListeners();
         super.destroy();
     }
 }
