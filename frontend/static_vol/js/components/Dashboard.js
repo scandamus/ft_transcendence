@@ -9,6 +9,7 @@ import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFri
 import { labels } from '../modules/labels.js';
 import { pageInstances } from '../modules/pageInstances.js';
 import { showModalSendMatchRequest } from '../modules/modal.js';
+import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 
 
 export default class Dashboard extends PageBase {
@@ -44,6 +45,7 @@ export default class Dashboard extends PageBase {
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">Your Friends</h3>
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockMatchLog">
                         <h3 class="blockMatchLog_title unitTitle1">Tournament Log</h3>
@@ -62,58 +64,6 @@ export default class Dashboard extends PageBase {
         `;
     }
 
-    updateFriendsList = async () => {
-        console.log('updateFriendList in');
-        try {
-            const friends = await fetchFriends();
-            const listFriendsWrappr = document.querySelector('.blockFriends_friends');
-            listFriendsWrappr.innerHTML = '';
-    
-            friends.forEach(friend => {
-                const friendElement = `
-                    <section class="unitFriend">
-                        <header class="unitFriend_header">
-                            <h4 class="unitFriend_name">${friend.username}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                        </header>
-                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>
-                        </ul>
-                    </section>
-                `;
-                listFriendsWrappr.innerHTML += friendElement;
-            });
-        } catch (error) {
-            console.error('Failed to update friends list: ', error);
-        }
-    }
-    
-    updateFriendRequestList = async () => {
-        console.log('updateFriendRequestList in');
-        try {
-            const requests = await fetchFriendRequests();
-            const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-            listRequestWrapper.innerHTML = '';
-    
-            requests.forEach(request => {
-                const requestElement = `
-                    <section class="unitFriend">
-                        <header class="unitFriend_header">
-                            <h4 class="unitFriend_name">${request.from_user}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${request.from_user}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                        </header>
-                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.labelAccept}</button></li>
-                            <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico" data-username="${request.from_user}" data-id="${request.id}"><img src="/images/ico-cross.svg" alt="${labels.labelDecline}" width="16px" height="16px"></button></li>
-                        </ul>
-                    </section>
-                `;
-                listRequestWrapper.innerHTML += requestElement;
-            });
-        } catch (error) {
-            console.error('Failed to update friend requests: ', error);
-        }
-    }
 
     showUserList() {
         this.updateLists()
@@ -124,8 +74,8 @@ export default class Dashboard extends PageBase {
 
     async updateLists() {
         try {
-            await this.updateFriendsList();
-            await this.updateFriendRequestList();
+            await updateFriendsList(false);
+            await updateFriendRequestList();
             this.listenRequest();
         } catch (error) {
             console.error('Failed to update lists: ', error);
