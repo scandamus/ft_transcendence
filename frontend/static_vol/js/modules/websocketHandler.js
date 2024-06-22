@@ -84,10 +84,9 @@ const loadGameContent = async (data) => {
 const handleFriendRequestAck = (data) => {
     const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
                                 ? PageBase.instance : null;
-
     if (data.action === 'error') {
         if (data.error === 'alreadyFriends') {
-            addNotice(`${data.username}さんはすでに友達です`, true);
+            addNotice(`${data.username}さんはすでに友達です`, false);
         } else if (data.error === 'usernameNotExists') {
             addNotice(`${data.username}は存在しません`, true);
         } else if (data.error === 'sendFriendReqSelf') {
@@ -141,6 +140,7 @@ const handleFriendRequestReceived = (data) => {
         }
     } else if (data.action === 'removed') {
         //rmられは通知されない
+        console.log(`${data.from_username}さんと友達じゃなくなりました`)
         if (currentPage) {
             updateFriendsList(currentPage).then(() => {});
         }

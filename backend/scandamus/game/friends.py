@@ -217,9 +217,9 @@ async def remove_friend(consumer, username):
 
         await consumer.players[from_username].send(text_data=json.dumps(
             {
-                'type': 'friendRequest',
-                'from_username': to_username,
-                'action': 'removed',
+                'type': 'ack',
+                'username': to_username,
+                'action': 'removeSuccess',
             }
         ))
         await consumer.players[to_username].send(text_data=json.dumps(

@@ -3,9 +3,11 @@
 import { fetchFriendRequests, fetchFriends } from "./friendsApi.js";
 import { resetListenFriendList, resetListenFriendRequestList } from "./friendListener.js";
 import { labels } from "./labels.js";
+import PageBase from "../components/PageBase.js";
 
 const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
+    const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
         const friends = await fetchFriends();
         const listFriendsWrappr = document.querySelector('.blockFriends_friends');
@@ -14,16 +16,20 @@ const updateFriendsList = async (pageInstance) => {
         } else {
             listFriendsWrappr.innerHTML = '';
             friends.forEach(friend => {
-                const friendElement = `
+                let friendElement = `
                     <section class="unitFriend">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${friend.username}</h4>
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>`;
+                if (isPageFriend) {
+                    friendElement += `
                             <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.labelRmFriend}</button></li>
-                        </ul>
+                    `;
+                }
+                friendElement += `</ul>
                     </section>
                 `;
                 listFriendsWrappr.innerHTML += friendElement;
