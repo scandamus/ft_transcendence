@@ -1,12 +1,10 @@
 class SiteInfo {
     constructor() {
         if (!SiteInfo.instance) {
-            this.username = 'DefaultUsername';
+            this.username = '';
             SiteInfo.instance = this;
         }
         return SiteInfo.instance;
-        //this.username = 'DefaultUsername';
-        //this.username = '';
     }
 
     setUsername(username) {

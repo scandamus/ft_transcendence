@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         await getUserInfo()
             .then(data => {
-                siteInfo.setUsername(data.username);
+                if (data) {
+                    siteInfo.setUsername(data.username);
+                }
             })
         const username = siteInfo.getUsername();
         if (username) {
