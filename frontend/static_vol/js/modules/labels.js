@@ -357,7 +357,7 @@ const getLanguage = () => {
     return localStorage.getItem('configLang') || 'en';
 }
 
-const labels = labels_ja;
-//const labels = languageLabels[getLanguage()];
+//const labels = labels_ja;
+const labels = languageLabels[getLanguage()];
 
 export { labels, switchLabels };
