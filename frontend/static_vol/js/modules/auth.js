@@ -2,6 +2,7 @@
 
 import { getToken, refreshAccessToken } from './token.js';
 import { handleLogout } from './logout.js';
+import PageBase from '../components/PageBase.js';
 
 const fetchUserInfo = async (isRefresh) => {
     const accessToken = getToken('accessToken');
@@ -66,8 +67,11 @@ const showMenu = () => {
 
 const switchDisplayAccount = async (userData) => {
     if (userData) {
+        //PageBaseにusername set
+        PageBase.instance.setUsername(userData.username);
+        //Account表示生成
         const labelButtonLogout = 'ログアウト'; // TODO json 共通化したい
-        const namePlayer = userData.username;
+        const namePlayer = PageBase.instance.getUsername();
         document.getElementById('headerAccount').innerHTML = `
             <header id="btnNavHeader" class="headerNav headerNav-login">
                 <h2>${namePlayer}</h2>
@@ -83,12 +87,16 @@ const switchDisplayAccount = async (userData) => {
                 </ul>
             </nav>
         `;
+        //addEvent
         const btnLogout = document.getElementById('btnLogoutForm');
         btnLogout.addEventListener('click', handleLogout);
         const btnNavHeader = document.getElementById('btnNavHeader');
         btnNavHeader.addEventListener('click', showMenu);
         btnNavHeader.nextElementSibling.style.display = 'none';
     } else {
+        //PageBaseのusername reset
+        PageBase.instance.setUsername('');
+        //removeEvent
         const btnLogout = document.getElementById('btnLogoutForm');
         if (btnLogout) {
             btnLogout.removeEventListener('click', handleLogout);
@@ -97,6 +105,7 @@ const switchDisplayAccount = async (userData) => {
         if (btnNavHeader) {
             btnNavHeader.removeEventListener('click', showMenu);
         }
+        //Account表示reset
         document.getElementById('headerAccount').innerHTML = '';
     }
 }

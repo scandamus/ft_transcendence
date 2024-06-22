@@ -3,17 +3,24 @@
 import { getUserInfo, switchDisplayAccount } from './modules/auth.js';
 import { addLinkPageEvClick, router } from './modules/router.js';
 import { switchLanguage } from './modules/switchLanguage.js';
+import { getToken } from "./modules/token.js";
 
 //load
 document.addEventListener('DOMContentLoaded', async () => {
-    getUserInfo()
-        .then(data => {
-            switchDisplayAccount(data);
-            router(data);
-        })
-        .catch(error => {
-            console.error('getUserInfo failed:', error);
-        })
+    try {
+        const accessToken = getToken('accessToken');
+        if (accessToken) {
+            await router(true);
+        } else {
+            await router(false);
+        }
+        getUserInfo()
+            .then(data => {
+                switchDisplayAccount(data);
+            })
+    } catch (error) {
+        console.error(error);
+    }
     //todo: selectedLanguageが未セットならdefault lang
     //const selectedLanguage = localStorage.getItem('selectedLanguage');
 
