@@ -49,6 +49,7 @@ const labels_ja = {
         labelSearch: '友達申請を送る',
         labelSendRequest: '送信',
         msgNoUsername: '友達申請を送るユーザー名を入力してください',
+        msgNoFriends: '友達はまだいません',
         labelListFriends: '友達一覧',
         labelReceivedRequest: '受け取った友達申請',
         labelRecommended: 'あなたへのおすすめ',
@@ -147,6 +148,7 @@ const labels_en = {
         labelSearch: 'send friend request',
         labelSendRequest: 'send',
         msgNoUsername: 'Enter a username to send friend request',
+        msgNoFriends: 'no friends yet',
         labelListFriends: 'friends',
         labelReceivedRequest: 'friend requests',
         labelRecommended: 'recommended',
@@ -245,6 +247,7 @@ const labels_la = {
         labelSearch: '',
         labelSendRequest: '',
         msgNoUsername: '',
+        msgNoFriends: '',
         labelListFriends: '',
         labelReceivedRequest: '',
         labelRecommended: '',
@@ -312,6 +315,7 @@ const getLanguage = () => {
     return localStorage.getItem('configLang') || 'en';
 }
 
+//const labels = labels_ja;
 const labels = languageLabels[getLanguage()];
 
 export { labels, switchLabels };
