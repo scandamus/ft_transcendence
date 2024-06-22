@@ -71,6 +71,7 @@ const labels_ja = {
         labelMatchLog: '対戦記録',
         labelWins: '勝',
         labelLosses: '敗',
+        fmtWinLoss: '$win勝 $loss敗',
     },
     tournament: {
         title: 'Tournament',
@@ -97,6 +98,19 @@ const labels_ja = {
         titleReceiveMatchRequest: '対戦申し込みがありました',
         titleWaitForOpponent: '対戦相手を待っています...',
         titleEntryTournament:  'トーナメントに出場する',
+    },
+    friendRequest: {
+        alreadyFriends: '$name さんはすでに友達です',
+        usernameNotExists: '$name は存在しません',
+        sendFriendReqSelf: '自分自身は友達になれないのですよ',
+        invalidDeclineFriendReq: '友達申請の削除ができませんでした',
+        sentRequestSuccess: '$name さんに友達申請が送信されました',
+        acceptRequestSuccess: '$name さんと友達になりました',
+        declineRequestSuccess: '$name さんの友達申請を削除しました',
+        removeSuccess: '$name さんとの友達を解除しました',
+        received: '$name さんから友達申請が来ました',
+        accepted: '$name さんが友達申請を承認しました',
+        removed: '$name さんと友達じゃなくなりました',
     },
 };
 const labels_en = {
@@ -170,6 +184,7 @@ const labels_en = {
         labelMatchLog: 'match log',
         labelWins: 'wins',
         labelLosses: 'losses',
+        fmtWinLoss: '$win wins, $loss losses',
     },
     tournament: {
         title: 'Tournament',
@@ -196,6 +211,19 @@ const labels_en = {
         titleReceiveMatchRequest: 'you received a match request',
         titleWaitForOpponent: 'waiting for an opponent...',
         titleEntryTournament:  'participate in tournament',
+    },
+    friendRequest: {
+        alreadyFriends: '$name is',
+        usernameNotExists: '$name is',
+        sendFriendReqSelf: 'is',
+        invalidDeclineFriendReq: 'is',
+        sentRequestSuccess: '$name is',
+        acceptRequestSuccess: '$name is',
+        declineRequestSuccess: '$name is',
+        removeSuccess: '$name is',
+        received: '$name is',
+        accepted: '$name is',
+        removed: '$name is',
     },
 };
 const labels_la = {
@@ -269,6 +297,7 @@ const labels_la = {
         labelMatchLog: '',
         labelWins: '',
         labelLosses: '',
+        fmtWinLoss: '$win $loss',
     },
     tournament: {
         title: '',
@@ -296,6 +325,19 @@ const labels_la = {
         titleWaitForOpponent: '',
         titleEntryTournament:  '',
     },
+    friendRequest: {
+        alreadyFriends: '$name ',
+        usernameNotExists: '$name ',
+        sendFriendReqSelf: '',
+        invalidDeclineFriendReq: '',
+        sentRequestSuccess: '$name ',
+        acceptRequestSuccess: '$name ',
+        declineRequestSuccess: '$name ',
+        removeSuccess: '$name ',
+        received: '$name ',
+        accepted: '$name ',
+        removed: '$name ',
+    },
 };
 const labels_fr = labels_la;
 const labels_he = Object.getPrototypeOf(labels_la);
@@ -315,7 +357,7 @@ const getLanguage = () => {
     return localStorage.getItem('configLang') || 'en';
 }
 
-//const labels = labels_ja;
-const labels = languageLabels[getLanguage()];
+const labels = labels_ja;
+//const labels = languageLabels[getLanguage()];
 
 export { labels, switchLabels };
