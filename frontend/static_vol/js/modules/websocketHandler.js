@@ -162,6 +162,7 @@ const handleFriendRequestReceived = (data) => {
 
     } else if (data.action === 'removed') {
         //rmられは通知されない
+        console.log(`${data.from_username}さんと友達じゃなくなりました`)
         if (currentPage) {
             updateFriendsList(isPageFriend)
                 .then(() => {
