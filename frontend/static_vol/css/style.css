@@ -6,6 +6,7 @@
 ----- */
 :root {
   --heightMainHeader: 60px;
+  --widthCont: 800px;
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
@@ -23,11 +24,14 @@
   --color-gray: #666666;
   --color-error1: rgba(243, 0, 67, 0.7);
   --color-error1-alpha: rgba(243, 0, 67, 0.1);
+  --color-error1-alpha2: rgba(243, 0, 67, 0.5);
   --color-error2: rgb(250, 216, 228);
   --color-error2-alpha: rgba(250, 216, 228, 0.7);
   --color-online: var(--content-color1);
   --color-offline: var(--color-gray);
   --color-busy: var(--content-color2);
+  --color-notice-bg1: rgba(13, 82, 55, 0.5);
+  --color-notice-error-bg1: rgba(166, 8, 52, 0.5);
 
   font-family: "Chakra Petch", sans-serif;
   font-style: normal;
@@ -111,11 +115,17 @@ hr {
 
 /* mainHeader */
 .mainHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: var(--heightMainHeader);
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 3px 10px rgba(24, 28, 28, 0.6);
+  backdrop-filter: blur(5px);
+  z-index: 1;
 }
 
 .mainHeader a {
@@ -231,6 +241,7 @@ hr {
           -0.05em -0.07em var(--content-color2);
   font-size: 1.3rem;
   color: var(--color-white);
+  word-break: keep-all;
 }
 
 .unitButton:hover {
@@ -915,6 +926,10 @@ input.has-input:invalid {
   margin: 0 0 50px;
 }
 
+.blockFriendRequest.is-noRequest {
+  display: none;
+}
+
 .blockFriendRequest_title {
   line-height: 0;
 }
@@ -977,8 +992,8 @@ input.has-input:invalid {
 }
 
 .blockUsers_column .blockFriends_friends {
-  overflow-y: scroll;
-  height: 40vh;
+  overflow-y: auto;
+  max-height: 40vh;
 }
 
 @media screen and (min-width: 768px) {
@@ -1005,18 +1020,26 @@ input.has-input:invalid {
 .blockSearchFriend_form {
   display: flex;
   justify-content: space-between;
-  padding: 20px 0;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 0 20px;
 }
 
 .blockSearchFriend_form .blockForm_input {
   flex: 1 0 auto;
+  margin: 12px 0 0;
+  padding-right: 5px;
 }
 
 .blockSearchFriend_form .blockForm_input input {
   width: 100%;
 }
 .blockSearchFriend_form .blockForm_button {
-  margin: 0 0 0 20px;
+  margin: 12px 0 0;
+}
+
+.blockSearchFriend_form .listError {
+  flex: 0 0 100%;
 }
 
 /*UserRegister*/
@@ -1674,4 +1697,78 @@ input.has-input:invalid {
   width: 100%;
   max-width: 480px;
   min-width: initial;
+}
+
+/* notice */
+.wrapNotice {
+  position: fixed;
+  box-sizing: border-box;
+  width: var(--widthCont);
+  max-width: calc(100% - 12px);
+  top: calc(var(--heightMainHeader) + 10px);
+  right: 0;
+  left: 0;
+  margin: auto;
+  list-style: none;
+}
+
+.unitNotice {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  padding: 3px;
+  background-color: var(--color-white-alpha2);
+  border: 1px solid var(--content-color1);
+  box-shadow: -1px -1px var(--content-color1),
+    1px 1px var(--content-color2);
+  translate: 100px 0;
+  opacity: 0;
+  transition: translate 0.3s ease, opacity 0.4s ease;
+}
+
+.unitNotice-appear {
+  translate: 0 0;
+  opacity: 1;
+}
+
+.unitNotice-disappear {
+  translate: -100px 0;
+  opacity: 0;
+}
+
+.unitNotice-error {
+  border: 1px solid var(--color-error1);
+}
+
+.unitNotice::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-notice-bg1);
+}
+
+.unitNotice-error::before {
+  background-color: var(--color-notice-error-bg1);
+}
+
+.unitNotice:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.unitNotice p,
+.unitNotice button {
+  position: relative;
+}
+
+.unitNotice p {
+}
+
+.unitNotice button {
+  background-color: transparent;
+  border: none;
 }

@@ -9,6 +9,7 @@ import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFri
 import { labels } from '../modules/labels.js';
 import { pageInstances } from '../modules/pageInstances.js';
 import { showModalSendMatchRequest } from '../modules/modal.js';
+import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 
 
 export default class Dashboard extends PageBase {
@@ -44,6 +45,7 @@ export default class Dashboard extends PageBase {
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockMatchLog">
                         <h3 class="blockMatchLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
@@ -124,8 +126,8 @@ export default class Dashboard extends PageBase {
 
     async updateLists() {
         try {
-            await this.updateFriendsList();
-            await this.updateFriendRequestList();
+            await updateFriendsList(false);
+            await updateFriendRequestList();
             this.listenRequest();
         } catch (error) {
             console.error('Failed to update lists: ', error);

@@ -94,4 +94,34 @@ const checkInputValid = (elInput) => {
     return false;
 };
 
-export { addErrorMessage, addErrorMessageCustom, checkInputValid };
+const checkSimpleInputValid = (elInput) => {
+    const errWrapper = elInput.closest('form').querySelector('.listError');
+
+    //validate OK
+    const validityState = elInput.validity;
+    if (validityState.valid) {
+        const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
+        listLiError.forEach((li) => {
+            li.remove();
+        });
+        return true;
+    }
+
+    //invalid。error表示してreturn false
+    errorTypes.forEach((errorType) => {
+        const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
+        const targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-type') === errorType);
+        if (validityState[errorType]) {
+            if (!targetLi) {
+                addErrorMessage(errWrapper, errorType);
+            }
+        } else {
+            if (targetLi) {
+                targetLi.remove();
+            }
+        }
+    });
+    return false;
+};
+
+export { errorTypes, addErrorMessage, addErrorMessageCustom, checkInputValid, checkSimpleInputValid };

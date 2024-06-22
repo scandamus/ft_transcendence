@@ -12,6 +12,8 @@ import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFri
 import { labels } from '../modules/labels.js';
 import { pageInstances } from '../modules/pageInstances.js';
 import { showModalSendMatchRequest } from '../modules/modal.js';
+import { checkSimpleInputValid } from "../modules/form.js";
+import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 
 export default class Friends extends PageBase {
     constructor(params) {
@@ -19,13 +21,13 @@ export default class Friends extends PageBase {
         this.setTitle(labels.friends.title);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
         pageInstances.setInstance('Friends', this);
 
         this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
         this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
         this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
         this.removeFriendHandlerBound = this.removeFriendHandler.bind(this);
-        this.handleSearchFriendBound = this.handleSearchFriend.bind(this);
 
         //ページ破棄のタイミングでイベントリスナーを削除
 //        window.addEventListener('beforeunload', this.cleanup.bind(this));
@@ -52,8 +54,9 @@ export default class Friends extends PageBase {
                     <section class="blockSearchFriend">
                         <h3 class="blockSearchFriend_title unitTitle1">${labels.friends.labelSearch}</h3>
                         <form action="" method="post" class="blockSearchFriend_form blockForm" id="friendSearchForm">
-                            <p class="blockForm_input"><input type="text" id="inputFriendsName" placeholder="Enter friend's name" minlength="3" maxlength="32"></p>
+                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required></p>
                             <p class="blockForm_button"><button type="submit" id="btnPlayerSearch" class="unitButton">${labels.friends.labelSendRequest}</button></p>
+                            <ul class="listError"></ul>
                         </form>
                     </section>
                     <section class="blockFriendRecommended">
@@ -160,8 +163,8 @@ export default class Friends extends PageBase {
 
     async updateLists() {
         try {
-            await this.updateFriendsList();
-            await this.updateFriendRequestList();
+            await updateFriendsList(true);
+            await updateFriendRequestList();
             this.listenRequest();
         } catch (error) {
             console.error('Failed to update lists: ', error);
@@ -209,10 +212,6 @@ export default class Friends extends PageBase {
             btn.removeEventListener('click', this.removeFriendHandlerBound);
             console.log(`Removed remove friend listener from ${btn.dataset.username}`);
         });
-    
-        const friendSearchForm = document.getElementById('friendSearchForm');
-        friendSearchForm.removeEventListener('submit', this.handleSearchFriendBound);
-        console.log(`Removed friend search form listener`);
     }
 
     listenRequest() {
@@ -256,22 +255,24 @@ export default class Friends extends PageBase {
             });
             console.log(`Added remove friend listener to ${btn.dataset.username}`);
         });
-
-        const friendSearchForm = document.getElementById('friendSearchForm');
-        friendSearchForm.addEventListener('submit', this.handleSearchFriendBound);
-        console.log(`Added friend search form listener`);
     }
 
-    async handleSearchFriend(event) {
-        event.preventDefault();
-        const inputFriendsName = document.getElementById('inputFriendsName').value;
-        if (inputFriendsName === '') {
-            alert(labels.friends.msgNoUsername);
+    listenSearchFriends() {
+        const btnSearchFriend = document.getElementById('btnSearchFriend');
+        btnSearchFriend.addEventListener('click', this.handleSearchFriend.bind(this));
+        this.addListenEvent(btnSearchFriend, this.handleSearchFriend, 'click');//todo: rm 確認
+    }
+
+    async handleSearchFriend(ev) {
+        ev.preventDefault();
+        const inputFriendsName = document.getElementById('inputFriendsName');
+        checkSimpleInputValid(inputFriendsName);
+        if (!ev.target.closest('form').checkValidity()) {
             return;
         }
         const message = {
             action: 'requestByUsername',
-            username: inputFriendsName,
+            username: inputFriendsName.value,
         };
         try {
             const accessToken = await initToken();
@@ -280,7 +281,7 @@ export default class Friends extends PageBase {
         } catch (error) {
             console.error('Failed to open or send through WebSocket: ', error);
         } finally {
-            document.getElementById('inputFriendsName').value = '';
+            inputFriendsName.value = '';
         }
     }
 }
