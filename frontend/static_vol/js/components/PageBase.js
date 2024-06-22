@@ -10,21 +10,12 @@ export default class PageBase {
         this.params = params;
         this.listAfterRenderHandlers = [];
         this.listListenInInstance = [];
-        this.username = '';
         this.addAfterRenderHandler(this.addListenLinkPages.bind(this));
     }
 
     setTitle(title) {
         document.title = title;
         document.getElementById('titlePage').innerText = title;
-    }
-
-    setUsername(username) {
-        this.username = username;
-    }
-
-    getUsername() {
-        return this.username;
     }
 
     static isInstance(instance, className) {

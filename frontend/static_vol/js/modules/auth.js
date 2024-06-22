@@ -65,17 +65,14 @@ const showMenu = () => {
     }
 }
 
-const switchDisplayAccount = async (userData) => {
-    if (userData) {
-        //PageBaseにusername set
-        PageBase.instance.setUsername(userData.username);
+const switchDisplayAccount = async (username) => {
+    if (username) {
         //Account表示生成
         const labelButtonLogout = 'ログアウト'; // TODO json 共通化したい
-        const namePlayer = PageBase.instance.getUsername();
         document.getElementById('headerAccount').innerHTML = `
             <header id="btnNavHeader" class="headerNav headerNav-login">
-                <h2>${namePlayer}</h2>
-                <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
+                <h2>${username}</h2>
+                <p class="thumb"><img src="//ui-avatars.com/api/?name=${username}&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
             </header>
             <nav id="navGlobal" class="navGlobal">
                 <ul class="navGlobal_list navList">
@@ -94,8 +91,6 @@ const switchDisplayAccount = async (userData) => {
         btnNavHeader.addEventListener('click', showMenu);
         btnNavHeader.nextElementSibling.style.display = 'none';
     } else {
-        //PageBaseのusername reset
-        PageBase.instance.setUsername('');
         //removeEvent
         const btnLogout = document.getElementById('btnLogoutForm');
         if (btnLogout) {
