@@ -14,7 +14,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
-from .api_access import get_match_from_api
+from .api_access import get_match_from_api, patch_match_to_api
 
 #from .models import Match
 
@@ -38,6 +38,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.ball = None
         self.reset_game_data()
         self.game_continue = False
+        self.storage_token = None
 
     async def connect(self):
         try:
@@ -92,6 +93,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 }))
                 return
 
+            # jwtを一時保存
+            self.storage_token = jwt
             self.username = username
             match = await self.get_match(self.match_id)
             if match and await self.is_player_in_match(players_id, match):
@@ -189,6 +192,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         timestamp = dt.utcnow().isoformat()
         if self.player_name == 'player2':
             self.game_continue = False
+        logger.info("=======================================")
+        await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+        logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
 
     async def update_ball_and_send_data(self):
@@ -326,6 +332,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
+
+    @database_sync_to_async
+    def update_match_status(self, match_id, score1, score2, game_state):
+        send_data = {
+            "score1": score1,
+            "score2": score2,
+            "status": game_state,
+        }
+        patch_match_to_api(self.storage_token, match_id, send_data)
 
     async def start_game(self, event):
         if self.player_name == 'player1':
