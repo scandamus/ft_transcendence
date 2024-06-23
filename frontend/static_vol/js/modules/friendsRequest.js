@@ -4,8 +4,8 @@ import { webSocketManager } from './websocket.js';
 import { pongHandler } from './websocketHandler.js';
 import { initToken } from './token.js';
 
-    console.log('sendFriendRequest');
 const sendFriendRequest = async (to_username) => {
+    console.log('sendFriendRequest');
     try {
 //        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
