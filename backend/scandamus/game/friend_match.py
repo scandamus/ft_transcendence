@@ -172,11 +172,13 @@ async def send_match_jwt(consumer, from_username, to_username):
     for player in [player1, player2]:
         game_token = await issue_jwt(player.user, player.id, match.id)
         websocket = consumer.players.get(player.user.username)
+        player_name = 'player1' if player == player1 else 'player2'
         await websocket.send(text_data=json.dumps({
             'type': 'gameSession',
             'jwt': game_token,
             'username': player.user.username,
-            'match_id': match.id
+            'match_id': match.id,
+            'player_name': player_name
         }))
 
 @database_sync_to_async
