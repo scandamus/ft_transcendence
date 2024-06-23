@@ -38,10 +38,6 @@ export default class Friends extends PageBase {
     //     pageInstances.removeInstance('Friends');
     // }
     async renderHtml() {
-        let listDescUsername = '';
-        for (let i = 0; i < labels.register.descUsername.length; i++) {
-            listDescUsername += `<li>${labels.register.descUsername[i]}</li>`;
-        }
         return `
             <div class="blockUsers">
                 <div class="blockUsers_column">
@@ -61,7 +57,6 @@ export default class Friends extends PageBase {
                             <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required></p>
                             <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${labels.friends.labelSendRequest}</button></p>
                             <ul class="listError"></ul>
-                        <ul class="listAnnotation">${listDescUsername}</ul>
                         </form>
                     </section>
                     <section class="blockFriendRecommended">
