@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from .utils import generate_game_jwt
 import logging
-from .join_game import handle_join_game, handle_join_game_cancel
+#from .join_game import handle_join_game, handle_join_game_cancel, handle_game_state
 from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
 from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
@@ -32,6 +32,7 @@ class LoungeSession(AsyncWebsocketConsumer):
             token = text_data_json.get('token')
             logger.info(f"Action: {action}")
             logger.info(f"token={token}")
+            # logger.info(f"------------------------------------ {text_data_json['opponentName']}")
 
             if msg_type == 'authWebSocket':
                 await handle_auth(self, token)
@@ -44,11 +45,11 @@ class LoungeSession(AsyncWebsocketConsumer):
                     await handle_reject_game(self, text_data_json)
                 elif action == 'cancelGame':
                     await handle_cancel_game(self, text_data_json)
-                # join_gameは廃止？
-                elif action == 'joinGame':
-                    await handle_join_game(self, token)
-                elif action == 'cancel':
-                    await handle_join_game_cancel(self)
+                # # join_gameは廃止？
+                # elif action == 'joinGame':
+                #     await handle_join_game(self, token)
+                # elif action == 'cancel':
+                #     await handle_join_game_cancel(self)
             elif msg_type == 'friendRequest':
                 if action == 'requestByUsername':
                     await send_friend_request_by_username(self, text_data_json['username'])

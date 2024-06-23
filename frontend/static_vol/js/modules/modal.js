@@ -73,6 +73,7 @@ const closeModalOnCancel = (args) => {
             cancel_game(args.username);
         })
         .then(() => {
+            //modal close
             closeModal();
         });
 }
@@ -143,6 +144,7 @@ const getModalHtml = (modalType, args) => {
 
 const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
+    const opponentName = button.dataset.username;
     const args = {
         titleModal: '対戦を申し込みました',
         username: button.dataset.username,
@@ -150,8 +152,6 @@ const showModalSendMatchRequest = (ev) => {
         labelCancel: 'キャンセル',
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
-    //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-    // 以下を変更し、friend_match_game()を呼ぶ
     request_game(button.dataset.username, button.dataset.id)
         .then(r => {
             showModal(elHtml, args);
@@ -223,5 +223,5 @@ const showModalEntryTournament = (ev) => {
         });
 }
 
-export { closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal };
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal };
 

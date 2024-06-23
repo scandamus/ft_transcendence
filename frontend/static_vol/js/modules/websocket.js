@@ -111,7 +111,7 @@ class WebSocketManager {
 
     isWebSocketOpened(containerId) {
         const socket = this.sockets[containerId];
-        return socket && socket.readyState == WebSocket.OPEN;
+        return socket && socket.readyState === WebSocket.OPEN;
     }
 
     getWebSocket(containerId) {
