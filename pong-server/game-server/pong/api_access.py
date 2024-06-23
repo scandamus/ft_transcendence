@@ -27,7 +27,7 @@ def patch_match_to_api(storage_token, match_id, send_data):
         logger.info(f'patch_match_to_api: start')
         headers = {
             'Authorization': f'Bearer {storage_token}',
-            'content-type': 'application/json',
+            'Content-type': 'application/json',
         }
         response = requests.patch(url, data=send_data, headers=headers)
         response.raise_for_status()
