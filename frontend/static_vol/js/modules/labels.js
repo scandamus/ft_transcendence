@@ -575,15 +575,13 @@ const languageLabels = {
     'ar': labels_ar,
 };
 
-const switchLabels = (language) => {
-    Object.assign(labels, languageLabels[language]);
-};
-
-const getLanguage = () => {
-    return localStorage.getItem('configLang') || 'en';
+export const getCurrentLanguageLabels = (lang) => {
+    return languageLabels[lang || localStorage.getItem('configLang')] || labels_en;
 }
 
-//const labels = labels_ja;
-const labels = languageLabels[getLanguage()];
+//export const labels = labels_ja;
+export const labels = getCurrentLanguageLabels();
 
-export { labels, switchLabels };
+export const switchLabels = (lang) => {
+    Object.assign(labels, getCurrentLanguageLabels(lang));
+};
