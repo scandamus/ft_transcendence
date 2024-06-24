@@ -204,7 +204,7 @@ hr {
 .mainContainerHeader {
   display: flex;
   flex-direction: column-reverse;
-  padding-top: 8px;
+  padding-top: var(--heightMainHeader);
   text-align: center;
 }
 
@@ -844,6 +844,7 @@ input.has-input:invalid {
   align-items: center;
   flex-wrap: wrap;
   padding: 12px 0;
+  max-width: calc(100% - 1px);
 }
 
 .unitFriend_header {
@@ -1222,12 +1223,20 @@ input.has-input:invalid {
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
-  padding-right: 0.5em;
+}
+
+.unitTournament_body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .unitTournament_title {
   font-size: 2.1rem;
   word-break: break-all;
+  margin-right: 1em;
 }
 
 .unitTournament_start {
@@ -1250,9 +1259,9 @@ input.has-input:invalid {
 }
 
 .unitTournament_capacity {
+  flex: 1 1 auto;
   width: 4.5em;
-  text-align: right;
-  font-size: 1.6rem;;
+  font-size: 1.6rem;
 }
 
 .unitTournament_capacity strong {
