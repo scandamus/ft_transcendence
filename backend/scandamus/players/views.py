@@ -4,13 +4,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from rest_framework import viewsets, renderers, status, generics
-from .models import Player
+from .models import Player, FriendRequest
 from django.contrib.auth.models import User
-from .serializers import PlayerSerializer, UserSerializer
+from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # from django.http import JsonResponse
@@ -151,3 +152,22 @@ class UserListView(generics.ListAPIView):
             .exclude(id=self.request.user.id)
         )
         return queryset
+
+class FriendListView(generics.ListAPIView):
+    serializer_class = UsernameSerializer # PlayerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        player = Player.objects.get(user=user)
+        return player.friends.all()
+    
+class FriendRequestListView(generics.ListAPIView):
+    serializer_class = FriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        player = Player.objects.get(user=user)
+        return FriendRequest.objects.filter(to_user=player)
+    

@@ -71,6 +71,7 @@ const closeModalOnCancel = () => {
             cancel_game();
         })
         .then(() => {
+            //modal close
             closeModal();
         });
 }
@@ -111,15 +112,16 @@ const getModalHtml = (modalType, args) => {
 
 const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
+    const opponentName = button.dataset.username;
     const args = {
         titleModal: '対戦を申し込みました',
-        username: button.dataset.name,
+        username: button.dataset.username,
         avatar: button.dataset.avatar,
         labelCancel: 'キャンセル',
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
     //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-    join_game()
+    join_game(opponentName)
         .then(r => {
             showModal(elHtml);
         });
@@ -127,6 +129,7 @@ const showModalSendMatchRequest = (ev) => {
 
 const showModalReceiveMatchRequest = (ev) => {
     const button = ev.target;
+    const opponentName = button.dataset.name;
     const args = {
         titleModal: '対戦申し込みがありました',
         username: button.dataset.name,
@@ -135,7 +138,7 @@ const showModalReceiveMatchRequest = (ev) => {
         labelReject: 'Reject'
     }
     const elHtml = getModalHtml('receiveMatchRequest', args);
-    join_game()
+    join_game(opponentName)
         .then(r => {
             showModal(elHtml);
         });
@@ -188,5 +191,4 @@ const showModalEntryTournament = (ev) => {
         });
 }
 
-export { closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament };
-
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal };

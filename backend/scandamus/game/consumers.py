@@ -1,29 +1,21 @@
 import json
-import jwt
-import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
-from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from rest_framework_simplejwt.backends import TokenBackend
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, TokenBackendError
-#from jwt.exceptions import ExpiredSignatureError
 from .utils import generate_game_jwt
-from django.conf import settings
-from django.db import transaction
-from datetime import datetime, timedelta
-
-from .models import Match
-from players.models import Player
 import logging
+from .join_game import handle_join_game, handle_join_game_cancel, handle_game_state
+from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
+from players.auth import handle_auth
 
 logger = logging.getLogger(__name__)
 
 class LoungeSession(AsyncWebsocketConsumer):
     players = {}
+    gamePlayers = {}
 
     async def connect(self):
         await self.accept()
+        self.user = self.scope['user']
 
     async def receive(self, text_data):
         logger.info(f"received text_data: {text_data}")
@@ -37,42 +29,26 @@ class LoungeSession(AsyncWebsocketConsumer):
             token = text_data_json.get('token')
             logger.info(f"Action: {action}")
             logger.info(f"token={token}")
+            # logger.info(f"------------------------------------ {text_data_json['opponentName']}")
 
-            if action == 'join_game':
-                user, error = await self.authenticate_token(token)
-                if user:
-                    player = await self.get_player_from_user(user)
-                    self.players[user.username] = {
-                        'user': user,
-                        'players_id': player.id,
-                        'websocket': self
-                    }
-                    logger.info(f"user={user.username} requesting new game match")
-                    if len(self.players) == 2:
-                        players_list = list(self.players.values())
-                        player1 = await self.get_player_from_user(players_list[0]['user'])
-                        player2 = await self.get_player_from_user(players_list[1]['user'])
-                        match = await self.create_match(player1, player2)
-                        for player in players_list:
-                            game_token = await self.issue_jwt(player['user'], player['players_id'], match.id)
-                            await player['websocket'].send(text_data=json.dumps({
-                                'type': 'gameSession',
-                                'jwt': game_token,
-                                'username': player['user'].username,
-                                'match_id': match.id
-                            }))
-                        self.players.clear()
-                else:
-                    logger.error('Error: Authentication Failed')
-                    logger.error(f'error={error}')
-                    await self.send(text_data=json.dumps({
-                        'type': 'authenticationFailed',
-                        'message': error
-                    }))
+            if action == 'authWebSocket':
+                await handle_auth(self, token)
+            if action == 'joinGame':
+                await handle_join_game(self, token, text_data_json['opponentName'])
+            # elif action == 'gameState':
+            #     await handle_game_state(self, token, text_data_json['match_id'], text_data_json['score1'], text_data_json['score2'], text_data_json['status'])
             elif action == 'cancel':
-                if hasattr(self, 'user') and self.user.username in self.players:
-                    del self.players[self.user.username]
-                    logger.info(f'{self.user.username}: cancel accepted.')
+                await handle_join_game_cancel(self)
+            elif action == 'requestByUsername':
+                await send_friend_request_by_username(self, text_data_json['username'])
+            elif action == 'sendRequest':
+                await send_friend_request(self, text_data_json['user_id'])
+            elif action == 'acceptRequest':
+                await accept_friend_request(self, text_data_json['request_id'])
+            elif action == 'declineRequest':
+                await decline_friend_request(self, text_data_json['request_id'])
+            elif action == 'removeFriend':
+                await remove_friend(self, text_data_json['username'])
             else:
                 await self.send(text_data=json.dumps({
                     'message': 'response from server'
@@ -84,67 +60,6 @@ class LoungeSession(AsyncWebsocketConsumer):
         except AttributeError as e:
             logger.error(f"aaaAttribute error: {str(e)}")
             await self.close()
-
-    @database_sync_to_async
-    def get_player_from_user(self, user):
-        try:
-            return Player.objects.get(user=user)
-        except Player.DoesNotExist:
-            logger.info(f"Player doesn't exist for user: {user.username}")
-            return None
-
-    @database_sync_to_async
-    def issue_jwt(self, user, players_id, match_id):
-        expire = datetime.utcnow() + timedelta(minutes=1)
-        payload = {
-            'user_id': user.id,
-            'username': user.username,
-            'players_id': players_id,
-            'match_id': match_id,
-            'iat': datetime.utcnow(),
-            'exp': expire,
-            'aud': 'pong-server',
-            'iss': 'backend'
-        }
-        token = jwt.encode(payload, settings.SIMPLE_JWT['SIGNING_KEY'], algorithm='HS256')
-        return token
-
-    @database_sync_to_async
-    def issue_game_token(self, user):
-        # ゲームセッション用トークン発行
-        refresh = RefreshToken.for_user(user)
-        return str(refresh.access_token)
-
-    @database_sync_to_async
-    def create_match(self, player1, player2):
-        # マッチをDBに登録
-        with transaction.atomic():
-            match = Match.objects.create(
-                player1=player1,
-                player2=player2,
-                status='before'
-            )
-        logger.info(f'Match created, {match}, ID: {match.id}, Player1: {match.player1}, Player2: {match.player2}')
-        return match
-
-    @database_sync_to_async
-    def authenticate_token(self, token):
-        try:
-            token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'], signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
-            validated_token = token_backend.decode(token, verify=True)
-            user_id = validated_token['user_id']
-            user = User.objects.get(id=user_id)
-            self.user = user
-            return user, None
-        except TokenBackendError as e:
-            logger.info(f"TokenBackendError: " + str(e))
-            return None, 'Error: Token Backend Error.'
-        except (InvalidToken, TokenError) as e:
-            logger.info(f"Error decoding token: {str(e)}")
-            return None, 'Error: Token is invalid or expired.'
-        except (User.DoesNotExist) as e:
-            logger.info(f"User not found")
-            return None, 'User not found'
 
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.username in self.players:
