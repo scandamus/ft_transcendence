@@ -6,6 +6,8 @@ import { addNotice } from "./notice.js";
 import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import { router } from "./router.js";
 
+import { labels } from './labels.js'; // TODO use labels but wait for merge
+
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
     let data;
@@ -93,19 +95,19 @@ const handleFriendRequestAck = (data) => {
     const isPageFriend = !!(pageInstances.getInstance('Friends'));
     if (data.action === 'error') {
         if (data.error === 'alreadyFriends') {
-            addNotice(`${data.username}さんはすでに友達です`, false);
+            addNotice(labels.friendRequest[data.error].replace('$name', data.username), false);
         } else if (data.error === 'usernameNotExists') {
-            addNotice(`${data.username}は存在しません`, true);
+            addNotice(labels.friendRequest[data.error].replace('$name', data.username), true);
         } else if (data.error === 'sendFriendReqSelf') {
-            addNotice(`自分自身は友達になれないのですよ`, true);
+            addNotice(labels.friendRequest[data.error].replace('$name', data.username), true);
         } else if (data.error === 'invalidDeclineFriendReq') {
-            addNotice(`友達申請の削除ができませんでした`, true);
+            addNotice(labels.friendRequest[data.error].replace('$name', data.username), true);
         } else {
             console.error(`Error: ${data.message}`);
         }
     } else if (data.action === 'sentRequestSuccess') {
         console.log('Friend request by username is sent to ', data.to_username);
-        addNotice(`${data.to_username}さんに友達申請が送信されました`, false);
+        addNotice(labels.friendRequest[data.action].replace('$name', data.to_username), false);
         if (currentPage) {
             updateFriendRequestList()
                 .then(() => {
@@ -114,7 +116,7 @@ const handleFriendRequestAck = (data) => {
         }
     } else if (data.action === 'acceptRequestSuccess') {
         console.log('Accept friend request is successfully done');
-        addNotice(`${data.from_username}さんと友達になりました`, false);
+        addNotice(labels.friendRequest[data.action].replace('$name', data.from_username), false);
         if (currentPage) {
             updateFriendRequestList();
             updateFriendsList(isPageFriend)
@@ -124,6 +126,7 @@ const handleFriendRequestAck = (data) => {
         }
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
+        addNotice(labels.friendRequest[data.action].replace('$name', data.username), false);
         if (currentPage) {
             updateFriendRequestList()
                 .then(() => {
@@ -132,7 +135,7 @@ const handleFriendRequestAck = (data) => {
         }
     } else if (data.action === 'removeSuccess') {
         console.log('Remove Successfully done');
-        addNotice(`${data.username}さんとの友達を解除しました`, false);
+        addNotice(labels.friendRequest[data.action].replace('$name', data.username), false);
         if (currentPage) {
             updateFriendsList(isPageFriend)
                 .then(() => {
@@ -148,7 +151,7 @@ const handleFriendRequestReceived = (data) => {
 
     console.log('handleFriendRepuestReceived: received');
     if (data.action === 'received') {
-        addNotice(`${data.from_username}さんから友達申請が来ました`, false);
+        addNotice(labels.friendRequest[data.action].replace('$name', data.from_username), false);
         if (currentPage) {
             updateFriendRequestList()
                 .then(() => {
@@ -156,7 +159,7 @@ const handleFriendRequestReceived = (data) => {
                 });
         }
     } else if (data.action === 'accepted') {
-        addNotice(`${data.from_username}さんが友達申請を承認しました`, false);
+        addNotice(labels.friendRequest[data.action].replace('$name', data.from_username), false);
         if (currentPage) {
             Promise.all([
                 updateFriendRequestList(),
@@ -169,7 +172,7 @@ const handleFriendRequestReceived = (data) => {
 
     } else if (data.action === 'removed') {
         //rmられは通知されない
-        console.log(`${data.from_username}さんと友達じゃなくなりました`)
+        console.log(labels.friendRequest[data.action].replace('$name', data.from_username));
         if (currentPage) {
             updateFriendsList(isPageFriend)
                 .then(() => {
