@@ -11,7 +11,7 @@ const endIndicator = (ev) => {
 };
 
 //elHtmlのルート要素は`.blockModal`とする
-const showModal = (elHtml, args) => {
+const showModal = (elHtml) => {
     //modal open
     const elModal = document.getElementById('wrapModal');
     elModal.classList.add('is-show');
@@ -169,7 +169,7 @@ const showModalSendMatchRequest = (ev) => {
     const elHtml = getModalHtml('sendMatchRequest', args);
     request_game(button.dataset.username, button.dataset.id)
         .then(r => {
-            showModal(elHtml, args);
+            showModal(elHtml);
         });
 }
 
@@ -188,7 +188,7 @@ const showModalReceiveMatchRequest = (data) => {
         labelReject: 'Reject'
     }
     const elHtml = getModalHtml('receiveMatchRequest', args);
-    showModal(elHtml, args);
+    showModal(elHtml);
 }
 
 const showModalWaitForOpponent = (ev) => {
