@@ -1,15 +1,17 @@
 'use strict';
 
+import { labels } from './labels.js';
+
 const errorTypes = ['valueMissing', 'patternMismatch', 'tooLong', 'tooShort', 'customError'];
 
 const errorMessages = {
-    'valueMissing': 'This field is required.',
-    'patternMismatch': 'The character types used do not meet the requirement.',
-    'tooLong': 'The character count is too long.',
-    'tooShort': 'The character count is too short.',
+    'valueMissing': labels.formErrorMessages.valueMissing,
+    'patternMismatch': labels.formErrorMessages.patternMismatch,
+    'tooLong': labels.formErrorMessages.tooLong,
+    'tooShort': labels.formErrorMessages.tooShort,
     //for customError
-    'passwordIsNotSame': 'password is not same.',
-    'isExists': 'This username already exists.',
+    'passwordIsNotSame': labels.formErrorMessages.passwordIsNotSame,
+    'isExists': labels.formErrorMessages.isExists,
     //以下はfront validate弾けているはずができずにbackend validateでエラーになるパターン
     'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
     'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
