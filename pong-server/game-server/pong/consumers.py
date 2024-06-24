@@ -178,10 +178,12 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
+                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
                     await self.channel_layer.group_send(self.room_group_name, {
                         "type": "send_game_over_message",
                         "message": "GameOver",
                     })
+
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
             # 今は特に書いていないのでpass
@@ -192,9 +194,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         timestamp = dt.utcnow().isoformat()
         if self.player_name == 'player2':
             self.game_continue = False
-        logger.info("=======================================")
-        await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
-        logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
 
     async def update_ball_and_send_data(self):
