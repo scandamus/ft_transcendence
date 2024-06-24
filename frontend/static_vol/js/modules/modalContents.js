@@ -1,5 +1,5 @@
 const sendMatchRequest = (args) => `
-    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}"
+    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}">
         <h2 class="blockModal_title">${args.titleModal}</h2>
         <section class="blockOpponent">
             <h4 class="blockOpponent_name">${args.username}</h4>
@@ -15,7 +15,7 @@ const sendMatchRequest = (args) => `
 `;
 
 const receiveMatchRequest = (args) => `
-    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}"
+    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}">
         <h2 class="blockModal_title">${args.titleModal}</h2>
         <section class="blockOpponent">
             <h4 class="blockOpponent_name">${args.username}</h4>
@@ -32,7 +32,7 @@ const receiveMatchRequest = (args) => `
 `;
 
 const waitForOpponent = (args) => `
-    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}"
+    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}">
         <h2 class="blockModal_title">${args.titleModal}</h2>
         <ul class="blockModal_capacity unitCapacity">
             <li class="unitCapacity_numerator">
@@ -54,7 +54,7 @@ const waitForOpponent = (args) => `
 `;
 
 const entryTournament = (args) => `
-    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}"
+    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}">
         <header class="blockModal_header">
             <h2 class="blockModal_title">${args.titleModal}: <strong>${args.labelTournamentTitle}</strong></h2>
             <p class="blockModal_date">(${args.labelTournamentStart})</p>
