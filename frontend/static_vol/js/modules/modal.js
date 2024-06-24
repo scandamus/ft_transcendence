@@ -3,6 +3,7 @@
 import { cancel_game, join_game } from "./match.js";
 import { initToken } from "./token.js";
 import * as mc from "./modalContents.js";
+import { labels } from './labels.js';
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -114,10 +115,10 @@ const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
     const opponentName = button.dataset.username;
     const args = {
-        titleModal: '対戦を申し込みました',
+        titleModal: labels.modal.titleSendMatchRequest,
         username: button.dataset.username,
         avatar: button.dataset.avatar,
-        labelCancel: 'キャンセル',
+        labelCancel: labels.modal.labelCancel,
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
     //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
@@ -131,11 +132,11 @@ const showModalReceiveMatchRequest = (ev) => {
     const button = ev.target;
     const opponentName = button.dataset.name;
     const args = {
-        titleModal: '対戦申し込みがありました',
+        titleModal: labels.modal.titleReceiveMatchRequest,
         username: button.dataset.name,
         avatar: button.dataset.avatar,
-        labelAccept: 'Accept',
-        labelReject: 'Reject'
+        labelAccept: labels.modal.labelAccept,
+        labelReject: labels.modal.labelReject,
     }
     const elHtml = getModalHtml('receiveMatchRequest', args);
     join_game(opponentName)
@@ -151,10 +152,10 @@ const showModalWaitForOpponent = (ev) => {
         data[key] = value;
     });
     const args = {
-        titleModal: 'Waiting...',
-        labelCancel: 'キャンセル',
-        labelCapacity: '定員',
-        labelAvailable: '募集中',
+        titleModal: labels.modal.titleWaitForOpponent,
+        labelCancel: labels.modal.labelCancel,
+        labelCapacity: labels.modal.labelCapacity,
+        labelAvailable: labels.modal.labelAvailable,
     }
     args.labelCapacityNum = (data['gameType'] === 'dual') ? 2 : 4;
     const elHtml = getModalHtml('waitForOpponent', args);
@@ -175,10 +176,10 @@ const showModalEntryTournament = (ev) => {
         return;
     }
     const args = {
-        titleModal: 'Entry Tournament',
-        labelNickname: 'NickName',
-        labelEntry: 'Entry',
-        labelCancel: 'Cancel',
+        titleModal: labels.modal.titleEntryTournament,
+        labelNickname: labels.modal.labelNickname,
+        labelEntry: labels.modal.labelEntry,
+        labelCancel: labels.modal.labelCancel,
         labelTournamentId: data['idTitle'],
         labelTournamentTitle: data['title'],
         labelTournamentStart: data['start'],
