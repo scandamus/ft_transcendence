@@ -16,24 +16,24 @@ const showModal = (elHtml, args) => {
     const elModal = document.getElementById('wrapModal');
     elModal.classList.add('is-show');
     elModal.innerHTML = elHtml;
-
+        
     //キャンセルボタンにaddEventListener
     const btnCancel = document.querySelector('.blockBtnCancel_button');
     if (btnCancel) {
-        btnCancel.addEventListener('click', () => closeModalOnCancel(args));
+        btnCancel.addEventListener('click', closeModalOnCancel);
     }
 
     //AcceptボタンにaddEventListener
     const btnAccept = document.querySelector('.blockBtnAccept_button');
     if (btnAccept) {
-        btnAccept.addEventListener('click', () => closeModalOnAccept(args));
+        btnAccept.addEventListener('click', closeModalOnAccept);
     }
 
     //RejectボタンにaddEventListener
     const btnReject = document.querySelector('.blockBtnReject_button');
     if (btnReject) {
         //todo: Reject特化の関数が必要か検討
-        btnReject.addEventListener('click', () => closeModalOnReject(args));
+        btnReject.addEventListener('click', closeModalOnReject);
     }
 
     //インディケータがあれば進行、終了でcloseModalOnCancel
@@ -49,8 +49,11 @@ const showModal = (elHtml, args) => {
     //todo: インディケータのないモーダルは何かしら閉じるようにしておく
 }
 
-const closeModalOnCancel = (args) => {
+const closeModalOnCancel = (ev) => {
     console.log('closeModalOnCancel');
+    const modal = ev.target.closest('.blockModal');
+    const username = modal.getAttribute('data-modal-username');
+
     initToken()
         .then((accessToken) => {
             //btnCancel, btnReject removeEventListener
@@ -69,8 +72,8 @@ const closeModalOnCancel = (args) => {
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
             //cancel game
-            console.log(`cancel game: ${args.username}`);
-            cancel_game(args.username);
+            console.log(`cancel game: ${username}`);
+            cancel_game(username);
         })
         .then(() => {
             //modal close
@@ -78,8 +81,14 @@ const closeModalOnCancel = (args) => {
         });
 }
 
-const closeModalOnReject = (args) => {
+const closeModalOnReject = (ev) => {
     console.log('closeModalOnReject');
+    const modal = ev.target.closest('.blockModal');
+    const args = {
+        request_id: modal.getAttribute('data-modal-request_id'),
+        username: modal.getAttribute('data-modal-username')
+    };
+
     initToken()
         .then((accessToken) => {
             //btnCancel, btnReject removeEventListener
@@ -106,8 +115,14 @@ const closeModalOnReject = (args) => {
         });
 }
 
-const closeModalOnAccept = (args) => {
+const closeModalOnAccept = (ev) => {
     console.log('closeModalOnAccept');
+    const modal = ev.target.closest('.blockModal');
+    const args = {
+        request_id: modal.getAttribute('data-modal-request_id'),
+        username: modal.getAttribute('data-modal-username')
+    };
+
     initToken()
         .then((accessToken) => {
             //AcceptボタンremoveEventListener
