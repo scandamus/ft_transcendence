@@ -61,7 +61,7 @@ const accept_game = async (request_id, from_username) => {
 }
 
 const reject_game = async (request_id, from_username) => {
-    console.log('reject_game ${request_id}')
+    console.log(`reject_game ${request_id}`)
     try {
         const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
