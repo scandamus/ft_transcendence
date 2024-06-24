@@ -194,9 +194,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         timestamp = dt.utcnow().isoformat()
         if self.player_name == 'player2':
             self.game_continue = False
-        logger.info("=======================================")
-        await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
-        logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
 
     async def update_ball_and_send_data(self):
