@@ -1391,13 +1391,13 @@ input.has-input:invalid {
   margin-bottom: 30px;
 }
 
-.blockTournamentMatch {
+.blockMatch {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-.blockTournamentMatch_vs {
+.blockMatch_vs {
   padding-top: 12px;
   width: 60px;
   height: 50px;
@@ -1410,7 +1410,7 @@ input.has-input:invalid {
 .unitMatchPlayer {
   position: relative;
   display: flex;
-  flex: 0 0 calc(50% - 30px);/* blockTournamentMatch_vs width: 60px */
+  flex: 0 0 calc(50% - 30px);/* blockMatch_vs width: 60px */
   justify-content: space-between;
   padding: 12px 0;
 }
@@ -1500,11 +1500,11 @@ input.has-input:invalid {
 }
 
 @media screen and (min-width: 768px) {
-  .blockTournamentMatch {
+  .blockMatch {
     align-items: center;
   }
 
-  .blockTournamentMatch_vs {
+  .blockMatch_vs {
     padding-top: 0;
   }
 
