@@ -10,8 +10,11 @@ export default class Dashboard extends PageBase {
     constructor(params) {
         super(params);
         Dashboard.instance = this;
-        this.playerNameTmp = 'playername'; // TODO fetch username
-        this.setTitle(`${labels.dashboard.title}: ${this.playerNameTmp}`);
+        this.playerNameTmp = 'playername';
+        this.title = `${labels.dashboard.title}: ${this.playerNameTmp}`;
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.updateLists.bind(this));
 

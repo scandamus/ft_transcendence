@@ -8,7 +8,13 @@ export default class Tournament extends PageBase {
     constructor(params) {
         super(params);
         Tournament.instance = this;
-        this.setTitle('Tournament');
+        this.title = 'Tournament';
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
+        this.labelEntry = 'Entry';
+        this.labelCancelEntry = 'Cancel';
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
         this.addAfterRenderHandler(this.listenCancelTournament.bind(this));
@@ -45,54 +51,62 @@ export default class Tournament extends PageBase {
                                 <h4 class="unitTournament_title">TournamentTitle1</h4>
                                 <p class="unitTournament_start">2024/07/3 13:00</p>
                             </header>
-                            <p class="unitTournament_nickname">(as 01234567890123456789012345678901)</p>
-                            <form class="unitTournament_form" action="" method="post">
-                                <input type="hidden" name="idTitle" value="1">
-                                <input type="hidden" name="title" value="TournamentTitle">
-                                <input type="hidden" name="start" value="2024/05/3 13:00">
-                                <input type="hidden" name="nickname" value="nickname6">
-                                <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${labels.tournament.labelCancelEntry}</button></p>
-                            </form>
-                            <p class="unitTournament_capacity"><strong>6</strong> / 50</p>
+                            <div class="unitTournament_body">
+                                <p class="unitTournament_capacity">( <strong>6</strong> / 50 )</p>
+                                <p class="unitTournament_nickname">as 01234567890123456789012345678901</p>
+                                <form class="unitTournament_form" action="" method="post">
+                                    <input type="hidden" name="idTitle" value="1">
+                                    <input type="hidden" name="title" value="TournamentTitle">
+                                    <input type="hidden" name="start" value="2024/05/3 13:00">
+                                    <input type="hidden" name="nickname" value="nickname6">
+                                    <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${labels.tournament.labelCancelEntry}</button></p>
+                                </form>
+                            </div>
                         </section>
                         <section class="unitTournament">
                             <header class="unitTournament_header">
                                 <h4 class="unitTournament_title">TournamentTitle1</h4>
                                 <p class="unitTournament_start">2024/07/3 13:00</p>
                             </header>
-                            <p class="unitTournament_nickname">(as 012)</p>
-                            <form class="unitTournament_form" action="" method="post">
-                                <input type="hidden" name="idTitle" value="2">
-                                <input type="hidden" name="title" value="TournamentTitle">
-                                <input type="hidden" name="start" value="2024/05/3 13:00">
-                                <input type="hidden" name="nickname" value="nickname6">
-                                <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${labels.tournament.labelCancelEntry}</button></p>
-                            </form>
-                            <p class="unitTournament_capacity"><strong>6</strong> / 50</p>
+                            <div class="unitTournament_body">
+                                <p class="unitTournament_capacity">( <strong>6</strong> / 50 )</p>
+                                <p class="unitTournament_nickname">as 012</p>
+                                <form class="unitTournament_form" action="" method="post">
+                                    <input type="hidden" name="idTitle" value="2">
+                                    <input type="hidden" name="title" value="TournamentTitle">
+                                    <input type="hidden" name="start" value="2024/05/3 13:00">
+                                    <input type="hidden" name="nickname" value="nickname6">
+                                    <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${labels.tournament.labelCancelEntry}</button></p>
+                                </form>
+                            </div>
                         </section>
                         <section class="unitTournament">
                             <header class="unitTournament_header">
                                 <h4 class="unitTournament_title">TournamentTitle2</h4>
                                 <p class="unitTournament_start">2024/07/5 21:00</p>
                             </header>
-                            <form class="unitTournament_form" action="" method="post">
-                                <input type="hidden" name="idTitle" value="3">
-                                <input type="hidden" name="title" value="TournamentTitle2">
-                                <input type="hidden" name="start" value="2024/07/5 21:00">
-                                <p class="blockForm_button"><button type="button" class="unitButton">${labels.tournament.labelEntry}</button></p>
-                            </form>
-                            <p class="unitTournament_capacity"><strong>6</strong> / 50</p>
+                            <div class="unitTournament_body">
+                                <p class="unitTournament_capacity">( <strong>6</strong> / 50 )</p>
+                                <form class="unitTournament_form" action="" method="post">
+                                    <input type="hidden" name="idTitle" value="3">
+                                    <input type="hidden" name="title" value="TournamentTitle2">
+                                    <input type="hidden" name="start" value="2024/07/5 21:00">
+                                    <p class="blockForm_button"><button type="button" class="unitButton">${labels.tournament.labelEntry}</button></p>
+                                </form>
+                            </div>
                         </section>
                         <section class="unitTournament">
                             <header class="unitTournament_header">
                                 <h4 class="unitTournament_title">TournamentTitle2</h4>
                                 <p class="unitTournament_start">2024/07/5 21:00</p>
                             </header>
-                            <form class="unitTournament_form">
-                                <!-- todo: 満員の場合、フォーム要素なしにしておく -->
-                                <p class="blockForm_button"><button type="button" class="unitButton" disabled>${labels.tournament.labelEntry}</button></p>
-                            </form>
-                            <p class="unitTournament_capacity"><strong>50</strong> / 50</p>
+                            <div class="unitTournament_body">
+                                <p class="unitTournament_capacity">( <strong>50</strong> / 50 )</p>
+                                <form class="unitTournament_form">
+                                    <!-- todo: 満員の場合、フォーム要素なしにしておく -->
+                                    <p class="blockForm_button"><button type="button" class="unitButton" disabled>${labels.tournament.labelEntry}</button></p>
+                                </form>
+                            </div>
                         </section>
                     </div>
                 </section>
@@ -105,7 +119,9 @@ export default class Tournament extends PageBase {
                                     <h4 class="unitTournament_title">TournamentTitle1</h4>
                                     <p class="unitTournament_start">2024/07/3 13:00</p>
                                 </header>
-                                <p class="unitTournament_nickname">(as nickname6)</p>
+                                <div class="unitTournament_body">
+                                    <p class="unitTournament_nickname">as nickname6</p>
+                                </div>
                             </a>
                         </section>
                         <section class="unitTournament unitTournament-link">
@@ -127,7 +143,9 @@ export default class Tournament extends PageBase {
                                     <h4 class="unitTournament_title">TournamentTitle1</h4>
                                     <p class="unitTournament_start">2024/07/3 13:00</p>
                                 </header>
-                                <p class="unitTournament_nickname">(as 01234567890123456789012345678901)</p>
+                                <div class="unitTournament_body">
+                                    <p class="unitTournament_nickname">as 01234567890123456789012345678901</p>
+                                </div>
                             </a>
                         </section>
                         <section class="unitTournament unitTournament-link">
@@ -141,10 +159,6 @@ export default class Tournament extends PageBase {
                     </div>
                 </section>
             </div>
-            <ol class="breadcrumb">
-                <li><a href="/">${labels.dashboard.title}</a></li>
-                <li>${labels.tournament.title}</li>
-            </ol>
         `;
     }
 
