@@ -8,7 +8,6 @@ def get_match_from_api(storage_token, match_id):
     response = None
     try:
         logger.info(f'get_match_from_api: start')
-        logger.info(f'sent jwt_token in pong ->  {storage_token}')
         headers = {
             'Authorization': f'Bearer {storage_token}',
         }
