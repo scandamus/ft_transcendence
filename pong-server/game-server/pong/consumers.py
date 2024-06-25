@@ -144,10 +144,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             speed = -7 if key == 'ArrowUp' or key == 'w' else 7
         else:
             speed = 0
+
         # キーを離したときにすでに逆向きのキーが押されているならspeedの計算はしない
         def is_add_speed_needed(current_speed):
             if not is_pressed:
-                if (current_speed == -7 and key in ['ArrowDown', 's']) or (current_speed == 7 and key in ['ArrowUp', 'w']):
+                if (current_speed == -7 and key in ['ArrowDown', 's']) or (
+                        current_speed == 7 and key in ['ArrowUp', 'w']):
                     return False
             return True
 
