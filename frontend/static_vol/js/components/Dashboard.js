@@ -84,7 +84,7 @@ export default class Dashboard extends PageBase {
                             <div class="blockMatch">
                                 <section class="blockMatch_player unitMatchPlayer">
                                     <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
                                         <h4 class="unitMatchPlayer_title">username</h4>
                                     </header>
                                     <p class="unitMatchPlayer_score">10</p>
@@ -102,7 +102,7 @@ export default class Dashboard extends PageBase {
                             <div class="blockMatch">
                                 <section class="blockMatch_player unitMatchPlayer">
                                     <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
                                         <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                     </header>
                                     <p class="unitMatchPlayer_score">5</p>
@@ -120,7 +120,7 @@ export default class Dashboard extends PageBase {
                             <div class="blockMatch">
                                 <section class="blockMatch_player unitMatchPlayer">
                                     <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
                                         <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
                                     </header>
                                     <p class="unitMatchPlayer_score">5</p>
