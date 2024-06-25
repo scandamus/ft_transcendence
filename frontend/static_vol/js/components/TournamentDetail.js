@@ -9,8 +9,8 @@ export default class TournamentDetail extends PageBase {
         super(params);
         TournamentDetail.instance = this;
         this.title = 'TournamentTitle1';
-        this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
         this.setTitle(this.title);
+        this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
     }
 

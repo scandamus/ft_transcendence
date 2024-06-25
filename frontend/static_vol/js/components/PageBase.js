@@ -9,12 +9,11 @@ export default class PageBase {
     constructor(params) {
         PageBase.instance = this;
         this.params = params;
-        this.listAfterRenderHandlers = [];
-        this.listEventListeners = [];
         this.title = '';
         this.breadcrumbLinks = [
             { href: '/', text: 'dashboard' }
         ];
+        this.listAfterRenderHandlers = [];
         this.listListenInInstance = [];
         this.addAfterRenderHandler(this.addListenLinkPages.bind(this));
     }

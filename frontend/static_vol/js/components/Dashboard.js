@@ -9,7 +9,8 @@ import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListen
 export default class Dashboard extends PageBase {
     constructor(params) {
         super(params);
-        Dashboard.instance = this;this.playerNameTmp = 'playername';
+        Dashboard.instance = this;
+        this.playerNameTmp = 'playername';
         this.title = `${labels.dashboard.title}: ${this.playerNameTmp}`;
         this.setTitle(this.title);
         this.clearBreadcrumb();
