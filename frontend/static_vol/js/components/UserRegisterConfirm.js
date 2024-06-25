@@ -8,7 +8,10 @@ export default class SignUpConfirm extends PageBase {
     constructor(params) {
         super(params);
         SignUpConfirm.instance = this;
-        this.setTitle('SIGN UP');
+        this.title = 'SIGN UP';
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.displayInputData.bind(this));
         this.addAfterRenderHandler(this.listenLinkBack.bind(this));

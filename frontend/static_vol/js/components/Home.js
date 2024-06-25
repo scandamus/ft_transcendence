@@ -12,7 +12,9 @@ export default class LogIn extends PageBase {
     constructor(params) {
         super(params);
         LogIn.instance = this;
-        this.setTitle('LOGIN');
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
     }
