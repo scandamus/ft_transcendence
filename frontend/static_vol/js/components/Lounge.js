@@ -4,9 +4,10 @@ import PageBase from './PageBase.js';
 import { showModalWaitForOpponent } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class Lounge extends PageBase {
     constructor(params) {
         super(params);
+        Lounge.instance = this;
         this.setTitle(labels.lounge.title);
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateRoom.bind(this));
@@ -97,7 +98,11 @@ export default class extends PageBase {
 
     listenCreateRoom() {
         const btnCreateRoom = document.getElementById('btnCreateRoom');
-        btnCreateRoom.addEventListener('click', showModalWaitForOpponent.bind(this));
-        this.addListenEvent(btnCreateRoom, showModalWaitForOpponent, 'click');
+        const boundShowModalWaitForOpponent = showModalWaitForOpponent.bind(this);
+        this.addListListenInInstance(btnCreateRoom, boundShowModalWaitForOpponent, 'click');
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

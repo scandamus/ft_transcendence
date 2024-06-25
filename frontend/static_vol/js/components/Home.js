@@ -8,9 +8,10 @@ import { pongHandler } from '../modules/WebsocketHandler.js';
 import { labels } from '../modules/labels.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
-export default class extends PageBase {
+export default class LogIn extends PageBase {
     constructor(params) {
         super(params);
+        LogIn.instance = this;
         this.setTitle('LOGIN');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
@@ -39,8 +40,8 @@ export default class extends PageBase {
 
     listenLogin() {
         const btnLogin = document.getElementById('btnLoginForm');
-        btnLogin.addEventListener('click', this.handleLogin.bind(this));
-        this.addListenEvent(btnLogin, this.handleLogin, 'click');
+        const boundHandleLogin = this.handleLogin.bind(this);
+        this.addListListenInInstance(btnLogin, boundHandleLogin, 'click');
     }
 
     handleLogin(ev) {
@@ -87,5 +88,9 @@ export default class extends PageBase {
             .catch(error => {
                 console.error('Login failed:', error);
             });
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

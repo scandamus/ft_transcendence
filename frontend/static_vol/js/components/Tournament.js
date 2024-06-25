@@ -4,9 +4,10 @@ import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class Tournament extends PageBase {
     constructor(params) {
         super(params);
+        Tournament.instance = this;
         this.setTitle('Tournament');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
@@ -149,8 +150,8 @@ export default class extends PageBase {
 
     listenCreateTournament() {
         const btnCreateTournament = document.getElementById('btnCreateTournament');
-        btnCreateTournament.addEventListener('click', this.handleCreateTournament.bind(this));
-        this.addListenEvent(btnCreateTournament, this.handleCreateTournament, 'click');
+        const boundHandleCreateTournament = this.handleCreateTournament.bind(this);
+        this.addListListenInInstance(btnCreateTournament, boundHandleCreateTournament, 'click');
     }
 
     handleCreateTournament(ev) {
@@ -161,9 +162,9 @@ export default class extends PageBase {
 
     listenCancelTournament() {
         const btnCancelTournament = document.querySelectorAll('.unitTournament_form .unitButtonDecline');
+        const boundHandleCancelTournament = this.handleCancelTournament.bind(this);
         btnCancelTournament.forEach((btn) => {
-            btn.addEventListener('click', this.handleCancelTournament.bind(this));
-            this.addListenEvent(btn, this.handleCancelTournament, 'click');
+            this.addListListenInInstance(btn, boundHandleCancelTournament, 'click');
         });
     }
 
@@ -175,9 +176,13 @@ export default class extends PageBase {
 
     listenEntryTournament() {
         const btnEntryTournament = document.querySelectorAll('.unitTournament_form .unitButton');
+        const boundShowModalEntryTournament = showModalEntryTournament.bind(this);
         btnEntryTournament.forEach((btn) => {
-            btn.addEventListener('click', showModalEntryTournament.bind(this));
-            this.addListenEvent(btn, showModalEntryTournament, 'click');//todo: rm 確認
+            this.addListListenInInstance(btn, boundShowModalEntryTournament, 'click');//todo: rm 確認
         });
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

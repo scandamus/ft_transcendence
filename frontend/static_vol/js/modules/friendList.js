@@ -1,10 +1,13 @@
 'use strict';
 
 import { fetchFriendRequests, fetchFriends } from "./friendsApi.js";
+import { resetListenFriendList, resetListenFriendRequestList } from "./friendListener.js";
 import { labels } from "./labels.js";
+import PageBase from "../components/PageBase.js";
 
-const updateFriendsList = async (isPageFriend) => {
+const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
+    const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
         const friends = await fetchFriends();
         const listFriendsWrappr = document.querySelector('.blockFriends_friends');
@@ -31,13 +34,14 @@ const updateFriendsList = async (isPageFriend) => {
                 `;
                 listFriendsWrappr.innerHTML += friendElement;
             });
+            resetListenFriendList(pageInstance);
         }
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }
 }
 
-const updateFriendRequestList = async () => {
+const updateFriendRequestList = async (pageInstance) => {
     console.log('updateFriendRequestList in');
     try {
         const requests = await fetchFriendRequests();
@@ -67,6 +71,7 @@ const updateFriendRequestList = async () => {
                 `;
                 listRequestWrapper.innerHTML += requestElement;
             });
+            resetListenFriendRequestList(pageInstance);
         }
     } catch (error) {
         console.error('Failed to update friend requests: ', error);

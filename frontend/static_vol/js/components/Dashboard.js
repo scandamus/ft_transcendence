@@ -1,29 +1,25 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { getUserList } from '../modules/users.js';
-//import { showModal } from '../modules/modal.js';
-//import { join_game } from '../modules/match.js';
-import { fetchFriends, fetchFriendRequests } from '../modules/friendsApi.js';
-import { sendFriendRequest, acceptFriendRequest, declineFriendRequest, removeFriend } from '../modules/friendsRequest.js';
 import { labels } from '../modules/labels.js';
-import { pageInstances } from '../modules/pageInstances.js';
-import { showModalSendMatchRequest } from '../modules/modal.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
-
+import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend }
+    from '../modules/friendListener.js';
 
 export default class Dashboard extends PageBase {
     constructor(params) {
         super(params);
+        Dashboard.instance = this;
         this.playerNameTmp = 'playername'; // TODO fetch username
         this.setTitle(`${labels.dashboard.title}: ${this.playerNameTmp}`);
         //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.showUserList.bind(this));
-        pageInstances.setInstance('Dashboard', this);
+        this.addAfterRenderHandler(this.updateLists.bind(this));
 
-        this.showModalSendMatchRequestHandlerBound = this.showModalSendMatchRequestHandler.bind(this);
-        this.acceptFriendRequestHandlerBound = this.acceptFriendRequestHandler.bind(this);
-        this.declineFriendRequestHandlerBound = this.declineFriendRequestHandler.bind(this);
+        //Instance固有のlistenerList
+        this.listListenMatchRequest = [];
+        this.listListenRemoveFriend = [];
+        this.listListenAcceptFriendRequest = [];
+        this.listListenDeclineFriendRequest = [];
     }
 
     async renderHtml() {
@@ -66,98 +62,24 @@ export default class Dashboard extends PageBase {
         `;
     }
 
-    showUserList() {
-        this.updateLists()
-            .catch(error => {
-                    console.error('Failed to update lists: ', error);
-            });
-    }
-
-    async updateLists() {
+    updateLists() {
         try {
-            await updateFriendsList(false);
-            await updateFriendRequestList();
-            this.listenRequest();
+            updateFriendsList(this).then(() => {});
+            updateFriendRequestList(this).then(() => {});
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
         }
     }
 
-    listenRequestMatch() {
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-        btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', showModalSendMatchRequest.bind(this));
-            this.addListenEvent(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
-        });
-    }
+    destroy() {
+        //rmFriendsList
+        removeListenMatchRequest(this);
+        removeListenRemoveFriend(this);
+        //rmFriendRequestList
+        removeListenAcceptFriendRequest(this);
+        removeListenDeclineFriendRequest(this);
 
-    showModalSendMatchRequestHandler(ev) {
-        showModalSendMatchRequest(ev);
-    }
-
-    acceptFriendRequestHandler(requestId) {
-        acceptFriendRequest(requestId);
-    }
-
-    declineFriendRequestHandler(requestId) {
-        declineFriendRequest(requestId);
-    }
-
-    removeFriendHandler(username) {
-        removeFriend(username);
-    }
-
-    removeEventListeners() {
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-        btnMatchRequest.forEach((btn) => {
-            btn.removeEventListener('click', this.showModalSendMatchRequestHandlerBound);
-            console.log(`Removed match request listener from ${btn.dataset.username}`);
-        });
-    
-        const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
-        btnAcceptFriendRequest.forEach((btn) => {
-            btn.removeEventListener('click', this.acceptFriendRequestHandlerBound);
-            console.log(`Removed accept friend request listener from ${btn.dataset.username}`);
-        });
-
-        const btnDeclineFriendRequest = document.querySelectorAll('.unitFriendButton_friendDecline');
-        btnDeclineFriendRequest.forEach((btn) => {
-            btn.removeEventListener('click', this.declineFriendRequestHandlerBound);
-            console.log(`Removed decline friend request listener from ${btn.dataset.username}`);
-        });
-    }
-
-    listenRequest() {
-        this.removeEventListeners();
-
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-        btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', this.showModalSendMatchRequestHandlerBound);
-            this.addListenEvent(btn, this.showModalMatchRequest, 'click');
-            console.log(`Added match request listener to ${btn.dataset.username}`);
-        });
-
-        const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
-        btnAcceptFriendRequest.forEach((btn) => {
-            btn.addEventListener('click', (event) => {
-                const username = event.target.dataset.username;
-                const requestId = event.target.dataset.id;
-                this.acceptFriendRequestHandlerBound(requestId);
-                console.log(`Accept friend request from ${username} with id ${requestId}`)
-            });
-            console.log(`Add accept friend request listner to ${btn.dataset.username}`);
-        });
-
-        const btnDeclineFriendRequest = document.querySelectorAll('.unitFriendButton_friendDecline');
-        btnDeclineFriendRequest.forEach((btn) => {
-            btn.addEventListener('click', (event) => {
-                const username =event.target.dataset.username;
-                const requestId = event.target.dataset.id;
-                this.declineFriendRequestHandlerBound(requestId);
-                console.log(`Decline friend request from ${username} with id ${requestId}`);
-            })
-            console.log(`Add decline friend request listner to ${btn.dataset.username}`);
-        });
+        super.destroy();
     }
 }

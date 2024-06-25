@@ -186,7 +186,7 @@ def get_player_by_username(username):
     return Player.objects.get(user__username=username)
 
 @database_sync_to_async
-def issue_jwt(user, players_id, match_id):
+def issue_jwt(user, players_id, match_id, aud='pong-server'):
     expire = datetime.utcnow() + timedelta(minutes=1)
     payload = {
         'user_id': user.id,
@@ -195,7 +195,7 @@ def issue_jwt(user, players_id, match_id):
         'match_id': match_id,
         'iat': datetime.utcnow(),
         'exp': expire,
-        'aud': 'pong-server',
+        'aud': aud,
         'iss': 'backend'
     }
     token = jwt.encode(payload, settings.SIMPLE_JWT['SIGNING_KEY'], algorithm='HS256')

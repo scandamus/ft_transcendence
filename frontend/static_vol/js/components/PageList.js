@@ -4,9 +4,10 @@ import PageBase from './PageBase.js';
 import { showModalReceiveMatchRequest } from '../modules/modal.js';
 import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class PageList extends PageBase {
     constructor(params) {
         super(params);
+        PageList.instance = this;
         this.setTitle('PageList');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenReceiveReqMatch.bind(this));
@@ -35,9 +36,13 @@ export default class extends PageBase {
 
     listenReceiveReqMatch() {
         const btnMatchRequest = document.querySelectorAll('.unitFriendButton_receiveReqMatch');
+        const boundShowModalReceiveMatchRequest = showModalReceiveMatchRequest.bind(this)
         btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', showModalReceiveMatchRequest.bind(this));
-            this.addListenEvent(btn, showModalReceiveMatchRequest, 'click');
+            this.addListListenInInstance(btn, boundShowModalReceiveMatchRequest, 'click');
         });
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

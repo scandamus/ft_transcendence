@@ -6,13 +6,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# pong-serverからの接続を認証なしで通すクラス
+# pong-serverおよびpong4-serverからの接続を認証なしで通すクラス
 class InternalNetworkAuthentication(BaseAuthentication):
     def __init__(self):
         logger.debug("InternalNetworkAuthentication initialized")
 
     def authenticate(self, request):
-        allowed_hosts = ['pong-server', 'backend', 'backend:8001']
+        allowed_hosts = ['pong-server', 'pong4-server', 'backend', 'backend:8001']
 
 #        host_name =request.get_host()
         host_name = request.META.get('HTTP_HOST', '')
