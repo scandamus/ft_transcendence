@@ -26,15 +26,15 @@ export default class extends PageBase {
                 <section class="blockLoungeRoom">
                     <form class="blockForm unitBox">
                         <h3 class="blockLoungeRoom_title">${this.labelDualGame}</h3>
+                        <input type="hidden" name="gameType" value="dual">
                         <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinDual" class="unitButton unitButton-large">${this.labelMatch}</button></p>
                     </form>
                 </section>
                 <section class="blockLoungeRoom">
                     <form class="blockForm unitBox">
                         <h3 class="blockLoungeRoom_title">${this.labelQuadGame}</h3>
-                        <div class="blockLoungeRoom_body">
+                        <input type="hidden" name="gameType" value="quad">
                         <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinQuad" class="unitButton unitButton-large">${this.labelMatch}</button></p>
-                        </div>
                     </form>
                 </section>
             </div>
