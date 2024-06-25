@@ -1,6 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { labels } from '../modules/labels.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend }
     from '../modules/friendListener.js';
