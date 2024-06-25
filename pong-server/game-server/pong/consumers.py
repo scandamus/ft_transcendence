@@ -146,7 +146,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             speed = 0
 
         # キーを離したときにすでに逆向きのキーが押されているならspeedの計算はしない
-        def is_add_speed_needed(current_speed):
+        def is_change_speed_needed(current_speed):
             if not is_pressed:
                 if (current_speed == -7 and key in ['ArrowDown', 's']) or (
                         current_speed == 7 and key in ['ArrowUp', 'w']):
@@ -155,10 +155,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if self.player_name == 'player1':
             if sent_player_name == 'player1':
-                if is_add_speed_needed(self.left_paddle.speed):
+                if is_change_speed_needed(self.left_paddle.speed):
                     self.left_paddle.speed = speed
             elif sent_player_name == 'player2':
-                if is_add_speed_needed(self.right_paddle.speed):
+                if is_change_speed_needed(self.right_paddle.speed):
                     self.right_paddle.speed = speed
 
     async def schedule_ball_update(self):
