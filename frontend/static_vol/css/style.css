@@ -1641,10 +1641,11 @@ input.has-input:invalid {
   max-width: 80%;
   margin: 0 auto;
   text-align: center;
+  font-size: 2.8rem;
 }
 
 .blockModal_title small {
-  font-size: 1.3rem;
+  font-size: 2rem;
 }
 
 .blockModal_title strong {
