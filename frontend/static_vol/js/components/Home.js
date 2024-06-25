@@ -5,17 +5,13 @@ import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
+import { labels } from '../modules/labels.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
-export default class extends PageBase {
+export default class LogIn extends PageBase {
     constructor(params) {
         super(params);
-
-        this.title = 'LOGIN';
-        this.labelButtonLogin = 'LOGIN'; // TODO json
-        this.txtSignUp = 'Don\'t have an account?'; // TODO json
-        this.labelLinkSignUp = 'SIGN UP'; // TODO json
-
+        LogIn.instance = this;
         this.setTitle(this.title);
         this.clearBreadcrumb();
 
@@ -27,27 +23,27 @@ export default class extends PageBase {
         return `
             <form action="" method="post" class="blockForm blockForm-home">
                 <dl class="blockForm_el">
-                    <dt>username</dt>
+                    <dt>${labels.home.labelUsername}</dt>
                     <dd><input type="text" id="loginUsername" placeholder="Enter username"></dd>
                 </dl>
                 <dl class="blockForm_el">
-                    <dt>password</dt>
+                    <dt>${labels.home.labelPassword}</dt>
                     <dd><input type="password" id="loginPassword" placeholder="Enter password"></dd>
                 </dl>
-                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${this.labelButtonLogin}</button></p>
+                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>
             </form>
             <hr />
             <dl class="blockSignUp">
-                <dt class="blockSignUp_txt">${this.txtSignUp}</dt>
-                <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${this.labelLinkSignUp}</a></dd>
+                <dt class="blockSignUp_txt">${labels.home.textSignUp}</dt>
+                <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${labels.home.labelLinkSignUp}</a></dd>
             </dl>
         `;
     }
 
     listenLogin() {
         const btnLogin = document.getElementById('btnLoginForm');
-        btnLogin.addEventListener('click', this.handleLogin.bind(this));
-        this.addListenEvent(btnLogin, this.handleLogin, 'click');
+        const boundHandleLogin = this.handleLogin.bind(this);
+        this.addListListenInInstance(btnLogin, boundHandleLogin, 'click');
     }
 
     handleLogin(ev) {
@@ -94,5 +90,9 @@ export default class extends PageBase {
             .catch(error => {
                 console.error('Login failed:', error);
             });
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

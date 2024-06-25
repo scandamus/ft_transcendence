@@ -2,23 +2,18 @@
 
 import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
+import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class Tournament extends PageBase {
     constructor(params) {
         super(params);
-
+        Tournament.instance = this;
         this.title = 'Tournament';
-        this.labelCreateTournament = 'Create Tournament'; // TODO json
-        this.labelTournamentTitle = 'Tournament Title';
-        this.labelStart = 'Start Time';
-        this.labelEntry = 'Entry';
-        this.labelCancelEntry = 'Cancel';
-        this.labelTitleUpcoming = 'Upcoming';
-        this.labelTitleInPlay = 'InPlay';
-        this.labelTitleRecent = 'Recent';
-
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
+        this.labelEntry = 'Entry';
+        this.labelCancelEntry = 'Cancel';
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
@@ -31,11 +26,11 @@ export default class extends PageBase {
             <div class="wrapTournament">
                 <form id="formCreateTournament" class="formCreateTournament blockForm unitBox" action="" method="post">
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-title">
-                        <dt>${this.labelTournamentTitle}</dt>
+                        <dt>${labels.tournament.labelTournamentTitle}</dt>
                         <dd><input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required /></dd>
                     </dl>
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-start">
-                        <dt>${this.labelStart}</dt>
+                        <dt>${labels.tournament.labelStart}</dt>
                         <dd>
                             <input
                               type="datetime-local"
@@ -46,10 +41,10 @@ export default class extends PageBase {
                               max="2024-08-01T21:00" />
                         </dd>
                     </dl>
-                    <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton">${this.labelCreateTournament}</button></p>
+                    <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton">${labels.tournament.labelCreateTournament}</button></p>
                 </form>
                 <section class="blockTournamentList">
-                    <h3 class="blockTournamentList_title unitTitle1">${this.labelTitleUpcoming}</h3>
+                    <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleUpcoming}</h3>
                     <div class="blockTournamentList_list listLineDivide">
                         <section class="unitTournament">
                             <header class="unitTournament_header">
@@ -64,7 +59,7 @@ export default class extends PageBase {
                                     <input type="hidden" name="title" value="TournamentTitle">
                                     <input type="hidden" name="start" value="2024/05/3 13:00">
                                     <input type="hidden" name="nickname" value="nickname6">
-                                    <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${this.labelCancelEntry}</button></p>
+                                    <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${labels.tournament.labelCancelEntry}</button></p>
                                 </form>
                             </div>
                         </section>
@@ -81,7 +76,7 @@ export default class extends PageBase {
                                     <input type="hidden" name="title" value="TournamentTitle">
                                     <input type="hidden" name="start" value="2024/05/3 13:00">
                                     <input type="hidden" name="nickname" value="nickname6">
-                                    <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${this.labelCancelEntry}</button></p>
+                                    <p class="blockForm_button"><button type="submit" class="unitButtonDecline">${labels.tournament.labelCancelEntry}</button></p>
                                 </form>
                             </div>
                         </section>
@@ -96,7 +91,7 @@ export default class extends PageBase {
                                     <input type="hidden" name="idTitle" value="3">
                                     <input type="hidden" name="title" value="TournamentTitle2">
                                     <input type="hidden" name="start" value="2024/07/5 21:00">
-                                    <p class="blockForm_button"><button type="button" class="unitButton">${this.labelEntry}</button></p>
+                                    <p class="blockForm_button"><button type="button" class="unitButton">${labels.tournament.labelEntry}</button></p>
                                 </form>
                             </div>
                         </section>
@@ -109,14 +104,14 @@ export default class extends PageBase {
                                 <p class="unitTournament_capacity">( <strong>50</strong> / 50 )</p>
                                 <form class="unitTournament_form">
                                     <!-- todo: 満員の場合、フォーム要素なしにしておく -->
-                                    <p class="blockForm_button"><button type="button" class="unitButton" disabled>${this.labelEntry}</button></p>
+                                    <p class="blockForm_button"><button type="button" class="unitButton" disabled>${labels.tournament.labelEntry}</button></p>
                                 </form>
                             </div>
                         </section>
                     </div>
                 </section>
                 <section class="blockTournamentList">
-                    <h3 class="blockTournamentList_title unitTitle1">${this.labelTitleInPlay}</h3>
+                    <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleInPlay}</h3>
                     <div class="blockTournamentList_list listLineDivide">
                         <section class="unitTournament unitTournament-link">
                             <a href="/tournament/detail_id" data-link>
@@ -140,7 +135,7 @@ export default class extends PageBase {
                     </div>
                 </section>
                 <section class="blockTournamentList">
-                    <h3 class="blockTournamentList_title unitTitle1">${this.labelTitleRecent}</h3>
+                    <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleRecent}</h3>
                     <div class="blockTournamentList_list listLineDivide">
                         <section class="unitTournament unitTournament-link">
                             <a href="/tournament/detail_id" data-link>
@@ -169,8 +164,8 @@ export default class extends PageBase {
 
     listenCreateTournament() {
         const btnCreateTournament = document.getElementById('btnCreateTournament');
-        btnCreateTournament.addEventListener('click', this.handleCreateTournament.bind(this));
-        this.addListenEvent(btnCreateTournament, this.handleCreateTournament, 'click');
+        const boundHandleCreateTournament = this.handleCreateTournament.bind(this);
+        this.addListListenInInstance(btnCreateTournament, boundHandleCreateTournament, 'click');
     }
 
     handleCreateTournament(ev) {
@@ -181,9 +176,9 @@ export default class extends PageBase {
 
     listenCancelTournament() {
         const btnCancelTournament = document.querySelectorAll('.unitTournament_form .unitButtonDecline');
+        const boundHandleCancelTournament = this.handleCancelTournament.bind(this);
         btnCancelTournament.forEach((btn) => {
-            btn.addEventListener('click', this.handleCancelTournament.bind(this));
-            this.addListenEvent(btn, this.handleCancelTournament, 'click');
+            this.addListListenInInstance(btn, boundHandleCancelTournament, 'click');
         });
     }
 
@@ -195,9 +190,13 @@ export default class extends PageBase {
 
     listenEntryTournament() {
         const btnEntryTournament = document.querySelectorAll('.unitTournament_form .unitButton');
+        const boundShowModalEntryTournament = showModalEntryTournament.bind(this);
         btnEntryTournament.forEach((btn) => {
-            btn.addEventListener('click', showModalEntryTournament.bind(this));
-            this.addListenEvent(btn, showModalEntryTournament, 'click');//todo: rm 確認
+            this.addListListenInInstance(btn, boundShowModalEntryTournament, 'click');//todo: rm 確認
         });
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

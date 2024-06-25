@@ -2,18 +2,18 @@
 
 import PageBase from './PageBase.js';
 import { showModalWaitForOpponent } from "../modules/modal.js";
+import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class Lounge extends PageBase {
     constructor(params) {
         super(params);
-
+        Lounge.instance = this;
         this.title = 'Lounge';
+        this.setTitle(labels.lounge.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.labelMatch = '参加';
         this.labelDualGame = '2人対戦';
         this.labelQuadGame = '4人対戦';
-
-        this.setTitle(this.title);
-        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenJoinDual.bind(this));
@@ -51,5 +51,9 @@ export default class extends PageBase {
         const btnJoinQuad = document.getElementById('btnJoinQuad');
         btnJoinQuad.addEventListener('click', showModalWaitForOpponent.bind(this));
         this.addListenEvent(btnJoinQuad, showModalWaitForOpponent, 'click');
+    }
+
+    destroy() {
+        super.destroy();
     }
 }
