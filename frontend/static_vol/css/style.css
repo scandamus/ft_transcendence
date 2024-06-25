@@ -1544,6 +1544,22 @@ input.has-input:invalid {
 
   }
 
+  .blockDashboardLog_listTournament .unitMatchPlayer:first-child {
+    flex: 0 0 165px;
+  }
+
+  .blockDashboardLog_listTournament .unitMatchPlayer:last-child {
+    flex-grow: 1;
+  }
+
+  .blockDashboardLog_listTournament .unitMatchPlayer:last-child .unitMatchPlayer_header {
+    flex-wrap: wrap;
+  }
+
+  .blockDashboardLog_listTournament .unitMatchPlayer:first-child .unitMatchPlayer_title {
+    display: none;
+  }
+
   .unitMatchPlayer:first-child .unitMatchPlayer_title {
     margin-left: 10px;
   }
