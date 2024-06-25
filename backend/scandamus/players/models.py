@@ -17,12 +17,13 @@ class Player(models.Model):
         on_delete=models.CASCADE,
         verbose_name="プレイヤー"
     )
-    # avatar = models.ImageField(
-    #     upload_to='uploads/avatar/',
-    #     validators=[FileExtensionValidator(['jpg', 'png'])],
-    #     null=True,
-    #     verbose_name="アバター"
-    # )
+    avatar = models.ImageField(
+        upload_to='uploads/avatar/',
+        validators=[FileExtensionValidator(['jpg', 'png'])],
+        blank=True,
+        null=True,
+        verbose_name="アバター"
+    )
     level = models.FloatField(
         validators=[MinValueValidator(0.0)],
         default=0.0,
@@ -38,11 +39,13 @@ class Player(models.Model):
     )
     id_42 = models.CharField(
         max_length=20,
+        blank=True,
         null=True,
         verbose_name="42 Intra ID"
     )
     link_42 = models.CharField(
         max_length=255,
+        blank=True,
         null=True,
         verbose_name="42 Intra link"
     )
