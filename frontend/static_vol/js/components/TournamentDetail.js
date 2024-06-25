@@ -2,13 +2,14 @@
 
 import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
+import { labels } from '../modules/labels.js';
 
 export default class TournamentDetail extends PageBase {
     constructor(params) {
         super(params);
         TournamentDetail.instance = this;
         this.setTitle('TournamentTitle1');
-        this.labelTitleRecent = 'Recent';
+        // labels.tournament.labelTitleRecent = 'Recent';
     }
 
     async renderHtml() {

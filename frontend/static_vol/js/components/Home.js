@@ -5,6 +5,7 @@ import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
+import { labels } from '../modules/labels.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class LogIn extends PageBase {
@@ -12,9 +13,6 @@ export default class LogIn extends PageBase {
         super(params);
         LogIn.instance = this;
         this.setTitle('LOGIN');
-        this.labelButtonLogin = 'LOGIN'; // TODO json
-        this.txtSignUp = 'Don\'t have an account?'; // TODO json
-        this.labelLinkSignUp = 'SIGN UP'; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
     }
@@ -23,19 +21,19 @@ export default class LogIn extends PageBase {
         return `
             <form action="" method="post" class="blockForm blockForm-home">
                 <dl class="blockForm_el">
-                    <dt>username</dt>
+                    <dt>${labels.home.labelUsername}</dt>
                     <dd><input type="text" id="loginUsername" placeholder="Enter username"></dd>
                 </dl>
                 <dl class="blockForm_el">
-                    <dt>password</dt>
+                    <dt>${labels.home.labelPassword}</dt>
                     <dd><input type="password" id="loginPassword" placeholder="Enter password"></dd>
                 </dl>
-                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${this.labelButtonLogin}</button></p>
+                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>
             </form>
             <hr />
             <dl class="blockSignUp">
-                <dt class="blockSignUp_txt">${this.txtSignUp}</dt>
-                <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${this.labelLinkSignUp}</a></dd>
+                <dt class="blockSignUp_txt">${labels.home.textSignUp}</dt>
+                <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${labels.home.labelLinkSignUp}</a></dd>
             </dl>
         `;
     }

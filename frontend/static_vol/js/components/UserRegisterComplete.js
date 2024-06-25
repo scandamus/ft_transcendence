@@ -2,22 +2,21 @@
 
 import PageBase from './PageBase.js';
 import { router, routes } from '../modules/router.js';
+import { labels } from '../modules/labels.js';
 
 export default class SignUpComplete extends PageBase {
     constructor(params) {
         super(params);
         SignUpComplete.instance = this;
         this.setTitle('SIGN UP');
-        this.message = '登録完了しました'; // TODO json
-        this.labelButtonLogin = 'LOGIN'; // TODO json
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.checkRegisterFlow.bind(this));
     }
 
     async renderHtml() {
         return `
-            <p class="unitTextComplete unitBox">${this.message}</p>
-            <p class="unitButtonWrap"><a href="/" class="unitButton unitButton-large" data-link>${this.labelButtonLogin}</a></p>
+            <p class="unitTextComplete unitBox">${labels.register.textComplete}</p>
+            <p class="unitButtonWrap"><a href="/" class="unitButton unitButton-large" data-link>${labels.register.labelButtonLogin}</a></p>
         `;
     }
 

@@ -1,6 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { labels } from '../modules/labels.js';
 import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
 import { initToken } from '../modules/token.js';
@@ -10,8 +11,8 @@ export default class GamePlay extends PageBase {
         super(params);
         GamePlay.instance = this;
         this.setTitle('GamePlay');
-        this.player1 = 'player1人目'; // TODO json
-        this.player2 = 'player2人目';
+        this.player1 = 'player1'; // TODO fetch from backend?
+        this.player2 = 'player2';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
         this.score1 = 0;
