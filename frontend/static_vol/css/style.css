@@ -5,8 +5,8 @@
  common
 ----- */
 :root {
-  --heightMainHeader: 60px;
-  --baseContentWidth: 1024px;
+  --height-main-header: 60px;
+  --base-content-width: 1024px;
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
@@ -132,7 +132,7 @@ hr {
   top: 0;
   left: 0;
   width: 100%;
-  height: var(--heightMainHeader);
+  height: var(--height-main-header);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -167,7 +167,7 @@ hr {
 
 .navGlobal {
   position: absolute;
-  top: var(--heightMainHeader);
+  top: var(--height-main-header);
   right: 0;
   padding: 20px;
   background-color: var(--color-black-alpha);
@@ -204,7 +204,7 @@ hr {
 .mainContainerHeader {
   display: flex;
   flex-direction: column-reverse;
-  padding-top: var(--heightMainHeader);
+  padding-top: var(--height-main-header);
   text-align: center;
 }
 
@@ -219,7 +219,7 @@ hr {
 
 .mainContainer_content {/* #app */
   width: 90%;
-  max-width: var(--baseContentWidth);
+  max-width: var(--base-content-width);
   margin: 0 auto;
 }
 
@@ -680,7 +680,7 @@ input.has-input:invalid {
 
 /* .breadcrumb */
 .breadcrumb {
-  width: var(--baseContentWidth);
+  width: var(--base-content-width);
   margin: 0 auto;
   display: flex;
   padding: 0 1em;
@@ -1606,7 +1606,7 @@ input.has-input:invalid {
   position: fixed;
   width: 70%;
   min-height: 300px;
-  max-width: var(--baseContentWidth);
+  max-width: var(--base-content-width);
   inset: 50% auto auto 50%;
   translate: -50% -50%;
   padding: 30px;
@@ -1709,9 +1709,9 @@ input.has-input:invalid {
 .wrapNotice {
   position: fixed;
   box-sizing: border-box;
-  width: var(--baseContentWidth);
+  width: var(--base-content-width);
   max-width: calc(100% - 12px);
-  top: calc(var(--heightMainHeader) + 10px);
+  top: calc(var(--height-main-header) + 10px);
   right: 0;
   left: 0;
   margin: auto;
