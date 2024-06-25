@@ -138,32 +138,26 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def pong_message(self, data):
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
-        player_name = data.get('player_name')
+        sent_player_name = data.get('player_name')
 
-        # キー入力によってパドルを操作
+        if is_pressed:
+            speed = -7 if key == 'ArrowUp' or key == 'w' else 7
+        else:
+            speed = 0
+        # キーを離したときにすでに逆向きのキーが押されているならspeedの計算はしない
+        def is_add_speed_needed(current_speed):
+            if not is_pressed:
+                if (current_speed == -7 and key in ['ArrowDown', 's']) or (current_speed == 7 and key in ['ArrowUp', 'w']):
+                    return False
+            return True
+
         if self.player_name == 'player1':
-            if key and is_pressed:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = -7
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 7
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = -7
-                    elif key == "s":
-                        self.left_paddle.speed = 7
-            else:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = 0
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 0
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = 0
-                    elif key == "s":
-                        self.left_paddle.speed = 0
+            if sent_player_name == 'player1':
+                if is_add_speed_needed(self.left_paddle.speed):
+                    self.left_paddle.speed = speed
+            elif sent_player_name == 'player2':
+                if is_add_speed_needed(self.right_paddle.speed):
+                    self.right_paddle.speed = speed
 
     async def schedule_ball_update(self):
         self.game_continue = True
