@@ -952,26 +952,9 @@ input.has-input:invalid {
   line-height: 1.7;
 }
 
-.listMatchLog {
-  width: 100%;
-  list-style: none;
-  font-size: 2.2rem;;
-}
-
-.listMatchLog_item {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 0.5em;
-  padding: 0.5em 0;
-}
-
-.listMatchLog_item strong {
-
-}
-
-.listMatchLog_item span {
-  font-size: 1.9rem;
+/* blockDashboardLog */
+.blockDashboardLog:not(:last-child) {
+  margin-bottom: 50px;
 }
 
 /* Friends */
@@ -1194,6 +1177,10 @@ input.has-input:invalid {
   padding: 12px 0;
 }
 
+.unitTournamentResult.unitTournament-link a {
+  flex-direction: row-reverse;
+}
+
 .unitTournament-link a {
   position: relative;
   padding-right: 36px;
@@ -1232,6 +1219,14 @@ input.has-input:invalid {
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
+}
+
+.unitTournamentResult.unitTournament-link .unitTournament_body {
+  justify-content: flex-start;
+}
+
+.unitTournament_rank {
+  font-size: 2.7rem;
 }
 
 .unitTournament_title {
