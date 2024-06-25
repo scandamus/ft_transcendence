@@ -11,7 +11,6 @@ import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
 import GamePlay from '../components/GamePlay.js';
-import GameMatch from '../components/GameMatch.js';
 import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
@@ -29,7 +28,6 @@ const routes = {
     friends:  { path: '/friends', view: Friends, isProtected: true },
     lounge: {path: '/lounge', view: Lounge, isProtected: true},
     gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
-    gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
     tournament: {path: '/tournament', view: Tournament, isProtected: true},
     TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
 };

@@ -3,6 +3,7 @@
 import { getToken, refreshAccessToken } from './token.js';
 import { handleLogout } from './logout.js';
 import PageBase from '../components/PageBase.js';
+import { labels } from './labels.js';
 
 const fetchUserInfo = async (isRefresh) => {
     const accessToken = getToken('accessToken');
@@ -67,8 +68,6 @@ const showMenu = () => {
 
 const switchDisplayAccount = async (username) => {
     if (username) {
-        //Account表示生成
-        const labelButtonLogout = 'ログアウト'; // TODO json 共通化したい
         document.getElementById('headerAccount').innerHTML = `
             <header id="btnNavHeader" class="headerNav headerNav-login">
                 <h2>${username}</h2>
@@ -78,7 +77,7 @@ const switchDisplayAccount = async (username) => {
                 <ul class="navGlobal_list navList">
                     <li id="" class="navList_item">
                         <form action="" method="post" class="blockForm">
-                            <button type="submit" id="btnLogoutForm" class="unitButton">${labelButtonLogout}</button>
+                            <button type="submit" id="btnLogoutForm" class="unitButton">${labels.home.labelButtonLogout}</button>
                         </form>
                     </li>
                 </ul>

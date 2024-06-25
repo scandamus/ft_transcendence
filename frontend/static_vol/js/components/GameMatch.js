@@ -1,13 +1,13 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { labels } from '../modules/labels.js';
 
 export default class GameMatch extends PageBase {
     constructor(params) {
         super(params);
         GameMatch.instance = this;
         this.setTitle('GameMatch');
-        this.labelButton = '対戦を申し込む'; // TODO json
     }
 
     // async getListPlayers() {
@@ -36,7 +36,7 @@ export default class GameMatch extends PageBase {
     //                         <h3>${player.playername}</h3>
     //                         <p class="thumb"><img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="60" height="60"></p>
     //                     </div>
-    //                     <button class="unitButton">${this.labelButton}</button>
+    //                     <button class="unitButton">${labels.labelMatch}</button>
     //                 </header>
     //                 <div class="unitListItem_content unitPlayerScore">
     //                     <p>RANK: 4 (20勝3敗)</p>
