@@ -1,4 +1,6 @@
 import json
+import uuid
+
 import jwt
 import logging
 
@@ -196,7 +198,9 @@ def issue_jwt(user, players_id, match_id):
         'iat': datetime.utcnow(),
         'exp': expire,
         'aud': 'pong-server',
-        'iss': 'backend'
+        'iss': 'backend',
+        'jti': str(uuid.uuid4()),
+        'token_type': 'access'
     }
     token = jwt.encode(payload, settings.SIMPLE_JWT['SIGNING_KEY'], algorithm='HS256')
     return token
