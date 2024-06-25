@@ -1059,23 +1059,37 @@ input.has-input:invalid {
   }
 }
 
-/* formCreateRoom */
-.formCreateRoom {
+/* blockLoungeRoom */
+.blockLoungeRoom .blockForm {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   box-sizing: border-box;
   flex-wrap: wrap;
   margin-bottom: 50px;
-  padding: 30px 0;
+  padding: 30px;
 }
 
-.formCreateRoom_list {
-  margin: 0 20px;
+.blockLoungeRoom_title {
+  margin-right: 1em;
 }
 
-.formCreateRoom_button {
-  margin: 10px 20px;
+.blockLoungeRoom_body {
+  flex: 1 0 auto;
+}
+
+.blockLoungeRoom .blockLoungeRoom_capacity {
+  flex: 1 0 auto;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.blockLoungeRoom_button {
+  text-align: right;
+}
+
+.blockLoungeRoom_button .unitButton {
+  padding: 0.2em 2em;
 }
 
 /* GamePlay */
@@ -1120,31 +1134,18 @@ input.has-input:invalid {
 }
 
 /* Lounge */
-.blockMatch .formCreateRoom,
-.blockMatch .blockMatch_listWrap {
+.blockLounge {
   width: 640px;
   max-width: 100%;
   margin: 0 auto;
 }
 
-
-.blockMatch .formCreateRoom + .blockMatch_listWrap {
-  margin-top: 50px;
+.blockLoungeRoom_title {
+  font-size: 3rem;
 }
 
-.unitMatch {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-}
-
-.unitMatch_capacity {
-  flex: 1 0 auto;
-}
-
-.unitMatch_button {
-  flex: 0 0 200px;
-  text-align: right;
+.blockLoungeRoom:not(:last-child) {
+  margin-bottom: 50px;
 }
 
 .unitCapacity {
