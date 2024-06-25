@@ -1,9 +1,9 @@
 import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
-import { pageInstances } from "./pageInstances.js";
 import { closeModal, showModalReceiveMatchRequest } from "./modal.js";
 import { addNotice } from "./notice.js";
 import { updateFriendsList, updateFriendRequestList } from './friendList.js';
+import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 
 import { labels } from './labels.js'; // TODO use labels but wait for merge
@@ -91,8 +91,8 @@ const loadGameContent = async (data) => {
 }
 
 const handleFriendRequestAck = (data) => {
-    const currentPage = pageInstances.getInstance('Friends') || pageInstances.getInstance('Dashboard'); // その他も
-    const isPageFriend = !!(pageInstances.getInstance('Friends'));
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+                                ? PageBase.instance : null;
     if (data.action === 'error') {
         if (data.error === 'alreadyFriends') {
             addNotice(labels.friendRequest[data.error].replace('$name', data.username), false);
@@ -109,75 +109,50 @@ const handleFriendRequestAck = (data) => {
         console.log('Friend request by username is sent to ', data.to_username);
         addNotice(labels.friendRequest[data.action].replace('$name', data.to_username), false);
         if (currentPage) {
-            updateFriendRequestList()
-                .then(() => {
-                    currentPage.listenRequest();
-                });
+            updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'acceptRequestSuccess') {
         console.log('Accept friend request is successfully done');
         addNotice(labels.friendRequest[data.action].replace('$name', data.from_username), false);
         if (currentPage) {
-            updateFriendRequestList();
-            updateFriendsList(isPageFriend)
-                .then(() => {
-                    currentPage.listenRequest();
-                });
+            updateFriendRequestList(currentPage).then(() => {});
+            updateFriendsList(currentPage).then(() => {});
         }
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
         addNotice(labels.friendRequest[data.action].replace('$name', data.username), false);
         if (currentPage) {
-            updateFriendRequestList()
-                .then(() => {
-                    currentPage.listenRequest();
-                });
+            updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'removeSuccess') {
         console.log('Remove Successfully done');
         addNotice(labels.friendRequest[data.action].replace('$name', data.username), false);
         if (currentPage) {
-            updateFriendsList(isPageFriend)
-                .then(() => {
-                    currentPage.listenRequest();
-                });
+            updateFriendsList(currentPage).then(() => {});
         }
     }
 }
 
 const handleFriendRequestReceived = (data) => {
-    const currentPage = pageInstances.getInstance('Friends') || pageInstances.getInstance('Dashboard'); //|| pageInstances.getInstance('Home') // その他も
-    const isPageFriend = !!(pageInstances.getInstance('Friends'));
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+                                ? PageBase.instance : null;
 
     console.log('handleFriendRepuestReceived: received');
     if (data.action === 'received') {
         addNotice(labels.friendRequest[data.action].replace('$name', data.from_username), false);
         if (currentPage) {
-            updateFriendRequestList()
-                .then(() => {
-                    currentPage.listenRequest();
-                });
+            updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'accepted') {
         addNotice(labels.friendRequest[data.action].replace('$name', data.from_username), false);
         if (currentPage) {
-            Promise.all([
-                updateFriendRequestList(),
-                updateFriendsList(isPageFriend)
-            ])
-                .then(() => {
-                    currentPage.listenRequest();
-                });
+            updateFriendsList(currentPage).then(() => {});
         }
-
     } else if (data.action === 'removed') {
         //rmられは通知されない
         console.log(labels.friendRequest[data.action].replace('$name', data.from_username));
         if (currentPage) {
-            updateFriendsList(isPageFriend)
-                .then(() => {
-                    currentPage.listenRequest();
-                });
+            updateFriendsList(currentPage).then(() => {});
         }
     }
 }
