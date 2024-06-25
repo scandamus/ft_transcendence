@@ -110,7 +110,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                         'type': 'start.game',
                     })
                 # TODO: 2人揃わない場合のタイムアウト処理
-                # クライアント側からリクエストする？
             else:
                 logger.error('Match data not found or user is not for this match')
                 await self.close(code=5000)

@@ -167,7 +167,7 @@ export default class Friends extends PageBase {
         btnMatchRequest.forEach((btn) => {
             btn.addEventListener('click', this.showModalSendMatchRequestHandlerBound);
             this.addListenEvent(btn, this.showModalMatchRequest, 'click');
-            console.log(`Added match request listener to ${btn.dataset.username}`);
+            console.log(`Added match request listener to ${btn.dataset.username}, id: ${btn.dataset.id}`);
         });
 
         const btnAcceptFriendRequest = document.querySelectorAll('.unitFriendButton_friendAccept');
@@ -217,6 +217,7 @@ export default class Friends extends PageBase {
             return;
         }
         const message = {
+            type: 'friendRequest',
             action: 'requestByUsername',
             username: inputFriendsName.value,
         };
@@ -230,4 +231,6 @@ export default class Friends extends PageBase {
             inputFriendsName.value = '';
         }
     }
+
+
 }

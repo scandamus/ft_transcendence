@@ -36,6 +36,7 @@ const refreshAccessToken = async () => {
             console.log(`Successfully token refreshed: ${refreshData.access}`);
             return refreshData.access;
         }
+        // TODO: logout処理に飛ばす
         console.error('Failed to refresh token, server responded with: ', response.status);
         return null;
     } catch (error) {
@@ -66,6 +67,7 @@ const getValidToken = async (nameToken) => {
     if (!isTokenExpired(myToken)) {
         return { token: myToken, error: null };
     }
+    console.log('token expired');
     const refreshedToken = await refreshAccessToken();
     if (!refreshedToken) {
         console.error('Failed to refresh token.');
@@ -75,7 +77,7 @@ const getValidToken = async (nameToken) => {
 }
 
 const initToken = async () => {
-    console.log('init in');
+    console.log('initToken in');
     try {
         const tokenResult = await getValidToken('accessToken');
         console.log('tokenResult: ', tokenResult);

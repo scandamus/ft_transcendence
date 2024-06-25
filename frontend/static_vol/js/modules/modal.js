@@ -1,6 +1,6 @@
 'use strict';
 
-import { cancel_game, join_game } from "./match.js";
+import { accept_game, reject_game, cancel_game, join_game, request_game } from "./match.js";
 import { initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
@@ -17,7 +17,7 @@ const showModal = (elHtml) => {
     const elModal = document.getElementById('wrapModal');
     elModal.classList.add('is-show');
     elModal.innerHTML = elHtml;
-
+        
     //キャンセルボタンにaddEventListener
     const btnCancel = document.querySelector('.blockBtnCancel_button');
     if (btnCancel) {
@@ -34,7 +34,7 @@ const showModal = (elHtml) => {
     const btnReject = document.querySelector('.blockBtnReject_button');
     if (btnReject) {
         //todo: Reject特化の関数が必要か検討
-        btnReject.addEventListener('click', closeModalOnCancel);
+        btnReject.addEventListener('click', closeModalOnReject);
     }
 
     //インディケータがあれば進行、終了でcloseModalOnCancel
@@ -50,7 +50,11 @@ const showModal = (elHtml) => {
     //todo: インディケータのないモーダルは何かしら閉じるようにしておく
 }
 
-const closeModalOnCancel = () => {
+const closeModalOnCancel = (ev) => {
+    console.log('closeModalOnCancel');
+    const modal = ev.target.closest('.blockModal');
+    const username = modal.getAttribute('data-modal-username');
+
     initToken()
         .then((accessToken) => {
             //btnCancel, btnReject removeEventListener
@@ -69,7 +73,8 @@ const closeModalOnCancel = () => {
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
             //cancel game
-            cancel_game();
+            console.log(`cancel game: ${username}`);
+            cancel_game(username);
         })
         .then(() => {
             //modal close
@@ -77,7 +82,48 @@ const closeModalOnCancel = () => {
         });
 }
 
-const closeModalOnAccept = () => {
+const closeModalOnReject = (ev) => {
+    console.log('closeModalOnReject');
+    const modal = ev.target.closest('.blockModal');
+    const args = {
+        request_id: modal.getAttribute('data-modal-request_id'),
+        username: modal.getAttribute('data-modal-username')
+    };
+
+    initToken()
+        .then((accessToken) => {
+            //btnCancel, btnReject removeEventListener
+            const btnCancel = document.querySelector('.blockBtnCancel_button');
+            if (btnCancel) {
+                btnCancel.removeEventListener('click', closeModalOnCancel);
+            }
+            const btnReject = document.querySelector('.blockBtnReject_button');
+            if (btnReject) {
+                btnReject.removeEventListener('click', closeModalOnReject);
+            }
+            //indicator removeEventListener
+            const indicator = document.getElementById('indicator');
+            if (indicator) {
+                const indicatorBar = indicator.querySelector('.unitIndicator_bar');
+                indicatorBar.removeEventListener('transitionend', endIndicator);
+            }
+            //cancel game
+            console.log(`reject game: ${args.request_id}`);
+            reject_game(args.request_id, args.username);
+        })
+        .then(() => {
+            closeModal();
+        });
+}
+
+const closeModalOnAccept = (ev) => {
+    console.log('closeModalOnAccept');
+    const modal = ev.target.closest('.blockModal');
+    const args = {
+        request_id: modal.getAttribute('data-modal-request_id'),
+        username: modal.getAttribute('data-modal-username')
+    };
+
     initToken()
         .then((accessToken) => {
             //AcceptボタンremoveEventListener
@@ -87,7 +133,8 @@ const closeModalOnAccept = () => {
             const btnReject = document.querySelector('.blockBtnReject_button');
             btnReject.addEventListener('click', closeModalOnCancel);
             //todo:start game
-            console.log('start game');
+            accept_game(args.request_id, args.username);
+            console.log(`accept game: ${args.request_id}`);
         })
         .then(() => {
             closeModal();
@@ -121,28 +168,24 @@ const showModalSendMatchRequest = (ev) => {
         labelCancel: labels.modal.labelCancel,
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
-    //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-    join_game(opponentName)
+    request_game(button.dataset.username, button.dataset.id)
         .then(r => {
             showModal(elHtml);
         });
 }
 
-const showModalReceiveMatchRequest = (ev) => {
-    const button = ev.target;
-    const opponentName = button.dataset.name;
+const showModalReceiveMatchRequest = (data) => {
+    // WebSocketから受け取った相手のusernameおよびavatarを表示
     const args = {
         titleModal: labels.modal.titleReceiveMatchRequest,
-        username: button.dataset.name,
-        avatar: button.dataset.avatar,
+        username: data.from,
+        request_id: data.request_id,
+        avatar: '',
         labelAccept: labels.modal.labelAccept,
         labelReject: labels.modal.labelReject,
     }
     const elHtml = getModalHtml('receiveMatchRequest', args);
-    join_game(opponentName)
-        .then(r => {
-            showModal(elHtml);
-        });
+    showModal(elHtml);
 }
 
 const showModalWaitForOpponent = (ev) => {
@@ -193,3 +236,4 @@ const showModalEntryTournament = (ev) => {
 }
 
 export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal };
+
