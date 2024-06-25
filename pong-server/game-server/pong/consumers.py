@@ -301,7 +301,8 @@ class PongConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def authenticate_jwt(self, jwt):
         try:
-            token_backend = TokenBackend(algorithm='HS256', signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
+            token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'],
+                                         signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
             validated_token = token_backend.decode(jwt, verify=True)
             logger.info(f'validated_token= {validated_token}')
             user_id = validated_token['user_id']
@@ -317,7 +318,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_match(self, match_id):
-        return get_match_from_api(match_id)
+        return get_match_from_api(self.storage_token, match_id)
 
     @database_sync_to_async
     def is_player_in_match(self, players_id, match):
