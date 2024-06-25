@@ -6,7 +6,7 @@
 ----- */
 :root {
   --heightMainHeader: 60px;
-  --baseContentWidth: 1000px;
+  --baseContentWidth: 1024px;
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
