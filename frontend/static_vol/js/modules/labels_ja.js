@@ -114,4 +114,11 @@ export const labels_ja = {
         accepted: '$name さんが友達申請を承認しました',
         removed: '$name さんと友達じゃなくなりました',
     },
+    matchRequest: {
+        accepted: '対戦相手が承諾しました',
+        cancelled: '対戦相手にキャンセルされました',
+        rejected: '対戦相手にリジェクトされました',
+        error: 'エラー：',
+        userOffline: '対戦相手はオフラインです',
+    },
 };
