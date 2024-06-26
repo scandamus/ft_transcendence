@@ -1,6 +1,7 @@
 'use strict';
 
 import PageBase from './PageBase.js';
+import { SiteInfo } from "../modules/SiteInfo.js";
 import { labels } from '../modules/labels.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend }
@@ -10,9 +11,8 @@ export default class Dashboard extends PageBase {
     constructor(params) {
         super(params);
         Dashboard.instance = this;
-        this.playerNameTmp = 'playername';
-        this.title = `${labels.dashboard.title}: ${this.playerNameTmp}`;
-        this.setTitle(this.title);
+        this.siteInfo = new SiteInfo();
+        this.setTitle(`${labels.dashboard.title}: ${this.siteInfo.getUsername()}`);
         this.clearBreadcrumb();
 
         //afterRenderにmethod追加
