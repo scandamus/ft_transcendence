@@ -5,14 +5,9 @@ import logging
 from django.contrib.auth.models import User
 from .models import Player
 from .models import Match
-from channels.db import database_sync_to_async
-from datetime import datetime, timedelta
-from rest_framework_simplejwt.backends import TokenBackend
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, TokenBackendError
-#from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-#from .utils import generate_game_jwt
 from django.conf import settings
 from django.db import transaction
+from .match_utils import send_match_jwt, authenticate_token
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +94,7 @@ async def handle_accept_game(consumer, data):
         return
         
     if from_username in consumer.players:
-        await send_match_jwt(consumer, request['from_username'], consumer.user.username)
+        await send_match_jwt(consumer, request['from_username'])
         LoungeSession.pending_requests.pop(request_id)
     else:
         await consumer.send(text_data=json.dumps({
@@ -163,71 +158,3 @@ async def handle_cancel_game(consumer, data):
             logger.error(f'Cancelled successfully but opponent is not online')
     except Exception as e:
         logger.error(f'Error: {str(e)}')
-
-async def send_match_jwt(consumer, from_username, to_username):
-    player1 = await get_player_by_username(from_username)
-    player2 = consumer.player
-    match = await create_match(player1, player2)
-    
-    for player in [player1, player2]:
-        game_token = await issue_jwt(player.user, player.id, match.id)
-        websocket = consumer.players.get(player.user.username)
-        player_name = 'player1' if player == player1 else 'player2'
-        await websocket.send(text_data=json.dumps({
-            'type': 'gameSession',
-            'jwt': game_token,
-            'username': player.user.username,
-            'match_id': match.id,
-            'player_name': player_name
-        }))
-
-@database_sync_to_async
-def get_player_by_username(username):
-    return Player.objects.get(user__username=username)
-
-@database_sync_to_async
-def issue_jwt(user, players_id, match_id):
-    expire = datetime.utcnow() + timedelta(minutes=1)
-    payload = {
-        'user_id': user.id,
-        'username': user.username,
-        'players_id': players_id,
-        'match_id': match_id,
-        'iat': datetime.utcnow(),
-        'exp': expire,
-        'aud': 'pong-server',
-        'iss': 'backend'
-    }
-    token = jwt.encode(payload, settings.SIMPLE_JWT['SIGNING_KEY'], algorithm='HS256')
-    return token
-
-@database_sync_to_async
-def create_match(player1, player2):
-    # マッチをDBに登録
-    with transaction.atomic():
-        match = Match.objects.create(
-            player1=player1,
-            player2=player2,
-            status='before'
-        )
-    logger.info(f'Match created, {match}, ID: {match.id}, Player1: {match.player1}, Player2: {match.player2}')
-    return match
-
-@database_sync_to_async
-def authenticate_token(token):
-    try:
-        token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'], signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
-        validated_token = token_backend.decode(token, verify=True)
-        user_id = validated_token['user_id']
-        user = User.objects.get(id=user_id)
-        #self.user = user
-        return user, None
-    except TokenBackendError as e:
-        logger.info(f"TokenBackendError: " + str(e))
-        return None, 'Error: Token Backend Error.'
-    except (InvalidToken, TokenError) as e:
-        logger.info(f"Error decoding token: {str(e)}")
-        return None, 'Error: Token is invalid or expired.'
-    except (User.DoesNotExist) as e:
-        logger.info(f"User not found")
-        return None, 'User not found'
