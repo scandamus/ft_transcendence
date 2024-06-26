@@ -60,7 +60,10 @@ def delete_friend_request(from_user, to_user):
     
 @database_sync_to_async
 def get_friend_request(request_id):
-    return FriendRequest.objects.get(id=request_id)
+    try:
+        return FriendRequest.objects.get(id=request_id)
+    except FriendRequest.DoesNotExist:
+         return None
 
 @database_sync_to_async
 def approve_frined_request_db(friend_request):
@@ -154,6 +157,12 @@ async def send_friend_request(consumer, player):
     
 async def accept_friend_request(consumer, request_id):
         friend_request = await get_friend_request(request_id)
+        if not friend_request:
+             await consumer.send(text_data=json.dumps({
+                  'type': 'ack',
+                  'action': 'error',
+                  'message': 'Invalid request id'
+             }))
         to_user_username = await get_user_request_to_username(friend_request)
         to_user_id = await get_to_id_by_request(friend_request)
         scope_user_username = await get_username_by_player(consumer.player)
