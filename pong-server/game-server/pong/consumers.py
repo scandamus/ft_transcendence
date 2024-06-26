@@ -73,8 +73,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if action == 'authenticate':
             jwt = text_data_json.get('jwt')
-            self.player_name = text_data_json.get('player_name')
-            players_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
+            players_id, player_name, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
+            self.player_name = player_name
 
             if not players_id or not username or not jwt_match_id:
                 logger.error('Error occured while decoding JWT')
@@ -302,10 +302,11 @@ class PongConsumer(AsyncWebsocketConsumer):
             user_id = validated_token['user_id']
             username = validated_token['username']
             players_id = validated_token['players_id']
+            player_name = validated_token['player_name']
             match_id = validated_token['match_id']
             logger.info(
                 f'authenticate_jwt: user_id={user_id}, username={username}, players_id={players_id}, match_id={match_id}')
-            return players_id, username, match_id
+            return players_id, player_name, username, match_id
         except InvalidToken as e:
             logger.error('Error: invalid token in jwt')
             return None, None
