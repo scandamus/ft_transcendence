@@ -109,7 +109,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # TODO: 2人揃わない場合のタイムアウト処理
             else:
                 logger.error('Match data not found or user is not for this match')
-                await self.close(code=5000)
+                await self.close(code=1000)
                 return
         elif action == 'key_event':
             await self.handle_game_message(text_data)
