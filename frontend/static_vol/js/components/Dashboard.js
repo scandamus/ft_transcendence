@@ -14,6 +14,7 @@ export default class Dashboard extends PageBase {
         this.siteInfo = new SiteInfo();
         this.setTitle(`${labels.dashboard.title}: ${this.siteInfo.getUsername()}`);
         this.clearBreadcrumb();
+        this.avatar = this.siteInfo.getAvatar();
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.updateLists.bind(this));
@@ -31,7 +32,7 @@ export default class Dashboard extends PageBase {
         return `
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">
-                    <p class="blockPlayerDetail_thumb thumb"><img src="//ui-avatars.com/api/?name=Gg Hh&background=872bac&color=ffffff" alt="" width="200" height="200"></p>
+                    <p class="blockPlayerDetail_thumb thumb"><img src="${this.avatar}" alt="" width="200" height="200"></p>
                     <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${textWinLoss}</p>
                     <ul class="unitListBtn unitListBtn-w100">
                         <li><a href="/lounge" class="unitButton" data-link>${labels.lounge.title}</a></li>
