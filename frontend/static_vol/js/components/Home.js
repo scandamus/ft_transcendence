@@ -88,7 +88,8 @@ export default class LogIn extends PageBase {
             .then((data) => {
                 if (data) {
                     siteInfo.setUsername(data.username);
-                    switchDisplayAccount(siteInfo.getUsername())
+                    siteInfo.setAvatar(data.avatar);
+                    switchDisplayAccount()
                         .then(() => {
                             router(true).then(() => {});
                         });
