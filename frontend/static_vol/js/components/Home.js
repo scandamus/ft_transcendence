@@ -5,6 +5,7 @@ import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
+import { SiteInfo } from "../modules/SiteInfo.js";
 import { labels } from '../modules/labels.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
@@ -55,6 +56,7 @@ export default class LogIn extends PageBase {
             username: username,
             password: password
         };
+        const siteInfo = new SiteInfo();
         console.log('Sending data :', data);
         fetch('https://localhost/api/players/login/', {
                 method: 'POST',
@@ -83,9 +85,14 @@ export default class LogIn extends PageBase {
                     });
                 return getUserInfo();
             })
-            .then((userData) => {
-                switchDisplayAccount(userData);//not return
-                router(true);
+            .then((data) => {
+                if (data) {
+                    siteInfo.setUsername(data.username);
+                    switchDisplayAccount(siteInfo.getUsername())
+                        .then(() => {
+                            router(true).then(() => {});
+                        });
+                }
             })
             .catch(error => {
                 console.error('Login failed:', error);
