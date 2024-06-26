@@ -168,14 +168,18 @@ const handleFriendMatchRequestReceived = (data) => {
     } else if (data.action === 'cancelled') {
         // 対戦を申し込んだ主がキャンセルボタンを押した
         closeModal();
-        alert(`対戦相手にキャンセルされました`)
+        addNotice(labels.matchRequest[data.action], true);
     } else if (data.action === 'rejected') {
         // 申し込んだ相手がリジェクトボタンを押した
         // TODO: リジェクトされたメッセージを出す？
         closeModal();
-        alert(`対戦相手にリジェクトされました`)
+        addNotice(labels.matchRequest[data.action], true);
     } else if (data.action === 'error') {
         closeModal();
-        alert(`エラー：${data.message}`);
+        if (data.error === 'userOffline') {
+            addNotice(labels.matchRequest[data.error], true);
+        } else {
+            console.error(`Error: ${data.message}`);
+        }
     }
 }
