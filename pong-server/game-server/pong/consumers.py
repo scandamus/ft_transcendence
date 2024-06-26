@@ -38,6 +38,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.ball = None
         self.reset_game_data()
         self.game_continue = False
+        self.up_pressed = False
+        self.down_pressed = False
 
     async def connect(self):
         try:
@@ -138,32 +140,19 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def pong_message(self, data):
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
-        player_name = data.get('player_name')
+        sent_player_name = data.get('player_name')
 
-        # キー入力によってパドルを操作
+        if key in ['ArrowUp', 'w']:
+            self.up_pressed = is_pressed
+        elif key in ['s', 'ArrowDown']:
+            self.down_pressed = is_pressed
+        speed = -7 * self.up_pressed + 7 * self.down_pressed
+
         if self.player_name == 'player1':
-            if key and is_pressed:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = -7
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 7
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = -7
-                    elif key == "s":
-                        self.left_paddle.speed = 7
-            else:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = 0
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 0
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = 0
-                    elif key == "s":
-                        self.left_paddle.speed = 0
+            if sent_player_name == 'player1':
+                self.left_paddle.speed = speed
+            elif sent_player_name == 'player2':
+                self.right_paddle.speed = speed
 
     async def schedule_ball_update(self):
         self.game_continue = True
