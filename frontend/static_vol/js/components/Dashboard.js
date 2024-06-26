@@ -6,6 +6,9 @@ import { labels } from '../modules/labels.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend }
     from '../modules/friendListener.js';
+import { addListenerToList, removeListenerAndClearList } from "../modules/listenerCommon.js";
+import { getToken } from "../modules/token.js";
+import { switchDisplayAccount } from "../modules/auth.js";
 
 export default class Dashboard extends PageBase {
     constructor(params) {
@@ -18,12 +21,15 @@ export default class Dashboard extends PageBase {
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.updateLists.bind(this));
+        this.addAfterRenderHandler(this.listenUpdateAvatar.bind(this));
+        this.addAfterRenderHandler(this.listenPickFileAvatar.bind(this));
 
         //Instance固有のlistenerList
         this.listListenMatchRequest = [];
         this.listListenRemoveFriend = [];
         this.listListenAcceptFriendRequest = [];
         this.listListenDeclineFriendRequest = [];
+        this.listListenUploadAvatar = [];
     }
 
     async renderHtml() {
@@ -32,7 +38,19 @@ export default class Dashboard extends PageBase {
         return `
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">
-                    <p class="blockPlayerDetail_thumb thumb"><img src="${this.avatar}" alt="" width="200" height="200"></p>
+                
+    <form class="blockAvatar blockForm" action="" method="post">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+        <div class="blockAvatar_avatar thumb">
+            <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
+        </div>
+        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">Change Avatar</button></p>
+        <input type="file" id="inputAvatarFile" accept="image/*" class="formPartsHide">
+        <ul class="blockAvatar_listButton listButton">
+            <li><button type="button" id="btnAvatarCancel" class="unitButton">cancel</button></li>
+            <li><button type="submit" id="btnAvatarUpload" class="unitButton">Upload</button></li>
+        </ul>
+    </form>
+    
                     <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${textWinLoss}</p>
                     <ul class="unitListBtn unitListBtn-w100">
                         <li><a href="/lounge" class="unitButton" data-link>${labels.lounge.title}</a></li>
@@ -76,6 +94,108 @@ export default class Dashboard extends PageBase {
         }
     }
 
+    listenUpdateAvatar() {
+        const btnUpdateAvatar = document.getElementById('btnUpdateAvatar');
+        const boundUpdateAvatar = this.updateAvatar.bind(this);
+        this.addListListenInInstance(btnUpdateAvatar, boundUpdateAvatar, 'click');
+    }
+
+    updateAvatar() {
+        const inputFile = document.getElementById('inputAvatarFile');
+        inputFile.click();
+    }
+
+    listenPickFileAvatar() {
+        const inputFile = document.getElementById('inputAvatarFile');
+        const boundPickFileAvatar = this.pickFileAvatar.bind(this);
+        this.addListListenInInstance(inputFile, boundPickFileAvatar, 'change');
+    }
+    
+    pickFileAvatar(ev) {
+        const imgAvatar = document.getElementById('imgAvatar');
+        const btnWrapUpdateAvatar = document.querySelector('.blockAvatar_button');
+        const listButton = document.querySelector('.blockAvatar_listButton');
+        const file = ev.target.files[0];
+        if (file) {
+            const fileReader = new FileReader();
+            fileReader.onload = (ev) => {
+                imgAvatar.src = ev.target.result;
+                btnWrapUpdateAvatar.classList.remove('is-show');
+                listButton.classList.add('is-show');
+                this.listenUploadAvatar();
+            };
+            fileReader.readAsDataURL(file);
+        }
+    }
+
+    listenUploadAvatar() {
+        const btnAvatarCancel = document.getElementById('btnAvatarCancel');
+        const btnAvatarUpload = document.getElementById('btnAvatarUpload');
+        const boundCancelAvatar = this.cancelAvatar.bind(this);
+        const boundUploadAvatar = this.uploadAvatar.bind(this);
+
+        addListenerToList(
+            this.listListenUploadAvatar, btnAvatarCancel, boundCancelAvatar, 'click');
+        addListenerToList(
+            this.listListenUploadAvatar, btnAvatarUpload, boundUploadAvatar, 'click');
+    }
+
+    async uploadAvatar(ev) {
+        ev.preventDefault();
+        const inputFile = document.getElementById('inputAvatarFile');
+        const formData = new FormData();
+        const file = inputFile.files[0];
+        if (!file) {
+            return;
+        }
+        formData.append('avatar', file);
+
+        const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            return Promise.resolve(null);
+        }
+        fetch('/api/players/avatar/', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: formData //stringify?
+        })
+            .then( async (response) => {
+                if (!response.ok) {
+                    const responseBody = await response.text();
+                    throw new Error(responseBody);
+                 }
+                return response.json();
+            })
+            .then( async (data) => {
+                this.siteInfo.setAvatar(data.newAvatar);
+                this.cancelAvatar();
+                await switchDisplayAccount();
+            })
+            .catch((error) => {
+                this.cancelAvatar();
+                console.error('Error:', error);
+            });
+    }
+
+    cancelAvatar() {
+        const inputFile = document.getElementById('inputAvatarFile');
+        const imgAvatar = document.getElementById('imgAvatar');
+        const btnWrapUpdateAvatar = document.querySelector('.blockAvatar_button');
+        const listButton = document.querySelector('.blockAvatar_listButton');
+        this.removeListenUploadAvatar();
+        btnWrapUpdateAvatar.classList.add('is-show');
+        listButton.classList.remove('is-show');
+        imgAvatar.src = this.siteInfo.getAvatar();
+        inputFile.value = '';
+    }
+
+    removeListenUploadAvatar() {
+        removeListenerAndClearList(this.listListenUploadAvatar);
+        this.listListenUploadAvatar = [];
+    }
+
     destroy() {
         //rmFriendsList
         removeListenMatchRequest(this);
@@ -83,6 +203,8 @@ export default class Dashboard extends PageBase {
         //rmFriendRequestList
         removeListenAcceptFriendRequest(this);
         removeListenDeclineFriendRequest(this);
+        //rmUploadAvatarList
+        this.removeListenUploadAvatar();
 
         super.destroy();
     }

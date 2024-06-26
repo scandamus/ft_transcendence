@@ -13,6 +13,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser
 
 # from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
@@ -173,4 +174,20 @@ class FriendRequestListView(generics.ListAPIView):
         user = self.request.user
         player = Player.objects.get(user=user)
         return FriendRequest.objects.filter(to_user=player)
-    
+
+class AvatarUploadView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def put(self, request, format=None):
+        user = request.user
+        player = Player.objects.get(user=user)
+        avatar_file = request.FILES.get('avatar')
+
+        if avatar_file:
+            player.avatar = avatar_file
+            player.save()
+            return Response({"newAvatar": player.avatar.url})
+        else:
+            return Response({"error": "No avatar file provided"}, status=400)
