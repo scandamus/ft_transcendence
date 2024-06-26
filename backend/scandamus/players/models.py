@@ -18,7 +18,7 @@ class Player(models.Model):
         verbose_name="プレイヤー"
     )
     avatar = models.ImageField(
-        upload_to='uploads/avatar/',
+        upload_to='static/uploads/avatar/',
         validators=[FileExtensionValidator(['jpg', 'png'])],
         blank=True,
         null=True,

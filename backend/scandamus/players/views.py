@@ -123,10 +123,11 @@ class UserInfoView(APIView):
     def get(self, request, format=None):
         user = request.user
         player = Player.objects.get(user=user)
+
         data = {
             'is_authenticated': user.is_authenticated,
             'username': user.username,
-            'avatar': player.avatar.url,
+            'avatar': player.avatar.url if player.avatar else '',
         }
         return Response(data)
 

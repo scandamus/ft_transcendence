@@ -13,7 +13,11 @@ class SiteInfo {
     }
 
     setAvatar(urlAvatar) {
-        this.avatar = `/static/${urlAvatar}`;
+        if (urlAvatar) {
+            this.avatar = `${urlAvatar}`;
+        } else {
+            this.avatar = `/static/uploads/avatar/avatar_default.png`;
+        }
     }
 
     getUsername() {
