@@ -38,7 +38,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.ball = None
         self.reset_game_data()
         self.game_continue = False
-        self.storage_token = None
 
     async def connect(self):
         try:
@@ -94,7 +93,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 return
 
             # jwtを一時保存
-            self.storage_token = jwt
             self.username = username
             match = await self.get_match(self.match_id)
             if match and await self.is_player_in_match(players_id, match):
@@ -318,7 +316,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_match(self, match_id):
-        return get_match_from_api(self.storage_token, match_id)
+        return get_match_from_api(match_id)
 
     @database_sync_to_async
     def is_player_in_match(self, players_id, match):
@@ -339,7 +337,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             'score2': score2,
             'status': game_state,
         }
-        patch_match_to_api(self.storage_token, match_id, send_data)
+        patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
         if self.player_name == 'player1':
