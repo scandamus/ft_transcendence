@@ -114,4 +114,10 @@ export const labels_fr = {
         accepted: '$name ',
         removed: '$name ',
     },
+    matchRequest: {
+        accepted: '',
+        cancelled: '',
+        rejected: '',
+        userOffline: '',
+    },
 };

@@ -58,7 +58,7 @@ export const labels_ja = {
     },
     lounge: {
         title: 'Lounge',
-        labelMatch: '対戦する',
+        labelMatch: '参加する',
         labelCreateRoom: '部屋を作成',
         labelDualGame: '2人対戦',
         labelQuadGame: '4人対戦',
