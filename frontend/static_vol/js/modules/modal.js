@@ -200,8 +200,8 @@ const showModalWaitForOpponent = (ev) => {
     ev.preventDefault();
     const buttonId = ev.target.id;
 //    const gameType = buttonId === 'dualGameButton' ? 'dual' : 'quad';
-    const gameName = buttonId === 'dualGameButton' ? 'pong' : 'pong4';
-    const capacityNum = buttonId === 'dualGameButton' ? 2 : 4;
+    const gameName = buttonId === 'btnJoinDual' ? 'pong' : 'pong4';
+    const capacityNum = buttonId === 'btnJoinDual' ? 2 : 4;
 
     const args = {
         titleModal: labels.modal.titleWaitForOpponent,
