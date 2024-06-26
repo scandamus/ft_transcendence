@@ -6,16 +6,19 @@ import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
 import { initToken } from '../modules/token.js';
 
-export default class extends PageBase {
+export default class GamePlay extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('GamePlay');
+        GamePlay.instance = this;
+        this.title = 'GamePlay';
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.player1 = 'player1'; // TODO fetch from backend?
         this.player2 = 'player2';
-        //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.initGame.bind(this));
         this.score1 = 0;
         this.score2 = 0;
+        //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.initGame.bind(this));
     }
 
     async renderHtml() {
@@ -158,5 +161,9 @@ export default class extends PageBase {
         } catch (error) {
         console.error('Error initializing game', error);
         }
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

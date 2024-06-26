@@ -3,9 +3,10 @@
 import PageBase from './PageBase.js';
 import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class GameMatch extends PageBase {
     constructor(params) {
         super(params);
+        GameMatch.instance = this;
         this.setTitle('GameMatch');
     }
 
@@ -46,4 +47,8 @@ export default class extends PageBase {
     //         </div>
     //     `; // TODO json; 翻訳しやすくしたい
     // }
+
+    destroy() {
+        super.destroy();
+    }
 }

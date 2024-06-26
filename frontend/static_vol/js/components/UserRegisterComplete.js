@@ -4,10 +4,14 @@ import PageBase from './PageBase.js';
 import { router, routes } from '../modules/router.js';
 import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class SignUpComplete extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('SIGN UP');
+        SignUpComplete.instance = this;
+        this.title = 'SIGN UP';
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.checkRegisterFlow.bind(this));
     }
@@ -32,5 +36,9 @@ export default class extends PageBase {
                 sessionStorage.removeItem('username');
                 sessionStorage.removeItem('password');
         }
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

@@ -4,10 +4,14 @@ import PageBase from './PageBase.js';
 import { router, routes } from '../modules/router.js';
 import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class SignUpConfirm extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('SIGN UP');
+        SignUpConfirm.instance = this;
+        this.title = 'SIGN UP';
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.displayInputData.bind(this));
         this.addAfterRenderHandler(this.listenLinkBack.bind(this));
@@ -49,8 +53,8 @@ export default class extends PageBase {
 
     listenLinkBack() {
         const btnBack = document.getElementById('btnBackForm');
-        btnBack.addEventListener('click', this.handleBack.bind(this));
-        this.addListenEvent(btnBack, this.handleBack, 'click');
+        const boundHandleBack = this.handleBack.bind(this);
+        this.addListListenInInstance(btnBack, boundHandleBack, 'click');
     }
 
     handleBack() {
@@ -60,8 +64,8 @@ export default class extends PageBase {
 
     listenRegister() {
         const btnRegister = document.getElementById('btnRegisterForm');
-        btnRegister.addEventListener('click', this.handleRegister.bind(this));
-        this.addListenEvent(btnRegister, this.handleRegister, 'click');
+        const boundHandleRegister = this.handleRegister.bind(this);
+        this.addListListenInInstance(btnRegister, boundHandleRegister, 'click');
     }
 
     handleRegister(ev) {
@@ -93,5 +97,9 @@ export default class extends PageBase {
             .catch(error => {
                 console.error('register failed:', error);
             });
+    }
+
+    destroy() {
+        super.destroy();
     }
 }
