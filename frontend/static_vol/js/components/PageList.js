@@ -8,14 +8,17 @@ export default class PageList extends PageBase {
     constructor(params) {
         super(params);
         PageList.instance = this;
-        this.setTitle('PageList');
+        this.title = 'PageList';
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenReceiveReqMatch.bind(this));
     }
 
     async renderHtml() {
         return `
-            <ul>
+            <ul style="font-size: 2rem">
                 <li><a href="/" data-link>login</a></li>
                 <li><a href="/register" data-link>SIGN UP</a></li>
                 <li><a href="/register/confirm" data-link>SIGN UP - confirm</a></li>

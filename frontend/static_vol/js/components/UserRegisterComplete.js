@@ -8,7 +8,10 @@ export default class SignUpComplete extends PageBase {
     constructor(params) {
         super(params);
         SignUpComplete.instance = this;
-        this.setTitle('SIGN UP');
+        this.title = 'SIGN UP';
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.checkRegisterFlow.bind(this));
     }

@@ -14,7 +14,10 @@ export default class Friends extends PageBase {
     constructor(params) {
         super(params);
         Friends.instance = this;
-        this.setTitle(labels.friends.title);
+        this.title = 'Friends';
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.updateLists.bind(this));
         this.addAfterRenderHandler(this.listenSearchFriends.bind(this));
@@ -82,10 +85,6 @@ export default class Friends extends PageBase {
                     </section>
                 </div>
             </div>
-            <ol class="breadcrumb">
-            <li><a href="/">${labels.dashboard.title}</a></li>
-            <li>${labels.friends.title}</li>
-            </ol>
         `;
     }
 
