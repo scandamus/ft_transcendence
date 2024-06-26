@@ -8,11 +8,9 @@ export default class Lounge extends PageBase {
     constructor(params) {
         super(params);
         Lounge.instance = this;
-        this.title = 'Lounge';
-        this.setTitle(labels.lounge.title);
+        this.title = labels.lounge.title;
+        this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-
-        this.labelMatch = '参加';
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenJoinDual.bind(this));
@@ -26,14 +24,14 @@ export default class Lounge extends PageBase {
                     <form class="blockForm unitBox">
                         <h3 class="blockLoungeRoom_title">${labels.lounge.labelDualGame}</h3>
                         <input type="hidden" name="gameType" value="dual">
-                        <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinDual" class="unitButton unitButton-large">${this.labelMatch}</button></p>
+                        <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinDual" class="unitButton unitButton-large">${labels.lounge.labelMatch}</button></p>
                     </form>
                 </section>
                 <section class="blockLoungeRoom">
                     <form class="blockForm unitBox">
                         <h3 class="blockLoungeRoom_title">${labels.lounge.labelQuadGame}</h3>
                         <input type="hidden" name="gameType" value="quad">
-                        <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinQuad" class="unitButton unitButton-large">${this.labelMatch}</button></p>
+                        <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinQuad" class="unitButton unitButton-large">${labels.lounge.labelMatch}</button></p>
                     </form>
                 </section>
             </div>
