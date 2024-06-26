@@ -10,13 +10,15 @@ export default class GamePlay extends PageBase {
     constructor(params) {
         super(params);
         GamePlay.instance = this;
-        this.setTitle('GamePlay');
+        this.title = 'GamePlay';
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.player1 = 'player1'; // TODO fetch from backend?
         this.player2 = 'player2';
-        //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.initGame.bind(this));
         this.score1 = 0;
         this.score2 = 0;
+        //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.initGame.bind(this));
     }
 
     async renderHtml() {

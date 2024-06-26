@@ -1,5 +1,6 @@
 'use strict';
 
+import { addLinkPageEvClick } from "../modules/router.js";
 import { linkSpa } from "../modules/router.js";
 
 export default class PageBase {
@@ -8,6 +9,10 @@ export default class PageBase {
     constructor(params) {
         PageBase.instance = this;
         this.params = params;
+        this.title = '';
+        this.breadcrumbLinks = [
+            { href: '/', text: 'dashboard' }
+        ];
         this.listAfterRenderHandlers = [];
         this.listListenInInstance = [];
         this.addAfterRenderHandler(this.addListenLinkPages.bind(this));
@@ -16,6 +21,25 @@ export default class PageBase {
     setTitle(title) {
         document.title = title;
         document.getElementById('titlePage').innerText = title;
+    }
+
+
+    generateBreadcrumb(title, breadcrumbLinks) {
+        const breadcrumbWrapper = document.getElementById('navBreadcrumb');
+        let olHtml = '<ol class="breadcrumb">';
+        breadcrumbLinks.forEach((link, index) => {
+            olHtml += `<li><a href="${link.href}" data-link>${link.text}</a></li>`;
+        });
+        olHtml += `<li>${title}</li>`
+        olHtml += '</ol>';
+        breadcrumbWrapper.innerHTML = olHtml;
+        const linkBreadcrumb = document.querySelectorAll('#navBreadcrumb a[data-link]');
+        addLinkPageEvClick(linkBreadcrumb);
+    }
+
+    clearBreadcrumb() {
+        const breadcrumbWrapper = document.getElementById('navBreadcrumb');
+        breadcrumbWrapper.innerHTML = '';
     }
 
     static isInstance(instance, className) {
@@ -51,6 +75,11 @@ export default class PageBase {
     }
 
     destroy() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+
         // remove eventListeners
         let countListen = this.listListenInInstance.length;
         console.log(`/*/ destroy:this.listListenInInstance.length: ${countListen}`);
