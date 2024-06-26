@@ -1,11 +1,28 @@
-export const labels = {
-    labelMatch: '対戦する',
-    labelCancel: 'キャンセル',
-    labelRmFriend: '友達解除',
-    labelAccept: '承諾',
-    labelDecline: '削除',
-    labelApply: '友達申請',
-    labelSearch: '友達申請',
-    msgNoUsername: '友達申請を送るユーザー名を入力してください',
-    msgNoFriends: '友達はまだいません',
+'use strict';
+
+import { labels_en } from './labels_en.js';
+import { labels_ja } from './labels_ja.js';
+import { labels_fr } from './labels_fr.js';
+import { labels_la } from './labels_la.js';
+import { labels_he } from './labels_he.js';
+import { labels_ar } from './labels_ar.js';
+
+export const languageLabels = {
+    'en': labels_en,
+    'ja': labels_ja,
+    'fr': labels_fr,
+    'la': labels_la,
+    'he': labels_he,
+    'ar': labels_ar,
+};
+
+export const getCurrentLanguageLabels = (lang) => {
+    return languageLabels[lang || localStorage.getItem('configLang')] || labels_en;
+}
+
+//export const labels = labels_ja;
+export const labels = getCurrentLanguageLabels();
+
+export const switchLabels = (lang) => {
+    Object.assign(labels, getCurrentLanguageLabels(lang));
 };

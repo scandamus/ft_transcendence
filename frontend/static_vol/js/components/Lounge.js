@@ -2,18 +2,17 @@
 
 import PageBase from './PageBase.js';
 import { showModalWaitForOpponent } from "../modules/modal.js";
+import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class Lounge extends PageBase {
     constructor(params) {
         super(params);
-
+        Lounge.instance = this;
         this.title = 'Lounge';
-        this.labelMatch = '参加';
-        this.labelDualGame = '2人対戦';
-        this.labelQuadGame = '4人対戦';
-
-        this.setTitle(this.title);
+        this.setTitle(labels.lounge.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
+        this.labelMatch = '参加';
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenJoinDual.bind(this));
@@ -25,16 +24,16 @@ export default class extends PageBase {
             <div class="blockLounge">
                 <section class="blockLoungeRoom">
                     <form class="blockForm unitBox">
-                        <h3 class="blockLoungeRoom_title">${this.labelDualGame}</h3>
+                        <h3 class="blockLoungeRoom_title">${labels.lounge.labelDualGame}</h3>
+                        <input type="hidden" name="gameType" value="dual">
                         <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinDual" class="unitButton unitButton-large">${this.labelMatch}</button></p>
                     </form>
                 </section>
                 <section class="blockLoungeRoom">
                     <form class="blockForm unitBox">
-                        <h3 class="blockLoungeRoom_title">${this.labelQuadGame}</h3>
-                        <div class="blockLoungeRoom_body">
+                        <h3 class="blockLoungeRoom_title">${labels.lounge.labelQuadGame}</h3>
+                        <input type="hidden" name="gameType" value="quad">
                         <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinQuad" class="unitButton unitButton-large">${this.labelMatch}</button></p>
-                        </div>
                     </form>
                 </section>
             </div>
@@ -43,13 +42,17 @@ export default class extends PageBase {
 
     listenJoinDual() {
         const btnJoinDual = document.getElementById('btnJoinDual');
-        btnJoinDual.addEventListener('click', showModalWaitForOpponent.bind(this));
-        this.addListenEvent(btnJoinDual, showModalWaitForOpponent, 'click');
+        const boundShowModalWaitForOpponent = showModalWaitForOpponent.bind(this);
+        this.addListListenInInstance(btnJoinDual, boundShowModalWaitForOpponent, 'click');
     }
 
     listenJoinQuad() {
         const btnJoinQuad = document.getElementById('btnJoinQuad');
-        btnJoinQuad.addEventListener('click', showModalWaitForOpponent.bind(this));
-        this.addListenEvent(btnJoinQuad, showModalWaitForOpponent, 'click');
+        const boundShowModalWaitForOpponent = showModalWaitForOpponent.bind(this);
+        this.addListListenInInstance(btnJoinQuad, boundShowModalWaitForOpponent, 'click');
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

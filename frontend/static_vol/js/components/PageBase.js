@@ -1,6 +1,7 @@
 'use strict';
 
 import { addLinkPageEvClick } from "../modules/router.js";
+import { linkSpa } from "../modules/router.js";
 
 export default class PageBase {
     static instance = null;
@@ -8,18 +9,20 @@ export default class PageBase {
     constructor(params) {
         PageBase.instance = this;
         this.params = params;
-        this.listAfterRenderHandlers = [];
-        this.listEventListeners = [];
         this.title = '';
         this.breadcrumbLinks = [
             { href: '/', text: 'dashboard' }
         ];
+        this.listAfterRenderHandlers = [];
+        this.listListenInInstance = [];
+        this.addAfterRenderHandler(this.addListenLinkPages.bind(this));
     }
 
     setTitle(title) {
         document.title = title;
         document.getElementById('titlePage').innerText = title;
     }
+
 
     generateBreadcrumb(title, breadcrumbLinks) {
         const breadcrumbWrapper = document.getElementById('navBreadcrumb');
@@ -39,6 +42,18 @@ export default class PageBase {
         breadcrumbWrapper.innerHTML = '';
     }
 
+    static isInstance(instance, className) {
+        return (instance &&
+                instance.constructor.name === className);
+    }
+
+    addListenLinkPages() {
+        const linkPages = document.querySelectorAll('#app a[data-link]');
+        linkPages.forEach((linkPage) => {
+            this.addListListenInInstance(linkPage, linkSpa, 'click');
+        });
+    }
+
     async renderHtml() {
         return '';
     }
@@ -53,26 +68,37 @@ export default class PageBase {
         this.listAfterRenderHandlers.push(handler);
     }
 
-
-    //継承クラスでeventListenersにmethodをpushする際に使う
-    addListenEvent(el, cb, ev) {
-        this.listEventListeners.push({element: el, callback: cb, event: ev});
+    //継承クラスでaddListenerのうえthis.listListenInInstanceにpushする際に使う
+    addListListenInInstance(el, cb, ev) {
+        el.addEventListener(ev, cb);
+        this.listListenInInstance.push({element: el, callback: cb, event: ev});
     }
 
-    // eventListeners解除
-    // todo:解除確認
     destroy() {
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
         });
 
-        this.listEventListeners.forEach(listener => {
+        // remove eventListeners
+        let countListen = this.listListenInInstance.length;
+        console.log(`/*/ destroy:this.listListenInInstance.length: ${countListen}`);
+        this.listListenInInstance.forEach(listener => {
+            console.log(`/*/*/ removeEventListener ${listener.element} ${listener.event}`)
             listener.element.removeEventListener(listener.event, listener.callback);
+            countListen--;
         });
-        // if (this.listEventListeners.length === 0)
-        //     console.log('Listeners all clear')
-        // else
-        //     console.log('Listeners' + this.listEventListeners.length + 'left')
+        if (countListen === 0) {
+            console.log(`/*/*/*/ destroy:All event listeners have been removed. countListen:${countListen}`);
+        } else {
+            console.log(`/*/*/!!!!!/*/*/ destroy:Event listeners remain. countListen:${countListen}`);
+        }
+
+        // clear ar
+        this.listAfterRenderHandlers = [];
+        this.listListenInInstance = [];
+
+        // delete instance
+        PageBase.instance = null;
     }
 }

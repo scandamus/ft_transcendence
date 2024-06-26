@@ -1,15 +1,18 @@
 'use strict';
 
 import { fetchFriendRequests, fetchFriends } from "./friendsApi.js";
+import { resetListenFriendList, resetListenFriendRequestList } from "./friendListener.js";
 import { labels } from "./labels.js";
+import PageBase from "../components/PageBase.js";
 
-const updateFriendsList = async (isPageFriend) => {
+const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
+    const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
         const friends = await fetchFriends();
         const listFriendsWrappr = document.querySelector('.blockFriends_friends');
         if (friends.length === 0) {
-            listFriendsWrappr.innerHTML = `<p>${labels.msgNoFriends}</p>`
+            listFriendsWrappr.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
             listFriendsWrappr.innerHTML = '';
             friends.forEach(friend => {
@@ -20,10 +23,10 @@ const updateFriendsList = async (isPageFriend) => {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.labelMatch}</button></li>`;
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.friends.labelMatch}</button></li>`;
                 if (isPageFriend) {
                     friendElement += `
-                            <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.labelRmFriend}</button></li>
+                            <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.friends.labelRmFriend}</button></li>
                     `;
                 }
                 friendElement += `</ul>
@@ -31,13 +34,14 @@ const updateFriendsList = async (isPageFriend) => {
                 `;
                 listFriendsWrappr.innerHTML += friendElement;
             });
+            resetListenFriendList(pageInstance);
         }
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }
 }
 
-const updateFriendRequestList = async () => {
+const updateFriendRequestList = async (pageInstance) => {
     console.log('updateFriendRequestList in');
     try {
         const requests = await fetchFriendRequests();
@@ -60,13 +64,14 @@ const updateFriendRequestList = async () => {
                             <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${request.from_user}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.labelAccept}</button></li>
-                            <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico" data-username="${request.from_user}" data-id="${request.id}"><img src="/images/ico-cross.svg" alt="${labels.labelDecline}" width="16px" height="16px"></button></li>
+                            <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.friends.labelAccept}</button></li>
+                            <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico" data-username="${request.from_user}" data-id="${request.id}"><img src="/images/ico-cross.svg" alt="${labels.friends.labelDecline}" width="16px" height="16px"></button></li>
                         </ul>
                     </section>
                 `;
                 listRequestWrapper.innerHTML += requestElement;
             });
+            resetListenFriendRequestList(pageInstance);
         }
     } catch (error) {
         console.error('Failed to update friend requests: ', error);

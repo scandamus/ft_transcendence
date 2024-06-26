@@ -2,15 +2,15 @@
 
 import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
+import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class TournamentDetail extends PageBase {
     constructor(params) {
         super(params);
-
+        TournamentDetail.instance = this;
         this.title = 'TournamentTitle1';
-        this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
-
         this.setTitle(this.title);
+        this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
     }
 
@@ -318,5 +318,9 @@ export default class extends PageBase {
                 </section>
             </div>
         `;
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

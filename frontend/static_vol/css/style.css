@@ -761,7 +761,7 @@ input.has-input:invalid {
 }
 
 .listAnnotation li::before {
-  content: "※";
+  content: "＊";
   margin-right: 0.2em;
 }
 
@@ -969,6 +969,12 @@ input.has-input:invalid {
 .blockUsers_column .blockFriends_friends {
   overflow-y: auto;
   max-height: 40vh;
+}
+
+.blockFriends_friends p {
+  font-size: 1.8rem;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 @media screen and (min-width: 768px) {
@@ -1652,10 +1658,11 @@ input.has-input:invalid {
   max-width: 80%;
   margin: 0 auto;
   text-align: center;
+  font-size: 2.8rem;
 }
 
 .blockModal_title small {
-  font-size: 1.3rem;
+  font-size: 2rem;
 }
 
 .blockModal_title strong {
@@ -1781,6 +1788,7 @@ input.has-input:invalid {
 .unitNotice p,
 .unitNotice button {
   position: relative;
+  font-size: 1.6rem;
 }
 
 .unitNotice p {
