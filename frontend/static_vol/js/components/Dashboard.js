@@ -9,6 +9,7 @@ import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListen
 import { addListenerToList, removeListenerAndClearList } from "../modules/listenerCommon.js";
 import { getToken } from "../modules/token.js";
 import { switchDisplayAccount } from "../modules/auth.js";
+import { addNotice } from "../modules/notice.js";
 
 export default class Dashboard extends PageBase {
     constructor(params) {
@@ -38,19 +39,17 @@ export default class Dashboard extends PageBase {
         return `
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">
-                
-    <form class="blockAvatar blockForm" action="" method="post">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-        <div class="blockAvatar_avatar thumb">
-            <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
-        </div>
-        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">Change Avatar</button></p>
-        <input type="file" id="inputAvatarFile" accept="image/*" class="formPartsHide">
-        <ul class="blockAvatar_listButton listButton">
-            <li><button type="button" id="btnAvatarCancel" class="unitButton">cancel</button></li>
-            <li><button type="submit" id="btnAvatarUpload" class="unitButton">Upload</button></li>
-        </ul>
-    </form>
-    
+                    <form class="blockAvatar blockForm" action="" method="post">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                        <div class="blockAvatar_avatar thumb">
+                            <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
+                        </div>
+                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">Change Avatar</button></p>
+                        <input type="file" id="inputAvatarFile" accept="image/*" class="formPartsHide">
+                        <ul class="blockAvatar_listButton listButton">
+                            <li><button type="button" id="btnAvatarCancel" class="unitButton">cancel</button></li>
+                            <li><button type="submit" id="btnAvatarUpload" class="unitButton">Upload</button></li>
+                        </ul>
+                    </form>
                     <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${textWinLoss}</p>
                     <ul class="unitListBtn unitListBtn-w100">
                         <li><a href="/lounge" class="unitButton" data-link>${labels.lounge.title}</a></li>
@@ -159,7 +158,7 @@ export default class Dashboard extends PageBase {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
-                body: formData //stringify?
+                body: formData
         })
             .then( async (response) => {
                 if (!response.ok) {
@@ -172,6 +171,7 @@ export default class Dashboard extends PageBase {
                 this.siteInfo.setAvatar(data.newAvatar);
                 this.cancelAvatar();
                 await switchDisplayAccount();
+                addNotice('アバターを変更しました', false);
             })
             .catch((error) => {
                 this.cancelAvatar();
