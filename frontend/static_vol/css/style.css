@@ -55,7 +55,7 @@ ul, ol {
 
 li, p, strong, dt, dd, h1, h2, h3, h4, h5, h6, button, label, small, span,
 .unitTitle1, .unitTitle2,
-a.unitButton {
+a.unitButton, .unitTournament-link a::after {
   text-shadow:
           1.3px 1.2px var(--content-color1),
           -1.2px -1.3px var(--content-color2);
