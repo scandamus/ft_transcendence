@@ -160,7 +160,6 @@ const getModalHtml = (modalType, args) => {
 
 const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
-    const opponentName = button.dataset.username;
     const args = {
         titleModal: labels.modal.titleSendMatchRequest,
         username: button.dataset.username,
@@ -176,11 +175,12 @@ const showModalSendMatchRequest = (ev) => {
 
 const showModalReceiveMatchRequest = (data) => {
     // WebSocketから受け取った相手のusernameおよびavatarを表示
+    const avatar = data.avatar ? data.avatar : '/images/avatar_default.png';
     const args = {
         titleModal: labels.modal.titleReceiveMatchRequest,
         username: data.from,
         request_id: data.request_id,
-        avatar: '',
+        avatar: avatar,
         labelAccept: labels.modal.labelAccept,
         labelReject: labels.modal.labelReject,
     }

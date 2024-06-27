@@ -24,7 +24,7 @@ const updateFriendsList = async (pageInstance) => {
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}" data-avatar="${friend.avatar}">${labels.friends.labelMatch}</button></li>`;
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}" data-avatar="${avatar}">${labels.friends.labelMatch}</button></li>`;
                 if (isPageFriend) {
                     friendElement += `
                             <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.friends.labelRmFriend}</button></li>

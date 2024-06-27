@@ -39,6 +39,7 @@ async def handle_request_game(consumer, data):
         'to_username': opponent_name
     }
     logger.info(f'request_id = {request_id}')
+    player = await get_player_by_username(consumer.user)
     if opponent_name in consumer.players:
         opponent_ws = consumer.players[opponent_name]
         await opponent_ws.send(text_data=json.dumps({
@@ -46,6 +47,7 @@ async def handle_request_game(consumer, data):
             'action': 'requested',
             'from': consumer.user.username,
             'from_id': user.id,
+            'avatar': player.avatar.url if player.avatar else '',
             'request_id': request_id,
         }))
         logger.info(f'Sent to opponent {opponent_name}')
