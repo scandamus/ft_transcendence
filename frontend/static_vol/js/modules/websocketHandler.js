@@ -5,8 +5,8 @@ import { addNotice } from "./notice.js";
 import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
-
 import { labels } from './labels.js'; // TODO use labels but wait for merge
+import { updateModalAvailablePlayers } from "./modal.js";
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -31,6 +31,9 @@ export const pongHandler = (event, containerId) => {
         }
         else if (data.type === 'ack') { // TODO: friendRequestAckに変更？
             handleFriendRequestAck(data);
+        }
+        else if (data.type === 'lounge') {
+            handleLoungeMatchReceived(data);
         }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
@@ -58,15 +61,15 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { jwt, match_id, username, player_name } = data;
+    const { game_name, jwt, match_id, username, player_name } = data;
 
     closeModal();
 
-    console.log(`Loading pong content with JWT: `, jwt);
+    console.log(`Loading ${game_name} content with JWT: `, jwt);
     console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}`);
 
     const gameMatchId = match_id; 
-    const containerId = `pong/${gameMatchId}`;
+    const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
 
     try {
@@ -177,5 +180,14 @@ const handleFriendMatchRequestReceived = (data) => {
     } else if (data.action === 'error') {
         closeModal();
         alert(`エラー：${data.message}`);
+    }
+}
+
+const handleLoungeMatchReceived = (data) => {
+    if (data.action === 'update') {
+        updateModalAvailablePlayers(data.availablePlayers);
+    } else if (data.action === 'error') {
+        closeModal();
+        alert(`エラー:${data.message}`);
     }
 }

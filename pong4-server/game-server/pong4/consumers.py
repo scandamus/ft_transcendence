@@ -96,20 +96,20 @@ class PongConsumer(AsyncWebsocketConsumer):
             match = await self.get_match(self.match_id)
             if match and await self.is_player_in_match(players_id, match):
                 logger.info(f'player:{players_id} is in match {self.match_id}!!')
-                self.room_group_name = f'pong_{self.match_id}'
+                self.room_group_name = f'pong4_{self.match_id}'
                 await self.channel_layer.group_add(self.room_group_name, self.channel_name)
                 self.players_id = players_id
                 if self.match_id not in self.players_ids:
                     self.players_ids[self.match_id] = set()
                 self.players_ids[self.match_id].add(self.players_id)
-                if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
+                if len(self.players_ids[self.match_id]) == 4:  # 4人に決め打ち
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'start.game',
                     })
-                # TODO: 2人揃わない場合のタイムアウト処理
+                # TODO: 4人揃わない場合のタイムアウト処理
             else:
                 logger.error('Match data not found or user is not for this match')
-                await self.close(code=5000)
+                await self.close(code=1000)
                 return
         elif action == 'key_event':
             await self.handle_game_message(text_data)
@@ -319,9 +319,11 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             player1_id = match.get('player1')
             player2_id = match.get('player2')
+            player3_id = match.get('player3')
+            player4_id = match.get('player4')
             logger.info(
-                f'Checking if player_id:{players_id} is in the match with player1:{player1_id} or player2:{player2_id}')
-            return players_id in [player1_id, player2_id]
+                f'Checking if player_id:{players_id} is in the match with player1:{player1_id} or player2:{player2_id} or player3:{player3_id} or player4:{player4_id}')
+            return players_id in [player1_id, player2_id, player3_id, player4_id]
         except Exception as e:
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False

@@ -1,6 +1,7 @@
 'use strict';
 
 import { accept_game, reject_game, cancel_game, join_game, request_game } from "./match.js";
+import { join_lounge_game, exit_lounge_match_room } from "./lounge_match.js";
 import { initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
@@ -8,7 +9,7 @@ import { labels } from './labels.js';
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
     indicatorBar.removeEventListener('transitionend', endIndicator);
-    closeModalOnCancel();
+    closeModalOnCancel(ev);
 };
 
 //elHtmlのルート要素は`.blockModal`とする
@@ -54,6 +55,7 @@ const closeModalOnCancel = (ev) => {
     console.log('closeModalOnCancel');
     const modal = ev.target.closest('.blockModal');
     const username = modal.getAttribute('data-modal-username');
+    const matchType = modal.getAttribute('data-modal-match_type');
 
     initToken()
         .then((accessToken) => {
@@ -72,9 +74,14 @@ const closeModalOnCancel = (ev) => {
                 const indicatorBar = indicator.querySelector('.unitIndicator_bar');
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
-            //cancel game
-            console.log(`cancel game: ${username}`);
-            cancel_game(username);
+            if (matchType === 'friendMatch') {
+                //cancel game
+                console.log(`cancel friend Match: ${username}`);
+                cancel_game(username);
+            } else if (matchType === 'loungeMatch') {
+                console.log('cancel lounge match');
+                exit_lounge_match_room(modal.getAttribute('data-modal-game_name'));
+            }
         })
         .then(() => {
             //modal close
@@ -166,6 +173,7 @@ const showModalSendMatchRequest = (ev) => {
         username: button.dataset.username,
         avatar: button.dataset.avatar,
         labelCancel: labels.modal.labelCancel,
+        matchType: 'frinedMatch',
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
     request_game(button.dataset.username, button.dataset.id)
@@ -189,20 +197,24 @@ const showModalReceiveMatchRequest = (data) => {
 }
 
 const showModalWaitForOpponent = (ev) => {
-    const formData = new FormData(ev.target.closest('form'));
-    const data = {};
-    formData.forEach((value, key) => {
-        data[key] = value;
-    });
+    ev.preventDefault();
+    const buttonId = ev.target.id;
+//    const gameType = buttonId === 'dualGameButton' ? 'dual' : 'quad';
+    const gameName = buttonId === 'btnJoinDual' ? 'pong' : 'pong4';
+    const capacityNum = buttonId === 'btnJoinDual' ? 2 : 4;
+
     const args = {
         titleModal: labels.modal.titleWaitForOpponent,
         labelCancel: labels.modal.labelCancel,
         labelCapacity: labels.modal.labelCapacity,
         labelAvailable: labels.modal.labelAvailable,
-    }
-    args.labelCapacityNum = (data['gameType'] === 'dual') ? 2 : 4;
+        labelCapacityNum: capacityNum,
+        MatchType: 'loungeMatch',
+        game_name: gameName,
+    };
     const elHtml = getModalHtml('waitForOpponent', args);
-    join_game()
+
+    join_lounge_game(gameName)
         .then(r => {
             showModal(elHtml);
         });
@@ -235,5 +247,15 @@ const showModalEntryTournament = (ev) => {
         });
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal };
+const updateModalAvailablePlayers = (availablePlayers) => {
+    const modal = document.querySelector('.blockModal');
+    if (modal) {
+        const availableSpan = modal.querySelector('.unitCapacity_numerator span');
+        if (availableSpan) {
+            availableSpan.textContent = availablePlayers;
+        }
+    }
+}
+
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers };
 

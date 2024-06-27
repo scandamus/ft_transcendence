@@ -1,12 +1,13 @@
 import json
+import asyncio
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from .utils import generate_game_jwt
-import logging
-#from .join_game import handle_join_game, handle_join_game_cancel, handle_game_state
 from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
 from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
+from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ class LoungeSession(AsyncWebsocketConsumer):
     players = {}
     gamePlayers = {}
     pending_requests = {}
+    matchmaking_lock = asyncio.Lock()
 
     async def connect(self):
         await self.accept()
@@ -60,6 +62,11 @@ class LoungeSession(AsyncWebsocketConsumer):
                     await decline_friend_request(self, text_data_json['request_id'])
                 elif action == 'removeFriend':
                     await remove_friend(self, text_data_json['username'])
+            elif msg_type == 'lounge':
+                if action == 'requestJoinMatch':
+                    await handle_join_lounge_match(self, token, text_data_json['game'])
+                elif action == 'requestExitRoom':
+                    await handle_exit_lounge_room(self, text_data_json['game'])
             else:
                 await self.send(text_data=json.dumps({
                     'message': 'response from server'
