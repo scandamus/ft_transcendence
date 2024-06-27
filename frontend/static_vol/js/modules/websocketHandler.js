@@ -179,7 +179,11 @@ const handleFriendMatchRequestReceived = (data) => {
         alert(`対戦相手にリジェクトされました`)
     } else if (data.action === 'error') {
         closeModal();
-        alert(`エラー：${data.message}`);
+        if (data.error === 'playerNotWaitingStatus') {
+            addNotice('対戦相手がビジーです', true);
+        } else {
+            alert(`エラー：${data.message}`);
+        }
     }
 }
 
