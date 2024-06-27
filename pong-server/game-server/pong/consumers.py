@@ -14,7 +14,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
-from .api_access import get_match_from_api
+from .api_access import get_match_from_api, patch_match_to_api
 
 #from .models import Match
 
@@ -38,30 +38,32 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.ball = None
         self.reset_game_data()
         self.game_continue = False
+        self.up_pressed = False
+        self.down_pressed = False
 
     async def connect(self):
         try:
             # URLからmatch_idを取得
-            self.match_id = self.scope["url_route"]["kwargs"].get("match_id")
+            self.match_id = self.scope['url_route']['kwargs'].get('match_id')
             if not self.match_id:
-                logger.error(f"Match ID is missing in URL path: {self.match_id}")
+                logger.error(f'Match ID is missing in URL path: {self.match_id}')
                 await self.close(code=4200)
                 return
             logger.info('match_id exists')
             await self.accept()
 
         except Exception as e:
-            logger.error(f"Error connecting: {e}")
+            logger.error(f'Error connecting: {e}')
 
     async def disconnect(self, close_code):
         # Leave room group
         if self.scheduled_task:
             self.scheduled_task.cancel()
         if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
-            logger.info(f"remove: players_ids[{self.match_id}]: {self.players_id}")
+            logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
             self.players_ids[self.match_id].remove(self.players_id)
             if not self.players_ids[self.match_id]:
-                logger.info(f"del: {self.players_ids}[{self.match_id}]")
+                logger.info(f'del: {self.players_ids}[{self.match_id}]')
                 del self.players_ids[self.match_id]
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
@@ -74,7 +76,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if action == 'authenticate':
             jwt = text_data_json.get('jwt')
             self.player_name = text_data_json.get('player_name')
-            players_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
+            players_id, username, jwt_match_id = await self.authenticate_jwt(jwt)
 
             if not players_id or not username or not jwt_match_id:
                 logger.error('Error occured while decoding JWT')
@@ -116,54 +118,41 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
-        action = text_data_json.get("action")
+        action = text_data_json.get('action')
         if action == 'key_event':
             key = text_data_json['key']
             is_pressed = text_data_json['is_pressed']
-            print(f"Key event received: {key}" f"\tis_pressed: {is_pressed}")  # コンソールにキーイベントを出力
+            print(f'Key event received: {key}' f'\tis_pressed: {is_pressed}')  # コンソールにキーイベントを出力
 
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
                 # typeキーはgroup_send メソッド内で指定されるキーで、どのハンドラ関数をトリガするかを指定する
-                "type": "pong.message",
+                'type': 'pong.message',
                 # ここで二つのキーを渡すことでpong_message内で辞書としてアクセスできる
-                "key": key,
-                "is_pressed": is_pressed,
-                "player_name": self.player_name,
+                'key': key,
+                'is_pressed': is_pressed,
+                'player_name': self.player_name,
             })
         else:
-            logger.info("unknown message:", text_data)
+            logger.info('unknown message:', text_data)
 
     # Receive message from room group
     async def pong_message(self, data):
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
-        player_name = data.get('player_name')
+        sent_player_name = data.get('player_name')
 
-        # キー入力によってパドルを操作
+        if key in ['ArrowUp', 'w']:
+            self.up_pressed = is_pressed
+        elif key in ['s', 'ArrowDown']:
+            self.down_pressed = is_pressed
+        speed = -7 * self.up_pressed + 7 * self.down_pressed
+
         if self.player_name == 'player1':
-            if key and is_pressed:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = -7
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 7
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = -7
-                    elif key == "s":
-                        self.left_paddle.speed = 7
-            else:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = 0
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 0
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = 0
-                    elif key == "s":
-                        self.left_paddle.speed = 0
+            if sent_player_name == 'player1':
+                self.left_paddle.speed = speed
+            elif sent_player_name == 'player2':
+                self.right_paddle.speed = speed
 
     async def schedule_ball_update(self):
         self.game_continue = True
@@ -174,9 +163,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
+                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
                     await self.channel_layer.group_send(self.room_group_name, {
-                        "type": "send_game_over_message",
-                        "message": "GameOver",
+                        'type': 'send_game_over_message',
+                        'message': 'GameOver',
                     })
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
@@ -184,7 +174,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             pass
 
     async def send_game_over_message(self, event):
-        message = event["message"]
+        message = event['message']
         timestamp = dt.utcnow().isoformat()
         if self.player_name == 'player2':
             self.game_continue = False
@@ -195,68 +185,68 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.move()
         game_continue = self.ball.move(self.right_paddle, self.left_paddle)
         ball_tmp = {
-            "x": self.ball.x,
-            "y": self.ball.y,
-            "dx": self.ball.dx,
-            "dy": self.ball.dy,
-            "size": self.ball.size,
+            'x': self.ball.x,
+            'y': self.ball.y,
+            'dx': self.ball.dx,
+            'dy': self.ball.dy,
+            'size': self.ball.size,
         }
         right_paddle_tmp = {
-            "x": self.right_paddle.x,
-            "y": self.right_paddle.y,
-            "horizontal": self.right_paddle.thickness,
-            "vertical": self.right_paddle.length,
-            "score": self.right_paddle.score,
+            'x': self.right_paddle.x,
+            'y': self.right_paddle.y,
+            'horizontal': self.right_paddle.thickness,
+            'vertical': self.right_paddle.length,
+            'score': self.right_paddle.score,
         }
         left_paddle_tmp = {
-            "x": self.left_paddle.x,
-            "y": self.left_paddle.y,
-            "horizontal": self.left_paddle.thickness,
-            "vertical": self.left_paddle.length,
-            "score": self.left_paddle.score,
+            'x': self.left_paddle.x,
+            'y': self.left_paddle.y,
+            'horizontal': self.left_paddle.thickness,
+            'vertical': self.left_paddle.length,
+            'score': self.left_paddle.score,
         }
         await self.channel_layer.group_send(self.room_group_name, {
-            "type": "ball.message",
-            "message": "update_ball_pos",
-            "timestamp": dt.utcnow().isoformat(),
-            "player_name": self.player_name,
-            "ball": ball_tmp,
-            "right_paddle": right_paddle_tmp,
-            "left_paddle": left_paddle_tmp,
+            'type': 'ball.message',
+            'message': 'update_ball_pos',
+            'timestamp': dt.utcnow().isoformat(),
+            'player_name': self.player_name,
+            'ball': ball_tmp,
+            'right_paddle': right_paddle_tmp,
+            'left_paddle': left_paddle_tmp,
         })
         return game_continue
 
     async def ball_message(self, data):
-        message = data["message"]
-        timestamp = data["timestamp"]
+        message = data['message']
+        timestamp = data['timestamp']
         if self.player_name != 'player1':
             await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
 
     async def send_game_data(self, game_status, message, timestamp):
         await self.send(text_data=json.dumps({
-            "message": message + f'\n{timestamp}\n\n',
-            "game_status": game_status,
-            "ball": {
-                "x": self.ball.x,
-                "y": self.ball.y,
-                "dx": self.ball.dx,
-                "dy": self.ball.dy,
-                "size": self.ball.size,
+            'message': message + f'\n{timestamp}\n\n',
+            'game_status': game_status,
+            'ball': {
+                'x': self.ball.x,
+                'y': self.ball.y,
+                'dx': self.ball.dx,
+                'dy': self.ball.dy,
+                'size': self.ball.size,
             },
-            "right_paddle": {
-                "x": self.right_paddle.x,
-                "y": self.right_paddle.y,
-                "horizontal": self.right_paddle.thickness,
-                "vertical": self.right_paddle.length,
-                "score": self.right_paddle.score,
+            'right_paddle': {
+                'x': self.right_paddle.x,
+                'y': self.right_paddle.y,
+                'horizontal': self.right_paddle.thickness,
+                'vertical': self.right_paddle.length,
+                'score': self.right_paddle.score,
             },
-            "left_paddle": {
-                "x": self.left_paddle.x,
-                "y": self.left_paddle.y,
-                "horizontal": self.left_paddle.thickness,
-                "vertical": self.left_paddle.length,
-                "score": self.left_paddle.score,
+            'left_paddle': {
+                'x': self.left_paddle.x,
+                'y': self.left_paddle.y,
+                'horizontal': self.left_paddle.thickness,
+                'vertical': self.left_paddle.length,
+                'score': self.left_paddle.score,
             },
         }))
 
@@ -294,9 +284,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.score = left_paddle_data['score']
 
     @database_sync_to_async
-    def auhtnticate_jwt(self, jwt):
+    def authenticate_jwt(self, jwt):
         try:
-            token_backend = TokenBackend(algorithm='HS256', signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
+            token_backend = TokenBackend(algorithm=settings.SIMPLE_JWT['ALGORITHM'],
+                                         signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
             validated_token = token_backend.decode(jwt, verify=True)
             logger.info(f'validated_token= {validated_token}')
             user_id = validated_token['user_id']
@@ -325,6 +316,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
+
+    @database_sync_to_async
+    def update_match_status(self, match_id, score1, score2, game_state):
+        send_data = {
+            'score1': score1,
+            'score2': score2,
+            'status': game_state,
+        }
+        patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
         if self.player_name == 'player1':
