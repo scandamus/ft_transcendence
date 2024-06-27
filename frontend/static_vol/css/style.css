@@ -851,8 +851,11 @@ input.has-input:invalid {
 .unitFriend_header {
   display: flex;
   flex-direction: row-reverse;
+  justify-content: flex-end;
   align-items: center;
   padding-right: 0.5em;
+  flex: 1 1 calc(100% - 160px);
+  min-width: 60%;
 }
 
 .unitFriend_name {
