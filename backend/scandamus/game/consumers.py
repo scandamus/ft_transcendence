@@ -20,19 +20,18 @@ class LoungeSession(AsyncWebsocketConsumer):
         self.user = self.scope['user']
 
     async def receive(self, text_data):
-        logger.info(f"received text_data: {text_data}")
+        logger.info(f'received text_data: {text_data}')
         try:
             text_data_json = json.loads(text_data)
-            logger.info(f"Decoded JSON: {text_data_json}, Type: {type(text_data_json)}")  # 追加: デコード後のデータをログに記録
+            logger.info(f'Decoded JSON: {text_data_json}, Type: {type(text_data_json)}')  # 追加: デコード後のデータをログに記録
             if not isinstance(text_data_json, dict):
-                logger.error(f"Type error: Expected dict, got {type(text_data_json).__name__}")
-                raise TypeError("Expected text_data_json to be a dict")
+                logger.error(f'Type error: Expected dict, got {type(text_data_json).__name__}')
+                raise TypeError('Expected text_data_json to be a dict')
             msg_type = text_data_json.get('type')
             action = text_data_json.get('action')
             token = text_data_json.get('token')
-            logger.info(f"Action: {action}")
-            logger.info(f"token={token}")
-            # logger.info(f"------------------------------------ {text_data_json['opponentName']}")
+            logger.info(f'Action: {action}')
+            logger.info(f'token={token}')
 
             if msg_type == 'authWebSocket':
                 await handle_auth(self, token)
@@ -67,10 +66,10 @@ class LoungeSession(AsyncWebsocketConsumer):
                 }))
 
         except json.JSONDecodeError as e:
-            logger.error(f"JSON decode error: {str(e)}")
+            logger.error(f'JSON decode error: {str(e)}')
             await self.close()
         except AttributeError as e:
-            logger.error(f"aaaAttribute error: {str(e)}")
+            logger.error(f'aaaAttribute error: {str(e)}')
             await self.close()
 
     async def disconnect(self, close_code):
