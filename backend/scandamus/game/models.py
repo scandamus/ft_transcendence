@@ -75,7 +75,7 @@ class Match(models.Model):
         max_length=10,
         choices=[
             ('before', '対戦前'),
-            ('ongoing', '対戦中'),
+            ('ongoing', '対戦中'), # 現在未使用
             ('after', '対戦後')
         ],
         default='before',
@@ -104,8 +104,7 @@ class Match(models.Model):
     def __str__(self):
         player_names = ", ".join([str(player) for player in [self.player1, self.player2, self.player3, self.player4] if player])
         return f"{player_names} - Round: {self.round} on {self.tournament}"
-#        return f"{self.player1} vs {self.player2} - Round: {self.round} on {self.tournament}"
-
+    
     class Meta:
         verbose_name = '対戦'
 
@@ -118,6 +117,16 @@ class Match(models.Model):
             raise ValidationError(f'{self.game_name} requires {required_players} players')
         if len(set(actual_players)) != len(actual_players):
             raise ValidationError('Players cannnot be the same')          
+
+    def delete(self, *args, **kwargs): # 万一、試合中のMatchを削除する場合に関連するPlayerのstatusを変更するオーバーライド
+        if self.status != 'after':
+            players = [self.player1, self.player2, self.player3, self.player4]
+            for player in players:
+                if player and player.current_match == self:
+                    player.status = 'waiting'
+                    player.current_match = None
+                    player.save()
+        super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         self.full_clean()
