@@ -14,7 +14,7 @@ from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
-async def send_match_jwt(consumer, from_username, game_name='pong'):
+async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
     player1 = await get_player_by_username(from_username)
     player2 = consumer.player
     match = await create_match(player1, player2)
@@ -23,16 +23,22 @@ async def send_match_jwt(consumer, from_username, game_name='pong'):
         game_token = await issue_jwt(player.user, player.id, match.id, game_name)
         websocket = consumer.players.get(player.user.username)
         player_name = 'player1' if player == player1 else 'player2'
-        await websocket.send(text_data=json.dumps({
-            'type': 'gameSession',
-            'game_name': game_name,
-            'jwt': game_token,
-            'username': player.user.username,
-            'match_id': match.id,
-            'player_name': player_name
-        }))
+        try:
+            await websocket.send(text_data=json.dumps({
+                'type': 'gameSession',
+                'game_name': game_name,
+                'jwt': game_token,
+                'username': player.user.username,
+                'match_id': match.id,
+                'player_name': player_name
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send message to {player.user.username}: {e}')
 
-async def send_match_jwt_to_all(consumer, players_list, game_name):
+        await update_player_status_and_match(player, match, 'frined_match')
+        
+
+async def send_lounge_match_jwt_to_all(consumer, players_list, game_name):
     match = await create_match_universal(players_list, game_name)
     for index, player_info in enumerate(players_list):
         player = player_info['player']
@@ -41,14 +47,19 @@ async def send_match_jwt_to_all(consumer, players_list, game_name):
         game_token = await issue_jwt(user, player_id, match.id, game_name)
         websocket = player_info['websocket']
         player_name = f'player{index + 1}'
-        await websocket.send(text_data=json.dumps({
-            'type': 'gameSession',
-            'game_name': game_name, 
-            'jwt': game_token,
-            'username': player.user.username,
-            'match_id': match.id,
-            'player_name': player_name            
-        }))
+        try:
+            await websocket.send(text_data=json.dumps({
+                'type': 'gameSession',
+                'game_name': game_name, 
+                'jwt': game_token,
+                'username': player.user.username,
+                'match_id': match.id,
+                'player_name': player_name            
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send message to {player.user.username}: {e}')
+        
+        await update_player_status_and_match(player, match, 'lounge_match')
 
 @database_sync_to_async
 def get_user_by_player(player):
@@ -141,3 +152,9 @@ def authenticate_token(token):
 
 def get_required_players(game_name):
     return 4 if game_name == 'pong4' else 2
+
+@database_sync_to_async
+def update_player_status_and_match(player, match, status):
+    player.status = status
+    player.current_match = match
+    player.save()
