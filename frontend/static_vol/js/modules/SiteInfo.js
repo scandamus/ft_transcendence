@@ -16,7 +16,7 @@ class SiteInfo {
         if (urlAvatar) {
             this.avatar = `${urlAvatar}`;
         } else {
-            this.avatar = `/static/uploads/avatar/avatar_default.png`;
+            this.avatar = `/images/avatar_default.png`;
         }
     }
 
