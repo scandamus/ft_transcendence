@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
+from PIL import Image
 
 def get_default_user():
     try:
@@ -65,6 +66,25 @@ class Player(models.Model):
         verbose_name="登録日時"
     )
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.avatar:
+            self._resize_avatar()
+
+    def _resize_avatar(self):
+        avatar_path = self.avatar.path
+        with Image.open(avatar_path) as img:
+            width, height = img.size
+            min_dim = min(width, height)
+            left = (width - min_dim) / 2
+            top = (height - min_dim) / 2
+            right = (width + min_dim) / 2
+            bottom = (height + min_dim) / 2
+            img = img.crop((left, top, right, bottom))
+            img = img.resize((200, 200), Image.Resampling.LANCZOS)
+            img.save(avatar_path)
 
     def __str__(self):
         return f"{self.user.username}"

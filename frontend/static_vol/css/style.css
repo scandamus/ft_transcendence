@@ -1790,8 +1790,9 @@ input.has-input:invalid {
 }
 
 .blockAvatar_avatar img {
-  width: 100%;
-  height: auto;
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
 }
 
 .blockAvatar_button {
