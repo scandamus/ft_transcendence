@@ -49,7 +49,7 @@ export default class Dashboard extends PageBase {
                         <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockDashboardLog">
-                        <h3 class="blockDashboardLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
+                        <h3 class="blockDashboardLog_title unitTitle1">${labels.tournament.labelTournamentLog}</h3>
                         <div class="blockDashboardLog_listTournament listLineDivide">
                             <section class="unitTournamentResult unitTournament-link">
                                 <a href="/tournament/detail_id" data-link>
@@ -76,8 +76,8 @@ export default class Dashboard extends PageBase {
                         </div>
                     </section>
                     <section class="blockDashboardLog">
-                        <h3 class="blockDashboardLog_title unitTitle1">${labels.tournament.labelTournamentLog}</h3>
-                        <div class="blockDashboardLog_listTournament listLineDivide">
+                        <h3 class="blockDashboardLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
+                        <div class="blockDashboardLog_listMatch listLineDivide">
                             <div class="blockMatch">
                                 <section class="blockMatch_player unitMatchPlayer">
                                     <header class="unitMatchPlayer_header">
