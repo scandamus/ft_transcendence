@@ -19,7 +19,6 @@ class MatchViewSet(ModelViewSet):
     authentication_classes = [InternalNetworkAuthentication] #[JWTAuthentication]
     permission_classes =[AllowAny] #[permissions.IsAuthenticated]
 
-
 class EntryViewSet(ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer

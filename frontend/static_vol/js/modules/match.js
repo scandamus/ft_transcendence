@@ -9,7 +9,6 @@ const join_game = async (opponentName=null) => {
     try {
         const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
-        console.log("------------------------------", opponentName);
         webSocketManager.sendWebSocketMessage('lounge', {
             action: 'joinGame',
             token: accessToken.token,
