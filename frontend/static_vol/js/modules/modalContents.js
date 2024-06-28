@@ -1,5 +1,5 @@
 const sendMatchRequest = (args) => `
-    <section class="blockModal" data-modal-game_name="${args.game_name}" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}">
+    <section class="blockModal" data-modal-game_name="${args.game_name}" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}" data-modal-match_type="${args.matchType}">
         <h2 class="blockModal_title">${args.titleModal}</h2>
         <section class="blockOpponent">
             <h4 class="blockOpponent_name">${args.username}</h4>
@@ -32,7 +32,7 @@ const receiveMatchRequest = (args) => `
 `;
 
 const waitForOpponent = (args) => `
-    <section class="blockModal" data-modal-game_name="${args.game_name}" data-modal-number_of_players="${args.number_of_players}" data-modal-match_type="${args.MatchType}">
+    <section class="blockModal" data-modal-game_name="${args.game_name}" data-modal-number_of_players="${args.number_of_players}" data-modal-match_type="${args.matchType}">
         <h2 class="blockModal_title">${args.titleModal}</h2>
         <ul class="blockModal_capacity unitCapacity">
             <li class="unitCapacity_numerator">
