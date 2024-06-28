@@ -114,4 +114,10 @@ export const labels_he = {
         accepted: '$name הזה עברית ',
         removed: '$name הזה עברית ',
     },
+    matchRequest: {
+        accepted: 'הזה עברית ',
+        cancelled: 'הזה עברית ',
+        rejected: 'הזה עברית ',
+        userOffline: 'הזה עברית ',
+    },
 };

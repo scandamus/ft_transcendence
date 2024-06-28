@@ -58,7 +58,7 @@ export const labels_ja = {
     },
     lounge: {
         title: 'Lounge',
-        labelMatch: '対戦する',
+        labelMatch: '参加する',
         labelCreateRoom: '部屋を作成',
         labelDualGame: '2人対戦',
         labelQuadGame: '4人対戦',
@@ -113,5 +113,11 @@ export const labels_ja = {
         received: '$name さんから友達申請が来ました',
         accepted: '$name さんが友達申請を承認しました',
         removed: '$name さんと友達じゃなくなりました',
+    },
+    matchRequest: {
+        accepted: '対戦が始まります',
+        cancelled: '対戦がキャンセルされました',
+        rejected: '相手は対戦したくない気分です',
+        userOffline: '相手はオフラインです',
     },
 };

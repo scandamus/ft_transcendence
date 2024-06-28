@@ -14,7 +14,7 @@ export default class Friends extends PageBase {
     constructor(params) {
         super(params);
         Friends.instance = this;
-        this.title = 'Friends';
+        this.title = labels.friends.title;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
 

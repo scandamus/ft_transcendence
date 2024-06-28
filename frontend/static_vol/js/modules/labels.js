@@ -17,11 +17,12 @@ export const languageLabels = {
 };
 
 export const getCurrentLanguageLabels = (lang) => {
-    return languageLabels[lang || localStorage.getItem('configLang')] || labels_en;
+    const label = languageLabels[lang || localStorage.getItem('configLang')] || labels_en;
+    return label;
 }
 
 //export const labels = labels_ja;
-export const labels = getCurrentLanguageLabels();
+export const labels = getCurrentLanguageLabels('');
 
 export const switchLabels = (lang) => {
     Object.assign(labels, getCurrentLanguageLabels(lang));

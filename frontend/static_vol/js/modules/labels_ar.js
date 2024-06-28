@@ -114,4 +114,10 @@ export const labels_ar = {
         accepted: '$name يؤُلاءِ العربية',
         removed: '$name يؤُلاءِ العربية',
     },
+    matchRequest: {
+        accepted: 'يؤُلاءِ العربية',
+        cancelled: 'يؤُلاءِ العربية',
+        rejected: 'يؤُلاءِ العربية',
+        userOffline: 'يؤُلاءِ العربية',
+    },
 };
