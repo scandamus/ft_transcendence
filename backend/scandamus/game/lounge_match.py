@@ -29,7 +29,10 @@ async def handle_join_lounge_match(consumer, token, game_name):
     player = await get_player_by_user(user)
     if not player:
         logger.error(f"No player found for user: {user.username}")
-    
+    if player.status != 'waiting':
+        logger.error(f'{user.username} can not request new game as playing the match')
+        return
+
     async with consumer.matchmaking_lock:
         if game_name not in consumer.gamePlayers:
             consumer.gamePlayers[game_name] = {}
