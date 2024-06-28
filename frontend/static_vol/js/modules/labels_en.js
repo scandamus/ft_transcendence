@@ -58,7 +58,7 @@ export const labels_en = {
     },
     lounge: {
         title: 'Lounge',
-        labelMatch: 'start a match',
+        labelMatch: 'enter',
         labelCreateRoom: 'create a room',
         labelDualGame: '2-player match',
         labelQuadGame: '4-player match',
@@ -113,5 +113,11 @@ export const labels_en = {
         received: '$name has sent you a friend request',
         accepted: '$name has accepted your friend request',
         removed: '$name is no longer your friend',
+    },
+    matchRequest: {
+        accepted: 'game is starting',
+        cancelled: 'opponent cancelled the match',
+        rejected: 'opponent has rejected to play',
+        userOffline: 'opponent is offline',
     },
 };
