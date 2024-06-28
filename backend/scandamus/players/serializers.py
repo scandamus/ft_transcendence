@@ -95,7 +95,12 @@ class UsernameSerializer(serializers.ModelSerializer):
 class FriendRequestSerializer(serializers.ModelSerializer):
     from_user = serializers.CharField(source='from_user.user.username')
     to_user = serializers.CharField(source='to_user.user.username')
+    from_user_avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = FriendRequest
-        fields = ['id', 'from_user', 'to_user', 'created_at']
+        fields = ['id', 'from_user', 'to_user', 'from_user_avatar', 'created_at']
+
+    def get_from_user_avatar(self, obj):
+        player = Player.objects.get(user=obj.from_user.user)
+        return player.avatar.url if player.avatar else ''
