@@ -6,13 +6,17 @@ services:
       - "8001:8001"
     volumes:
       - ./backend/scandamus:/app
+    depends_on:
+      - redis
     environment:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - SECRET_KEY=${SECRET_KEY}
+      - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
+      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
+      - CHANNEL_SECRET_KEY=${BACKEND_CHANNEL_SECRET_KEY}
       - DEBUG=${DEBUG}
-      - SIGNING_KEY=${SIGNING_KEY}
+      - BACKEND_JWT_SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}
       - DJANGO_SU_USER=${DJANGO_SU_USER}
       - DJANGO_SU_MAIL=${DJANGO_SU_MAIL}
       - DJANGO_SU_PASSWORD=${DJANGO_SU_PASSWORD}
@@ -22,12 +26,14 @@ services:
       - DJANGO_PLAYER2_USER=${DJANGO_PLAYER2_USER}
       - DJANGO_PLAYER2_MAIL=${DJANGO_PLAYER2_MAIL}
       - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+    restart: always
 
   frontend:
     build:
       context: ./frontend
     environment:
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_KEY=${FRONTEND_SECRET_KEY}
       - DEBUG=${DEBUG}
       - CERTS=${CERTS}
       - COUNTRY=${COUNTRY}
@@ -39,12 +45,15 @@ services:
       - EMAIL=${EMAIL}
       - DOMAIN_NAME=${DOMAIN_NAME}
     container_name: frontend
+    depends_on:
+      - backend
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./frontend/static_vol:/var/www/html
       - ${CERTS}:/etc/nginx/ssl
+    restart: always
 
   db:
     image: postgres:13
@@ -57,16 +66,50 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - "5432:5432"
+    restart: always
 
   pong-server:
     build: pong-server
     container_name: pong-server
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SIGNING_KEY=${PONG_SERVER_SIGNING_KEY}
+      - SECRET_KEY=${PONG_SERVER_SECRET_KEY}
+      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
+      - CHANNEL_SECRET_KEY=${PONG_SERVER_CHANNEL_SECRET_KEY}
+      - POSTGRES_USER=${DB_USER}
     depends_on:
       - redis
     ports:
       - "8002:8002"
+    restart: always
+    volumes:
+      - ./pong-server/game-server:/app
+
+  pong4-server:
+    build: pong4-server
+    container_name: pong4-server
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SIGNING_KEY=${PONG_SERVER_SIGNING_KEY}
+      - SECRET_KEY=${PONG_SERVER_SECRET_KEY}
+      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
+      - CHANNEL_SECRET_KEY=${PONG_SERVER_CHANNEL_SECRET_KEY}
+      - POSTGRES_USER=${DB_USER}
+    depends_on:
+      - redis
+    ports:
+      - "8003:8003"
+    restart: always
+    volumes:
+      - ./pong4-server/game-server:/app
 
   redis:
     image: redis:7
+    restart: always
   # ports:
   #   - "6379:6379"

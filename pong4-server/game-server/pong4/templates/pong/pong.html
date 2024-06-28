@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -21,7 +22,12 @@
         </style>
 </head>
 <body>
+    <textarea id="pong-log" cols="100" rows="20"></textarea><br>
+    <input id="pong-message-input" type="text" size="100"><br>
+    <input id="pong-message-submit" type="button" value="Send">
+    {{ room_name|json_script:"room-name" }}
+
 	<canvas id="pongcanvas" width="600" height="300"></canvas>
-    <script src="pong.js"></script>
+    <script src="{% static 'js/pong.js' %}"></script>
 </body>
 </html>

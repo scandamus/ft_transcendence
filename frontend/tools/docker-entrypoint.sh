@@ -34,4 +34,43 @@ if [ ! -f /etc/nginx/ssl/server.key ] || [ ! -f /etc/nginx/ssl/server.crt ]; the
     openssl req -newkey rsa:2048 -x509 -nodes -days 365 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -config config.tmp
 fi
 
+echo "Waiting for backend booting..."
+for i in {30..0}; do
+    if nc -z backend 8001; then
+        echo "backend OK"
+	    break;
+    fi
+    if [ $i -eq 0 ]; then
+        echo "bakcend not reachable"
+        exit 1
+    fi
+    sleep 1
+done
+
+echo "Waiting for pong-server booting..."
+for i in {30..0}; do
+    if nc -z pong-server 8002; then
+        echo "pong-server OK"
+	    break;
+    fi
+	if [ $i -eq 0 ]; then
+        echo "pong-server not reachable"
+        exit 1
+    fi
+    sleep 1
+done
+
+echo "Waiting for pong4-server booting..."
+for i in {30..0}; do
+    if nc -z pong4-server 8003; then
+        echo "pong4-server OK"
+	    break;
+    fi
+	if [ $i -eq 0 ]; then
+        echo "pong4-server not reachable"
+        exit 1
+    fi
+    sleep 1
+done
+
 exec "$@"

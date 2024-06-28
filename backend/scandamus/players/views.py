@@ -1,24 +1,25 @@
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from rest_framework import viewsets, renderers, status
-from .models import Player
-from .serializers import PlayerSerializer
+from rest_framework import viewsets, renderers, status, generics
+from .models import Player, FriendRequest
+from django.contrib.auth.models import User
+from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # from django.http import JsonResponse
-# from .models import UserProfile
-# from django.contrib.auth.models import User
 # from django.views.decorators.csrf import csrf_exempt
 # from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.hashers import make_password
 # from django.contrib.auth import authenticate, login, logout
 # from django.views.decorators.http import require_POST
-# from django.contrib.auth.password_validation import validate_password
 # from django.core.exceptions import ValidationError
 
 
@@ -28,78 +29,39 @@ class PlayersViewSet(viewsets.ModelViewSet):
     serializer_class = PlayerSerializer
     renderer_classes = [renderers.JSONRenderer]
     template_name = None
-#
-#
-# def getUserProfile(request, username):
-#     try:
-#         userProfile = UserProfile.objects.get(user__username=username)
-#         data = {
-#             "username": userProfile.user.username if userProfile.user else None,
-#             "email": userProfile.user.email if userProfile.user else None,
-#             "level": userProfile.level,
-#             "createdDate": userProfile.createdDate,
-#             "playCount": userProfile.playCount,
-#             "winCount": userProfile.winCount
-#         }
-#         return JsonResponse(data)
-#     except UserProfile.DoesNotExist:
-#         return JsonResponse({"error": "User not found"}, status=404)
-#
-# @login_required
-# def userProfile(request):
-#     try:
-#         user_profile = UserProfile.objects.get(user=request.user)
-#         data = {
-#             "username": request.user.username,
-#             "email": request.user.email,
-#             "level": user_profile.level,
-#             "createdDate": user_profile.createdDate.strftime('%Y-%m-%d %H:%M:%S'),
-#             "playCount": user_profile.playCount,
-#             "winCount": user_profile.winCount
-#         }
-#         return JsonResponse(data)
-#     except UserProfile.DoesNotExist:
-#         return JsonResponse({"error": "User profile not found"}, status=404)
-#
-# def registerUser(request):
-#     if request.method == 'POST':
-#         try:
-#             data = request.POST
-#             username = data.get('username')
-#             email = data.get('email')
-#             password = data.get('password')
-#
-#             validate_password(password, request.user)
-#
-#             if User.objects.filter(username=username).exists():
-#                 return JsonResponse({'error': 'Username already exists'}, status=400)
-#
-#             user = User.objects.create(
-#                 username=username,
-#                 email=email,
-#                 password=make_password(password)
-#             )
-#             user.save()
-#
-#             return JsonResponse({'message': 'User created successfully'}, status=201)
-#         except Exception as e:
-#             return JsonResponse({'error': str(e)}, status=500)
-#     else:
-#         return JsonResponse({'error': 'Invalid request'}, status=400)
-#
-# def loginUser(request):
-#     username = request.POST.get('username')
-#     password = request.POST.get('password')
-#     user = authenticate(request, username=username, password=password)
-#     if user is not None:
-#         login(request, user)
-#         return JsonResponse({'message': 'Login successful'}, status=200)
-#     else:
-#         return JsonResponse({'message': 'Invalid username or password'}, status=401)
+
+
+class ValidateView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"message": "Validation successful"}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegisterView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            # パスワードをハッシュ化して保存
+            hashed_password = make_password(validated_data['password'])
+            new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
+            new_user.save()
+            return Response({'message': 'User created successfully.'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = []
     permission_classes = []
 
     def post(self, request):
@@ -179,3 +141,33 @@ class UserInfoView(APIView):
 #             'user_id': user.pk,
 #             'username': user.username
 #         })
+
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        queryset = (
+            User.objects.all()
+            .filter(is_superuser=False)
+            .exclude(id=self.request.user.id)
+        )
+        return queryset
+
+class FriendListView(generics.ListAPIView):
+    serializer_class = UsernameSerializer # PlayerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        player = Player.objects.get(user=user)
+        return player.friends.all()
+    
+class FriendRequestListView(generics.ListAPIView):
+    serializer_class = FriendRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        player = Player.objects.get(user=user)
+        return FriendRequest.objects.filter(to_user=player)
+    

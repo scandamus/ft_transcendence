@@ -4,15 +4,18 @@
 import PageBase from '../components/PageBase.js';
 import Home from '../components/Home.js';
 import PageList from '../components/PageList.js';
-import User from '../components/User.js';
+import Dashboard from '../components/Dashboard.js';
+import Friends from '../components/Friends.js';
+import Lounge from '../components/Lounge.js';
 import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
 import GamePlay from '../components/GamePlay.js';
-import GameMatch from '../components/GameMatch.js';
-import TournamentEntry from '../components/TournamentEntry.js';
-import TournamentMatch from '../components/TournamentMatch.js';
+import Tournament from '../components/Tournament.js';
+import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
+
+import { closeModalOnCancel, closeModal } from './modal.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = {
@@ -21,12 +24,12 @@ const routes = {
     register: {path: '/register', view: UserRegister, isProtected: false},
     registerConfirm: {path: '/register/confirm', view: UserRegisterConfirm, isProtected: false},
     registerComplete: {path: '/register/complete', view: UserRegisterComplete, isProtected: false},
-    user: {path: '/user', view: User, isProtected: true},
-    gamePlay: {path: '/game/play', view: GamePlay, isProtected: true},
-    gameMatch: {path: '/game/match', view: GameMatch, isProtected: true},
-    tournamentEntry: {path: '/tournament/entry', view: TournamentEntry, isProtected: true},
-    tournamentMatch: {path: '/tournament/match', view: TournamentMatch, isProtected: true},
-    //userId:  { path: '/user/:id', components: user },
+    dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
+    friends:  { path: '/friends', view: Friends, isProtected: true },
+    lounge: {path: '/lounge', view: Lounge, isProtected: true},
+    gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
+    tournament: {path: '/tournament', view: Tournament, isProtected: true},
+    TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
 };
 
 //認証の必要なページ
@@ -48,39 +51,61 @@ const getParams = (matchRoute) => {
     }));
 };
 
+const linkSpa = async (ev) => {
+    console.log("call linkSpa")
+    ev.preventDefault();
+    const link = (ev.target.tagName === 'a') ? ev.target.href : ev.target.closest('a').href;
+    if (window.location.href === ev.target.href || !link) {
+        return;
+    }
+    history.pushState(null, null, link);
+    try {
+        await router(getToken('accessToken'));
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 const addLinkPageEvClick = (linkPages) => {
+    console.log(`length:${linkPages.length}`)
     linkPages.forEach((linkPage) => {
-        linkPage.addEventListener('click', async (ev) => {
-            ev.preventDefault();
-            if (window.location.href === ev.target.href) {
-                return;
-            }
-            history.pushState(null, null, ev.target.href);
-            try {
-                await router(getToken('accessToken'));
-            } catch (error) {
-                console.error(error);
-            }
-        });
+        linkPage.addEventListener('click', linkSpa);
     });
 }
 
-//認証の必要なページかチェック(protectedRoutesに定義したディレクトリ名始まりか判定)
-const checkProtectedRoute = (path) => {
-    return (protectedRoutes.some(route => route.test(path)));
+const replaceView = async (matchRoute) => {
+    const view = new matchRoute.route.view(getParams(matchRoute));
+    if (view) {
+        //モーダルが開いていたら閉じる
+        //todo: openModal後のフローに組み込む方がよさそう
+        const elModal = document.querySelector('.blockModal');
+        if (elModal) {
+            if (matchRoute.route.path === routes.gamePlay.path) {
+                closeModal();
+            } else {
+            closeModalOnCancel();
+            }
+        }
+        //view更新
+        document.getElementById('app').innerHTML = await view.renderHtml();
+        view.afterRender();
+    }
 }
 
-const router = async (isLogin) => {
-    if (isLogin instanceof PopStateEvent) {
-        isLogin = getToken('accessToken');
+const router = async (accessToken) => {
+    if (accessToken instanceof PopStateEvent) {
+        accessToken = getToken('accessToken');
     }
+
+    console.log('router in');
     const mapRoutes = Object.keys(routes).map(key => {
-    const route = routes[key];
-    return {
-        route: route,
-        result: location.pathname.match(pathToRegex(route.path))
-    };
-});
+        const route = routes[key];
+        return {
+            route: route,
+            result: location.pathname.match(pathToRegex(route.path))
+        };
+    });
+    //実際の遷移先パスを取得
     let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
     if (!matchRoute) {//todo:404はpage_listに移動(暫定)
         matchRoute = {
@@ -93,35 +118,32 @@ const router = async (isLogin) => {
     //非ログイン状態で要認証ページにアクセス => ログインにリダイレクト
     //ログイン状態で非認証ページにアクセス => userにリダイレクト
     //ログイン状況を問わずアクセスできるページは、現状page_listのみ
-    if (!isLogin && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
+    if (!accessToken && matchRoute.route.isProtected && matchRoute.result !== routes.pageList.path) {
         window.history.pushState({}, '', routes.login.path);
         matchRoute = {
             route: routes.login,
             result: routes.login.path
         };
-    } else if (isLogin && matchRoute.route.isProtected === false) {
+    } else if (accessToken && matchRoute.route.isProtected === false) {
         //todo: page_list削除時に === false条件削除
-        window.history.pushState({}, '', routes.user.path);
+        window.history.pushState({}, '', routes.dashboard.path);
         matchRoute = {
-            route: routes.user,
-            result: routes.user.path
+            route: routes.dashboard,
+            result: routes.dashboard.path
         };
     }
 
-    const view = new matchRoute.route.view(getParams(matchRoute));
-    if (view) {
-        //前画面のeventListenerをrm
-        const oldView = PageBase.instance;
-        if (oldView) {
-            oldView.destroy();
-        }
-        //view更新
-        document.getElementById('app').innerHTML = await view.renderHtml();
-        view.afterRender();
-        //todo: ↓afterRenderに統合
-        const linkPages = document.querySelectorAll('#app a[data-link]');
-        addLinkPageEvClick(linkPages);
+
+    const oldView = PageBase.instance;
+    if (oldView) {
+        // 2画面目以降
+        console.log("/*/*/ oldView.constructor.name::" + oldView.constructor.name);
+        oldView.destroy();
+    // } else {
+    //     // 初回
+    //     await replaceView(matchRoute);
     }
+    await replaceView(matchRoute);
 };
 
-export { addLinkPageEvClick, router };
+export { addLinkPageEvClick, router, routes, linkSpa };

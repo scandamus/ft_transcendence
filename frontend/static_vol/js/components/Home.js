@@ -3,12 +3,19 @@
 import PageBase from './PageBase.js';
 import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
+import { webSocketManager } from '../modules/websocket.js';
+import { pongHandler } from '../modules/WebsocketHandler.js';
+import { SiteInfo } from "../modules/SiteInfo.js";
+import { labels } from '../modules/labels.js';
+//import { openWebSocket } from '../modules/websocket.js';
 
-export default class extends PageBase {
+export default class LogIn extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('LOGIN');
-        this.labelButtonLogin = 'ログイン'; // TODO json
+        LogIn.instance = this;
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
     }
@@ -17,22 +24,27 @@ export default class extends PageBase {
         return `
             <form action="" method="post" class="blockForm blockForm-home">
                 <dl class="blockForm_el">
-                    <dt>username</dt>
+                    <dt>${labels.home.labelUsername}</dt>
                     <dd><input type="text" id="loginUsername" placeholder="Enter username"></dd>
                 </dl>
                 <dl class="blockForm_el">
-                    <dt>password</dt>
+                    <dt>${labels.home.labelPassword}</dt>
                     <dd><input type="password" id="loginPassword" placeholder="Enter password"></dd>
                 </dl>
-                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton">${this.labelButtonLogin}</button></p>
+                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>
             </form>
+            <hr />
+            <dl class="blockSignUp">
+                <dt class="blockSignUp_txt">${labels.home.textSignUp}</dt>
+                <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${labels.home.labelLinkSignUp}</a></dd>
+            </dl>
         `;
     }
 
     listenLogin() {
         const btnLogin = document.getElementById('btnLoginForm');
-        btnLogin.addEventListener('click', this.handleLogin.bind(this));
-        this.addListenEvent(btnLogin, this.handleLogin, 'click');
+        const boundHandleLogin = this.handleLogin.bind(this);
+        this.addListListenInInstance(btnLogin, boundHandleLogin, 'click');
     }
 
     handleLogin(ev) {
@@ -44,15 +56,17 @@ export default class extends PageBase {
             username: username,
             password: password
         };
-
-        fetch('http://localhost:8001/api/players/login/', {
-            method: 'POST',
+        const siteInfo = new SiteInfo();
+        console.log('Sending data :', data);
+        fetch('https://localhost/api/players/login/', {
+                method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         })
             .then(response => {
+                console.log('Response status: ', response.status);
                 if (!response.ok) {
                     throw new Error('Login failed with status: ' + response.status);
                 }
@@ -61,14 +75,31 @@ export default class extends PageBase {
             .then(data => {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
+                webSocketManager.openWebSocket('lounge', pongHandler)
+                    .then(() => {
+                        //return webSocketManager.sendAccessToken('lounge');
+                        return;
+                    })
+                    .catch((error) => {
+                        console.error('WebSocket connection or token send failed', error);
+                    });
                 return getUserInfo();
             })
-            .then((userData) => {
-                switchDisplayAccount(userData);//not return
-                router(true);
+            .then((data) => {
+                if (data) {
+                    siteInfo.setUsername(data.username);
+                    switchDisplayAccount(siteInfo.getUsername())
+                        .then(() => {
+                            router(true).then(() => {});
+                        });
+                }
             })
             .catch(error => {
                 console.error('Login failed:', error);
             });
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

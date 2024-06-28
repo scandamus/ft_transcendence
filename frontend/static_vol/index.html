@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch&family=Noto+Sans+Symbols:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <title>transcendence</title>
 </head>
@@ -19,6 +19,7 @@
     <main class="mainContainer">
         <header class="mainContainer_header mainContainerHeader">
             <h2 id="titlePage" class="mainContainerHeader_title"></h2>
+            <nav id="navBreadcrumb" class="mainContainerHeader_nav"></nav>
         </header>
         <div id="app" class="mainContainer_content">
         </div>
@@ -28,12 +29,18 @@
             <label for="languageSelect">SwitchLanguage:</label>
             <select id="languageSelect">
                 <option value="en">English</option>
-                <option value="jp">日本語</option>
+                <option value="ja">日本語</option>
+                <option value="fr">français</option>
+                <option value="la">latina</option>
+                <option value="he">עברית</option>
+                <option value="ar">العربية</option>
             </select>
         </div>
         <p><a href="/page_list" data-link>PageList</a></p>
     </footer>
 </section>
+<ul id="wrapNotice" class="wrapNotice"></ul>
+<div id="wrapModal" class="wrapModal"></div>
 <script type="module" src="/js/main.js"></script>
 </body>
 </html>

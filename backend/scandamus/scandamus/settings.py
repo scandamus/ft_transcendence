@@ -30,17 +30,18 @@ def get_env_var(var):
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_var('SECRET_KEY')
+SECRET_KEY = get_env_var('BACKEND_SECRET_KEY')
+CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['backend', 'pong-server', 'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,8 +50,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    "rest_framework_simplejwt",
+    'rest_framework_simplejwt.token_blacklist',
+    'channels',
     'players.apps.PlayersConfig',
-    'game.apps.GameConfig'
+    'game.apps.GameConfig',
     # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。
     # 'players',
     # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
@@ -62,7 +66,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware', DRFでは直接APIにPOSTアクセスするので、CSRFはOFFにする
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -79,6 +83,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://localhost:80',
     'https://localhost:443'
 ]
+
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://127.0.0.1']
 
 # クライアントからのリクエストヘッダーに含める項目をカスタマイズ
 # CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -113,6 +119,7 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'scandamus.authentication.InternalNetworkAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'players.auth.CustomJWTAuthentication',
     ],
@@ -126,15 +133,26 @@ AUTHENTICATION_BACKENDS = (
     # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+#JWT_SECRET_KEY = get_env_var('SECRET_KEY')
+
 SIMPLE_JWT = {
-    'SIGNING_KEY': get_env_var('SIGNING_KEY'),
+    'SIGNING_KEY': get_env_var('BACKEND_JWT_SIGNING_KEY'),
     'ALGORITHM': 'HS256',
     'ENCODE': 'utf-8',
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
     'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化
     'UPDATE_LAST_LOGIN': True,
+}
+
+GAME_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=3),
+    'SIGNING_KEY': get_env_var('GAME_JWT_SIGNING_KEY'),
+    'ALGORITHM': 'HS256',
+#    'AUDIENCE': '',
+#    'ISSUER': 'pong-server'
 }
 
 ## ブラウザブルAPIレンダリングをOFFにする場合、下記を有効にする
@@ -151,6 +169,7 @@ SIMPLE_JWT = {
 
 WSGI_APPLICATION = 'scandamus.wsgi.application'
 
+ASGI_APPLICATION = 'scandamus.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -173,13 +192,7 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
@@ -202,8 +215,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -216,9 +231,12 @@ LOGGING = {
     'handlers': {
         'console': {
             'level': 'DEBUG',
-            'class': 'logging.StreamHandler',  # コンソールに出力
-            'stream': 'ext://sys.stdout',      # 標準出力にログを直接出力
+            'class': 'logging.StreamHandler',
         },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
     },
     'loggers': {
         'django': {
@@ -226,5 +244,28 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'scandamus' : {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+            'symmetric_encryption_keys': [CHANNEL_SECRET_KEY],
+            'expiry': 3600,
+            'prefix': 'scandamus',
+        },
+    },
+}
+
