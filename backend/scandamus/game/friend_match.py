@@ -7,7 +7,7 @@ from .models import Player
 from .models import Match
 from django.conf import settings
 from django.db import transaction
-from .match_utils import send_friend_match_jwt, authenticate_token, get_player_by_username, get_player_by_user
+from .match_utils import send_friend_match_jwt, authenticate_token, get_player_by_username, get_player_by_user, update_player_status
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +53,7 @@ async def handle_request_game(consumer, data):
             logger.error(f'Failed to send to consumer: {e}')
         return
     
+    logger.info(f'opponent player: {opponent_name} status {opponent_player.status}')
     if opponent_player.status != 'waiting':
         logger.info(f'Opppnent player: {opponent_name} is not in waiting status')
         try:
@@ -82,6 +83,10 @@ async def handle_request_game(consumer, data):
                 'request_id': request_id,
             }))
             logger.info(f'Sent to opponent {opponent_name}')
+            await update_player_status(player, 'friend_waiting')
+            await update_player_status(opponent_player, 'friend_waiting')
+            logger.info(f'player.status:{user.username} status:{player.status}')
+            logger.info(f'opponent_player:{opponent_name} status:{player.status}')
         except Exception as e:
             logger.error(f'Failed to send message to {opponent_name}: {e}')
     else:
@@ -165,9 +170,14 @@ async def handle_reject_game(consumer, data):
             logger.error(f'Error in handle_reject_game: invalid request for reject ID:{request_id} from {consumer.username}')
             return
 
+        to_player = await get_player_by_username(to_username)
+        update_player_status(to_player, 'waiting')
+        
         from_username = request['from_username']
         if from_username in consumer.players:
             from_socket = consumer.players[from_username]
+            from_player = await get_player_by_username(from_username)
+            update_player_status(from_player, 'waiting')
             await from_socket.send(text_data=json.dumps({
                 'type': 'friendMatchRequest',
                 'action': 'rejected',
@@ -187,11 +197,16 @@ async def handle_cancel_game(consumer, data):
     try:
         request_id = f'{consumer.user.username}_vs_{opponent_name}'
         if not request_id in LoungeSession.pending_requests:
+            logger.error(f'{consumer.user.username} request cancel invalid friend request {request_id}')
             return
         
         request = LoungeSession.pending_requests.pop(request_id)
+        await update_player_status(consumer.player, 'waiting')
+
         to_username = request['to_username']
         if to_username in consumer.players:
+            to_player = await get_player_by_username(to_username)
+            await update_player_status(to_player, 'waiting')
             await consumer.players[to_username].send(text_data=json.dumps({
                 'type': 'friendMatchRequest',
                 'action': 'cancelled',                
