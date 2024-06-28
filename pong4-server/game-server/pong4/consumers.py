@@ -73,7 +73,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if action == 'authenticate':
             jwt = text_data_json.get('jwt')
-            players_id, player_name, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
+            players_id, player_name, username, jwt_match_id = await self.authenticate_jwt(jwt)
             self.player_name = player_name
 
             if not players_id or not username or not jwt_match_id:
@@ -294,7 +294,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.score = left_paddle_data['score']
 
     @database_sync_to_async
-    def auhtnticate_jwt(self, jwt):
+    def authenticate_jwt(self, jwt):
         try:
             token_backend = TokenBackend(algorithm='HS256', signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
             validated_token = token_backend.decode(jwt, verify=True)
