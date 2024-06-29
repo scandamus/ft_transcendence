@@ -119,8 +119,9 @@ export const labels_ja = {
     },
     matchRequest: {
         accepted: '対戦が始まります',
-        cancelled: '対戦がキャンセルされました',
+        cancelled: '相手が対戦をキャンセルしました',
         rejected: '相手は対戦したくない気分です',
         userOffline: '相手はオフラインです',
+        playerNotWaitingStatus: '相手は取り込み中です',
     },
 };
