@@ -136,6 +136,7 @@ hr {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   box-shadow: 0 3px 10px rgba(24, 28, 28, 0.6);
   backdrop-filter: blur(5px);
   z-index: 1;
@@ -933,17 +934,6 @@ input.has-input:invalid {
 
 .blockFriendRequest .unitFriend {
   margin: 0 20px;
-}
-
-.blockPlayerDetail_thumb {
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.blockPlayerDetail_thumb img {
-  display: inline;
-  width: 160px;
-  height: auto;
 }
 
 .blockPlayerDetail_score {
@@ -1797,4 +1787,44 @@ input.has-input:invalid {
 .unitNotice button {
   background-color: transparent;
   border: none;
+}
+
+/* .blockAvatar */
+.blockAvatar {
+  padding-bottom: 30px;
+}
+
+.blockAvatar_avatar {
+  width: 160px;
+  margin: 0 auto -6px;
+  text-align: center;
+}
+
+.blockAvatar_avatar img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+}
+
+.blockAvatar_button {
+  display: none;
+  width: 200px;
+  margin: 0 auto;
+  text-align: right;
+}
+
+.blockAvatar_button.is-show {
+  display: block;
+}
+
+.blockAvatar_listButton {
+    display: none;
+}
+
+.blockAvatar_listButton.is-show {
+    display: flex;
+}
+
+.formPartsHide {
+  display: none;
 }
