@@ -1,4 +1,5 @@
 from django.core.validators import FileExtensionValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -12,6 +13,13 @@ def get_default_user():
     except ObjectDoesNotExist:
         return None
 
+def validate_image(file):
+    try:
+        img = Image.open(file)
+        img.verify()
+    except (IOError, SyntaxError) as e:
+        raise ValidationError("Invalid image file")
+
 class Player(models.Model):
     user = models.OneToOneField(
         User,
@@ -20,7 +28,7 @@ class Player(models.Model):
     )
     avatar = models.ImageField(
         upload_to='static/uploads/avatar/',
-        validators=[FileExtensionValidator(['jpg', 'png'])],
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png']), validate_image],
         blank=True,
         null=True,
         verbose_name="アバター"
