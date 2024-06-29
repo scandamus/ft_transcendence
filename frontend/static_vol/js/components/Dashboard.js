@@ -199,7 +199,7 @@ export default class Dashboard extends PageBase {
                     imgAvatar.src = ev.target.result;
                     imgAvatar.onerror = () => {
                         isImg = 0;
-                        addNotice('不正なファイルです', true);
+                        addNotice(labels.dashboard.msgInvalidFile, true);
                         imgAvatar.src = this.siteInfo.getAvatar();
                         inputFile.value = '';
                     }
@@ -214,7 +214,7 @@ export default class Dashboard extends PageBase {
                 };
                 fileReader.readAsDataURL(file);
             } else {
-                addNotice('不正なファイル形式です(jpg, pngが設定できます)', true);
+                addNotice(labels.dashboard.msgInvalidFileFormat, true);
                 inputFile.value = '';
             }
         }
@@ -263,11 +263,11 @@ export default class Dashboard extends PageBase {
                 this.siteInfo.setAvatar(data.newAvatar);
                 this.cancelAvatar();
                 await switchDisplayAccount();
-                addNotice('アバターを変更しました', false);
+                addNotice(labels.dashboard.msgAvatarSwitched, false);
             })
             .catch((error) => {
                 console.error('Error upload avatar', error);
-                addNotice('不正なファイルです', true);
+                addNotice(labels.dashboard.msgInvalidFile, true);
                 this.cancelAvatar();
             });
     }

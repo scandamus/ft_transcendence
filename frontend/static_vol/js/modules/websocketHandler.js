@@ -189,6 +189,6 @@ const handleLoungeMatchReceived = (data) => {
         updateModalAvailablePlayers(data.availablePlayers);
     } else if (data.action === 'error') {
         closeModal();
-        alert(`エラー:${data.message}`);
+        alert(`Error: ${data.message}`);
     }
 }

@@ -38,6 +38,9 @@ export const labels_ja = {
 
     dashboard: {
         title: 'Dashboard',
+        msgAvatarSwitched: 'アバターを変更しました',
+        msgInvalidFile: '不正なファイルです',
+        msgInvalidFileFormat: '不正なファイル形式です(jpg, png のみ設定できます)',
     },
     friends: {
         title: 'Friends',
