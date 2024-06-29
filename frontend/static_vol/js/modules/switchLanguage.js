@@ -12,8 +12,8 @@ const switchLanguage = (language) => {
         const selectedLanguage = languageSelect.value;
         console.log('!selectedLanguage! ' + selectedLanguage);
         localStorage.setItem('configLang', selectedLanguage);
-		switchLabels(selectedLanguage);
-		router(getToken('accessToken'));
+        switchLabels(selectedLanguage);
+        router(getToken('accessToken'));
     });
 }
 
