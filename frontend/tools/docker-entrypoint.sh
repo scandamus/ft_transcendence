@@ -34,6 +34,17 @@ if [ ! -f /etc/nginx/ssl/server.key ] || [ ! -f /etc/nginx/ssl/server.crt ]; the
     openssl req -newkey rsa:2048 -x509 -nodes -days 365 -keyout /etc/nginx/ssl/server.key -out /etc/nginx/ssl/server.crt -config config.tmp
 fi
 
+echo "DEBUG environment variable is set to: $DEBUG"
+if [ "$DEBUG" = "True" ]; then
+    echo "Using test_ssl.conf"
+	cp test_ssl.conf /etc/nginx/sites-available/default
+    rm ssl.conf
+else
+    echo "Using ssl.conf"
+	cp ssl.conf /etc/nginx/sites-available/default
+    rm test_ssl.conf
+fi
+
 echo "Waiting for backend booting..."
 for i in {30..0}; do
     if nc -z backend 8001; then
