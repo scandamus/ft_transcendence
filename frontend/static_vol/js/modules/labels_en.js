@@ -38,6 +38,9 @@ export const labels_en = {
 
     dashboard: {
         title: 'Dashboard',
+        msgAvatarSwitched: 'avatar successfully changed',
+        msgInvalidFile: 'file is invalid',
+        msgInvalidFileFormat: 'invalid file format (only .jpg and .png are accepted)',
     },
     friends: {
         title: 'Friends',
@@ -119,5 +122,6 @@ export const labels_en = {
         cancelled: 'opponent cancelled the match',
         rejected: 'opponent has rejected to play',
         userOffline: 'opponent is offline',
+        playerNotWaitingStatus: 'opponent is busy',
     },
 };
