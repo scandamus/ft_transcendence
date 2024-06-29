@@ -44,7 +44,7 @@ export default class Dashboard extends PageBase {
                             <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
                         </div>
                         <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">Change Avatar</button></p>
-                        <input type="file" id="inputAvatarFile" accept="image/*" class="formPartsHide">
+                        <input type="file" id="inputAvatarFile" accept=".jpg, .jpeg, .png" class="formPartsHide">
                         <ul class="blockAvatar_listButton listButton">
                             <li><button type="button" id="btnAvatarCancel" class="unitButton">cancel</button></li>
                             <li><button type="submit" id="btnAvatarUpload" class="unitButton">Upload</button></li>
@@ -114,16 +114,35 @@ export default class Dashboard extends PageBase {
         const imgAvatar = document.getElementById('imgAvatar');
         const btnWrapUpdateAvatar = document.querySelector('.blockAvatar_button');
         const listButton = document.querySelector('.blockAvatar_listButton');
-        const file = ev.target.files[0];
+        const inputFile = ev.target;
+        const file = inputFile.files[0];
+        let isImg = 1;
         if (file) {
-            const fileReader = new FileReader();
-            fileReader.onload = (ev) => {
-                imgAvatar.src = ev.target.result;
-                btnWrapUpdateAvatar.classList.remove('is-show');
-                listButton.classList.add('is-show');
-                this.listenUploadAvatar();
-            };
-            fileReader.readAsDataURL(file);
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (validTypes.includes(file.type)) {
+                const fileReader = new FileReader();
+                fileReader.onload = (ev) => {
+                    imgAvatar.src = ev.target.result;
+                    imgAvatar.onerror = () => {
+                        isImg = 0;
+                        addNotice('不正なファイルです', true);
+                        imgAvatar.src = this.siteInfo.getAvatar();
+                        inputFile.value = '';
+                    }
+                    imgAvatar.onload = () => {
+                        // valid image, image preview
+                        if (isImg && imgAvatar.src.startsWith('data:')) {
+                            btnWrapUpdateAvatar.classList.remove('is-show');
+                            listButton.classList.add('is-show');
+                            this.listenUploadAvatar();
+                        }
+                    }
+                };
+                fileReader.readAsDataURL(file);
+            } else {
+                addNotice('不正なファイル形式です(jpg, pngが設定できます)', true);
+                inputFile.value = '';
+            }
         }
     }
 
@@ -162,8 +181,7 @@ export default class Dashboard extends PageBase {
         })
             .then( async (response) => {
                 if (!response.ok) {
-                    const responseBody = await response.text();
-                    throw new Error(responseBody);
+                    throw new Error(response.status);
                  }
                 return response.json();
             })
@@ -174,8 +192,9 @@ export default class Dashboard extends PageBase {
                 addNotice('アバターを変更しました', false);
             })
             .catch((error) => {
+                console.error('Error upload avatar', error);
+                addNotice('不正なファイルです', true);
                 this.cancelAvatar();
-                console.error('Error:', error);
             });
     }
 
