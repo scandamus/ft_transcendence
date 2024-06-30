@@ -146,17 +146,6 @@ class UserInfoView(APIView):
 #             'username': user.username
 #         })
 
-class UserListView(generics.ListAPIView):
-    serializer_class = UserSerializer
-
-    def get_queryset(self):
-        queryset = (
-            User.objects.all()
-            .filter(is_superuser=False)
-            .exclude(id=self.request.user.id)
-        )
-        return queryset
-
 class FriendListView(generics.ListAPIView):
     serializer_class = UsernameSerializer # PlayerSerializer
     permission_classes = [IsAuthenticated]
