@@ -14,7 +14,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
-from .api_access import get_match_from_api
+from .api_access import get_match_from_api, patch_match_to_api
 
 #from .models import Match
 
@@ -166,6 +166,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
+                    # await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
                     await self.channel_layer.group_send(self.room_group_name, {
                         "type": "send_game_over_message",
                         "message": "GameOver",
@@ -397,6 +398,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
+
+    # @database_sync_to_async
+    # def update_match_status(self, match_id, score1, score2, game_state):
+    #     send_data = {
+    #         'score1': score1,
+    #         'score2': score2,
+    #         'status': game_state,
+    #     }
+    #     patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
         if self.player_name == 'player1':
