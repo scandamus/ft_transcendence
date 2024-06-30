@@ -10,11 +10,11 @@ const updateFriendsList = async (pageInstance) => {
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
         const friends = await fetchFriends();
-        const listFriendsWrappr = document.querySelector('.blockFriends_friends');
-        if (friends.length === 0) {
-            listFriendsWrappr.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
+        const listFriendsWrapper = document.querySelector('.blockFriends_friends');
+        if (!friends || friends.length === 0) {
+            listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
-            listFriendsWrappr.innerHTML = '';
+            listFriendsWrapper.innerHTML = '';
             friends.forEach(friend => {
                 let friendElement = `
                     <section class="unitFriend">
@@ -32,7 +32,7 @@ const updateFriendsList = async (pageInstance) => {
                 friendElement += `</ul>
                     </section>
                 `;
-                listFriendsWrappr.innerHTML += friendElement;
+                listFriendsWrapper.innerHTML += friendElement;
             });
             resetListenFriendList(pageInstance);
         }
@@ -45,9 +45,9 @@ const updateFriendRequestList = async (pageInstance) => {
     console.log('updateFriendRequestList in');
     try {
         const requests = await fetchFriendRequests();
-            const secRequestWrapper = document.querySelector('.blockFriendRequest');
-            const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (requests.length === 0) {
+        const secRequestWrapper = document.querySelector('.blockFriendRequest');
+        const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
+        if (!requests || requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
             }
