@@ -159,7 +159,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if key in ['ArrowRight', 'd']:
             self.right_pressed = is_pressed
-        elif key in ['s', 'ArrowDown']:
+        elif key in ['a', 'ArrowLeft']:
             self.left_pressed = is_pressed
         horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
 
