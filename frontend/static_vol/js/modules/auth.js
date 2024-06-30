@@ -4,6 +4,7 @@ import { getToken, refreshAccessToken } from './token.js';
 import { handleLogout } from './logout.js';
 import PageBase from '../components/PageBase.js';
 import { labels } from './labels.js';
+import { SiteInfo } from "./SiteInfo.js";
 
 const fetchUserInfo = async (isRefresh) => {
     const accessToken = getToken('accessToken');
@@ -66,12 +67,15 @@ const showMenu = () => {
     }
 }
 
-const switchDisplayAccount = async (username) => {
+const switchDisplayAccount = async () => {
+    const siteInfo = new SiteInfo();
+    const username = siteInfo.getUsername();
+    const avatar = siteInfo.getAvatar();
     if (username) {
         document.getElementById('headerAccount').innerHTML = `
             <header id="btnNavHeader" class="headerNav headerNav-login">
                 <h2>${username}</h2>
-                <p class="thumb"><img src="//ui-avatars.com/api/?name=${username}&background=e3ad03&color=ffffff" alt="" width="30" height="30"></p>
+                <p class="thumb"><img src="${avatar}" alt="" width="30" height="30"></p>
             </header>
             <nav id="navGlobal" class="navGlobal">
                 <ul class="navGlobal_list navList">

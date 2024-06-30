@@ -14,14 +14,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             .then(data => {
                 if (data) {
                     siteInfo.setUsername(data.username);
+                    siteInfo.setAvatar(data.avatar);
                 }
             })
-        const username = siteInfo.getUsername();
-        if (username) {
-            await switchDisplayAccount(username);
+        await switchDisplayAccount();
+        if (siteInfo.getUsername()) {
             await router(true);
         } else {
-            await switchDisplayAccount(false);
             await router(false);
         }
     } catch (error) {

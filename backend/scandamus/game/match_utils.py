@@ -20,9 +20,9 @@ async def send_match_jwt(consumer, from_username, game_name='pong'):
     match = await create_match(player1, player2)
     
     for player in [player1, player2]:
-        game_token = await issue_jwt(player.user, player.id, match.id, game_name)
-        websocket = consumer.players.get(player.user.username)
         player_name = 'player1' if player == player1 else 'player2'
+        game_token = await issue_jwt(player.user, player_name, player.id, match.id, game_name)
+        websocket = consumer.players.get(player.user.username)
         await websocket.send(text_data=json.dumps({
             'type': 'gameSession',
             'game_name': game_name,
@@ -38,9 +38,9 @@ async def send_match_jwt_to_all(consumer, players_list, game_name):
         player = player_info['player']
         user = await get_user_by_player(player)
         player_id = player_info['players_id']
-        game_token = await issue_jwt(user, player_id, match.id, game_name)
-        websocket = player_info['websocket']
         player_name = f'player{index + 1}'
+        game_token = await issue_jwt(user, player_name, player_id, match.id, game_name)
+        websocket = player_info['websocket']
         await websocket.send(text_data=json.dumps({
             'type': 'gameSession',
             'game_name': game_name, 
@@ -67,12 +67,13 @@ def get_player_by_user(user):
         return None
 
 @database_sync_to_async
-def issue_jwt(user, players_id, match_id, game_name='pong'):
+def issue_jwt(user, player_name, players_id, match_id, game_name='pong'):
     expire = datetime.utcnow() + timedelta(minutes=1)
     payload = {
         'game_name': game_name,
         'user_id': user.id,
         'username': user.username,
+        'player_name': player_name,
         'players_id': players_id,
         'match_id': match_id,
         'iat': datetime.utcnow(),
