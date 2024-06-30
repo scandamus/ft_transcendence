@@ -12,7 +12,7 @@ import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
 import GamePlay from '../components/GamePlay.js';
 // TODO:4人pong用の画面作成は一時的な解決策なので検討
-import MultiGamePlay from '../components/MultiGamePlay.js';
+import GamePlayMulti from '../components/GamePlayMulti.js';
 import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
@@ -30,7 +30,7 @@ const routes = {
     friends:  { path: '/friends', view: Friends, isProtected: true },
     lounge: {path: '/lounge', view: Lounge, isProtected: true},
     gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
-    gamePlayMulti: {path: '/game/pong4/play:id', view: MultiGamePlay, isProtected: true},
+    gamePlayMulti: {path: '/game/pong4/play:id', view: GamePlayMulti, isProtected: true},
     tournament: {path: '/tournament', view: Tournament, isProtected: true},
     TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
 };

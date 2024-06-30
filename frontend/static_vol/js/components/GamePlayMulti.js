@@ -6,10 +6,10 @@ import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
 import { initToken } from '../modules/token.js';
 
-export default class MultiGamePlay extends PageBase {
+export default class GamePlayMulti extends PageBase {
     constructor(params) {
         super(params);
-        MultiGamePlay.instance = this;
+        GamePlayMulti.instance = this;
         this.title = 'MultiGamePlay';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
