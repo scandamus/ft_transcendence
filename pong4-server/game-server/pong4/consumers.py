@@ -33,15 +33,21 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.username = None
         self.player_name = None
         self.scheduled_task = None
+        # 1vs1pongを引き継ぐためplayer1はleft_paddle
         self.right_paddle = None
+        # player2
         self.left_paddle = None
+        # player3
         self.upper_paddle = None
+        # player4
         self.lower_paddle = None
         self.ball = None
         self.reset_game_data()
         self.game_continue = False
         self.up_pressed = False
         self.down_pressed = False
+        self.right_pressed = False
+        self.left_pressed = False
         self.walls = None
 
     async def connect(self):
@@ -149,13 +155,23 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.up_pressed = is_pressed
         elif key in ['s', 'ArrowDown']:
             self.down_pressed = is_pressed
-        speed = -7 * self.up_pressed + 7 * self.down_pressed
+        vertical_speed = -7 * self.up_pressed + 7 * self.down_pressed
+
+        if key in ['ArrowRight', 'd']:
+            self.right_pressed = is_pressed
+        elif key in ['s', 'ArrowDown']:
+            self.left_pressed = is_pressed
+        horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
 
         if self.player_name == 'player1':
             if sent_player_name == 'player1':
-                self.left_paddle.speed = speed
+                self.left_paddle.speed = vertical_speed
             elif sent_player_name == 'player2':
-                self.right_paddle.speed = speed
+                self.right_paddle.speed = vertical_speed
+            elif sent_player_name == 'player3':
+                self.upper_paddle.speed = horizontal_speed
+            elif sent_player_name == 'player4':
+                self.lower_paddle.speed = horizontal_speed
 
     async def schedule_ball_update(self):
         self.game_continue = True
