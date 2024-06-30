@@ -21,7 +21,7 @@ const updateFriendsList = async (pageInstance) => {
                 const onlineStatus = 'online';
                 const disableMatchButton = onlineStatus === 'online' ? '' : 'disabled';
                 let friendElement = `
-                    <section class="unitFriend  unitFriend-${onlineStatus}">
+                    <section class="unitFriend unitFriend-${onlineStatus}">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${friend.username}</h4>
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
