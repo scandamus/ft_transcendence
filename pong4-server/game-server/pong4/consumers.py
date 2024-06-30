@@ -35,9 +35,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.scheduled_task = None
         self.right_paddle = None
         self.left_paddle = None
+        self.upper_paddle = None
+        self.lower_paddle = None
         self.ball = None
         self.reset_game_data()
         self.game_continue = False
+        self.walls = None
 
     async def connect(self):
         try:
@@ -260,15 +263,64 @@ class PongConsumer(AsyncWebsocketConsumer):
             },
         }))
 
-    def reset_game_data(self):
+    async def reset_game_data(self):
         self.scheduled_task = None
-        self.right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
-                                   PADDLE_THICKNESS, PADDLE_LENGTH)
-        self.right_paddle.reset()
-        self.left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
-        self.left_paddle.reset()
-        self.ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
+        # horizontal -> 横向き    vertical -> 縦向き
+        self.right_paddle = Paddle(CANVAS_WIDTH_MULTI - PADDLE_THICKNESS,
+                                   (CANVAS_HEIGHT_MULTI / 2) - (PADDLE_LENGTH / 2),
+                                   PADDLE_THICKNESS, PADDLE_LENGTH, 'vertical')
+        self.left_paddle = Paddle(0, (CANVAS_HEIGHT_MULTI / 2) - (PADDLE_LENGTH / 2), PADDLE_THICKNESS,
+                                  PADDLE_LENGTH, 'vertical')
+        self.upper_paddle = Paddle((CANVAS_WIDTH_MULTI / 2) - (PADDLE_LENGTH / 2), 0, PADDLE_LENGTH,
+                                   PADDLE_THICKNESS, 'horizontal')
+        self.lower_paddle = Paddle((CANVAS_WIDTH_MULTI / 2) - (PADDLE_LENGTH / 2),
+                                   CANVAS_HEIGHT_MULTI - PADDLE_THICKNESS,
+                                   PADDLE_LENGTH, PADDLE_THICKNESS, 'horizontal')
         self.game_continue = False
+
+    async def init_walls(self):
+        # 壁の初期化はplayer1が初回だけ行えばいい
+        # 1.左上横
+        wall_top_left_horizontal = Block(CORNER_BLOCK_THICKNESS, 0, CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS,
+                                         CORNER_BLOCK_THICKNESS, 'horizontal', 'UPPER')
+        # 2.左上縦
+        wall_top_left_vertical = Block(0, CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                       CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, 'vertical', 'LEFT')
+        # 3.右上横
+        wall_top_right_horizontal = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE, 0,
+                                          CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                          'horizontal', 'UPPER')
+        # 4.右上縦
+        wall_top_right_vertical = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                        CORNER_BLOCK_THICKNESS, CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS,
+                                        'vertical', 'RIGHT')
+        # 5.左下横
+        wall_bottom_left_horizontal = Block(CORNER_BLOCK_THICKNESS, CANVAS_HEIGHT_MULTI - CORNER_BLOCK_THICKNESS,
+                                            CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                            'horizontal', 'LOWER')
+        # 6.左下縦
+        wall_bottom_left_vertical = Block(0, CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE, CORNER_BLOCK_THICKNESS,
+                                          CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, 'vertical', 'LEFT')
+        # 7.右下横
+        wall_bottom_right_horizontal = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE,
+                                             CANVAS_HEIGHT_MULTI - CORNER_BLOCK_THICKNESS,
+                                             CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                             'horizontal', 'LOWER')
+        # 8.右下縦
+        wall_bottom_right_vertical = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_THICKNESS,
+                                           CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE,
+                                           CORNER_BLOCK_THICKNESS, CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS,
+                                           'vertical', 'RIGHT')
+        self.walls = {
+            wall_top_left_horizontal,
+            wall_top_left_vertical,
+            wall_top_right_horizontal,
+            wall_top_right_vertical,
+            wall_bottom_left_horizontal,
+            wall_bottom_left_vertical,
+            wall_bottom_right_horizontal,
+            wall_bottom_right_vertical
+        }
 
     async def init_game_state_into_self(self, data):
         # player1からオブジェクトを受け取る
@@ -292,6 +344,20 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.thickness = left_paddle_data['horizontal']
         self.left_paddle.length = left_paddle_data['vertical']
         self.left_paddle.score = left_paddle_data['score']
+        # upper_paddle
+        upper_paddle_data = data['upper_paddle']
+        self.upper_paddle.x = upper_paddle_data['x']
+        self.upper_paddle.y = upper_paddle_data['y']
+        self.upper_paddle.thickness = upper_paddle_data['horizontal']
+        self.upper_paddle.length = upper_paddle_data['vertical']
+        self.upper_paddle.score = upper_paddle_data['score']
+        # lower_paddle
+        lower_paddle_data = data['left_paddle']
+        self.lower_paddle.x = lower_paddle_data['x']
+        self.lower_paddle.y = lower_paddle_data['y']
+        self.lower_paddle.thickness = lower_paddle_data['horizontal']
+        self.lower_paddle.length = lower_paddle_data['vertical']
+        self.lower_paddle.score = lower_paddle_data['score']
 
     @database_sync_to_async
     def authenticate_jwt(self, jwt):
@@ -331,5 +397,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def start_game(self, event):
         if self.player_name == 'player1':
-            self.reset_game_data()
+            await self.reset_game_data()
+            await self.init_walls()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
