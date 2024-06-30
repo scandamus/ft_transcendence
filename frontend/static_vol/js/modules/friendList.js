@@ -17,14 +17,17 @@ const updateFriendsList = async (pageInstance) => {
             listFriendsWrappr.innerHTML = '';
             friends.forEach(friend => {
                 const avatar = friend.avatar ? friend.avatar : '/images/avatar_default.png';
+                //todo: friendsの状況に応じて online/ offline / busy で切り替える
+                const onlineStatus = 'online';
+                const disableMatchButton = onlineStatus === 'online' ? '' : 'disabled';
                 let friendElement = `
-                    <section class="unitFriend">
+                    <section class="unitFriend  unitFriend-${onlineStatus}">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${friend.username}</h4>
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}" data-avatar="${avatar}">${labels.friends.labelMatch}</button></li>`;
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}" data-avatar="${avatar}" ${disableMatchButton}>${labels.friends.labelMatch}</button></li>`;
                 if (isPageFriend) {
                     friendElement += `
                             <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.friends.labelRmFriend}</button></li>
