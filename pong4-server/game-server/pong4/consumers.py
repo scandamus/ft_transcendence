@@ -189,7 +189,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def send_game_over_message(self, event):
         message = event["message"]
         timestamp = dt.utcnow().isoformat()
-        if self.player_name == 'player2':
+        if self.player_name != 'player1':
             self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
 
@@ -260,6 +260,20 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "horizontal": self.left_paddle.thickness,
                 "vertical": self.left_paddle.length,
                 "score": self.left_paddle.score,
+            },
+            "upper_paddle": {
+                "x": self.upper_paddle.x,
+                "y": self.upper_paddle.y,
+                "horizontal": self.upper_paddle.thickness,
+                "vertical": self.upper_paddle.length,
+                "score": self.upper_paddle.score,
+            },
+            "lower_paddle": {
+                "x": self.lower_paddle.x,
+                "y": self.lower_paddle.y,
+                "horizontal": self.lower_paddle.thickness,
+                "vertical": self.lower_paddle.length,
+                "score": self.lower_paddle.score,
             },
         }))
 
