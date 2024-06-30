@@ -4,6 +4,7 @@ import { getToken, refreshAccessToken } from './token.js';
 import { switchDisplayAccount } from './auth.js';
 import { router } from './router.js';
 import { webSocketManager } from './websocket.js';
+import { SiteInfo } from "./SiteInfo.js";
 //import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
@@ -46,7 +47,9 @@ const handleLogout = (ev) => {
             localStorage.removeItem('refreshToken');
             webSocketManager.closeWebSocket('lounge');
             webSocketManager.closeWebSocket('pong');
-            switchDisplayAccount(null);//not return
+            const siteInfo = new SiteInfo();
+            siteInfo.reset();
+            switchDisplayAccount();//not return
             router(false);//not return
         })
 }

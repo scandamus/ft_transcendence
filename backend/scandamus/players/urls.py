@@ -2,7 +2,7 @@ from django.urls import path
 # ↓ view.pyの全てのviewをimport
 # from . import views
 # ↓ view.pyから指定したviewをimport（推奨）
-from .views import LoginView, UserInfoView, LogoutView, RegisterView, ValidateView, UserListView, FriendListView, FriendRequestListView
+from .views import LoginView, UserInfoView, LogoutView, RegisterView, ValidateView, UserListView, FriendListView, FriendRequestListView, AvatarUploadView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
@@ -20,5 +20,6 @@ urlpatterns = [
     # path('api/delete/', views.deleteUser.as_view()),
     path('userlist/', UserListView.as_view(), name='userList'),
     path('friends/', FriendListView.as_view(), name='friend-list'),
-    path('requests/', FriendRequestListView.as_view(), name='friend-request-list')
+    path('requests/', FriendRequestListView.as_view(), name='friend-request-list'),
+    path('avatar/', AvatarUploadView.as_view(), name='avatar_upload'),
 ]
