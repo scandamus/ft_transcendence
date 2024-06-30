@@ -24,6 +24,7 @@ export default class GamePlay extends PageBase {
     async renderHtml() {
         return `
            <div class="playBoardWrap">
+                <p>Press space key to turn on the sound</p>
                 <ul class="listPlayerActiveMatch">
                     <li class="listPlayerActiveMatch_item">${this.player1}</li>
                     <li class="listPlayerActiveMatch_item">${this.player2}</li>
@@ -45,6 +46,19 @@ export default class GamePlay extends PageBase {
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext("2d");
+
+            // sound
+            this.audioCtx = new window.AudioContext();
+            const ballNode = this.audioCtx.createOscillator();
+            const pannerNode = this.audioCtx.createStereoPanner();
+            const paddleNode = this.audioCtx.createOscillator();
+            const gainNode = this.audioCtx.createGain();
+            ballNode.connect(pannerNode);
+            pannerNode.connect(this.audioCtx.destination);
+            ballNode.type = 'sine';
+            paddleNode.connect(gainNode);
+            gainNode.connect(this.audioCtx.destination);
+            paddleNode.type = 'sawtooth';
 
             function drawBackground() {
                 ctx.fillStyle = 'black';
@@ -85,6 +99,22 @@ export default class GamePlay extends PageBase {
                 ctx.closePath();
             }
 
+            const changeSound = (data) => {
+                // ball.y: 周波数を上下 
+                const freq = 440 * Math.pow(2, (data.ball.y / canvas.height) * -2 + 1);
+                ballNode.frequency.value = freq;
+                // ball.x: パンを左右 
+                const pan = ((data.ball.x / canvas.width) * 2 - 1) * 1.125;
+                const clamp = (x, min, max) => Math.min(Math.max(min, x), max);
+                pannerNode.pan.value = clamp(pan, -1, +1);
+
+                // paddle.y: 周波数を上下 
+                const paddleFreq = 440 * Math.pow(2, (data.left_paddle.y / canvas.height) * -2 + 1); // TODO left or right
+                paddleNode.frequency.value = paddleFreq;
+                // currentTime: 周期的に強弱
+                gainNode.gain.value = clamp(Math.sin(this.audioCtx.currentTime * 32), 0, 0.25);
+            }
+
             const updateGameObjects = async (data) => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // 背景色
@@ -100,12 +130,10 @@ export default class GamePlay extends PageBase {
                 // 左
                 drawPaddle(data.left_paddle);
 
+                changeSound(data);
+
                 if (!data.game_status) {
                     console.log("Game Over");
-                    //alert('GAME OVER');
-                    // ここでゲームをリセットする処理を追加するか、ページをリロードする
-                    //document.location.reload();
-                    // TODO 勝敗を記録など
                     pongSocket.send(JSON.stringify({
                         action: 'end_game',
                         match_id: gameMatchId,
@@ -134,6 +162,12 @@ export default class GamePlay extends PageBase {
                 // send event to django websocket
                 if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
                     sendKeyEvent(e.key, false);
+                } else if (e.key == ' ') {
+                    ballNode.start();
+                    paddleNode.start();
+                } else if (e.key == 'm') {
+                    ballNode.stop();
+                    paddleNode.stop();
                 }
             }
 
@@ -159,11 +193,12 @@ export default class GamePlay extends PageBase {
                 }
             }
         } catch (error) {
-        console.error('Error initializing game', error);
+            console.error('Error initializing game', error);
         }
     }
 
     destroy() {
         super.destroy();
+        this.audioCtx.close();
     }
 }
