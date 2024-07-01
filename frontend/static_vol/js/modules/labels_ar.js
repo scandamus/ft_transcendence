@@ -11,8 +11,6 @@ export const labels_ar = {
         labelButtonLogout: ' يؤُلاءِ العربية',
         textSignUp: ' يؤُلاءِ العربية',
         labelLinkSignUp: ' يؤُلاءِ العربية',
-        textLoginError1: '',
-        textLoginError2: '',
     },
     register: {
         title: 'Register',
@@ -36,6 +34,8 @@ export const labels_ar = {
         tooShort: ' يؤُلاءِ العربية',
         passwordIsNotSame: ' يؤُلاءِ العربية',
         isExists: ' يؤُلاءِ العربية',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {

@@ -11,8 +11,6 @@ export const labels_he = {
         labelButtonLogout: 'הזה עברית ',
         textSignUp: 'הזה עברית ',
         labelLinkSignUp: 'הזה עברית ',
-        textLoginError1: '',
-        textLoginError2: '',
     },
     register: {
         title: 'Register',
@@ -36,6 +34,8 @@ export const labels_he = {
         tooShort: 'הזה עברית ',
         passwordIsNotSame: 'הזה עברית ',
         isExists: 'הזה עברית ',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {

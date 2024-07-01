@@ -11,8 +11,6 @@ export const labels_fr = {
         labelButtonLogout: '',
         textSignUp: '',
         labelLinkSignUp: '',
-        textLoginError1: '',
-        textLoginError2: '',
     },
     register: {
         title: '',
@@ -36,6 +34,8 @@ export const labels_fr = {
         tooShort: '',
         passwordIsNotSame: '',
         isExists: '',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {
