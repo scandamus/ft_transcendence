@@ -37,7 +37,7 @@ export const labels_la = {
     },
 
     dashboard: {
-        title: 'Dashboard',
+        title: 'Tabula',
         msgAvatarSwitched: 'icon tibi mutata est',
         msgInvalidFile: 'fasciculus non acceptus',
         msgInvalidFileFormat: 'forma fasciculi non accepta est (soli .jpg, .png)',
