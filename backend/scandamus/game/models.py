@@ -6,6 +6,8 @@ from players.models import Player
 class Tournament(models.Model):
     name = models.CharField(
         max_length=50,
+        unique=True,
+        blank=False,
         verbose_name="トーナメント名"
     )
     start = models.DateTimeField(
