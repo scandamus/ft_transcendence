@@ -122,8 +122,8 @@ export default class LogIn extends PageBase {
                         });
                 }
             })
-            .catch(error => {
-                this.handleValidationError('loginError2');
+            .catch((error) => {
+                this.handleValidationError(error.message);
             });
     }
 
