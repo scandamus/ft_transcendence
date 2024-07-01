@@ -38,11 +38,9 @@ echo "DEBUG environment variable is set to: $DEBUG"
 if [ "$DEBUG" = "True" ]; then
     echo "Using test_ssl.conf"
 	cp test_ssl.conf /etc/nginx/sites-available/default
-    rm ssl.conf
 else
     echo "Using ssl.conf"
 	cp ssl.conf /etc/nginx/sites-available/default
-    rm test_ssl.conf
 fi
 
 echo "Waiting for backend booting..."
