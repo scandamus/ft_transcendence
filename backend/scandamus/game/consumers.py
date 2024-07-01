@@ -8,6 +8,9 @@ from .friends import send_friend_request, send_friend_request_by_username, accep
 from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
 from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
+from .match_utils import get_player_by_user
+from channels.db import database_sync_to_async
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -83,5 +86,33 @@ class LoungeSession(AsyncWebsocketConsumer):
         if hasattr(self, 'user') and self.user.username in self.players:
             del self.players[self.user.username]
             logger.info(f'User {self.user.username} disconnected and removed from players list.')
+
+            # remove pending_requests
+            request_to_remove = []
+            for request_id, request in self.pending_requests.items():
+                if request['from_username'] == self.user.username:
+                    request_to_remove.append(request_id)
+
+            for request_id in request_to_remove:
+                request = self.pending_requests.pop(request_id)
+                logger.info(f'Removed pending request {request_id} due to disconnection')
+
+                to_username = request['to_username']
+                if to_username in self.players:
+                    await self.players[to_username].send(text_data=json.dumps({
+                        'type': 'friendMatchRequest',
+                        'action': 'cancelled',                
+                    }))
+                    logger.info(f'Cancelled successfully and informed opponent player')
+                else:
+                    logger.error(f'Cancelled successfully but opponent is not online')
+
+            # reset player status
+            player = await get_player_by_user(self.user)
+            if player and player.status in ['friend_waiting', 'lounge_waiting']:
+                player.status = 'waiting'
+                await database_sync_to_async(player.save)()
+                logger.info(f'{self.user.username} status set to waiting')
+
         else:
             logger.info('Disconnect called but no user found.')
