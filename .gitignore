@@ -9,3 +9,4 @@ postgres_vol
 !.gitignore
 !.dockerignore
 !.gitkeep
+frontend/static_vol/js/modules/env.js
