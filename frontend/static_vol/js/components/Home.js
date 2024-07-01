@@ -58,7 +58,7 @@ export default class LogIn extends PageBase {
         };
         const siteInfo = new SiteInfo();
         console.log('Sending data :', data);
-        fetch('https://localhost/api/players/login/', {
+        fetch('/api/players/login/', {
                 method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
