@@ -1,13 +1,15 @@
 'use strict';
 
-import { cancel_game, join_game } from "./match.js";
+import { accept_game, reject_game, cancel_game, join_game, request_game } from "./match.js";
+import { join_lounge_game, exit_lounge_match_room } from "./lounge_match.js";
 import { initToken } from "./token.js";
 import * as mc from "./modalContents.js";
+import { labels } from './labels.js';
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
     indicatorBar.removeEventListener('transitionend', endIndicator);
-    closeModalOnCancel();
+    closeModalOnCancel(ev);
 };
 
 //elHtmlのルート要素は`.blockModal`とする
@@ -16,7 +18,7 @@ const showModal = (elHtml) => {
     const elModal = document.getElementById('wrapModal');
     elModal.classList.add('is-show');
     elModal.innerHTML = elHtml;
-
+        
     //キャンセルボタンにaddEventListener
     const btnCancel = document.querySelector('.blockBtnCancel_button');
     if (btnCancel) {
@@ -33,7 +35,7 @@ const showModal = (elHtml) => {
     const btnReject = document.querySelector('.blockBtnReject_button');
     if (btnReject) {
         //todo: Reject特化の関数が必要か検討
-        btnReject.addEventListener('click', closeModalOnCancel);
+        btnReject.addEventListener('click', closeModalOnReject);
     }
 
     //インディケータがあれば進行、終了でcloseModalOnCancel
@@ -49,7 +51,12 @@ const showModal = (elHtml) => {
     //todo: インディケータのないモーダルは何かしら閉じるようにしておく
 }
 
-const closeModalOnCancel = () => {
+const closeModalOnCancel = (ev) => {
+    console.log('closeModalOnCancel');
+    const modal = ev.target.closest('.blockModal');
+    const username = modal.getAttribute('data-modal-username');
+    const matchType = modal.getAttribute('data-modal-match_type');
+
     initToken()
         .then((accessToken) => {
             //btnCancel, btnReject removeEventListener
@@ -67,15 +74,63 @@ const closeModalOnCancel = () => {
                 const indicatorBar = indicator.querySelector('.unitIndicator_bar');
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
+            if (matchType === 'friendMatch') {
+                //cancel game
+                console.log(`cancel friend Match: ${username}`);
+                cancel_game(username);
+            } else if (matchType === 'loungeMatch') {
+                console.log('cancel lounge match');
+                exit_lounge_match_room(modal.getAttribute('data-modal-game_name'));
+            }
+        })
+        .then(() => {
+            //modal close
+            closeModal();
+        });
+}
+
+const closeModalOnReject = (ev) => {
+    console.log('closeModalOnReject');
+    const modal = ev.target.closest('.blockModal');
+    const args = {
+        request_id: modal.getAttribute('data-modal-request_id'),
+        username: modal.getAttribute('data-modal-username')
+    };
+
+    initToken()
+        .then((accessToken) => {
+            //btnCancel, btnReject removeEventListener
+            const btnCancel = document.querySelector('.blockBtnCancel_button');
+            if (btnCancel) {
+                btnCancel.removeEventListener('click', closeModalOnCancel);
+            }
+            const btnReject = document.querySelector('.blockBtnReject_button');
+            if (btnReject) {
+                btnReject.removeEventListener('click', closeModalOnReject);
+            }
+            //indicator removeEventListener
+            const indicator = document.getElementById('indicator');
+            if (indicator) {
+                const indicatorBar = indicator.querySelector('.unitIndicator_bar');
+                indicatorBar.removeEventListener('transitionend', endIndicator);
+            }
             //cancel game
-            cancel_game();
+            console.log(`reject game: ${args.request_id}`);
+            reject_game(args.request_id, args.username);
         })
         .then(() => {
             closeModal();
         });
 }
 
-const closeModalOnAccept = () => {
+const closeModalOnAccept = (ev) => {
+    console.log('closeModalOnAccept');
+    const modal = ev.target.closest('.blockModal');
+    const args = {
+        request_id: modal.getAttribute('data-modal-request_id'),
+        username: modal.getAttribute('data-modal-username')
+    };
+
     initToken()
         .then((accessToken) => {
             //AcceptボタンremoveEventListener
@@ -85,7 +140,8 @@ const closeModalOnAccept = () => {
             const btnReject = document.querySelector('.blockBtnReject_button');
             btnReject.addEventListener('click', closeModalOnCancel);
             //todo:start game
-            console.log('start game');
+            accept_game(args.request_id, args.username);
+            console.log(`accept game: ${args.request_id}`);
         })
         .then(() => {
             closeModal();
@@ -112,50 +168,53 @@ const getModalHtml = (modalType, args) => {
 const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
     const args = {
-        titleModal: '対戦を申し込みました',
-        username: button.dataset.name,
+        titleModal: labels.modal.titleSendMatchRequest,
+        username: button.dataset.username,
         avatar: button.dataset.avatar,
-        labelCancel: 'キャンセル',
+        labelCancel: labels.modal.labelCancel,
+        matchType: 'frinedMatch',
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
-    //todo: 対戦相手に通知、承諾 or Rejectを受け付けるなど
-    join_game()
+    request_game(button.dataset.username, button.dataset.id)
         .then(r => {
             showModal(elHtml);
         });
 }
 
-const showModalReceiveMatchRequest = (ev) => {
-    const button = ev.target;
+const showModalReceiveMatchRequest = (data) => {
+    // WebSocketから受け取った相手のusernameおよびavatarを表示
+    const avatar = data.avatar ? data.avatar : '/images/avatar_default.png';
     const args = {
-        titleModal: '対戦申し込みがありました',
-        username: button.dataset.name,
-        avatar: button.dataset.avatar,
-        labelAccept: 'Accept',
-        labelReject: 'Reject'
+        titleModal: labels.modal.titleReceiveMatchRequest,
+        username: data.from,
+        request_id: data.request_id,
+        avatar: avatar,
+        labelAccept: labels.modal.labelAccept,
+        labelReject: labels.modal.labelReject,
     }
     const elHtml = getModalHtml('receiveMatchRequest', args);
-    join_game()
-        .then(r => {
-            showModal(elHtml);
-        });
+    showModal(elHtml);
 }
 
 const showModalWaitForOpponent = (ev) => {
-    const formData = new FormData(ev.target.closest('form'));
-    const data = {};
-    formData.forEach((value, key) => {
-        data[key] = value;
-    });
+    ev.preventDefault();
+    const buttonId = ev.target.id;
+//    const gameType = buttonId === 'dualGameButton' ? 'dual' : 'quad';
+    const gameName = buttonId === 'btnJoinDual' ? 'pong' : 'pong4';
+    const capacityNum = buttonId === 'btnJoinDual' ? 2 : 4;
+
     const args = {
-        titleModal: 'Waiting...',
-        labelCancel: 'キャンセル',
-        labelCapacity: '定員',
-        labelAvailable: '募集中',
-    }
-    args.labelCapacityNum = (data['gameType'] === 'dual') ? 2 : 4;
+        titleModal: labels.modal.titleWaitForOpponent,
+        labelCancel: labels.modal.labelCancel,
+        labelCapacity: labels.modal.labelCapacity,
+        labelAvailable: labels.modal.labelAvailable,
+        labelCapacityNum: capacityNum,
+        MatchType: 'loungeMatch',
+        game_name: gameName,
+    };
     const elHtml = getModalHtml('waitForOpponent', args);
-    join_game()
+
+    join_lounge_game(gameName)
         .then(r => {
             showModal(elHtml);
         });
@@ -172,10 +231,10 @@ const showModalEntryTournament = (ev) => {
         return;
     }
     const args = {
-        titleModal: 'Entry Tournament',
-        labelNickname: 'NickName',
-        labelEntry: 'Entry',
-        labelCancel: 'Cancel',
+        titleModal: labels.modal.titleEntryTournament,
+        labelNickname: labels.modal.labelNickname,
+        labelEntry: labels.modal.labelEntry,
+        labelCancel: labels.modal.labelCancel,
         labelTournamentId: data['idTitle'],
         labelTournamentTitle: data['title'],
         labelTournamentStart: data['start'],
@@ -188,5 +247,15 @@ const showModalEntryTournament = (ev) => {
         });
 }
 
-export { closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament };
+const updateModalAvailablePlayers = (availablePlayers) => {
+    const modal = document.querySelector('.blockModal');
+    if (modal) {
+        const availableSpan = modal.querySelector('.unitCapacity_numerator span');
+        if (availableSpan) {
+            availableSpan.textContent = availablePlayers;
+        }
+    }
+}
+
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers };
 

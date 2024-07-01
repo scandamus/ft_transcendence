@@ -1,153 +1,304 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { getUserList } from '../modules/users.js';
-import { showModalSendMatchRequest } from '../modules/modal.js';
+import { SiteInfo } from "../modules/SiteInfo.js";
+import { labels } from '../modules/labels.js';
+import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
+import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend }
+    from '../modules/friendListener.js';
+import { addListenerToList, removeListenerAndClearList } from "../modules/listenerCommon.js";
+import { getToken } from "../modules/token.js";
+import { switchDisplayAccount } from "../modules/auth.js";
+import { addNotice } from "../modules/notice.js";
 
-
-export default class extends PageBase {
+export default class Dashboard extends PageBase {
     constructor(params) {
         super(params);
-        this.playerNameTmp = 'playername';
-        this.setTitle(`Dashboard: ${this.playerNameTmp}`);
-        this.labelMatch = '対戦する';
-        this.labelAccept = '承諾';
-        this.labelDecline = '削除';
+        Dashboard.instance = this;
+        this.siteInfo = new SiteInfo();
+        this.setTitle(`${labels.dashboard.title}: ${this.siteInfo.getUsername()}`);
+        this.clearBreadcrumb();
+        this.avatar = this.siteInfo.getAvatar();
+
         //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.showUserList.bind(this));
+        this.addAfterRenderHandler(this.updateLists.bind(this));
+        this.addAfterRenderHandler(this.listenUpdateAvatar.bind(this));
+        this.addAfterRenderHandler(this.listenPickFileAvatar.bind(this));
+
+        //Instance固有のlistenerList
+        this.listListenMatchRequest = [];
+        this.listListenRemoveFriend = [];
+        this.listListenAcceptFriendRequest = [];
+        this.listListenDeclineFriendRequest = [];
+        this.listListenUploadAvatar = [];
     }
 
     async renderHtml() {
+        const win = 70, loss = 20;
+        const textWinLoss = (labels.match.fmtWinLoss).replace('$win', win).replace('$loss', loss);
         return `
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">
-                    <p class="blockPlayerDetail_thumb thumb"><img src="//ui-avatars.com/api/?name=Gg Hh&background=872bac&color=ffffff" alt="" width="200" height="200"></p>
-                    <p class="blockPlayerDetail_score unitBox">RANK: 4 <br>(70勝20敗)</p>
+                    <form class="blockAvatar blockForm" action="" method="post">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                        <div class="blockAvatar_avatar thumb">
+                            <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
+                        </div>
+                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">Change Avatar</button></p>
+                        <input type="file" id="inputAvatarFile" accept=".jpg, .jpeg, .png" class="formPartsHide">
+                        <ul class="blockAvatar_listButton listButton">
+                            <li><button type="button" id="btnAvatarCancel" class="unitButton">cancel</button></li>
+                            <li><button type="submit" id="btnAvatarUpload" class="unitButton">Upload</button></li>
+                        </ul>
+                    </form>
+                    <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${textWinLoss}</p>
                     <ul class="unitListBtn unitListBtn-w100">
-                        <li><a href="/lounge" class="unitButton" data-link>Lounge</a></li>
-                        <li><a href="/tournament" class="unitButton" data-link>Tournament</a></li>
+                        <li><a href="/lounge" class="unitButton" data-link>${labels.lounge.title}</a></li>
+                        <li><a href="/tournament" class="unitButton" data-link>${labels.tournament.title}</a></li>
                     </ul>
                 </div>
                 <div class="blockPlayerDetail_detail">
                     <section class="blockFriendRequest">
-                        <h3 class="blockFriendRequest_title unitTitle2">Received friend request</h3>
-                        <div class="blockFriendRequest_friends listFriends listLineDivide">
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept">${this.labelAccept}</button></li>
-                                    <li><button type="button" class="unitFriendButton_friendDecline unitButtonDecline unitButtonDecline-ico"><img src="/images/ico-cross.svg" alt="${this.labelDecline}" width="16px" height="16px"></button></li>
-                                </ul>
-                            </section>
-                        </div>
+                        <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
+                        <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
                     </section>
                     <section class="blockFriends">
-                        <h3 class="blockFriends_title unitTitle1">Friends</h3>
-                        <!-- ↓ showUserList() で取得 -->
+                        <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
-                        <!-- ↓ オンライン状況ごとのstyleサンプル -->
-                        <div class="blockFriends_friends listFriends listLineDivide">
-                            <section class="unitFriend unitFriend-online">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[ONLINE]" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend unitFriend-offline">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[OFFLINE]" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton" disabled>${this.labelMatch}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend unitFriend-busy">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">username</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="[BUSY]" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton" disabled>${this.labelMatch}</button></li>
-                                </ul>
-                            </section>
-                        </div>
                         <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
-                    <section class="blockMatchLog">
-                        <h3 class="blockMatchLog_title unitTitle1">Tournament Log</h3>
-                        <ul class="blockMatchLog_log listMatchLog listLineDivide">
-                            <li class="listMatchLog_item"><strong>RANK: 4</strong> <span>(2024/4/2 tournament52)</span></li>
-                        </ul>
+                    <section class="blockDashboardLog">
+                        <h3 class="blockDashboardLog_title unitTitle1">${labels.tournament.labelTournamentLog}</h3>
+                        <div class="blockDashboardLog_listTournament listLineDivide">
+                            <section class="unitTournamentResult unitTournament-link">
+                                <a href="/tournament/detail_id" data-link>
+                                    <header class="unitTournament_header">
+                                        <h4 class="unitTournament_title">TournamentTitle1</h4>
+                                        <p class="unitTournament_start">2024/07/3 13:00</p>
+                                    </header>
+                                    <div class="unitTournament_body">
+                                        <p class="unitTournament_rank">Rank 1</p>
+                                    </div>
+                                </a>
+                            </section>
+                            <section class="unitTournamentResult unitTournament-link">
+                                <a href="/tournament/detail_id" data-link>
+                                    <header class="unitTournament_header">
+                                        <h4 class="unitTournament_title">TournamentTitle2</h4>
+                                        <p class="unitTournament_start">2024/07/5 21:00</p>
+                                    </header>
+                                    <div class="unitTournament_body">
+                                        <p class="unitTournament_rank">Rank 10</p>
+                                    </div>
+                                </a>
+                            </section>
+                        </div>
                     </section>
-                    <section class="blockMatchLog">
-                        <h3 class="blockMatchLog_title unitTitle1">Match Log</h3>
-                        <ul class="blockMatchLog_log listMatchLog listLineDivide">
-                            <li class="listMatchLog_item"><strong>RANK: 4</strong> <span>(2024/4/2 tournament52)</span></li>
-                        </ul>
+                    <section class="blockDashboardLog">
+                        <h3 class="blockDashboardLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
+                        <div class="blockDashboardLog_listMatch listLineDivide">
+                            <div class="blockMatch">
+                                <section class="blockMatch_player unitMatchPlayer">
+                                    <header class="unitMatchPlayer_header">
+                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
+                                        <h4 class="unitMatchPlayer_title">username</h4>
+                                    </header>
+                                    <p class="unitMatchPlayer_score">10</p>
+                                    <p class="unitMatchPlayer_result">win</p>
+                                </section>
+                                <p class="blockMatch_vs">VS</p>
+                                <section class="blockMatch_player unitMatchPlayer">
+                                    <header class="unitMatchPlayer_header">
+                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                        <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
+                                    </header>
+                                    <p class="unitMatchPlayer_score">3</p>
+                                </section>
+                            </div>
+                            <div class="blockMatch">
+                                <section class="blockMatch_player unitMatchPlayer">
+                                    <header class="unitMatchPlayer_header">
+                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
+                                        <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
+                                    </header>
+                                    <p class="unitMatchPlayer_score">5</p>
+                                </section>
+                                <p class="blockMatch_vs">VS</p>
+                                <section class="blockMatch_player unitMatchPlayer">
+                                    <header class="unitMatchPlayer_header">
+                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                        <h4 class="unitMatchPlayer_title">username</h4>
+                                    </header>
+                                    <p class="unitMatchPlayer_score">10</p>
+                                    <p class="unitMatchPlayer_result">win</p>
+                                </section>
+                            </div>
+                            <div class="blockMatch">
+                                <section class="blockMatch_player unitMatchPlayer">
+                                    <header class="unitMatchPlayer_header">
+                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
+                                        <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
+                                    </header>
+                                    <p class="unitMatchPlayer_score">5</p>
+                                </section>
+                                <p class="blockMatch_vs">VS</p>
+                                <section class="blockMatch_player unitMatchPlayer">
+                                    <header class="unitMatchPlayer_header">
+                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                                        <h4 class="unitMatchPlayer_title">username</h4>
+                                    </header>
+                                    <p class="unitMatchPlayer_score">10</p>
+                                    <p class="unitMatchPlayer_result">win</p>
+                                </section>
+                            </div>
+                        </div>
                     </section>
                 </div>
             </div>
         `;
     }
 
-    showUserList() {
-        const listFriendsWrapper = document.querySelector('.blockFriends_friends');
-        getUserList()
-            .then(data => {
-                listFriendsWrapper.innerHTML = '';
-                const userElements = data.map(user => `
-                    <section class="unitFriend">
-                        <header class="unitFriend_header">
-                            <h4 class="unitFriend_name">${user.username}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                        </header>
-                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-name="${user.username}" data-avatar="//ui-avatars.com/api/?name=${user.username}&background=3cbbc9&color=ffffff">${this.labelMatch}</button></li>
-                        </ul>
-                    </section>
-                  `);
-                listFriendsWrapper.innerHTML = userElements.join('');
-            })
-            .then(()=> {
-                this.listenRequestMatch();
-            })
-            .catch(error => {
-                console.error('getUserInfo failed:', error);
-            })
+    updateLists() {
+        try {
+            updateFriendsList(this).then(() => {});
+            updateFriendRequestList(this).then(() => {});
+        } catch (error) {
+            console.error('Failed to update lists: ', error);
+            throw error;
+        }
     }
 
-    listenRequestMatch() {
-        const btnMatchRequest = document.querySelectorAll('.unitFriendButton_matchRequest');
-        btnMatchRequest.forEach((btn) => {
-            btn.addEventListener('click', showModalSendMatchRequest.bind(this));
-            this.addListenEvent(btn, showModalSendMatchRequest, 'click');//todo: rm 確認
-        });
+    listenUpdateAvatar() {
+        const btnUpdateAvatar = document.getElementById('btnUpdateAvatar');
+        const boundUpdateAvatar = this.updateAvatar.bind(this);
+        this.addListListenInInstance(btnUpdateAvatar, boundUpdateAvatar, 'click');
+    }
+
+    updateAvatar() {
+        const inputFile = document.getElementById('inputAvatarFile');
+        inputFile.click();
+    }
+
+    listenPickFileAvatar() {
+        const inputFile = document.getElementById('inputAvatarFile');
+        const boundPickFileAvatar = this.pickFileAvatar.bind(this);
+        this.addListListenInInstance(inputFile, boundPickFileAvatar, 'change');
+    }
+    
+    pickFileAvatar(ev) {
+        const imgAvatar = document.getElementById('imgAvatar');
+        const btnWrapUpdateAvatar = document.querySelector('.blockAvatar_button');
+        const listButton = document.querySelector('.blockAvatar_listButton');
+        const inputFile = ev.target;
+        const file = inputFile.files[0];
+        let isImg = 1;
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (validTypes.includes(file.type)) {
+                const fileReader = new FileReader();
+                fileReader.onload = (ev) => {
+                    imgAvatar.src = ev.target.result;
+                    imgAvatar.onerror = () => {
+                        isImg = 0;
+                        addNotice('不正なファイルです', true);
+                        imgAvatar.src = this.siteInfo.getAvatar();
+                        inputFile.value = '';
+                    }
+                    imgAvatar.onload = () => {
+                        // valid image, image preview
+                        if (isImg && imgAvatar.src.startsWith('data:')) {
+                            btnWrapUpdateAvatar.classList.remove('is-show');
+                            listButton.classList.add('is-show');
+                            this.listenUploadAvatar();
+                        }
+                    }
+                };
+                fileReader.readAsDataURL(file);
+            } else {
+                addNotice('不正なファイル形式です(jpg, pngが設定できます)', true);
+                inputFile.value = '';
+            }
+        }
+    }
+
+    listenUploadAvatar() {
+        const btnAvatarCancel = document.getElementById('btnAvatarCancel');
+        const btnAvatarUpload = document.getElementById('btnAvatarUpload');
+        const boundCancelAvatar = this.cancelAvatar.bind(this);
+        const boundUploadAvatar = this.uploadAvatar.bind(this);
+
+        addListenerToList(
+            this.listListenUploadAvatar, btnAvatarCancel, boundCancelAvatar, 'click');
+        addListenerToList(
+            this.listListenUploadAvatar, btnAvatarUpload, boundUploadAvatar, 'click');
+    }
+
+    async uploadAvatar(ev) {
+        ev.preventDefault();
+        const inputFile = document.getElementById('inputAvatarFile');
+        const formData = new FormData();
+        const file = inputFile.files[0];
+        if (!file) {
+            return;
+        }
+        formData.append('avatar', file);
+
+        const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            return Promise.resolve(null);
+        }
+        fetch('/api/players/avatar/', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: formData
+        })
+            .then( async (response) => {
+                if (!response.ok) {
+                    throw new Error(response.status);
+                 }
+                return response.json();
+            })
+            .then( async (data) => {
+                this.siteInfo.setAvatar(data.newAvatar);
+                this.cancelAvatar();
+                await switchDisplayAccount();
+                addNotice('アバターを変更しました', false);
+            })
+            .catch((error) => {
+                console.error('Error upload avatar', error);
+                addNotice('不正なファイルです', true);
+                this.cancelAvatar();
+            });
+    }
+
+    cancelAvatar() {
+        const inputFile = document.getElementById('inputAvatarFile');
+        const imgAvatar = document.getElementById('imgAvatar');
+        const btnWrapUpdateAvatar = document.querySelector('.blockAvatar_button');
+        const listButton = document.querySelector('.blockAvatar_listButton');
+        this.removeListenUploadAvatar();
+        btnWrapUpdateAvatar.classList.add('is-show');
+        listButton.classList.remove('is-show');
+        imgAvatar.src = this.siteInfo.getAvatar();
+        inputFile.value = '';
+    }
+
+    removeListenUploadAvatar() {
+        removeListenerAndClearList(this.listListenUploadAvatar);
+        this.listListenUploadAvatar = [];
+    }
+
+    destroy() {
+        //rmFriendsList
+        removeListenMatchRequest(this);
+        removeListenRemoveFriend(this);
+        //rmFriendRequestList
+        removeListenAcceptFriendRequest(this);
+        removeListenDeclineFriendRequest(this);
+        //rmUploadAvatarList
+        this.removeListenUploadAvatar();
+
+        super.destroy();
     }
 }

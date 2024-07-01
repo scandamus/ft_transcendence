@@ -2,21 +2,24 @@
 
 import PageBase from './PageBase.js';
 import { router, routes } from '../modules/router.js';
+import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class SignUpComplete extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('SIGN UP');
-        this.message = '登録完了しました'; // TODO json
-        this.labelButtonLogin = 'LOGIN'; // TODO json
+        SignUpComplete.instance = this;
+        this.title = 'SIGN UP';
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.checkRegisterFlow.bind(this));
     }
 
     async renderHtml() {
         return `
-            <p class="unitTextComplete unitBox">${this.message}</p>
-            <p class="unitButtonWrap"><a href="/" class="unitButton unitButton-large" data-link>${this.labelButtonLogin}</a></p>
+            <p class="unitTextComplete unitBox">${labels.register.textComplete}</p>
+            <p class="unitButtonWrap"><a href="/" class="unitButton unitButton-large" data-link>${labels.register.labelButtonLogin}</a></p>
         `;
     }
 
@@ -33,5 +36,9 @@ export default class extends PageBase {
                 sessionStorage.removeItem('username');
                 sessionStorage.removeItem('password');
         }
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

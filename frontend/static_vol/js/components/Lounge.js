@@ -2,107 +2,55 @@
 
 import PageBase from './PageBase.js';
 import { showModalWaitForOpponent } from "../modules/modal.js";
+import { labels } from '../modules/labels.js';
 
-export default class extends PageBase {
+export default class Lounge extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('Lounge');
-        this.labelMatch = 'ルームに入る';
-        this.labelCreateRoom = 'ルーム作成';
-        this.labelDualGame = '2人対戦';
-        this.labelQuadGame = '4人対戦';
-        this.labelCapacity = '定員';
-        this.labelAvailable = '募集中';
+        Lounge.instance = this;
+        this.title = labels.lounge.title;
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+
         //afterRenderにmethod追加
-        this.addAfterRenderHandler(this.listenCreateRoom.bind(this));
+        this.addAfterRenderHandler(this.listenJoinDual.bind(this));
+        this.addAfterRenderHandler(this.listenJoinQuad.bind(this));
     }
 
     async renderHtml() {
         return `
-            <div class="blockMatch">
-                <form class="formCreateRoom blockForm unitBox">
-                    <ul class="formCreateRoom_list blockForm_list">
-                        <li><input type="radio" id="dualGame" name="gameType" value="dual" checked /><label for="dualGame">${this.labelDualGame}</label></li>
-                        <li><input type="radio" id="quadGame" name="gameType" value="quad" /><label for="quadGame">${this.labelQuadGame}</label></li>
-                    </ul>
-                    <p class="formCreateRoom_button blockForm_button"><button type="button" id="btnCreateRoom" class="unitButton">${this.labelCreateRoom}</button></p>
-                </form>
-                <div class="blockMatch_listWrap">
-                    <h3 class="blockMatch_title unitTitle1">Waiting</h3>
-                    <div class="blockMatch_list listMatch listLineDivide">
-                    <div class="unitMatch unitMatch-dual">
-                        <ul class="unitMatch_capacity unitCapacity">
-                            <li class="unitCapacity_numerator">
-                                <small>${this.labelAvailable}</small>
-                                <span>1</span>
-                            </li>
-                            <li class="unitCapacity_denominator">
-                                <small>${this.labelCapacity}</small>
-                                <span>2</span>
-                            </li>
-                        </ul>
-                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                        </ul>
-                    </div>
-                    <div class="unitMatch unitMatch-quad">
-                        <ul class="unitMatch_capacity unitCapacity">
-                            <li class="unitCapacity_numerator">
-                                <small>${this.labelAvailable}</small>
-                                <span>1</span>
-                            </li>
-                            <li class="unitCapacity_denominator">
-                                <small>${this.labelCapacity}</small>
-                                <span>4</span>
-                            </li>
-                        </ul>
-                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                        </ul>
-                    </div>
-                    <div class="unitMatch unitMatch-quad">
-                        <ul class="unitMatch_capacity unitCapacity">
-                            <li class="unitCapacity_numerator">
-                                <small>${this.labelAvailable}</small>
-                                <span>1</span>
-                            </li>
-                            <li class="unitCapacity_denominator">
-                                <small>${this.labelCapacity}</small>
-                                <span>4</span>
-                            </li>
-                        </ul>
-                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                        </ul>
-                    </div>
-                    <div class="unitMatch unitMatch-dual">
-                        <ul class="unitMatch_capacity unitCapacity">
-                            <li class="unitCapacity_numerator">
-                                <small>${this.labelAvailable}</small>
-                                <span>1</span>
-                            </li>
-                            <li class="unitCapacity_denominator">
-                                <small>${this.labelCapacity}</small>
-                                <span>2</span>
-                            </li>
-                        </ul>
-                        <ul class="unitMatch_button unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton">${this.labelMatch}</button></li>
-                        </ul>
-                    </div>
-                </div>
-                </div>
-            </section>
-            <ol class="breadcrumb">
-            <li><a href="/">dashboard</a></li>
-            <li>Lounge</li>
-            </ol>
+            <div class="blockLounge">
+                <section class="blockLoungeRoom">
+                    <form class="blockForm unitBox">
+                        <h3 class="blockLoungeRoom_title">${labels.lounge.labelDualGame}</h3>
+                        <input type="hidden" name="gameType" value="dual">
+                        <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinDual" class="unitButton unitButton-large">${labels.lounge.labelMatch}</button></p>
+                    </form>
+                </section>
+                <section class="blockLoungeRoom">
+                    <form class="blockForm unitBox">
+                        <h3 class="blockLoungeRoom_title">${labels.lounge.labelQuadGame}</h3>
+                        <input type="hidden" name="gameType" value="quad">
+                        <p class="blockLoungeRoom_button blockForm_button"><button type="button" id="btnJoinQuad" class="unitButton unitButton-large">${labels.lounge.labelMatch}</button></p>
+                    </form>
+                </section>
+            </div>
         `;
     }
 
-    listenCreateRoom() {
-        const btnCreateRoom = document.getElementById('btnCreateRoom');
-        btnCreateRoom.addEventListener('click', showModalWaitForOpponent.bind(this));
-        this.addListenEvent(btnCreateRoom, showModalWaitForOpponent, 'click');
+    listenJoinDual() {
+        const btnJoinDual = document.getElementById('btnJoinDual');
+        const boundShowModalWaitForOpponent = showModalWaitForOpponent.bind(this);
+        this.addListListenInInstance(btnJoinDual, boundShowModalWaitForOpponent, 'click');
+    }
+
+    listenJoinQuad() {
+        const btnJoinQuad = document.getElementById('btnJoinQuad');
+        const boundShowModalWaitForOpponent = showModalWaitForOpponent.bind(this);
+        this.addListListenInInstance(btnJoinQuad, boundShowModalWaitForOpponent, 'click');
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

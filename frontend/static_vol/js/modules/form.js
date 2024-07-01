@@ -1,15 +1,17 @@
 'use strict';
 
+import { labels } from './labels.js';
+
 const errorTypes = ['valueMissing', 'patternMismatch', 'tooLong', 'tooShort', 'customError'];
 
 const errorMessages = {
-    'valueMissing': 'This field is required.',
-    'patternMismatch': 'The character types used do not meet the requirement.',
-    'tooLong': 'The character count is too long.',
-    'tooShort': 'The character count is too short.',
+    'valueMissing': labels.formErrorMessages.valueMissing,
+    'patternMismatch': labels.formErrorMessages.patternMismatch,
+    'tooLong': labels.formErrorMessages.tooLong,
+    'tooShort': labels.formErrorMessages.tooShort,
     //for customError
-    'passwordIsNotSame': 'password is not same.',
-    'isExists': 'This username already exists.',
+    'passwordIsNotSame': labels.formErrorMessages.passwordIsNotSame,
+    'isExists': labels.formErrorMessages.isExists,
     //以下はfront validate弾けているはずができずにbackend validateでエラーになるパターン
     'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
     'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
@@ -92,4 +94,34 @@ const checkInputValid = (elInput) => {
     return false;
 };
 
-export { addErrorMessage, addErrorMessageCustom, checkInputValid };
+const checkSimpleInputValid = (elInput) => {
+    const errWrapper = elInput.closest('form').querySelector('.listError');
+
+    //validate OK
+    const validityState = elInput.validity;
+    if (validityState.valid) {
+        const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
+        listLiError.forEach((li) => {
+            li.remove();
+        });
+        return true;
+    }
+
+    //invalid。error表示してreturn false
+    errorTypes.forEach((errorType) => {
+        const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
+        const targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-type') === errorType);
+        if (validityState[errorType]) {
+            if (!targetLi) {
+                addErrorMessage(errWrapper, errorType);
+            }
+        } else {
+            if (targetLi) {
+                targetLi.remove();
+            }
+        }
+    });
+    return false;
+};
+
+export { errorTypes, addErrorMessage, addErrorMessageCustom, checkInputValid, checkSimpleInputValid };

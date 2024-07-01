@@ -5,17 +5,17 @@ import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
+import { SiteInfo } from "../modules/SiteInfo.js";
+import { labels } from '../modules/labels.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
-export default class extends PageBase {
+export default class LogIn extends PageBase {
     constructor(params) {
         super(params);
-        this.setTitle('LOGIN');
-        this.labelButtonLogin = 'LOGIN'; // TODO json
-        this.txtSignUp = 'Don\'t have an account?'; // TODO json
-        this.labelLinkSignUp = 'SIGN UP'; // TODO json
-        this.textLoginError1 = 'Login failed. Please check your username and password.'; // TODO json
-        this.textLoginError2 = 'Something went wrong. Unable to log in.';
+        LogIn.instance = this;
+        this.setTitle(this.title);
+        this.clearBreadcrumb();
+
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
     }
@@ -24,28 +24,28 @@ export default class extends PageBase {
         return `
             <form id="formLogin" class="blockForm blockForm-home" action="" method="post">
                 <dl class="blockForm_el">
-                    <dt>username</dt>
+                    <dt>${labels.home.labelUsername}</dt>
                     <dd><input type="text" id="loginUsername" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required /></dd>
                 </dl>
                 <dl class="blockForm_el">
-                    <dt>password</dt>
+                    <dt>${labels.home.labelPassword}</dt>
                     <dd><input type="password" id="loginPassword" placeholder="Enter password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required /></dd>
                 </dl>
                 <ul class="blockForm_el listError"></ul>
-                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${this.labelButtonLogin}</button></p>
+                <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>
             </form>
             <hr />
             <dl class="blockSignUp">
-                <dt class="blockSignUp_txt">${this.txtSignUp}</dt>
-                <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${this.labelLinkSignUp}</a></dd>
+                <dt class="blockSignUp_txt">${labels.home.textSignUp}</dt>
+                <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${labels.home.labelLinkSignUp}</a></dd>
             </dl>
         `;
     }
 
     listenLogin() {
         const btnLogin = document.getElementById('btnLoginForm');
-        btnLogin.addEventListener('click', this.handleLogin.bind(this));
-        this.addListenEvent(btnLogin, this.handleLogin, 'click');
+        const boundHandleLogin = this.handleLogin.bind(this);
+        this.addListListenInInstance(btnLogin, boundHandleLogin, 'click');
     }
 
     handleLogin(ev) {
@@ -63,8 +63,9 @@ export default class extends PageBase {
             username: username,
             password: password
         };
+        const siteInfo = new SiteInfo();
         console.log('Sending data :', data);
-        fetch('https://localhost/api/players/login/', {
+        fetch('/api/players/login/', {
                 method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -84,12 +85,25 @@ export default class extends PageBase {
             .then(data => {
                 localStorage.setItem('accessToken', data.access_token);
                 localStorage.setItem('refreshToken', data.refresh_token);
-                webSocketManager.openWebSocket('lounge', pongHandler);
+                webSocketManager.openWebSocket('lounge', pongHandler)
+                    .then(() => {
+                        //return webSocketManager.sendAccessToken('lounge');
+                        return;
+                    })
+                    .catch((error) => {
+                        console.error('WebSocket connection or token send failed', error);
+                    });
                 return getUserInfo();
             })
-            .then((userData) => {
-                switchDisplayAccount(userData);//not return
-                router(true);
+            .then((data) => {
+                if (data) {
+                    siteInfo.setUsername(data.username);
+                    siteInfo.setAvatar(data.avatar);
+                    switchDisplayAccount()
+                        .then(() => {
+                            router(true).then(() => {});
+                        });
+                }
             })
             .catch(error => {
                 //console.error('Login failed:', error);
@@ -99,5 +113,9 @@ export default class extends PageBase {
 
     handleValidationError(error) {
         console.error('///handleValidationError:', error);
+    }
+
+    destroy() {
+        super.destroy();
     }
 }

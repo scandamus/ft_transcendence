@@ -34,6 +34,15 @@ class Match(models.Model):
         null=True, blank=True,
         verbose_name="ラウンド"
     )
+    game_name = models.CharField(
+        max_length=20,
+        choices=[
+            ('pong', 'Pong'),
+            ('pong4', 'Pong4'),
+        ],
+        default='pong',
+        verbose_name="ゲームタイプ"
+    )
     player1 = models.ForeignKey(
         'players.Player',
         related_name='matches_as_player1',
@@ -47,6 +56,20 @@ class Match(models.Model):
         on_delete=models.SET_NULL,
         null=True, blank=False,
         verbose_name="プレイヤー2"
+    )
+    player3 = models.ForeignKey(
+        'players.Player',
+        related_name='matches_as_player3',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name="プレイヤー3"
+    )
+    player4 = models.ForeignKey(
+        'players.Player',
+        related_name='matches_as_player4',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name="プレイヤー4"
     )
     status = models.CharField(
         max_length=10,
@@ -68,21 +91,37 @@ class Match(models.Model):
         null=True, blank=True,
         verbose_name="スコア(プレイヤー2)"
     )
-
+    score3 = models.IntegerField(
+        default=0,
+        null=True, blank=True,
+        verbose_name="スコア(プレイヤー3)"
+    )
+    score4 = models.IntegerField(
+        default=0,
+        null=True, blank=True,
+        verbose_name="スコア(プレイヤー4)"
+    )
     def __str__(self):
-        return f"{self.player1} vs {self.player2} - Round: {self.round} on {self.tournament}"
+        player_names = ", ".join([str(player) for player in [self.player1, self.player2, self.player3, self.player4] if player])
+        return f"{player_names} - Round: {self.round} on {self.tournament}"
+#        return f"{self.player1} vs {self.player2} - Round: {self.round} on {self.tournament}"
 
     class Meta:
         verbose_name = '対戦'
 
     def clean(self):
-        if self.player1 == self.player2:
-            raise ValidationError('player1 and player2 cannot be the same player')
+        players = [self.player1, self.player2, self.player3, self.player4]
+        required_players = 2 if self.game_name == 'pong' else 4 if self.game_name == 'pong4' else 0
+        actual_players = [player for player in players if player is not None]
+
+        if len(actual_players) != required_players:
+            raise ValidationError(f'{self.game_name} requires {required_players} players')
+        if len(set(actual_players)) != len(actual_players):
+            raise ValidationError('Players cannnot be the same')          
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-
 
 class Entry(models.Model):
     tournament = models.ForeignKey(

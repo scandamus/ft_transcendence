@@ -60,4 +60,17 @@ for i in {30..0}; do
     sleep 1
 done
 
+echo "Waiting for pong4-server booting..."
+for i in {30..0}; do
+    if nc -z pong4-server 8003; then
+        echo "pong4-server OK"
+	    break;
+    fi
+	if [ $i -eq 0 ]; then
+        echo "pong4-server not reachable"
+        exit 1
+    fi
+    sleep 1
+done
+
 exec "$@"

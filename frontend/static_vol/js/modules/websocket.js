@@ -1,4 +1,4 @@
-import { getValidToken } from "./token.js";
+import { getValidToken, initToken } from "./token.js";
 
 class WebSocketManager {
     constructor() {
@@ -29,11 +29,24 @@ class WebSocketManager {
 
             const socket = new WebSocket(url);
 
+            // 接続したら必ずAccessToekenを送る
             socket.onopen = () => {
                 console.log(`WebSocket for ${containerId} is open now.`);
                 this.sockets[containerId] = socket;
                 this.messageHandlers[containerId] = messageHandler || this.defaultMessageHandler(this, containerId);
-                resolve(socket);
+                if (containerId === 'lounge') {
+                    this.sendAccessToken(containerId)
+                        .then(() => {
+                            console.log(`Sent access token to ${containerId}`);
+                            resolve(socket);
+                        })
+                        .catch((error) => {
+                            console.error(`Failed to send access token for ${containerId}: `, error);
+                            reject(error);
+                        });
+                } else {
+                    resolve(socket);
+                }
             };
 
             socket.onmessage = (event) => {
@@ -56,10 +69,6 @@ class WebSocketManager {
         const data = JSON.parse(event.data);
         console.log(`Default handler message from ${containerId}:`, data)
     }
-
-    loadGameContent(jwt, containerId) {
-        console.log(`Loading ${containerId}`);
-   }
 
     handleMessage(containerId, event) {
         const handler = this.messageHandlers[containerId];
@@ -98,11 +107,29 @@ class WebSocketManager {
 
     isWebSocketOpened(containerId) {
         const socket = this.sockets[containerId];
-        return socket && socket.readyState == WebSocket.OPEN;
+        return socket && socket.readyState === WebSocket.OPEN;
     }
 
     getWebSocket(containerId) {
         return this.sockets[containerId];
+    }
+
+    async sendAccessToken(containerId) {
+        console.log(`sendAccessToken to ${containerId}`);
+        try {
+            const accessToken = await initToken();
+//            await webSocketManager.openWebSocket(containerId, this.messageHandlers[containerId]);
+            console.log('sendAccessToken: initToken() finish');
+            const message = {
+                type: 'authWebSocket',
+                action: 'auth',
+                token: accessToken.token
+            };
+            this.sendWebSocketMessage(containerId, message);
+            console.log('send access token to backend.');
+        } catch (error) {
+            console.error('Failed to open or send through WebSocket: ', error);
+        }
     }
 }
 
