@@ -35,4 +35,9 @@ if not player2_exists:
     User.objects.create_user('$DJANGO_PLAYER2_USER', '$DJANGO_PLAYER2_MAIL', '$DJANGO_PLAYER2_PASSWORD')
 """ | python manage.py shell
 
+export PGPASSWORD=$DB_PASSWORD
+psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/user_dummy.sql
+psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/player_dummy.sql
+unset PGPASSWORD
+
 exec "$@"
