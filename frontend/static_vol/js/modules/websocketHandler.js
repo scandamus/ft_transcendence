@@ -176,7 +176,9 @@ const handleFriendMatchRequestReceived = (data) => {
         addNotice(labels.matchRequest['rejected'], true);
     } else if (data.action === 'error') {
         closeModal();
-        if (data.error === 'userOffline') {
+        if (data.error === 'playerNotWaitingStatus') {
+            addNotice('対戦相手がビジーです', true);
+        } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
         } else {
             console.error(`Error: ${data.message}`);
