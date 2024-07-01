@@ -202,6 +202,8 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def update_ball_and_send_data(self):
         self.right_paddle.move()
         self.left_paddle.move()
+        self.upper_paddle.move()
+        self.lower_paddle.move()
         game_continue = self.ball.move(self.right_paddle, self.left_paddle)
         ball_tmp = {
             "x": self.ball.x,
@@ -224,6 +226,20 @@ class PongConsumer(AsyncWebsocketConsumer):
             "vertical": self.left_paddle.length,
             "score": self.left_paddle.score,
         }
+        upper_paddle_tmp = {
+            "x": self.upper_paddle.x,
+            "y": self.upper_paddle.y,
+            "horizontal": self.upper_paddle.thickness,
+            "vertical": self.upper_paddle.length,
+            "score": self.upper_paddle.score,
+        }
+        lower_paddle_tmp = {
+            "x": self.lower_paddle.x,
+            "y": self.lower_paddle.y,
+            "horizontal": self.lower_paddle.thickness,
+            "vertical": self.lower_paddle.length,
+            "score": self.lower_paddle.score,
+        }
         await self.channel_layer.group_send(self.room_group_name, {
             "type": "ball.message",
             "message": "update_ball_pos",
@@ -232,6 +248,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             "ball": ball_tmp,
             "right_paddle": right_paddle_tmp,
             "left_paddle": left_paddle_tmp,
+            "upper_paddle": upper_paddle_tmp,
+            "lower_paddle": lower_paddle_tmp,
         })
         return game_continue
 
