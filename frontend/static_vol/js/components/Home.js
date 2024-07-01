@@ -15,9 +15,11 @@ export default class LogIn extends PageBase {
         LogIn.instance = this;
         this.setTitle(this.title);
         this.clearBreadcrumb();
+        this.loginErrorType = '';
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
+        this.addAfterRenderHandler(this.listenFocus.bind(this));
     }
 
     async renderHtml() {
@@ -40,6 +42,24 @@ export default class LogIn extends PageBase {
                 <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${labels.home.labelLinkSignUp}</a></dd>
             </dl>
         `;
+    }
+
+    listenFocus() {
+        const ids = ['loginUsername', 'loginPassword'];
+        const inputFocus = ids.map(id => document.getElementById(id));
+        const boundHandleFocus = this.handleFocus.bind(this);
+        inputFocus.forEach((input) => {
+            this.addListListenInInstance(input, boundHandleFocus, 'focus');
+        });
+    }
+
+    handleFocus(ev) {
+        const errWrapper = document.querySelector('.listError');
+        const listError = errWrapper.querySelectorAll('li');
+        listError.forEach((li) => {
+            li.remove();
+        });
+        this.loginErrorType = '';
     }
 
     listenLogin() {
@@ -108,9 +128,11 @@ export default class LogIn extends PageBase {
     }
 
     handleValidationError(error) {
-        //console.error('///handleValidationError:', error);
-        const errWrapper = document.querySelector('.listError');
-        addErrorMessage(errWrapper, error);
+        if (this.loginErrorType !== error) {
+            this.loginErrorType = error;
+            const errWrapper = document.querySelector('.listError');
+            addErrorMessage(errWrapper, error);
+        }
     }
 
     destroy() {

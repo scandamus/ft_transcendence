@@ -626,6 +626,11 @@ input.has-input:invalid {
   margin-bottom: -30px;
 }
 
+.blockForm_el+.listError {
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
 .blockForm_el dt {
   margin-bottom: 10px;
   text-align: left;
