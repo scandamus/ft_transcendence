@@ -48,13 +48,6 @@ class Paddle(Block):
         self.speed = 0
         self.score = 0
 
-    def move(self):
-        self.y += self.speed
-        if self.y < 0:
-            self.y = 0
-        elif self.y + self.length > CANVAS_HEIGHT:
-            self.y = CANVAS_HEIGHT - self.length
-
     def move_for_multiple(self):
         if self.orientation == 'horizontal':
             self.x += self.speed
@@ -96,59 +89,6 @@ class Ball:
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.flag = True
-
-    def move(self, paddle1, paddle2):
-        # 上下の壁との衝突判定 # if 上 or 下
-        if self.y + self.dy < 0 or self.y + self.size + self.dy > CANVAS_HEIGHT:
-            self.dy = -self.dy
-        collision_with_paddle1 = False
-        collision_with_paddle2 = False
-        # 衝突判定
-        if 0 < self.dx:
-            collision_with_paddle1 = self.collision_detection(paddle1, "RIGHT")
-        elif self.dx < 0:
-            collision_with_paddle2 = self.collision_detection(paddle2, "LEFT")
-
-        # 左の壁との衝突判定
-        if self.x + self.size + self.dx < 0:
-            paddle1.increment_score()
-            self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle1.score < 10
-        # 右の壁との衝突判定
-        elif self.x + self.dx > CANVAS_WIDTH:
-            paddle2.increment_score()
-            self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle2.score < 10
-        # 衝突判定がTrueの場合はpaddleにballを接触させるように
-        # x座標の操作
-        if collision_with_paddle1 == "collision_front":
-            self.reflect_ball(paddle1, "RIGHT")
-            self.x = paddle1.x - self.size
-        elif collision_with_paddle1 == "collision_side":
-            self.dy = -self.dy
-            self.x += self.dx
-        elif collision_with_paddle2 == "collision_front":
-            self.reflect_ball(paddle2, "LEFT")
-            self.x = paddle2.x + paddle2.thickness
-        elif collision_with_paddle2 == "collision_side":
-            self.dy = -self.dy
-            self.x += self.dx
-        else:
-            self.x += self.dx
-        # y座標の操作
-        if self.y + self.dy < 0:
-            self.y = 0
-            self.dy -= self.dy
-        elif CANVAS_HEIGHT < self.y + self.size:
-            self.y = CANVAS_HEIGHT - self.size
-            self.dy -= self.dy
-        else:
-            self.y += self.dy
-        if (self.y == 0 or self.y == CANVAS_HEIGHT - self.size) and self.dy == 0:
-            tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
-            self.dx = tmp["dx"]
-            self.dy = tmp["dy"]
-        return True
 
     def move_for_multiple(self, right_paddle, left_paddle, upper_paddle, lower_paddle, walls):
         # 壁を超えているか
