@@ -18,8 +18,13 @@ class MatchSerializer(serializers.ModelSerializer):
         old_status = instance.status
         new_status = validated_data.get('status', instance.status)
 
+        instance = super().update(instance, validated_data)
+
         if old_status != 'after' and new_status == 'after':
             self.set_players_to_waiting(instance)
+
+        instance.save()
+        return instance
 
     def set_players_to_waiting(self, match):
         players = [match.player1, match.player2, match.player3, match.player4]
