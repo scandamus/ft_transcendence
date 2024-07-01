@@ -6,7 +6,7 @@ import { router } from '../modules/router.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
 import { labels } from '../modules/labels.js';
-import { checkInputValid, checkSimpleInputValid } from '../modules/form.js';
+import { addErrorMessage } from '../modules/form.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class LogIn extends PageBase {
@@ -51,11 +51,8 @@ export default class LogIn extends PageBase {
     handleLogin(ev) {
         ev.preventDefault();
         const formLogin = document.getElementById('formLogin');
-        const formInput = document.getElementById('loginUsername');
         if (!formLogin.checkValidity()) {
-            console.log('logion error (front)')
-            //this.handleValidationError(labels.formErrorMessages.loginError1);
-            checkSimpleInputValid(formInput);
+            this.handleValidationError('loginError1');
             return;
         }
 
@@ -78,9 +75,9 @@ export default class LogIn extends PageBase {
                 console.log('Response status: ', response.status);
                 if (!response.ok) {
                     if (response.status === 403) {
-                        throw new Error(labels.formErrorMessages.loginError1);
+                        throw new Error('loginError1');
                     }
-                    throw new Error(labels.formErrorMessages.loginError2);
+                    throw new Error('loginError2');
                 }
                 return response.json();
             })
@@ -106,17 +103,14 @@ export default class LogIn extends PageBase {
                 }
             })
             .catch(error => {
-                //console.error('Login failed:', error);
-                this.handleValidationError(error);
+                this.handleValidationError('loginError2');
             });
     }
 
     handleValidationError(error) {
-        console.error('///handleValidationError:', error);
-        let errWrapper = document.querySelector('.listError');
-        const elError = document.createElement('li');
-        elError.textContent = error;
-        errWrapper.appendChild(elError);
+        //console.error('///handleValidationError:', error);
+        const errWrapper = document.querySelector('.listError');
+        addErrorMessage(errWrapper, error);
     }
 
     destroy() {
