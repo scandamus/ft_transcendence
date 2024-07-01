@@ -67,7 +67,7 @@ export const labels_en = {
         labelQuadGame: '4-player match',
         labelCapacity: 'capacity',
         labelAvailable: 'available',
-        labelWaiting: 'looking for an opponent',
+        labelWaiting: 'looking for opponent',
     },
     match: {
         title: '',
@@ -122,6 +122,6 @@ export const labels_en = {
         cancelled: 'opponent cancelled the match',
         rejected: 'opponent has rejected to play',
         userOffline: 'opponent is offline',
-        playerNotWaitingStatus: 'opponent is busy',
+        playerNotWaitingStatus: 'opponent is busy now',
     },
 };
