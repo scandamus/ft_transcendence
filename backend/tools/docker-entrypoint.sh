@@ -35,4 +35,6 @@ if not player2_exists:
     User.objects.create_user('$DJANGO_PLAYER2_USER', '$DJANGO_PLAYER2_MAIL', '$DJANGO_PLAYER2_PASSWORD')
 """ | python manage.py shell
 
+python manage.py generate_player
+
 exec "$@"

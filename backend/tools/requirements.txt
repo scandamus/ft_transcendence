@@ -14,3 +14,4 @@ daphne
 channels
 channels_redis
 Pillow
+faker
