@@ -17,12 +17,22 @@ done
 python manage.py makemigrations
 python manage.py migrate
 
+superuser_exists=$(python manage.py shell << END
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+superuser_exists = User.objects.filter(username='$DJANGO_SU_USER', is_superuser=True).exists()
+
+print(superuser_exists)
+END
+)
+
 # userの作成
 echo """
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-superuser_exists = User.objects.filter(username='$DJANGO_SU_USER').exists()
+superuser_exists = User.objects.filter(username='$DJANGO_SU_USER', is_superuser=True).exists()
 if not superuser_exists:
     User.objects.create_superuser('$DJANGO_SU_USER', '$DJANGO_SU_MAIL', '$DJANGO_SU_PASSWORD')
 
@@ -35,9 +45,11 @@ if not player2_exists:
     User.objects.create_user('$DJANGO_PLAYER2_USER', '$DJANGO_PLAYER2_MAIL', '$DJANGO_PLAYER2_PASSWORD')
 """ | python manage.py shell
 
-export PGPASSWORD=$DB_PASSWORD
-psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/user_dummy.sql
-psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/player_dummy.sql
-unset PGPASSWORD
+if [ "$superuser_exists" = "False" ]; then
+    export PGPASSWORD=$DB_PASSWORD
+    psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/user_dummy.sql
+    psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/player_dummy.sql
+    unset PGPASSWORD
+fi
 
 exec "$@"
