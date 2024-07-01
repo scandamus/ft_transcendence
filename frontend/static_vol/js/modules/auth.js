@@ -40,6 +40,9 @@ const getUserInfo = async () => {
             if (!userData) {
                 return Promise.resolve(null);
             }
+            const siteInfo = new SiteInfo();
+            siteInfo.setUsername(userData.username);
+            siteInfo.setAvatar(userData.avatar);
             return userData;
         })
         .catch(error => {

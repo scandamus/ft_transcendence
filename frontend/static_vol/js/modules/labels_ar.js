@@ -34,6 +34,8 @@ export const labels_ar = {
         tooShort: ' يؤُلاءِ العربية',
         passwordIsNotSame: ' يؤُلاءِ العربية',
         isExists: ' يؤُلاءِ العربية',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {
