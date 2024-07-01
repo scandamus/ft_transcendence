@@ -425,6 +425,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     #     patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
+        logger.info("Starting game")
         if self.player_name == 'player1':
             await self.reset_game_data()
             await self.init_walls()

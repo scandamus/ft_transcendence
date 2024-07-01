@@ -6,11 +6,11 @@ import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
 import { initToken } from '../modules/token.js';
 
-export default class GamePlayMulti extends PageBase {
+export default class GamePlayQuad extends PageBase {
     constructor(params) {
         super(params);
-        GamePlayMulti.instance = this;
-        this.title = 'MultiGamePlay';
+        GamePlayQuad.instance = this;
+        this.title = 'GamePlayQuad';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.player1 = 'player1'; // TODO fetch from backend?
@@ -51,22 +51,40 @@ export default class GamePlayMulti extends PageBase {
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            function drawLineDash() {
-                ctx.beginPath();
-                ctx.setLineDash([15, 15]);
-                ctx.lineWidth = 15;
-                ctx.strokeStyle = '#808080FF';
-                ctx.moveTo(325, 0);
-                ctx.lineTo(325, 450);
-                ctx.stroke();
-                ctx.closePath();
-            }
+            function drawCornerLine(line_width, size) {
+                ctx.lineWidth = line_width;
+                ctx.lineJoin = 'miter';
+                ctx.lineCap = 'butt'
+                ctx.strokeStyle = 'red';
+                const offset = line_width / 2;
 
-            function drawScore(left_paddle, right_paddle) {
-                ctx.font = '48px "Courier New"';
-                ctx.textAlign = "center";
-                ctx.fillStyle = '#808080FF';
-                ctx.fillText(`${left_paddle.score}   ${right_paddle.score}`, canvas.width / 2, 50);
+                // 左上
+                ctx.beginPath();
+                ctx.moveTo(size, offset);
+                ctx.lineTo(offset, offset);
+                ctx.lineTo(offset, size);
+                ctx.stroke();
+
+                // 右上
+                ctx.beginPath();
+                ctx.moveTo(canvas.width - size, offset);
+                ctx.lineTo(canvas.width - offset, offset);
+                ctx.lineTo(canvas.width - offset, size);
+                ctx.stroke();
+
+                // 左下
+                ctx.beginPath();
+                ctx.moveTo(size, canvas.height - offset);
+                ctx.lineTo(offset, canvas.height - offset);
+                ctx.lineTo(offset, canvas.height - size);
+                ctx.stroke();
+
+                // 右下
+                ctx.beginPath();
+                ctx.moveTo(canvas.width - size, canvas.height - offset);
+                ctx.lineTo(canvas.width - offset, canvas.height - offset);
+                ctx.lineTo(canvas.width - offset, canvas.height - size);
+                ctx.stroke();
             }
 
             function drawBall(obj) {
@@ -89,16 +107,18 @@ export default class GamePlayMulti extends PageBase {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // 背景色
                 drawBackground();
-                // 中央の波線
-                drawLineDash();
-                // スコア
-                drawScore(data.left_paddle, data.right_paddle);
-
+                // 四隅の枠を生成
+                drawCornerLine(15, 15*8);
+                //
                 drawBall(data.ball);
-                // 右
+                // // 右
                 drawPaddle(data.right_paddle);
-                // 左
+                // // 左
                 drawPaddle(data.left_paddle);
+                // 上
+                drawPaddle(data.upper_paddle);
+                //下
+                drawPaddle(data.lower_paddle);
 
                 if (!data.game_status) {
                     console.log("Game Over");
@@ -118,6 +138,7 @@ export default class GamePlayMulti extends PageBase {
                 }
             }
 
+            // TODO: キーイベントの送信
             // 押されたとき
             document.addEventListener("keydown", keyDownHandler, false);
             // 離れたとき
@@ -152,7 +173,7 @@ export default class GamePlayMulti extends PageBase {
                     const data = JSON.parse(e.data);
                     // document.querySelector('#pong-log').value += (data.message + '\n');
                     console.log('received_data -> ', data);
-                    console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
+                    // console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score, 'UPPER_PADDLE: ', data.upper_paddle.score, '  LOWER_PADDLE: ', data.lower_paddle.score);
                     updateGameObjects(data);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
