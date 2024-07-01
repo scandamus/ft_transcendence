@@ -79,6 +79,7 @@ async def handle_request_game(consumer, data):
                 'action': 'requested',
                 'from': consumer.user.username,
                 'from_id': user.id,
+                'avatar': player.avatar.url if player.avatar else '',
                 'request_id': request_id,
             }))
             logger.info(f'Sent to opponent {opponent_name}')
