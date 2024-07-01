@@ -13,10 +13,6 @@ export default class GamePlayQuad extends PageBase {
         this.title = 'GamePlayQuad';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        this.player1 = 'player1'; // TODO fetch from backend?
-        this.player2 = 'player2';
-        this.score1 = 0;
-        this.score2 = 0;
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
     }
@@ -25,8 +21,6 @@ export default class GamePlayQuad extends PageBase {
         return `
            <div class="playBoardWrap">
                 <ul class="listPlayerActiveMatch">
-                    <li class="listPlayerActiveMatch_item">${this.player1}</li>
-                    <li class="listPlayerActiveMatch_item">${this.player2}</li>
                 </ul>
                 <canvas id="playBoard" width="650" height="650"></canvas>
             </div>
