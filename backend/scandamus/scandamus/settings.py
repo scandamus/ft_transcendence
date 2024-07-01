@@ -36,7 +36,7 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
 
-ALLOWED_HOSTS = ['backend', 'pong-server', 'localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['backend', 'pong-server', 'frontend' ,'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
 
