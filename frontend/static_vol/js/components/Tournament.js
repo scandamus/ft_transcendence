@@ -3,6 +3,9 @@
 import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
+import { createTournament } from '../modules/tournament.js';
+import { addNotice } from '../modules/notice.js';
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from '../modules/env.js';
 
 export default class Tournament extends PageBase {
     constructor(params) {
@@ -171,7 +174,25 @@ export default class Tournament extends PageBase {
     handleCreateTournament(ev) {
         ev.preventDefault();
         console.log("handleCreateTournament");
-        //todo: CreateTournament
+
+        const tournamentTitle = document.getElementById('inputTournamentTitle').value;
+        if (!tournamentTitle || !tournamentTitle.trim()) {
+            addNotice('トーナメントのタイトルを入力してください', true);
+            return;
+        }
+
+        const startTimeInput = document.getElementById('startTime').value;
+        const startTime = new Date(startTimeInput);
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
+        const minUTC = new Date(now.toISOString());
+        const startUTC = new Date(startTime.toISOString());
+        console.log(`startUTC: ${startUTC}, minUTC: ${minUTC}`);
+        if (startUTC < minUTC) {
+             addNotice(`トーナメントの開始時刻は${CREATE_TOURNAMENT_TIMELIMIT_MIN}分後以降に設定してください`, true);
+             return;
+        }
+        createTournament(tournamentTitle, startTime);
     }
 
     listenCancelTournament() {
