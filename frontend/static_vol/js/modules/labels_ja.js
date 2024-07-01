@@ -11,6 +11,8 @@ export const labels_ja = {
         labelButtonLogout: 'ログアウト',
         textSignUp: '初めての方はこちら',
         labelLinkSignUp: '登録',
+        textLoginError1: 'ログインに失敗しました。ユーザー名とパスワードを確認してください',
+        textLoginError2: 'ログインできません',
     },
     register: {
         title: 'Register',

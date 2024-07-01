@@ -11,6 +11,8 @@ export const labels_ar = {
         labelButtonLogout: ' يؤُلاءِ العربية',
         textSignUp: ' يؤُلاءِ العربية',
         labelLinkSignUp: ' يؤُلاءِ العربية',
+        textLoginError1: '',
+        textLoginError2: '',
     },
     register: {
         title: 'Register',

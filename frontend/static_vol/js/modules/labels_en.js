@@ -11,6 +11,8 @@ export const labels_en = {
         labelButtonLogout: 'log out',
         textSignUp: 'If you don\'t have an account:',
         labelLinkSignUp: 'sign up',
+        textLoginError1: 'Login failed. Please check your username and password.',
+        textLoginError2: 'Something went wrong. Unable to log in.',
     },
     register: {
         title: 'Register',

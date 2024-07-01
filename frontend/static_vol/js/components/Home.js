@@ -52,7 +52,7 @@ export default class LogIn extends PageBase {
         ev.preventDefault();
         const formLogin = document.getElementById('formLogin');
         if (!formLogin.checkValidity()) {
-            this.handleValidationError(this.textLoginError1);
+            this.handleValidationError(labels.home.textLoginError1);
             return;
         }
 
@@ -76,9 +76,9 @@ export default class LogIn extends PageBase {
                 console.log('Response status: ', response.status);
                 if (!response.ok) {
                     if (response.status === 403) {
-                        throw new Error(this.textLoginError1);
+                        throw new Error(labels.home.textLoginError1);
                     }
-                    throw new Error(this.textLoginError2);
+                    throw new Error(labels.home.textLoginError2);
                 }
                 return response.json();
             })

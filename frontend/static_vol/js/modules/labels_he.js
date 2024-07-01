@@ -11,6 +11,8 @@ export const labels_he = {
         labelButtonLogout: 'הזה עברית ',
         textSignUp: 'הזה עברית ',
         labelLinkSignUp: 'הזה עברית ',
+        textLoginError1: '',
+        textLoginError2: '',
     },
     register: {
         title: 'Register',

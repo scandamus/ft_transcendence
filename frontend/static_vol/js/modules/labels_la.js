@@ -11,6 +11,8 @@ export const labels_la = {
         labelButtonLogout: '',
         textSignUp: '',
         labelLinkSignUp: '',
+        textLoginError1: '',
+        textLoginError2: '',
     },
     register: {
         title: '',
