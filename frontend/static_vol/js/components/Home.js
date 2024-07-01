@@ -63,7 +63,6 @@ export default class LogIn extends PageBase {
             username: username,
             password: password
         };
-        const siteInfo = new SiteInfo();
         console.log('Sending data :', data);
         fetch('/api/players/login/', {
                 method: 'POST',
@@ -97,8 +96,6 @@ export default class LogIn extends PageBase {
             })
             .then((data) => {
                 if (data) {
-                    siteInfo.setUsername(data.username);
-                    siteInfo.setAvatar(data.avatar);
                     switchDisplayAccount()
                         .then(() => {
                             router(true).then(() => {});
