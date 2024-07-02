@@ -50,6 +50,7 @@ export const labels_fr = {
         labelApply: '',
         labelSearch: '',
         labelSendRequest: '',
+        labelRequest: '',
         msgNoUsername: '',
         msgNoFriends: '',
         labelListFriends: '',

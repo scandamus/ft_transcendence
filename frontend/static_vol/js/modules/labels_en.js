@@ -50,6 +50,7 @@ export const labels_en = {
         labelApply: 'start a match',
         labelSearch: 'send friend request',
         labelSendRequest: 'send',
+        labelRequest: 'friend request',
         msgNoUsername: 'Enter a username to send friend request',
         msgNoFriends: 'no friends yet',
         labelListFriends: 'friends',
