@@ -5,17 +5,30 @@ import { resetListenFriendList, resetListenFriendRequestList } from "./friendLis
 import { labels } from "./labels.js";
 import PageBase from "../components/PageBase.js";
 
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
-        const friends = await fetchFriends();
+        let friends = await fetchFriends();
+        if (friends && friends.length > 1) {
+            shuffleArray(friends);
+        }
         const listFriendsWrappr = document.querySelector('.blockFriends_friends');
         if (friends.length === 0) {
             listFriendsWrappr.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
             listFriendsWrappr.innerHTML = '';
-            friends.forEach(friend => {
+            for (let i = 0; i < friends.length; i++) {
+                if (!isPageFriend && i >= 3) break; // isPageFriendがfalseの場合、3件で打ち切る
+                const friend = friends[i];
                 const avatar = friend.avatar ? friend.avatar : '/images/avatar_default.png';
                 //todo: friendsの状況に応じて online/ offline / busy で切り替える
                 const onlineStatus = 'online';
@@ -37,7 +50,7 @@ const updateFriendsList = async (pageInstance) => {
                     </section>
                 `;
                 listFriendsWrappr.innerHTML += friendElement;
-            });
+            }
             resetListenFriendList(pageInstance);
         }
     } catch (error) {
