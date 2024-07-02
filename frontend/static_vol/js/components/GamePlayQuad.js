@@ -102,31 +102,26 @@ export default class GamePlayQuad extends PageBase {
                 const scorePadding = 5; // 得点間のパディング
                 const scoreSize = 10; // 得点の正方形のサイズ
 
-                // Left paddle score (左上)
                 for (let i = 0; i < data.left_paddle.score; i++) {
                     ctx.fillStyle = '#FFD700';
                     ctx.fillRect(sideOffset, sideOffset + i * (scoreSize + scorePadding), scoreSize, scoreSize);
                 }
 
-                // Upper paddle score (右上)
                 for (let i = 0; i < data.upper_paddle.score; i++) {
                     ctx.fillStyle = '#FFD700';
                     ctx.fillRect(canvas.width - sideOffset - (i + 1) *  scoreSize - i * scorePadding, sideOffset, scoreSize, scoreSize);
                 }
 
-                // Right paddle score (右下)
                 for (let i = 0; i < data.right_paddle.score; i++) {
                     ctx.fillStyle = '#FFD700';
                     ctx.fillRect(canvas.width - sideOffset - scoreSize, canvas.height - sideOffset - (i + 1) *  scoreSize - i * scorePadding, scoreSize, scoreSize);
                 }
 
-                // Lower paddle score (左下)
                 for (let i = 0; i < data.lower_paddle.score; i++) {
                     ctx.fillStyle = '#FFD700';
                     ctx.fillRect(sideOffset + i * (scoreSize + scorePadding), canvas.height - scoreSize - sideOffset, scoreSize, scoreSize);
                 }
             }
-
 
             const updateGameObjects = async (data) => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -145,7 +140,7 @@ export default class GamePlayQuad extends PageBase {
                 //下
                 drawPaddle(data.lower_paddle);
 
-                // 得点（残機）の表示
+                // 残機の表示
                 drawScores(data);
 
                 if (!data.game_status) {
@@ -166,7 +161,6 @@ export default class GamePlayQuad extends PageBase {
                 }
             }
 
-            // TODO: キーイベントの送信
             // 押されたとき
             document.addEventListener('keydown', keyDownHandler, false);
             // 離れたとき
