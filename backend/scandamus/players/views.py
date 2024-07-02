@@ -10,7 +10,7 @@ from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
 from game.models import Match
 from django.contrib.auth.models import User
-from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer, MatchLogSerializer
+from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer, MatchLogSerializer, RecommendedSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -228,4 +228,34 @@ class MatchLogView(APIView):
             (Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)) & Q(tournament__isnull=True)
         ).order_by('-id')[:5]
         serializer = MatchLogSerializer(matches, many=True, context={'request': request})
+        return Response(serializer.data)
+
+class RecommendedView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        try:
+            player = Player.objects.get(user=user)
+        except Player.DoesNotExist:
+            return Response({'detail': 'Player not found'}, status=404)
+        current_friends = player.friends.all()
+        matches = Match.objects.filter(
+            Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)
+        )[:20]
+        opponents = set()
+        for match in matches:
+            if match.player1 != player and match.player1 not in current_friends:
+                opponents.add(match.player1)
+            if match.player2 != player and match.player2 not in current_friends:
+                opponents.add(match.player2)
+            if match.player3 and match.player3 != player and match.player3 not in current_friends:
+                opponents.add(match.player3)
+            if match.player4 and match.player4 != player and match.player4 not in current_friends:
+                opponents.add(match.player4)
+
+            # 最大10人まで取得
+            if len(opponents) >= 10:
+                break
+        serializer = RecommendedSerializer(opponents, many=True, context={'request': request})
         return Response(serializer.data)
