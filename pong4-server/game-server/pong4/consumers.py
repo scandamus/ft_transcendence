@@ -257,10 +257,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         message = data["message"]
         timestamp = data["timestamp"]
         if self.player_name != 'player1':
-            logger.info("ball_message: %s", self.player_name)
-            tmp = data["ball"]
-            if not tmp:
-                logger.error("No ball data")
             await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
 
