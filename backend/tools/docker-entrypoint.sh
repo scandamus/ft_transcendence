@@ -69,4 +69,6 @@ for i in range(1, 4):
         print(f'User {username} does not exist.')
 """ | python manage.py shell
 
+python manage.py random_friend
+
 exec "$@"
