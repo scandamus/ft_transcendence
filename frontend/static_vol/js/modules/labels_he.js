@@ -52,6 +52,7 @@ export const labels_he = {
         labelApply: 'הזה עברית ',
         labelSearch: 'הזה עברית ',
         labelSendRequest: 'הזה עברית ',
+        labelRequest: '',
         msgNoUsername: 'הזה עברית ',
         msgNoFriends: 'הזה עברית ',
         labelListFriends: 'הזה עברית ',

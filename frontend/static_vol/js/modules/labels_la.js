@@ -52,6 +52,7 @@ export const labels_la = {
         labelApply: '',
         labelSearch: '',
         labelSendRequest: '',
+        labelRequest: '',
         msgNoUsername: '',
         msgNoFriends: '',
         labelListFriends: '',
