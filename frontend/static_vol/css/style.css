@@ -1406,15 +1406,19 @@ input.has-input:invalid {
   font-size: 2.2rem;;
 }
 
-.unitMatchPlayer {
+.unitMatchPlayer,
+.blockMatch_opponents {
   position: relative;
-  display: flex;
   flex: 0 0 calc(50% - 30px);/* blockMatch_vs width: 60px */
+}
+
+.unitMatchPlayer {
+  display: flex;
   justify-content: space-between;
   padding: 12px 0;
 }
 
-.unitMatchPlayer:first-child {
+.blockMatch > .unitMatchPlayer:first-child {
   flex-direction: row-reverse;
   /*padding-left: 66px; !* for unitMatchPlayer_result *!*/
 }
@@ -1430,7 +1434,7 @@ input.has-input:invalid {
   word-break: break-all;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header {
   text-align: right;
 }
 
@@ -1442,7 +1446,7 @@ input.has-input:invalid {
 
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_title {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
   margin-left: -110px;
 }
 
@@ -1454,7 +1458,7 @@ input.has-input:invalid {
   display: block;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header img {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header img {
   margin: 0 0 0 auto;
 }
 
@@ -1486,15 +1490,17 @@ input.has-input:invalid {
 
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_score {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score,
+.blockMatch_opponents .unitMatchPlayer_score {
   text-align: right;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
   margin-left: 62px;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child,
+.blockMatch_opponents .unitMatchPlayer_score:last-child {
   margin-right: 62px;
 }
 
@@ -1525,7 +1531,7 @@ input.has-input:invalid {
     align-items: center;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_header {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header {
     flex-direction: row-reverse;
   }
 
@@ -1534,7 +1540,7 @@ input.has-input:invalid {
     margin-right: 10px;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_header img {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header img {
     margin-right: 0;
     margin-left: 10px;
   }
@@ -1559,7 +1565,7 @@ input.has-input:invalid {
     display: none;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_title {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
     margin-left: 10px;
   }
 
