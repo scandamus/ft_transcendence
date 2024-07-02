@@ -44,21 +44,34 @@ if [ "$superuser_exists" = "False" ]; then
     unset PGPASSWORD
 fi
 
-# user1〜user${n}をsqlから連番で作成し、range(1, n)に対しパスワード指定
+# user0〜user${n}をsqlから連番で作成し、range(1, n)に対しパスワード指定。
+# user0がpassword設定済みなら全員設定済みとみなす
+
 echo """
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 password = '$DJANGO_PLAYER1_PASSWORD'
-for i in range(0, 56):
-    username = f'testplayer{i}'
-    try:
-        user = User.objects.get(username=username)
-        user.set_password(password)
-        user.save()
-        print(f'Password for {username} set successfully.')
-    except User.DoesNotExist:
-        print(f'User {username} does not exist.')
+
+try:
+    user0 = User.objects.get(username='testplayer0')
+    if user0.password == '':
+        for i in range(0, 56):
+            username = f'testplayer{i}'
+            try:
+                user = User.objects.get(username=username)
+                if user.password == '':
+                    user.set_password(password)
+                    user.save()
+                    print(f'Password for {username} set successfully.')
+                else:
+                    print(f'Password for {username} is already set.')
+            except User.DoesNotExist:
+                print(f'User {username} does not exist.')
+    else:
+        print(f'User testplayer0 has a usable password.')
+except User.DoesNotExist:
+    print(f'User testplayer0 does not exist.')
 """ | python manage.py shell
 
 if [ "$superuser_exists" = "False" ]; then

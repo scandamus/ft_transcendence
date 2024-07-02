@@ -118,7 +118,7 @@ class Player(models.Model):
             img.save(avatar_path)
 
     def __str__(self):
-        return f"{self.user.username}"
+        return f"{self.user.username} - level:{self.level} / win: {self.win_count} / lang: {self.lang}"
 
 
 @receiver(post_save, sender=User)
