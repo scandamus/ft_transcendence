@@ -46,7 +46,7 @@ class Paddle(Block):
     def __init__(self, x, y, horizontal, vertical, orientation='vertical'):
         super().__init__(x, y, horizontal, vertical, orientation)
         self.speed = 0
-        self.score = 0
+        self.score = 4
 
     def move_for_multiple(self):
         if self.orientation == 'horizontal':
