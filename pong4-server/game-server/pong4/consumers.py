@@ -18,7 +18,36 @@ from .api_access import get_match_from_api, patch_match_to_api
 
 #from .models import Match
 
+# TODO: 後で消す
 logger = logging.getLogger(__name__)
+
+RED = '\033[31m'
+BLUE = '\033[94m'
+END = '\033[0m'
+
+# カスタムログフォーマッタ
+class ColorFormatter(logging.Formatter):
+    """ログメッセージに色をつけるためのフォーマッタ"""
+    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+    COLORS = {
+        logging.DEBUG: BLUE + format + END,
+        logging.INFO: BLUE + format + END,
+        logging.WARNING: BLUE + format + END,
+        logging.ERROR: RED + format + END,
+        logging.CRITICAL: RED + format + END
+    }
+
+    def format(self, record):
+        log_fmt = self.COLORS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+logger = logging.getLogger(__name__)
+handler = logging.StreamHandler()
+handler.setFormatter(ColorFormatter())
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
@@ -48,7 +77,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.down_pressed = False
         self.right_pressed = False
         self.left_pressed = False
-        self.walls = None
+        self.walls = self.init_walls()
 
     async def connect(self):
         try:
@@ -178,8 +207,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while self.game_continue:
                 #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                # await asyncio.sleep(0.1)  # 60Hz
-                await asyncio.sleep(1 / 60)  # 60Hz
+                await asyncio.sleep(1)  # 60Hz
+                # await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
                     # await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
@@ -204,8 +233,16 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.move_for_multiple()
         self.upper_paddle.move_for_multiple()
         self.lower_paddle.move_for_multiple()
+        if not self.ball:
+            logger.error("Before: update_ball_and_send_data: Ball is not initialized when trying to access its properties.")
+        else:
+            logger.info("Before: update_ball_and_send_data: Ball is initialized when trying to access its properties.")
         game_continue = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
                                                     self.lower_paddle, self.walls)
+        if not self.ball:
+            logger.error("After: update_ball_and_send_data: Ball is not initialized when trying to access its properties.")
+        else:
+            logger.info("After: update_ball_and_send_data: Ball is initialized when trying to access its properties.")
         ball_tmp = {
             "x": self.ball.x,
             "y": self.ball.y,
@@ -258,6 +295,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         message = data["message"]
         timestamp = data["timestamp"]
         if self.player_name != 'player1':
+            logger.info("ball_message: %s", self.player_name)
+            tmp = data["ball"]
+            if not tmp:
+                logger.error("No ball data")
             await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
 
@@ -364,6 +405,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def init_game_state_into_self(self, data):
         # player1からオブジェクトを受け取る
+        if not data["ball"]:
+            logger.error("Before: init_game_state_into_self: Ball is not initialized when trying to access its properties.")
+        else:
+            logger.info("Before: init_game_state_into_self: Ball is initialized when trying to access its properties.")
         ball_data = data['ball']
         self.ball.x = ball_data['x']
         self.ball.y = ball_data['y']
@@ -398,6 +443,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.lower_paddle.thickness = lower_paddle_data['horizontal']
         self.lower_paddle.length = lower_paddle_data['vertical']
         self.lower_paddle.score = lower_paddle_data['score']
+        if not self.ball:
+            logger.error("After: init_game_state_into_self: Ball is not initialized when trying to access its properties.")
+        else:
+            logger.info("After: init_game_state_into_self: Ball is initialized when trying to access its properties.")
 
     @database_sync_to_async
     def authenticate_jwt(self, jwt):
@@ -445,8 +494,12 @@ class PongConsumer(AsyncWebsocketConsumer):
     #     patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
-        logger.info("Starting game")
+        logger.info("Starting game: %s", self.player_name)
         if self.player_name == 'player1':
             await self.reset_game_data()
+            if not self.ball:
+                logger.error("start_game: Ball is not initialized when trying to access its properties.")
+            else:
+                logger.info("start_game: Ball is initialized when trying to access its properties.")
             await self.init_walls()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
