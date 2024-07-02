@@ -1423,7 +1423,7 @@ input.has-input:invalid {
   /*padding-left: 66px; !* for unitMatchPlayer_result *!*/
 }
 
-.unitMatchPlayer:last-child {
+.blockMatch > .unitMatchPlayer:last-child {
   /*padding-right: 66px; !* for unitMatchPlayer_result *!*/
 }
 
@@ -1450,7 +1450,8 @@ input.has-input:invalid {
   margin-left: -110px;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_title {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_title,
+.blockMatch_opponents .unitMatchPlayer_title {
   margin-right: -110px;
 }
 
@@ -1476,7 +1477,8 @@ input.has-input:invalid {
   left: 0;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_result {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_result,
+.blockMatch_opponents .unitMatchPlayer_result {
   right: 0;
 }
 
@@ -1513,15 +1515,17 @@ input.has-input:invalid {
     padding-top: 0;
   }
 
-  .unitMatchPlayer {
+  .unitMatchPlayer,
+  .blockMatch_opponents {
     align-items: center;
   }
 
-  .unitMatchPlayer:first-child {
+  .blockMatch > .unitMatchPlayer:first-child {
     padding-left: 66px; /* for unitMatchPlayer_result */
   }
 
-  .unitMatchPlayer:last-child {
+  .blockMatch > .unitMatchPlayer:last-child,
+  .blockMatch_opponents .unitMatchPlayer {
     padding-right: 66px; /* for unitMatchPlayer_result */
   }
 
@@ -1549,19 +1553,20 @@ input.has-input:invalid {
 
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:first-child {
+  .blockDashboardLog_listMatch  .blockMatch > .unitMatchPlayer:first-child {
     flex: 0 0 165px;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:last-child {
+  .blockDashboardLog_listMatch .unitMatchPlayer:last-child,
+  .blockDashboardLog_listMatch .blockMatch_opponents {
     flex-grow: 1;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:last-child .unitMatchPlayer_header {
+  .blockDashboardLog_listMatch .blockMatch_opponents .unitMatchPlayer_header {
     flex-wrap: wrap;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:first-child .unitMatchPlayer_title {
+  .blockDashboardLog_listMatch .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
     display: none;
   }
 
@@ -1569,7 +1574,8 @@ input.has-input:invalid {
     margin-left: 10px;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_title {
+  .blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_title,
+  .blockMatch_opponents .unitMatchPlayer_title {
     margin-right: 10px;
   }
 
@@ -1577,11 +1583,12 @@ input.has-input:invalid {
     position: absolute;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
     margin-left: 0;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
+  .blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child,
+  .blockMatch_opponents .unitMatchPlayer_score:last-child {
     margin-right: 0;
   }
 }
