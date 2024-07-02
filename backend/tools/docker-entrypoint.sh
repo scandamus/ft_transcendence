@@ -61,6 +61,9 @@ for i in range(0, 56):
         print(f'User {username} does not exist.')
 """ | python manage.py shell
 
-python manage.py random_friend
+if [ "$superuser_exists" = "False" ]; then
+    python manage.py random_friend
+    python manage.py gen_dummy_match
+fi
 
 exec "$@"
