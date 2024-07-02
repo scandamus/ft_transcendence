@@ -1,8 +1,8 @@
 'use strict';
 
 export const labels_la = {
-	langCode: 'la',
-	langName: 'Latina',
+    langCode: 'la',
+    langName: 'Latina',
     home: {
         title: 'Domus',
         labelUsername: 'nomen usoris',

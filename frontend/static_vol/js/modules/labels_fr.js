@@ -1,8 +1,8 @@
 'use strict';
 
 export const labels_fr = {
-	langCode: 'fr',
-	langName: 'français',
+    langCode: 'fr',
+    langName: 'français',
     home: {
         title: 'Accueil',
         labelUsername: 'Nom d’utilisateur',
@@ -38,7 +38,7 @@ export const labels_fr = {
 
     dashboard: {
         title: 'Tableau de bord',
-		msgAvatarSwitched : 'L’avatar a été modifié',
+        msgAvatarSwitched : 'L’avatar a été modifié',
         msgInvalidFile : 'Fichier non valide',
         msgInvalidFileFormat : 'Format de fichier non valide (.jpg, .png uniquement)',
     },

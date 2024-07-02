@@ -1,8 +1,8 @@
 'use strict';
 
 export const labels_ja = {
-	langCode: 'ja',
-	langName: '日本語',
+    langCode: 'ja',
+    langName: '日本語',
     home: {
         title: 'Home',
         labelUsername: 'ユーザー名',

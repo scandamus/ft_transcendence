@@ -1,8 +1,8 @@
 'use strict';
 
 export const labels_en = {
-	langCode: 'en',
-	langName: 'English',
+    langCode: 'en',
+    langName: 'English',
     home: {
         title: 'Home',
         labelUsername: 'username',
