@@ -357,6 +357,12 @@ class PongConsumer(AsyncWebsocketConsumer):
                                    CANVAS_HEIGHT_MULTI - PADDLE_THICKNESS,
                                    PADDLE_LENGTH, PADDLE_THICKNESS, 'horizontal')
         self.ball = Ball(CANVAS_WIDTH_MULTI / 2 - BALL_SIZE / 2, CANVAS_HEIGHT_MULTI / 2 - BALL_SIZE / 2, BALL_SIZE)
+        if self.ball is None:
+            logger.error(self.player_name)
+            logger.error("reset_game_data: ball is None")
+        else:
+            logger.info(self.player_name)
+            logger.info("reset_game_data: ball is not None")
         self.game_continue = False
 
     async def init_walls(self):
@@ -500,6 +506,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def start_game(self, event):
         logger.info("Starting game: %s", self.player_name)
+        await self.reset_game_data()
         if self.player_name == 'player1':
             await self.reset_game_data()
             if not self.ball:
