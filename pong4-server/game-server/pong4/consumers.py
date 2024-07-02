@@ -452,5 +452,5 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.reset_game_data()
         if self.player_name == 'player1':
             await self.reset_game_data()
-            # await self.init_walls()
+            await self.init_walls()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
