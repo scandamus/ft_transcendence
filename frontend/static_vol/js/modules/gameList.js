@@ -6,9 +6,9 @@ import { labels } from "./labels.js";
 const getMatchLog = async () => {
     console.log('getMatchLog');
     try {
-        const logList = await fetchMatchLog();
+        const logList = await fetchMatchLog(false);
         const listRequestWrapper = document.querySelector('.blockDashboardLog_listMatch');
-        if (logList.length === 0) {
+        if (!logList || logList.length === 0) {
             console.log('no match log')
         } else {
             listRequestWrapper.innerHTML = '';
