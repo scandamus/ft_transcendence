@@ -981,8 +981,8 @@ input.has-input:invalid {
   }
 
   .blockUsers_column .blockFriends_friends {
-    overflow-y: visible;
-    height: inherit;
+    max-height: calc(100vh - 350px);
+    min-height: 400px;
   }
 }
 
