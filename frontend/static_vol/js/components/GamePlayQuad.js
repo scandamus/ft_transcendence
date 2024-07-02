@@ -140,20 +140,21 @@ export default class GamePlayQuad extends PageBase {
 
             function keyDownHandler(e) {
                 // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s"
+                    || e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "a" || e.key === "d") {
                     sendKeyEvent(e.key, true);
                 }
             }
 
             function keyUpHandler(e) {
                 // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s"
+                    || e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "a" || e.key === "d") {
                     sendKeyEvent(e.key, false);
                 }
             }
 
             function sendKeyEvent(key, is_pressed) {
-                console.log("Error: ", key, " ----")
                 let data = {
                     action: 'key_event',
                     key: key,
