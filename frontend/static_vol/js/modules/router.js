@@ -29,7 +29,7 @@ const routes = {
     dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
     friends:  { path: '/friends', view: Friends, isProtected: true },
     lounge: {path: '/lounge', view: Lounge, isProtected: true},
-    gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
+    gamePlay: {path: '/game/pong/play:id', view: GamePlay, isProtected: true},
     gamePlayMulti: {path: '/game/pong4/play:id', view: GamePlayQuad, isProtected: true},
     tournament: {path: '/tournament', view: Tournament, isProtected: true},
     TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
