@@ -177,8 +177,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while self.game_continue:
                 #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                await asyncio.sleep(0.1)  # 60Hz
-                # await asyncio.sleep(1 / 60)  # 60Hz
+                # await asyncio.sleep(0.1)  # 60Hz
+                await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
                     await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score,
@@ -230,15 +230,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         upper_paddle_tmp = {
             "x": self.upper_paddle.x,
             "y": self.upper_paddle.y,
-            "horizontal": self.upper_paddle.thickness,
-            "vertical": self.upper_paddle.length,
+            "horizontal": self.upper_paddle.length,
+            "vertical": self.upper_paddle.thickness,
             "score": self.upper_paddle.score,
         }
         lower_paddle_tmp = {
             "x": self.lower_paddle.x,
             "y": self.lower_paddle.y,
-            "horizontal": self.lower_paddle.thickness,
-            "vertical": self.lower_paddle.length,
+            "horizontal": self.lower_paddle.length,
+            "vertical": self.lower_paddle.thickness,
             "score": self.lower_paddle.score,
         }
         await self.channel_layer.group_send(self.room_group_name, {
@@ -289,15 +289,15 @@ class PongConsumer(AsyncWebsocketConsumer):
             "upper_paddle": {
                 "x": self.upper_paddle.x,
                 "y": self.upper_paddle.y,
-                "horizontal": self.upper_paddle.thickness,
-                "vertical": self.upper_paddle.length,
+                "horizontal": self.upper_paddle.length,
+                "vertical": self.upper_paddle.thickness,
                 "score": self.upper_paddle.score,
             },
             "lower_paddle": {
                 "x": self.lower_paddle.x,
                 "y": self.lower_paddle.y,
-                "horizontal": self.lower_paddle.thickness,
-                "vertical": self.lower_paddle.length,
+                "horizontal": self.lower_paddle.length,
+                "vertical": self.lower_paddle.thickness,
                 "score": self.lower_paddle.score,
             },
         }))
