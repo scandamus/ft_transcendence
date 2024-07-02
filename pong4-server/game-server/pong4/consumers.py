@@ -181,7 +181,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
-                    # await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score,
+                                                   self.upper_paddle.score, self.lower_paddle.score, 'after')
                     await self.channel_layer.group_send(self.room_group_name, {
                         "type": "send_game_over_message",
                         "message": "GameOver",
@@ -434,14 +435,16 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
 
-    # @database_sync_to_async
-    # def update_match_status(self, match_id, score1, score2, game_state):
-    #     send_data = {
-    #         'score1': score1,
-    #         'score2': score2,
-    #         'status': game_state,
-    #     }
-    #     patch_match_to_api(match_id, send_data)
+    @database_sync_to_async
+    def update_match_status(self, match_id, score1, score2, score3, score4, game_state):
+        send_data = {
+            'score1': score1,
+            'score2': score2,
+            'score3': score3,
+            'score4': score4,
+            'status': game_state,
+        }
+        patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
         logger.info("Starting game: %s", self.player_name)
