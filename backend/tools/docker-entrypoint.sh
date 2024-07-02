@@ -35,14 +35,6 @@ User = get_user_model()
 superuser_exists = User.objects.filter(username='$DJANGO_SU_USER', is_superuser=True).exists()
 if not superuser_exists:
     User.objects.create_superuser('$DJANGO_SU_USER', '$DJANGO_SU_MAIL', '$DJANGO_SU_PASSWORD')
-
-player1_exists = User.objects.filter(username='$DJANGO_PLAYER1_USER').exists()
-if not player1_exists:
-    User.objects.create_user('$DJANGO_PLAYER1_USER', '$DJANGO_PLAYER1_MAIL', '$DJANGO_PLAYER1_PASSWORD')
-
-player2_exists = User.objects.filter(username='$DJANGO_PLAYER2_USER').exists()
-if not player2_exists:
-    User.objects.create_user('$DJANGO_PLAYER2_USER', '$DJANGO_PLAYER2_MAIL', '$DJANGO_PLAYER2_PASSWORD')
 """ | python manage.py shell
 
 if [ "$superuser_exists" = "False" ]; then
@@ -58,8 +50,8 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 password = '$DJANGO_PLAYER1_PASSWORD'
-for i in range(1, 4):
-    username = f'user{i}'
+for i in range(0, 56):
+    username = f'testplayer{i}'
     try:
         user = User.objects.get(username=username)
         user.set_password(password)
