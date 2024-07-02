@@ -10,6 +10,7 @@ from .friend_match import handle_request_game, handle_accept_game, handle_reject
 from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
 from .match_utils import get_player_by_user
 from channels.db import database_sync_to_async
+from channels.auth import get_user
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -20,9 +21,25 @@ class LoungeSession(AsyncWebsocketConsumer):
     pending_requests = {}
     matchmaking_lock = asyncio.Lock()
 
-    async def connect(self):
+    async def connect(self): 
         await self.accept()
-        self.user = self.scope['user']
+        self.user = await (get_user)(self.scope)
+
+        if self.user.is_anonymous:
+            logger.error('Anonymous user attempted to connect')
+            await self.send(text_data=json.dumps({
+                'type': 'authenticationFailed',
+                'action': 'forceLogout',
+                'message': 'Anonymous user webscoket access'
+            }))
+            return
+
+        # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
+        player = await get_player_by_user(self.user)
+        if player and player.status in ['friend_waiting', 'lounge_waiting']:
+            player.status = 'waiting'
+            await database_sync_to_async(player.save)()
+            logger.info(f'{self.user.username} status set to waiting')
 
     async def receive(self, text_data):
         logger.info(f'received text_data: {text_data}')
