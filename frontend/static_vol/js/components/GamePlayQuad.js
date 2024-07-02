@@ -2,8 +2,8 @@
 
 import PageBase from './PageBase.js';
 import { labels } from '../modules/labels.js';
-import { webSocketManager } from "../modules/websocket.js";
-import { router } from "../modules/router.js";
+import { webSocketManager } from '../modules/websocket.js';
+import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
 
 export default class GamePlayQuad extends PageBase {
@@ -19,10 +19,10 @@ export default class GamePlayQuad extends PageBase {
 
     async renderHtml() {
         return `
-           <div class="playBoardWrap">
-                <ul class="listPlayerActiveMatch">
+           <div class='playBoardWrap'>
+                <ul class='listPlayerActiveMatch'>
                 </ul>
-                <canvas id="playBoard" width="650" height="650"></canvas>
+                <canvas id='playBoard' width='650' height='650'></canvas>
             </div>
         `;
     }
@@ -30,15 +30,15 @@ export default class GamePlayQuad extends PageBase {
     async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
-            console.log("============ ", gameMatchId, " ============");
+            console.log('============ ', gameMatchId, ' ============');
             const containerId = `pong4/${gameMatchId}`;
             console.log(`URL = ${containerId}`);
             const pongSocket = await webSocketManager.openWebSocket(containerId);
             // ノードを取得
-            const canvas = document.getElementById("playBoard");
+            const canvas = document.getElementById('playBoard');
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
-            const ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext('2d');
 
             function drawBackground() {
                 ctx.fillStyle = 'black';
@@ -149,7 +149,7 @@ export default class GamePlayQuad extends PageBase {
                 drawScores(data);
 
                 if (!data.game_status) {
-                    console.log("Game Over");
+                    console.log('Game Over');
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
@@ -158,32 +158,32 @@ export default class GamePlayQuad extends PageBase {
                         action: 'end_game',
                         match_id: gameMatchId,
                     }));
-                    document.removeEventListener("keydown", keyDownHandler, false);
-                    document.removeEventListener("keyup", keyUpHandler, false);
+                    document.removeEventListener('keydown', keyDownHandler, false);
+                    document.removeEventListener('keyup', keyUpHandler, false);
                     webSocketManager.closeWebSocket(containerId);
-                    window.history.pushState({}, null, "/dashboard");
+                    window.history.pushState({}, null, '/dashboard');
                     await router(true);
                 }
             }
 
             // TODO: キーイベントの送信
             // 押されたとき
-            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener('keydown', keyDownHandler, false);
             // 離れたとき
-            document.addEventListener("keyup", keyUpHandler, false);
+            document.addEventListener('keyup', keyUpHandler, false);
 
             function keyDownHandler(e) {
                 // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s"
-                    || e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "a" || e.key === "d") {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
+                    || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
                     sendKeyEvent(e.key, true);
                 }
             }
 
             function keyUpHandler(e) {
                 // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s"
-                    || e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "a" || e.key === "d") {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
+                    || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
                     sendKeyEvent(e.key, false);
                 }
             }
