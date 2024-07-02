@@ -203,18 +203,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.move_for_multiple()
         self.upper_paddle.move_for_multiple()
         self.lower_paddle.move_for_multiple()
-        if not self.ball:
-            logger.error(
-                "Before: update_ball_and_send_data: Ball is not initialized when trying to access its properties.")
-        else:
-            logger.info("Before: update_ball_and_send_data: Ball is initialized when trying to access its properties.")
         game_continue = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
                                                     self.lower_paddle, self.walls)
-        if not self.ball:
-            logger.error(
-                "After: update_ball_and_send_data: Ball is not initialized when trying to access its properties.")
-        else:
-            logger.info("After: update_ball_and_send_data: Ball is initialized when trying to access its properties.")
         ball_tmp = {
             "x": self.ball.x,
             "y": self.ball.y,
@@ -462,5 +452,5 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.reset_game_data()
         if self.player_name == 'player1':
             await self.reset_game_data()
-            await self.init_walls()
+            # await self.init_walls()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
