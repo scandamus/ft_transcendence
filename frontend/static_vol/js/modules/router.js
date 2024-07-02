@@ -11,7 +11,6 @@ import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
 import GamePlay from '../components/GamePlay.js';
-// TODO:4人pong用の画面作成は一時的な解決策なので検討
 import GamePlayQuad from '../components/GamePlayQuad.js';
 import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
