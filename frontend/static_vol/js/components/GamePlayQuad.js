@@ -98,26 +98,26 @@ export default class GamePlayQuad extends PageBase {
             }
 
             function drawScores(data) {
-                const sideOffset = 20; // 側面からのオフセット
+                const sideOffset = 30; // 側面からのオフセット
                 const scorePadding = 5; // 得点間のパディング
                 const scoreSize = 10; // 得点の正方形のサイズ
 
                 // Left paddle score (左上)
                 for (let i = 0; i < data.left_paddle.score; i++) {
                     ctx.fillStyle = '#FFD700';
-                    ctx.fillRect(sideOffset + i * (scoreSize + scorePadding), sideOffset, scoreSize, scoreSize);
+                    ctx.fillRect(sideOffset, sideOffset + i * (scoreSize + scorePadding), scoreSize, scoreSize);
                 }
 
                 // Upper paddle score (右上)
                 for (let i = 0; i < data.upper_paddle.score; i++) {
                     ctx.fillStyle = '#FFD700';
-                    ctx.fillRect(canvas.width - sideOffset - (i + 1) * (scoreSize + scorePadding), sideOffset, scoreSize, scoreSize);
+                    ctx.fillRect(canvas.width - sideOffset - (i + 1) *  scoreSize - i * scorePadding, sideOffset, scoreSize, scoreSize);
                 }
 
                 // Right paddle score (右下)
                 for (let i = 0; i < data.right_paddle.score; i++) {
                     ctx.fillStyle = '#FFD700';
-                    ctx.fillRect(canvas.width - sideOffset - (i + 1) * (scoreSize + scorePadding), canvas.height - scoreSize - sideOffset, scoreSize, scoreSize);
+                    ctx.fillRect(canvas.width - sideOffset - scoreSize, canvas.height - sideOffset - (i + 1) *  scoreSize - i * scorePadding, scoreSize, scoreSize);
                 }
 
                 // Lower paddle score (左下)
