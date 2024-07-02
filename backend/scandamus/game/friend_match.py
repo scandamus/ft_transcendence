@@ -162,8 +162,7 @@ async def handle_reject_game(consumer, data):
         return
     
     if request_id in LoungeSession.pending_requests:
-        request = LoungeSession.pending_requests.pop(request_id)
-        logger.info(f'Request {request_id} cancelled successfully.')
+        request = LoungeSession.pending_requests[request_id]
         to_username = request['to_username']
 
         # セキュリティ対策: 無関係なユーザーからのリジェクトを無視
@@ -171,14 +170,17 @@ async def handle_reject_game(consumer, data):
             logger.error(f'Error in handle_reject_game: invalid request for reject ID:{request_id} from {consumer.username}')
             return
         
+        request = LoungeSession.pending_requests.pop(request_id)
+        logger.info(f'Request {request_id} cancelled successfully.')
+
         to_player = await get_player_by_username(to_username)
-        update_player_status(to_player, 'waiting')
+        await update_player_status(to_player, 'waiting')
 
         from_username = request['from_username']
         if from_username in consumer.players:
             from_socket = consumer.players[from_username]
             from_player = await get_player_by_username(from_username)
-            update_player_status(from_player, 'waiting')
+            await update_player_status(from_player, 'waiting')
             await from_socket.send(text_data=json.dumps({
                 'type': 'friendMatchRequest',
                 'action': 'rejected',
