@@ -5,8 +5,8 @@ export const labels_fr = {
 	langName: 'français',
     home: {
         title: 'Accueil',
-        labelUsername: 'Nom d’utilisateur', 
-        labelPassword: 'Mot de passe', 
+        labelUsername: 'Nom d’utilisateur',
+        labelPassword: 'Mot de passe',
         labelButtonLogin: 'Se connecter',
         labelButtonLogout: 'Se déconnecter',
         textSignUp: 'Vous n’avez pas encore de compte ?',
@@ -14,9 +14,9 @@ export const labels_fr = {
     },
     register: {
         title: 'Register',
-        labelUsername: 'Nom d’utilisateur', 
-        labelPassword: 'Mot de passe', 
-        labelPasswordConfirm: 'Confirmez le mot de passe', 
+        labelUsername: 'Nom d’utilisateur',
+        labelPassword: 'Mot de passe',
+        labelPasswordConfirm: 'Confirmez le mot de passe',
         descUsername: ['[Disponible] lettres minuscules, chiffres et symboles (_)]', '[Obligatoire] une lettre minuscule ou un chiffre', '3-32 caractères'],
         descPassword: ['[Disponible] Caractères alphanumériques et symboles (@_#$%&!.,+*~\')', '[[Obligatoire] une majuscule, une minuscule, un chiffre et un symbol', '8-24 caractères'],
         descPasswordConfirm: 'Veuillez saisir à nouveau votre mot de passe pour confirmation',

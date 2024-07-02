@@ -5,8 +5,8 @@ export const labels_ja = {
 	langName: '日本語',
     home: {
         title: 'Home',
-        labelUsername: 'ユーザー名', 
-        labelPassword: 'パスワード', 
+        labelUsername: 'ユーザー名',
+        labelPassword: 'パスワード',
         labelButtonLogin: 'ログイン',
         labelButtonLogout: 'ログアウト',
         textSignUp: '初めての方はこちら',
@@ -14,9 +14,9 @@ export const labels_ja = {
     },
     register: {
         title: 'Register',
-        labelUsername: 'ユーザー名', 
-        labelPassword: 'パスワード', 
-        labelPasswordConfirm: 'パスワード(再入力)', 
+        labelUsername: 'ユーザー名',
+        labelPassword: 'パスワード',
+        labelPasswordConfirm: 'パスワード(再入力)',
         descUsername: ['[使用可能] 半角英小文字,半角数字,記号(_)', '[使用必須] 半角英小文字,半角数字 のいずれか', '3〜32文字'],
         descPassword: ['[使用可能] 半角英数字と記号(@_#$%&!.,+*~\')', '[使用必須] 英小文字,英大文字,数字,記号 のそれぞれ1文字', '8〜24文字'],
         descPasswordConfirm: '確認のためパスワードをもう一度入力してください',

@@ -5,8 +5,8 @@ export const labels_ar = {
 	langName: 'العربية',
     home: {
         title: 'Home',
-        labelUsername: ' يؤُلاءِ العربية', 
-        labelPassword: ' يؤُلاءِ العربية', 
+        labelUsername: ' يؤُلاءِ العربية',
+        labelPassword: ' يؤُلاءِ العربية',
         labelButtonLogin: ' يؤُلاءِ العربية',
         labelButtonLogout: ' يؤُلاءِ العربية',
         textSignUp: ' يؤُلاءِ العربية',
@@ -14,9 +14,9 @@ export const labels_ar = {
     },
     register: {
         title: 'Register',
-        labelUsername: ' يؤُلاءِ العربية', 
-        labelPassword: ' يؤُلاءِ العربية', 
-        labelPasswordConfirm: ' يؤُلاءِ العربية( يؤُلاءِ العربية)', 
+        labelUsername: ' يؤُلاءِ العربية',
+        labelPassword: ' يؤُلاءِ العربية',
+        labelPasswordConfirm: ' يؤُلاءِ العربية( يؤُلاءِ العربية)',
         descUsername: ['[ يؤُلاءِ العربية] يؤُلاءِ العربية, يؤُلاءِ العربية, يؤُلاءِ العربية(_)', '[ يؤُلاءِ العربية] يؤُلاءِ العربية, يؤُلاءِ العربية يؤُلاءِ العربية', '3 يؤُلاءِ العربية32 يؤُلاءِ العربية'],
         descPassword: ['[ يؤُلاءِ العربية] يؤُلاءِ العربية(@_#$%&!.,+*~\')', '[ يؤُلاءِ العربية] يؤُلاءِ العربية, يؤُلاءِ العربية, يؤُلاءِ العربية, يؤُلاءِ العربية يؤُلاءِ العربية1 يؤُلاءِ العربية', '8 يؤُلاءِ العربية24 يؤُلاءِ العربية'],
         descPasswordConfirm: ' يؤُلاءِ العربية',

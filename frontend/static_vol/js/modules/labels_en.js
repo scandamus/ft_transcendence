@@ -5,8 +5,8 @@ export const labels_en = {
 	langName: 'English',
     home: {
         title: 'Home',
-        labelUsername: 'username', 
-        labelPassword: 'password', 
+        labelUsername: 'username',
+        labelPassword: 'password',
         labelButtonLogin: 'log in',
         labelButtonLogout: 'log out',
         textSignUp: 'If you don\'t have an account:',
@@ -14,9 +14,9 @@ export const labels_en = {
     },
     register: {
         title: 'Register',
-        labelUsername: 'username', 
-        labelPassword: 'password', 
-        labelPasswordConfirm: 'confirm password', 
+        labelUsername: 'username',
+        labelPassword: 'password',
+        labelPasswordConfirm: 'confirm password',
         descUsername: ['You can use lowercase alphabets, numbers, and underscore (a-z 0-9 _)', 'You need to use at least one alphabet or number', 'Between 3 and 32 characters long'],
         descPassword: ['You can use uppercase and lowercase alphabets, numbers, and following symbols (@_#$%&!.,+*~\')', 'You need to use at least one uppercase, one lowercase, one number, and one symbol', 'Between 8 and 24 characters long'],
         descPasswordConfirm: 'Please confirm the password',

@@ -5,8 +5,8 @@ export const labels_la = {
 	langName: 'Latina',
     home: {
         title: 'Domus',
-        labelUsername: 'nomen usoris', 
-        labelPassword: 'tessera', 
+        labelUsername: 'nomen usoris',
+        labelPassword: 'tessera',
         labelButtonLogin: 'nomen dare',
         labelButtonLogout: 'secedere',
         textSignUp: 'si novus es',
@@ -14,9 +14,9 @@ export const labels_la = {
     },
     register: {
         title: 'Registere',
-        labelUsername: 'nomen usoris', 
-        labelPassword: 'tessera', 
-        labelPasswordConfirm: 'tesseram confirma', 
+        labelUsername: 'nomen usoris',
+        labelPassword: 'tessera',
+        labelPasswordConfirm: 'tesseram confirma',
         descUsername: ['utendi: alphabeta minuscula, numeri, et symbola (_)', 'necesse: alphabetum minusculum vel numerus', 'inter 3 - 32 litterae'],
         descPassword: ['utendi: alphabeta majuscula et minuscula, numeri, et symbola (@_#$%&!.,+*~\')', 'necesse: unusquisque de utendo', 'inter 8 - 24 litterae'],
         descPasswordConfirm: 'scriba eamdem tesseram confirmare',

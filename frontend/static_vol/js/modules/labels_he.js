@@ -5,8 +5,8 @@ export const labels_he = {
 	langName: 'עברית',
     home: {
         title: 'Home',
-        labelUsername: 'הזה עברית ', 
-        labelPassword: 'הזה עברית ', 
+        labelUsername: 'הזה עברית ',
+        labelPassword: 'הזה עברית ',
         labelButtonLogin: 'הזה עברית ',
         labelButtonLogout: 'הזה עברית ',
         textSignUp: 'הזה עברית ',
@@ -14,9 +14,9 @@ export const labels_he = {
     },
     register: {
         title: 'Register',
-        labelUsername: 'הזה עברית ', 
-        labelPassword: 'הזה עברית ', 
-        labelPasswordConfirm: 'הזה עברית (הזה עברית )', 
+        labelUsername: 'הזה עברית ',
+        labelPassword: 'הזה עברית ',
+        labelPasswordConfirm: 'הזה עברית (הזה עברית )',
         descUsername: ['[הזה עברית ] הזה עברית ,הזה עברית ,הזה עברית (_)', '[הזה עברית ] הזה עברית ,הזה עברית  הזה עברית ', '3הזה עברית 32הזה עברית '],
         descPassword: ['[הזה עברית ] הזה עברית (@_#$%&!.,+*~\')', '[הזה עברית ] הזה עברית ,הזה עברית ,הזה עברית ,הזה עברית  הזה עברית 1הזה עברית ', '8הזה עברית 24הזה עברית '],
         descPasswordConfirm: 'הזה עברית ',
