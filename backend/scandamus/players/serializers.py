@@ -106,7 +106,51 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         player = Player.objects.get(user=obj.from_user.user)
         return player.avatar.url if player.avatar else ''
 
+class PlayerInfoSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    avatar = serializers.URLField()
+    score = serializers.IntegerField()
+
 class MatchLogSerializer(serializers.ModelSerializer):
+    ID = serializers.ReadOnlyField(source='id')
+    my_score = serializers.SerializerMethodField()
+    players = serializers.SerializerMethodField()
+
     class Meta:
         model = Match
-        fields = '__all__'
+        fields = ['ID', 'my_score', 'players']
+
+    def get_my_score(self, obj):
+        user = self.context['request'].user
+        if obj.player1.user == user:
+            return obj.score1
+        elif obj.player2.user == user:
+            return obj.score2
+        elif obj.player3.user == user:
+            return obj.score3
+        elif obj.player4.user == user:
+            return obj.score4
+        return None
+
+    def get_players(self, obj):
+        user = self.context['request'].user
+        players_info = [
+            {'username': obj.player1.user.username, 'avatar': obj.player1.avatar.url if obj.player1.avatar else None, 'score': obj.score1},
+            {'username': obj.player2.user.username, 'avatar': obj.player2.avatar.url if obj.player2.avatar else None, 'score': obj.score2}
+        ]
+        if obj.player3:
+            players_info.append({'username': obj.player3.user.username,
+                                 'avatar': obj.player3.avatar.url if obj.player3.avatar else None, 'score': obj.score3})
+        if obj.player4:
+            players_info.append({'username': obj.player4.user.username,
+                                 'avatar': obj.player4.avatar.url if obj.player4.avatar else None, 'score': obj.score4})
+
+        # ログインユーザー以外の全プレイヤー情報を取得
+        user = self.context['request'].user
+        players = []
+        for player_info in players_info:
+            if player_info['username'] != user.username and player_info['username']:
+                players.append({'username': player_info['username'], 'avatar': player_info['avatar'],
+                                'score': player_info['score']})
+
+        return players

@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
@@ -186,6 +187,13 @@ class MatchLogView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        matches = Match.objects.all()
-        serializer = MatchLogSerializer(matches, many=True)
+        user = request.user
+        try:
+            player = Player.objects.get(user=user)
+        except Player.DoesNotExist:
+            return Response({'detail': 'Player not found'}, status=404)
+        matches = Match.objects.filter(
+            (Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)) & Q(tournament__isnull=True)
+        )
+        serializer = MatchLogSerializer(matches, many=True, context={'request': request})
         return Response(serializer.data)
