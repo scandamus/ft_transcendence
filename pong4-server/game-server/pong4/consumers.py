@@ -448,6 +448,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def start_game(self, event):
         logger.info('Starting game: %s', self.player_name)
+        # ここで初期化しないとNoneTypeになってしまう
         await self.reset_game_data()
         if self.player_name == 'player1':
             await self.reset_game_data()
