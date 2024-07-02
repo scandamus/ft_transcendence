@@ -76,7 +76,7 @@ export const labels_he = {
         labelMatchLog: 'שיא התאמה',
         labelWins: 'ניצחונות',
         labelLosses: 'הפסדים',
-        fmtWinLoss: '$win ניצחונות $loss הפסדים',
+        fmtWinLoss: '$win ניצחונות <br>$loss הפסדים',
     },
     tournament: {
         title: 'Tournament',

@@ -76,7 +76,7 @@ export const labels_ar = {
         labelMatchLog: 'سجل المباريات',
         labelWins: 'فوز',
         labelLosses: 'خسارة',
-        fmtWinLoss: '$win فوز , $loss خسارة',
+        fmtWinLoss: '$win فوز <br>$loss خسارة',
     },
     tournament: {
         title: 'Tournament',
