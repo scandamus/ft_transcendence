@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.core.validators import RegexValidator
 
 from .models import Player, FriendRequest
+from game.models import Match
 
 # validate_username
 # 最小文字数: 3文字 / 最大文字数: 32文字 / 使用可能: 英小文字、数字、アンダースコア(_) / アンダースコアのみは不可
@@ -104,3 +105,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     def get_from_user_avatar(self, obj):
         player = Player.objects.get(user=obj.from_user.user)
         return player.avatar.url if player.avatar else ''
+
+class MatchLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Match
+        fields = '__all__'

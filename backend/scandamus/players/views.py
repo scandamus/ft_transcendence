@@ -5,8 +5,9 @@ from rest_framework.views import APIView
 
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
+from game.models import Match
 from django.contrib.auth.models import User
-from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer
+from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer, MatchLogSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -180,3 +181,11 @@ class AvatarUploadView(APIView):
             return Response({"newAvatar": player.avatar.url})
         else:
             return Response({"error": "No avatar file provided"}, status=400)
+
+class MatchLogView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        matches = Match.objects.all()
+        serializer = MatchLogSerializer(matches, many=True)
+        return Response(serializer.data)
