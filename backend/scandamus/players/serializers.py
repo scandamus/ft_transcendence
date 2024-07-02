@@ -170,3 +170,18 @@ class MatchLogSerializer(serializers.ModelSerializer):
                 players.append(
                     {'username': player_info['username'], 'avatar': player_info['avatar'], 'score': player_info['score'], 'is_win': player_info['is_win']})
         return players
+
+class RecommendedSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+    avatar = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Player
+        fields = ['username', 'avatar']
+
+    def get_username(self, obj):
+        user = self.context['request'].user
+        return user.username
+
+    def get_avatar(self, obj):
+        return obj.avatar.url if obj.avatar else None
