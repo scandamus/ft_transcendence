@@ -41,13 +41,11 @@ class PongConsumer(AsyncWebsocketConsumer):
         # player4
         self.lower_paddle = None
         self.ball = None
-        self.reset_game_data()
         self.game_continue = False
         self.up_pressed = False
         self.down_pressed = False
         self.right_pressed = False
         self.left_pressed = False
-        self.walls = self.init_walls()
 
     async def connect(self):
         try:
@@ -447,10 +445,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
-        logger.info('Starting game: %s', self.player_name)
         # ここで初期化しないとNoneTypeになってしまう
         await self.reset_game_data()
+        await self.init_walls()
         if self.player_name == 'player1':
-            await self.reset_game_data()
-            await self.init_walls()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
