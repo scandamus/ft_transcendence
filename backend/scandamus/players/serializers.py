@@ -141,9 +141,9 @@ class MatchLogSerializer(serializers.ModelSerializer):
             obj.score3 if obj.player3 else None,
             obj.score4 if obj.player4 else None
         ]
-        is_highest = all(my_score > score for score in scores if score is not None)
-        has_equal_score = any(my_score == score for score in scores if score is not None and score != my_score)
-        return is_highest and not has_equal_score
+        highest_score = max(score for score in scores if score is not None)
+        highest_scorers = [score for score in scores if score == highest_score]
+        return len(highest_scorers) == 1 and highest_scorers[0] == my_score
 
     def get_players(self, obj):
         players_info = [
