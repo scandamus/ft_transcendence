@@ -410,39 +410,44 @@ class PongConsumer(AsyncWebsocketConsumer):
         else:
             logger.info("Before: init_game_state_into_self: Ball is initialized when trying to access its properties.")
         ball_data = data['ball']
-        self.ball.x = ball_data['x']
-        self.ball.y = ball_data['y']
-        self.ball.dx = ball_data['dx']
-        self.ball.dy = ball_data['dy']
-        self.ball.size = ball_data['size']
+        if ball_data is not None:
+            self.ball.x = ball_data['x']
+            self.ball.y = ball_data['y']
+            self.ball.dx = ball_data['dx']
+            self.ball.dy = ball_data['dy']
+            self.ball.size = ball_data['size']
         # right_paddle
         right_paddle_data = data['right_paddle']
-        self.right_paddle.x = right_paddle_data['x']
-        self.right_paddle.y = right_paddle_data['y']
-        self.right_paddle.thickness = right_paddle_data['horizontal']
-        self.right_paddle.length = right_paddle_data['vertical']
-        self.right_paddle.score = right_paddle_data['score']
+        if right_paddle_data is not None:
+            self.right_paddle.x = right_paddle_data['x']
+            self.right_paddle.y = right_paddle_data['y']
+            self.right_paddle.thickness = right_paddle_data['horizontal']
+            self.right_paddle.length = right_paddle_data['vertical']
+            self.right_paddle.score = right_paddle_data['score']
         # left_paddle
         left_paddle_data = data['left_paddle']
-        self.left_paddle.x = left_paddle_data['x']
-        self.left_paddle.y = left_paddle_data['y']
-        self.left_paddle.thickness = left_paddle_data['horizontal']
-        self.left_paddle.length = left_paddle_data['vertical']
-        self.left_paddle.score = left_paddle_data['score']
+        if left_paddle_data is not None:
+            self.left_paddle.x = left_paddle_data['x']
+            self.left_paddle.y = left_paddle_data['y']
+            self.left_paddle.thickness = left_paddle_data['horizontal']
+            self.left_paddle.length = left_paddle_data['vertical']
+            self.left_paddle.score = left_paddle_data['score']
         # upper_paddle
         upper_paddle_data = data['upper_paddle']
-        self.upper_paddle.x = upper_paddle_data['x']
-        self.upper_paddle.y = upper_paddle_data['y']
-        self.upper_paddle.thickness = upper_paddle_data['horizontal']
-        self.upper_paddle.length = upper_paddle_data['vertical']
-        self.upper_paddle.score = upper_paddle_data['score']
+        if upper_paddle_data is not None:
+            self.upper_paddle.x = upper_paddle_data['x']
+            self.upper_paddle.y = upper_paddle_data['y']
+            self.upper_paddle.thickness = upper_paddle_data['horizontal']
+            self.upper_paddle.length = upper_paddle_data['vertical']
+            self.upper_paddle.score = upper_paddle_data['score']
         # lower_paddle
         lower_paddle_data = data['left_paddle']
-        self.lower_paddle.x = lower_paddle_data['x']
-        self.lower_paddle.y = lower_paddle_data['y']
-        self.lower_paddle.thickness = lower_paddle_data['horizontal']
-        self.lower_paddle.length = lower_paddle_data['vertical']
-        self.lower_paddle.score = lower_paddle_data['score']
+        if lower_paddle_data is not None:
+            self.lower_paddle.x = lower_paddle_data['x']
+            self.lower_paddle.y = lower_paddle_data['y']
+            self.lower_paddle.thickness = lower_paddle_data['horizontal']
+            self.lower_paddle.length = lower_paddle_data['vertical']
+            self.lower_paddle.score = lower_paddle_data['score']
         if not self.ball:
             logger.error("After: init_game_state_into_self: Ball is not initialized when trying to access its properties.")
         else:
