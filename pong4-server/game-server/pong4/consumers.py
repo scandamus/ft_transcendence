@@ -447,6 +447,6 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def start_game(self, event):
         # ここで初期化しないとNoneTypeになってしまう
         await self.reset_game_data()
-        await self.init_walls()
         if self.player_name == 'player1':
+            await self.init_walls()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
