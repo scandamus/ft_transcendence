@@ -11,7 +11,7 @@ const sendFriendRequest = async (to_username) => {
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'friendRequest',
-            action: 'sendRequest',
+            action: 'requestByUsername',
             username: to_username
         });
     } catch (error) {
