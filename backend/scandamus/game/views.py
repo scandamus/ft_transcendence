@@ -1,4 +1,4 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, generics
 from .models import Tournament, Match, Entry
 from .serializers import TournamentSerializer, MatchSerializer, EntrySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -11,6 +11,17 @@ class TournamentViewSet(ModelViewSet):
     serializer_class = TournamentSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
+class TournamentListView(generics.ListAPIView):
+    serializer_class = TournamentSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        status = self.kwargs.get('status')
+        if status:
+            return Tournament.objects.filter(status=status)
+        return Tournament.objects.all()
 
 # コンテナ内部からのみのルーティングとなるため認証なし
 class MatchViewSet(ModelViewSet):
