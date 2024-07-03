@@ -34,6 +34,8 @@ export const labels_fr = {
         tooShort: '',
         passwordIsNotSame: '',
         isExists: '',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {
