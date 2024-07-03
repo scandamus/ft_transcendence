@@ -54,7 +54,7 @@ const waitForOpponent = (args) => `
 `;
 
 const entryTournament = (args) => `
-    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}">
+    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}" data-modal-match_type="entryTournament">
         <header class="blockModal_header">
             <h2 class="blockModal_title">${args.titleModal}: <strong>${args.labelTournamentTitle}</strong></h2>
             <p class="blockModal_date">(${args.labelTournamentStart})</p>
@@ -68,7 +68,7 @@ const entryTournament = (args) => `
             <input type="hidden" name="idTitle" value="${args.labelTournamentId}">
             
             <ul class="unitListBtn unitListBtn-horizontal-center">
-                <li><button type="submit" id="btnCreateTournament" class="unitButton">${args.labelEntry}</button></li>
+                <li><button type="submit" id="btnEntryTournament" class="unitButton">${args.labelEntry}</button></li>
                 <li><button type="button" class="blockBtnCancel_button unitButtonDecline unitButton-small">${args.labelCancel}</button></li>
             </ul>
         </form>
