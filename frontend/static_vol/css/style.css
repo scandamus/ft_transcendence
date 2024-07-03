@@ -1472,6 +1472,10 @@ input.has-input:invalid {
 
 .unitMatchPlayer_header img {
   display: block;
+  width: 50px;
+  min-width: 30px;
+  height: 50px;
+  object-fit: contain;
 }
 
 .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header img {
