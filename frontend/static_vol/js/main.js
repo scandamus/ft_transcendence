@@ -10,13 +10,7 @@ import { SiteInfo } from "./modules/SiteInfo.js";
 document.addEventListener('DOMContentLoaded', async () => {
     const siteInfo = new SiteInfo();
     try {
-        await getUserInfo()
-            .then(data => {
-                if (data) {
-                    siteInfo.setUsername(data.username);
-                    siteInfo.setAvatar(data.avatar);
-                }
-            })
+        await getUserInfo().then(() => {})
         await switchDisplayAccount();
         if (siteInfo.getUsername()) {
             await router(true);
