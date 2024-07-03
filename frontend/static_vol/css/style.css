@@ -1476,7 +1476,7 @@ input.has-input:invalid {
   font-size: 1.9rem;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_result {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_result {
   left: 0;
 }
 
