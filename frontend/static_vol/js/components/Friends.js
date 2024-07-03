@@ -65,7 +65,7 @@ export default class Friends extends PageBase {
         try {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
-            updateRecommend().then(() => {});
+            updateRecommend(this).then(() => {});
             //recommendedのaddListener
             addListenSendFriendRequest(this);
         } catch (error) {
