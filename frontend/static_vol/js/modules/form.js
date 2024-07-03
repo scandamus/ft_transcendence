@@ -19,6 +19,9 @@ const errorMessages = {
     'invalidPasswordLenBackend': 'password is invalid.(len - backend)',
     'invalidPasswordCharacterTypesBackend': 'password is invalid.(character types - backend)',
     'invalidPasswordBlank': 'password is required.(required - backend)',
+    //for LogIn
+    'loginError1': labels.formErrorMessages.loginError1,
+    'loginError2': labels.formErrorMessages.loginError2,
 };
 
 const addErrorMessage = (errWrapper, errorType) => {

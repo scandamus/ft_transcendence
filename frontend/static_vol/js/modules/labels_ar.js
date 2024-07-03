@@ -34,6 +34,8 @@ export const labels_ar = {
         tooShort: 'قصير جداً',
         passwordIsNotSame: 'الرجاء إدخال كلمة المرور نفسها',
         isExists: 'اسم المستخدم هذا قيد الاستخدام',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {

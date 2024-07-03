@@ -34,6 +34,8 @@ export const labels_fr = {
         tooShort: 'Trop court',
         passwordIsNotSame: 'Veuillez saisir le même mot de passe',
         isExists: 'Ce nom d’utilisateur est utilisé',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {

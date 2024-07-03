@@ -34,6 +34,8 @@ export const labels_la = {
         tooShort: 'nimis brevis',
         passwordIsNotSame: 'non eadem tessera',
         isExists: 'nomen usoris alium selige',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {

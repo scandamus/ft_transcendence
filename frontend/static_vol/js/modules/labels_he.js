@@ -34,6 +34,8 @@ export const labels_he = {
         tooShort: 'קצר מדי',
         passwordIsNotSame: 'אנא הזן את אותה סיסמה',
         isExists: 'שם המשתמש כבר בשימוש',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {

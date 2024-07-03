@@ -9,12 +9,12 @@ const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
-        const friends = await fetchFriends();
-        const listFriendsWrappr = document.querySelector('.blockFriends_friends');
-        if (friends.length === 0) {
-            listFriendsWrappr.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
+        const friends = await fetchFriends(false);
+        const listFriendsWrapper = document.querySelector('.blockFriends_friends');
+        if (!friends || friends.length === 0) {
+            listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
-            listFriendsWrappr.innerHTML = '';
+            listFriendsWrapper.innerHTML = '';
             friends.forEach(friend => {
                 const avatar = friend.avatar ? friend.avatar : '/images/avatar_default.png';
                 //todo: friendsの状況に応じて online/ offline / busy で切り替える
@@ -36,7 +36,7 @@ const updateFriendsList = async (pageInstance) => {
                 friendElement += `</ul>
                     </section>
                 `;
-                listFriendsWrappr.innerHTML += friendElement;
+                listFriendsWrapper.innerHTML += friendElement;
             });
             resetListenFriendList(pageInstance);
         }
@@ -48,10 +48,10 @@ const updateFriendsList = async (pageInstance) => {
 const updateFriendRequestList = async (pageInstance) => {
     console.log('updateFriendRequestList in');
     try {
-        const requests = await fetchFriendRequests();
-            const secRequestWrapper = document.querySelector('.blockFriendRequest');
-            const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (requests.length === 0) {
+        const requests = await fetchFriendRequests(false);
+        const secRequestWrapper = document.querySelector('.blockFriendRequest');
+        const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
+        if (!requests || requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
             }
