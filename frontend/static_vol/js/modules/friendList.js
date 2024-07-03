@@ -18,7 +18,7 @@ const updateFriendsList = async (pageInstance) => {
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
         let friends = await fetchFriends();
-        if (friends && friends.length > 1) {
+        if (friends && !isPageFriend && friends.length > 1) {
             shuffleArray(friends);
         }
         const listFriendsWrappr = document.querySelector('.blockFriends_friends');
