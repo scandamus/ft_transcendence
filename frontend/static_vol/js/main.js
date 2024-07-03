@@ -33,3 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 言語切り替え
     switchLanguage();
 });
+
+//reload
+window.addEventListener('beforeunload', () => {
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('refreshToken');
+});
