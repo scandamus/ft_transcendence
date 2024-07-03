@@ -774,6 +774,15 @@ input.has-input:invalid {
   1px 1px var(--content-color2);
 }
 
+/* no data */
+.blockFriends_friends p:only-child,
+.blockDashboardLog_listMatch p:only-child {
+  font-size: 1.8rem;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+
 /* -----
  page
 ----- */
@@ -962,12 +971,6 @@ input.has-input:invalid {
 .blockUsers_column .blockFriends_friends {
   overflow-y: auto;
   max-height: 40vh;
-}
-
-.blockFriends_friends p {
-  font-size: 1.8rem;
-  margin-top: 1em;
-  margin-bottom: 1em;
 }
 
 @media screen and (min-width: 768px) {

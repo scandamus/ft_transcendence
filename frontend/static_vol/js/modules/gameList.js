@@ -10,7 +10,7 @@ const getMatchLog = async () => {
         const logList = await fetchMatchLog(false);
         const listRequestWrapper = document.querySelector('.blockDashboardLog_listMatch');
         if (!logList || logList.length === 0) {
-            console.log('no match log')
+            listRequestWrapper.innerHTML = `<p>${labels.match.msgNoMatch}</p>`
         } else {
             const siteInfo = new SiteInfo();
             const myUsername = siteInfo.getUsername();
