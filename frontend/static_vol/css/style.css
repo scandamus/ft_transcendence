@@ -621,6 +621,16 @@ input.has-input:invalid {
   font-size: 2.6rem;
 }
 
+.blockForm_el + .listError {
+  margin-top: 50px;
+  margin-bottom: -30px;
+}
+
+.blockForm_el+.listError {
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
 .blockForm_el dt {
   margin-bottom: 10px;
   text-align: left;
@@ -729,6 +739,7 @@ input.has-input:invalid {
   margin-top: 10px;
   padding: 0.8em 1em 0.8em 2em;
   background: var(--color-error2-alpha);
+  font-size: 2.6rem; /* for min-width*/
 }
 
 .listError:empty {
@@ -740,6 +751,7 @@ input.has-input:invalid {
   text-shadow: none;
   font-size: 1.6rem;
   line-height: 1.3;
+  text-align: left;
 }
 
 .listError li:not(:last-child) {
@@ -773,6 +785,15 @@ input.has-input:invalid {
   box-shadow: -1px -1px var(--content-color1),
   1px 1px var(--content-color2);
 }
+
+/* no data */
+.blockFriends_friends p:only-child,
+.blockDashboardLog_listMatch p:only-child {
+  font-size: 1.8rem;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 
 /* -----
  page
@@ -962,12 +983,6 @@ input.has-input:invalid {
 .blockUsers_column .blockFriends_friends {
   overflow-y: auto;
   max-height: 40vh;
-}
-
-.blockFriends_friends p {
-  font-size: 1.8rem;
-  margin-top: 1em;
-  margin-bottom: 1em;
 }
 
 @media screen and (min-width: 768px) {
@@ -1473,7 +1488,7 @@ input.has-input:invalid {
   font-size: 1.9rem;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_result {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_result {
   left: 0;
 }
 

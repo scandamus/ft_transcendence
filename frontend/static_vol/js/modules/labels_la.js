@@ -34,6 +34,8 @@ export const labels_la = {
         tooShort: '',
         passwordIsNotSame: '',
         isExists: '',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {
@@ -75,6 +77,7 @@ export const labels_la = {
         labelWins: '',
         labelLosses: '',
         fmtWinLoss: '$win $loss',
+        msgNoMatch: '',
     },
     tournament: {
         title: '',

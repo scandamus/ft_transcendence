@@ -34,6 +34,8 @@ export const labels_ar = {
         tooShort: ' يؤُلاءِ العربية',
         passwordIsNotSame: ' يؤُلاءِ العربية',
         isExists: ' يؤُلاءِ العربية',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {
@@ -75,6 +77,7 @@ export const labels_ar = {
         labelWins: ' يؤُلاءِ العربية',
         labelLosses: ' يؤُلاءِ العربية',
         fmtWinLoss: '$win يؤُلاءِ العربية  $loss يؤُلاءِ العربية',
+        msgNoMatch: '',
     },
     tournament: {
         title: 'Tournament',

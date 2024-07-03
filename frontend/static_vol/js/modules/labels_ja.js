@@ -34,6 +34,8 @@ export const labels_ja = {
         tooShort: '短すぎます',
         passwordIsNotSame: '同じパスワードを入力してください',
         isExists: 'このユーザー名は使われています',
+        loginError1: 'ログインに失敗しました。ユーザー名とパスワードを確認してください',
+        loginError2: 'ログインできません',
     },
 
     dashboard: {
@@ -75,6 +77,7 @@ export const labels_ja = {
         labelWins: '勝',
         labelLosses: '敗',
         fmtWinLoss: '$win勝 $loss敗',
+        msgNoMatch: '対戦結果がありません',
     },
     tournament: {
         title: 'Tournament',
