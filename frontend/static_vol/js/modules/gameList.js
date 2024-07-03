@@ -3,7 +3,7 @@
 import { fetchMatchLog, fetchRecommend } from "./gameApi.js";
 import { labels } from "./labels.js";
 import { SiteInfo } from "./SiteInfo.js";
-//import { resetListenFriendRequestList } from "./friendListener.js";
+import { addListenSendFriendRequest } from "./friendListener.js";
 
 const getMatchLog = async () => {
     console.log('getMatchLog');
@@ -87,7 +87,7 @@ const updateRecommend = async (pageInstance) => {
                 `;
                 RecommendedWrapper.innerHTML += requestElement;
             });
-            //resetListenFriendRequestList(pageInstance);
+            addListenSendFriendRequest(pageInstance);
         }
     } catch (error) {
         console.error('Failed to update recommended: ', error);

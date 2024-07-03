@@ -100,7 +100,7 @@ const addListenRemoveFriend = (pageInstance) => {
     });
 }
 
-//RequestFriendは表示中の更新がないのでlistListenInInstance[]で管理
+//RequestFriend(Recommended)は表示中の更新がないのでlistListenInInstance[]で管理
 const addListenSendFriendRequest = (pageInstance) => {
     const btnRequestFriend = document.querySelectorAll('.unitFriendButton_friendRequest');
     const boundSendFriendRequestHandler = sendFriendRequestHandler.bind(pageInstance);
