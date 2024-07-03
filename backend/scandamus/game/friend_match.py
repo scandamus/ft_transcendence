@@ -7,7 +7,7 @@ from .models import Player
 from .models import Match
 from django.conf import settings
 from django.db import transaction
-from .match_utils import send_match_jwt, authenticate_token
+from .match_utils import send_friend_match_jwt, authenticate_token, get_player_by_username, get_player_by_user
 
 logger = logging.getLogger(__name__)
 
@@ -22,38 +22,80 @@ async def handle_request_game(consumer, data):
     if not user:
         logger.error('Error: Authentication Failed')
         logger.error(f'error={error}')
-        await consumer.send(text_data=json.dumps({
-            'type': 'authenticationFailed',
-            'message': error
-        }))
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': 'authenticationFailed',
+                'message': error
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
         return
     
-    request_id = f'{consumer.user.username}_vs_{opponent_name}'
-    LoungeSession.pending_requests[request_id] = {
-        'from_username': consumer.user.username,
-        'to_username': opponent_name
-    }
-    logger.info(f'request_id = {request_id}')
-    player = await get_player_by_username(consumer.user)
+    player = await get_player_by_user(user)
+    if not player:
+        logger.error(f"No player found for user: {user.username}")
+    if player.status != 'waiting':
+        logger.error(f'{user.username} can not request new game as playing the match')
+        return
+
+    try:
+        opponent_player = await get_player_by_username(opponent_name)
+    except Player.DoesNotExist:
+        logger.error(f'Opponent player: {opponent_name} does not exist')
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': 'frinedMatchRequest',
+                'action': 'error',
+                'error': 'userDoesnotExist',
+                'message': f'{opponent_name} does not exist',
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
+        return
+    
+    if opponent_player.status != 'waiting':
+        logger.info(f'Opppnent player: {opponent_name} is not in waiting status')
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': 'friendMatchRequest',
+                'action': 'error',
+                'error': 'playerNotWaitingStatus',
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
+        return
+    
     if opponent_name in consumer.players:
+        request_id = f'{consumer.user.username}_vs_{opponent_name}'
+        LoungeSession.pending_requests[request_id] = {
+            'from_username': consumer.user.username,
+            'to_username': opponent_name
+        }
+        logger.info(f'request_id = {request_id}')
         opponent_ws = consumer.players[opponent_name]
-        await opponent_ws.send(text_data=json.dumps({
-            'type': 'friendMatchRequest',
-            'action': 'requested',
-            'from': consumer.user.username,
-            'from_id': user.id,
-            'avatar': player.avatar.url if player.avatar else '',
-            'request_id': request_id,
-        }))
-        logger.info(f'Sent to opponent {opponent_name}')
+        try:
+            await opponent_ws.send(text_data=json.dumps({
+                'type': 'friendMatchRequest',
+                'action': 'requested',
+                'from': consumer.user.username,
+                'from_id': user.id,
+                'avatar': player.avatar.url if player.avatar else '',
+                'request_id': request_id,
+            }))
+            logger.info(f'Sent to opponent {opponent_name}')
+        except Exception as e:
+            logger.error(f'Failed to send message to {opponent_name}: {e}')
     else:
-        await consumer.send(text_data=json.dumps({
-            'type': 'friendMatchRequest',
-            'action': 'error',
-            'error': 'userOffline',
-            'message': 'Opponent player not online',
-        }))
-        logger.info(f'Error opponent player is not online')
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': 'friendMatchRequest',
+                'action': 'error',
+                'error': 'userOffline',
+                'message': 'Opponent player not online',
+            }))
+            logger.info(f'Error opponent player is not online')
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
 
 async def handle_accept_game(consumer, data):
     from .consumers import LoungeSession
@@ -96,7 +138,7 @@ async def handle_accept_game(consumer, data):
         return
         
     if from_username in consumer.players:
-        await send_match_jwt(consumer, request['from_username'])
+        await send_friend_match_jwt(consumer, request['from_username'])
         LoungeSession.pending_requests.pop(request_id)
     else:
         await consumer.send(text_data=json.dumps({

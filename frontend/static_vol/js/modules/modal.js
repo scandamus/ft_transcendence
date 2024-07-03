@@ -74,6 +74,7 @@ const closeModalOnCancel = (ev) => {
                 const indicatorBar = indicator.querySelector('.unitIndicator_bar');
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
+            console.log(`matchType: ${matchType}`);
             if (matchType === 'friendMatch') {
                 //cancel game
                 console.log(`cancel friend Match: ${username}`);
@@ -172,7 +173,7 @@ const showModalSendMatchRequest = (ev) => {
         username: button.dataset.username,
         avatar: button.dataset.avatar,
         labelCancel: labels.modal.labelCancel,
-        matchType: 'frinedMatch',
+        matchType: 'friendMatch',
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
     request_game(button.dataset.username, button.dataset.id)
@@ -209,7 +210,7 @@ const showModalWaitForOpponent = (ev) => {
         labelCapacity: labels.modal.labelCapacity,
         labelAvailable: labels.modal.labelAvailable,
         labelCapacityNum: capacityNum,
-        MatchType: 'loungeMatch',
+        matchType: 'loungeMatch',
         game_name: gameName,
     };
     const elHtml = getModalHtml('waitForOpponent', args);

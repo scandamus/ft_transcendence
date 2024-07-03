@@ -74,6 +74,29 @@ class Player(models.Model):
         verbose_name="登録日時"
     )
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+    STATUS_CHOICES = [
+        ('friend_match', 'フレンドマッチ中'),
+        ('lounge_match', 'ラウンジマッチ中'),
+        ('tournament_match', 'トーナメントマッチ中'),
+        ('tournament', 'トーナメント中'),
+        ('friend_waiting', 'フレンドマッチ待機中'),
+        ('lounge_waiting', 'ラウンジマッチ待機中'),
+        ('waiting', '待機中'),
+    ]
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='waiting',
+        verbose_name="ステータス"
+    )
+    current_match = models.ForeignKey(
+        'game.Match',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='current_players',
+        verbose_name="現在のマッチ"
+    )
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
