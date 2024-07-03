@@ -18,6 +18,7 @@ from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser
+import random
 
 # from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
@@ -242,7 +243,7 @@ class RecommendedView(APIView):
         current_friends = player.friends.all()
         matches = Match.objects.filter(
             Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)
-        )[:20]
+        ).order_by('-id')[:30]
         opponents = set()
         for match in matches:
             if match.player1 != player and match.player1 not in current_friends:
@@ -254,8 +255,8 @@ class RecommendedView(APIView):
             if match.player4 and match.player4 != player and match.player4 not in current_friends:
                 opponents.add(match.player4)
 
-            # 最大10人まで取得
-            if len(opponents) >= 10:
-                break
-        serializer = RecommendedSerializer(opponents, many=True, context={'request': request})
+            if len(opponents) > 3:
+                opponents = list(opponents)
+                random.shuffle(opponents)
+        serializer = RecommendedSerializer(list(opponents)[:3], many=True, context={'request': request})
         return Response(serializer.data)
