@@ -194,6 +194,6 @@ class MatchLogView(APIView):
             return Response({'detail': 'Player not found'}, status=404)
         matches = Match.objects.filter(
             (Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)) & Q(tournament__isnull=True)
-        )
+        ).order_by('-id')[:5]
         serializer = MatchLogSerializer(matches, many=True, context={'request': request})
         return Response(serializer.data)
