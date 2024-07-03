@@ -34,6 +34,8 @@ export const labels_en = {
         tooShort: 'Too few characters.',
         passwordIsNotSame: 'The passwords do not match.',
         isExists: 'This username is already talen.',
+        loginError1: 'Login failed. Please check your username and password.',
+        loginError2: 'Something went wrong. Unable to log in.',
     },
 
     dashboard: {
