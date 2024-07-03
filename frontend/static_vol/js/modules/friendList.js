@@ -5,22 +5,11 @@ import { resetListenFriendList, resetListenFriendRequestList } from "./friendLis
 import { labels } from "./labels.js";
 import PageBase from "../components/PageBase.js";
 
-const shuffleArray = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-};
-
 const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
         let friends = await fetchFriends();
-        if (friends && friends.length > 1) {
-            shuffleArray(friends);
-        }
         const listFriendsWrappr = document.querySelector('.blockFriends_friends');
         if (friends.length === 0) {
             listFriendsWrappr.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
