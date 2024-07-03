@@ -20,8 +20,8 @@ class TournamentListView(generics.ListAPIView):
     def get_queryset(self):
         status = self.kwargs.get('status')
         if status:
-            return Tournament.objects.filter(status=status)
-        return Tournament.objects.all()
+            return Tournament.objects.filter(status=status).order_by('start')
+        return Tournament.objects.all().order_by('start')
 
 # コンテナ内部からのみのルーティングとなるため認証なし
 class MatchViewSet(ModelViewSet):
