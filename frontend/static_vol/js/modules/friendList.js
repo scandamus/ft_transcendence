@@ -5,17 +5,30 @@ import { resetListenFriendList, resetListenFriendRequestList } from "./friendLis
 import { labels } from "./labels.js";
 import PageBase from "../components/PageBase.js";
 
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
-        const friends = await fetchFriends(false);
+        let friends = await fetchFriends(false);
+        if (friends && !isPageFriend && friends.length > 1) {
+            shuffleArray(friends);
+        }
         const listFriendsWrapper = document.querySelector('.blockFriends_friends');
         if (!friends || friends.length === 0) {
             listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
             listFriendsWrapper.innerHTML = '';
-            friends.forEach(friend => {
+            for (let i = 0; i < friends.length; i++) {
+                if (!isPageFriend && i >= 3) break; // isPageFriendがfalseの場合、3件で打ち切る
+                const friend = friends[i];
                 const avatar = friend.avatar ? friend.avatar : '/images/avatar_default.png';
                 //todo: friendsの状況に応じて online/ offline / busy で切り替える
                 const onlineStatus = 'online';
@@ -37,7 +50,7 @@ const updateFriendsList = async (pageInstance) => {
                     </section>
                 `;
                 listFriendsWrapper.innerHTML += friendElement;
-            });
+            }
             resetListenFriendList(pageInstance);
         }
     } catch (error) {
@@ -61,11 +74,12 @@ const updateFriendRequestList = async (pageInstance) => {
             }
             listRequestWrapper.innerHTML = '';
             requests.forEach(request => {
+                const avatar = request.from_user_avatar ? request.from_user_avatar : '/images/avatar_default.png';
                 const requestElement = `
                     <section class="unitFriend">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${request.from_user}</h4>
-                            <p class="unitFriend_thumb"><img src="${request.from_user_avatar}" alt="" width="100" height="100"></p>
+                            <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                             <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.friends.labelAccept}</button></li>
