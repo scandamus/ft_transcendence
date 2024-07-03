@@ -80,9 +80,9 @@ const updateRecommend = async (pageInstance) => {
                             <h4 class="unitFriend_name">${player.username}</h4>
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
-                        <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_friendRequest unitButton" data-username="${player.username}">${labels.friends.labelRequest}</button></li>
-                        </ul>
+                        <p class="unitFriendButton">
+                            <button type="button" class="unitFriendButton_friendRequest unitButton" data-username="${player.username}">${labels.friends.labelRequest}</button>
+                        </p>
                     </section>
                 `;
                 RecommendedWrapper.innerHTML += requestElement;

@@ -875,7 +875,7 @@ input.has-input:invalid {
   justify-content: flex-end;
   align-items: center;
   padding-right: 0.5em;
-  flex: 1 1 calc(100% - 160px);
+  flex: 1 1 calc(100% - 170px);
   min-width: 60%;
 }
 
