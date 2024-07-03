@@ -17,15 +17,15 @@ const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
-        let friends = await fetchFriends();
+        let friends = await fetchFriends(false);
         if (friends && !isPageFriend && friends.length > 1) {
             shuffleArray(friends);
         }
-        const listFriendsWrappr = document.querySelector('.blockFriends_friends');
-        if (friends.length === 0) {
-            listFriendsWrappr.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
+        const listFriendsWrapper = document.querySelector('.blockFriends_friends');
+        if (!friends || friends.length === 0) {
+            listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
-            listFriendsWrappr.innerHTML = '';
+            listFriendsWrapper.innerHTML = '';
             for (let i = 0; i < friends.length; i++) {
                 if (!isPageFriend && i >= 3) break; // isPageFriendがfalseの場合、3件で打ち切る
                 const friend = friends[i];
@@ -49,7 +49,7 @@ const updateFriendsList = async (pageInstance) => {
                 friendElement += `</ul>
                     </section>
                 `;
-                listFriendsWrappr.innerHTML += friendElement;
+                listFriendsWrapper.innerHTML += friendElement;
             }
             resetListenFriendList(pageInstance);
         }
@@ -61,10 +61,10 @@ const updateFriendsList = async (pageInstance) => {
 const updateFriendRequestList = async (pageInstance) => {
     console.log('updateFriendRequestList in');
     try {
-        const requests = await fetchFriendRequests();
-            const secRequestWrapper = document.querySelector('.blockFriendRequest');
-            const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (requests.length === 0) {
+        const requests = await fetchFriendRequests(false);
+        const secRequestWrapper = document.querySelector('.blockFriendRequest');
+        const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
+        if (!requests || requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
             }

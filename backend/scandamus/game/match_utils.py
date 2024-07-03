@@ -159,3 +159,9 @@ def update_player_status_and_match(player, match, status):
     player.status = status
     player.current_match = match
     player.save()
+
+@database_sync_to_async
+def update_player_status(player, status):
+    logger.info(f'update_player_status {player.user.username}: {status}')
+    player.status = status
+    player.save()

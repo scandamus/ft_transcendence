@@ -11,6 +11,7 @@ import UserRegister from '../components/UserRegister.js';
 import UserRegisterConfirm from '../components/UserRegisterConfirm.js';
 import UserRegisterComplete from '../components/UserRegisterComplete.js';
 import GamePlay from '../components/GamePlay.js';
+import GamePlayQuad from '../components/GamePlayQuad.js';
 import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
@@ -27,7 +28,8 @@ const routes = {
     dashboard: {path: '/dashboard', view: Dashboard, isProtected: true},
     friends:  { path: '/friends', view: Friends, isProtected: true },
     lounge: {path: '/lounge', view: Lounge, isProtected: true},
-    gamePlay: {path: '/game/play:id', view: GamePlay, isProtected: true},
+    gamePlay: {path: '/game/pong/play:id', view: GamePlay, isProtected: true},
+    gamePlayMulti: {path: '/game/pong4/play:id', view: GamePlayQuad, isProtected: true},
     tournament: {path: '/tournament', view: Tournament, isProtected: true},
     TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
 };
