@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
@@ -25,6 +27,7 @@ from rest_framework.parsers import MultiPartParser
 # from django.views.decorators.http import require_POST
 # from django.core.exceptions import ValidationError
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class PlayersViewSet(viewsets.ModelViewSet):
@@ -62,6 +65,35 @@ class RegisterView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class DeleteUserView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        username = request.data.get('username')
+        logger.info(f'DeleteUserView in for {username}')
+        try:
+            user = User.objects.get(username=username)
+            user.delete()
+            logger.info(f'User deleted: {username}')
+            response = Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
+            logger.info(f'Delete response: {response.data}, headers: {response.headers}')
+            return response
+        except User.DoesNotExist:
+            response = Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            logger.info(f'Delete response: {response.data}, headers: {response.headers}')
+            return response
+        
+    def delete(self, request, username=None):
+        logger.info(f'DeleteUserView in for {username}')
+        try:
+            user = User.objects.get(username=username)
+            user.delete()
+            logger.info(f'User deleted: {username}')
+            return Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            logger.error(f'User {username} not found')
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class LoginView(APIView):
     authentication_classes = []
