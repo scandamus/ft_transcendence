@@ -98,10 +98,13 @@ export const labels_he = {
         labelReject: 'הזה עברית ',
         labelCapacity: 'הזה עברית ',
         labelAvailable: 'הזה עברית ',
+        labelExit:  '',
+        labelReturnToGame:  '',
         titleSendMatchRequest: 'הזה עברית ',
         titleReceiveMatchRequest: 'הזה עברית ',
         titleWaitForOpponent: 'הזה עברית ...',
         titleEntryTournament:  'הזה עברית ',
+        titleExitGame:  '',
     },
     friendRequest: {
         alreadyFriends: '$name הזה עברית ',

@@ -75,4 +75,15 @@ const entryTournament = (args) => `
     </section>
 `;
 
-export { sendMatchRequest, receiveMatchRequest, waitForOpponent, entryTournament };
+
+const exitGame = (args) => `
+    <section class="blockModal">
+        <h2 class="blockModal_title">${args.titleModal}</h2>
+        <ul class="unitListBtn unitListBtn-horizontal">
+            <li class="unitListBtn_btn blockBtnReturnToGame"><button type="button" class="blockBtnReturnToGame_button unitButton">${args.labelReturnToGame}</button></li>
+            <li class="unitListBtn_btn blockBtnExit"><a href="${args.link}" class="blockBtnExit_button unitButton" data-link>${args.labelExit}</a></li>
+        </ul>
+    </section>
+`;
+
+export { sendMatchRequest, receiveMatchRequest, waitForOpponent, entryTournament, exitGame };

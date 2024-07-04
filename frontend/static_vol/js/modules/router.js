@@ -16,7 +16,7 @@ import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
 
-import { closeModalOnCancel, closeModal } from './modal.js';
+import { closeModalOnCancel, closeModal, showModalExitGame } from './modal.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = {
@@ -58,6 +58,10 @@ const linkSpa = async (ev) => {
     ev.preventDefault();
     const link = (ev.target.tagName === 'a') ? ev.target.href : ev.target.closest('a').href;
     if (window.location.href === ev.target.href || !link) {
+        return;
+    }
+    if (window.location.href.indexOf('/game/pong/play') !== -1 || window.location.href.indexOf('/game/pong4/play') !== -1) {
+        showModalExitGame(link);
         return;
     }
     history.pushState(null, null, link);

@@ -98,10 +98,13 @@ export const labels_fr = {
         labelReject: '',
         labelCapacity: '',
         labelAvailable: '',
+        labelExit:  '',
+        labelReturnToGame:  '',
         titleSendMatchRequest: '',
         titleReceiveMatchRequest: '',
         titleWaitForOpponent: '',
         titleEntryTournament:  '',
+        titleExitGame:  '',
     },
     friendRequest: {
         alreadyFriends: '$name ',

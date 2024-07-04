@@ -159,7 +159,8 @@ const contModal = {
     sendMatchRequest: mc.sendMatchRequest,
     receiveMatchRequest: mc.receiveMatchRequest,
     waitForOpponent: mc.waitForOpponent,
-    entryTournament: mc.entryTournament
+    entryTournament: mc.entryTournament,
+    exitGame: mc.exitGame
 };
 
 const getModalHtml = (modalType, args) => {
@@ -258,5 +259,16 @@ const updateModalAvailablePlayers = (availablePlayers) => {
     }
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers };
+const showModalExitGame = (link) => {
+    const args = {
+        titleModal: labels.modal.titleExitGame,
+        link: link,
+        labelExit: labels.modal.labelExit,
+        labelReturnToGame: labels.modal.labelReturnToGame,
+    }
+    const elHtml = getModalHtml('exitGame', args);
+    showModal(elHtml);
+}
+
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame };
 

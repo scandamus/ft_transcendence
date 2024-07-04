@@ -98,10 +98,13 @@ export const labels_ar = {
         labelReject: ' يؤُلاءِ العربية',
         labelCapacity: ' يؤُلاءِ العربية',
         labelAvailable: ' يؤُلاءِ العربية',
+        labelExit:  '',
+        labelReturnToGame:  '',
         titleSendMatchRequest: ' يؤُلاءِ العربية',
         titleReceiveMatchRequest: ' يؤُلاءِ العربية',
         titleWaitForOpponent: ' يؤُلاءِ العربية...',
         titleEntryTournament:  ' يؤُلاءِ العربية',
+        titleExitGame:  '',
     },
     friendRequest: {
         alreadyFriends: '$name يؤُلاءِ العربية',
