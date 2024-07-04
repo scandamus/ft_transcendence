@@ -191,6 +191,26 @@ export default class GamePlayQuad extends PageBase {
                 webSocketManager.sendWebSocketMessage(containerId, data);
             }
 
+            function playSound(sound_type) {
+                if (!sound_type) {
+                    console.info('sound_type is undefined');
+                    return;
+                } else {
+                    console.log('sound_type: ', sound_type)
+                }
+                let sound;
+                if (sound_type === 'paddle_collision') {
+                    sound = new Audio('../../sounds/8-bit-game-4-188106.mp3');
+                } else if (sound_type === 'wall_collision') {
+                    sound = new Audio('../../sounds/8-bit-game-5-188107.mp3');
+                } else if (sound_type === 'scored' || sound_type === 'game_over') {
+                    sound = new Audio('../../sounds/8-bit-game-6-188105.mp3');
+                }
+                if (sound) {
+                    sound.play();
+                }
+            }
+
             pongSocket.onmessage = function (e) {
                 try {
                     const data = JSON.parse(e.data);
@@ -198,6 +218,7 @@ export default class GamePlayQuad extends PageBase {
                     console.log('received_data -> ', data);
                     // console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score, 'UPPER_PADDLE: ', data.upper_paddle.score, '  LOWER_PADDLE: ', data.lower_paddle.score);
                     updateGameObjects(data);
+                    playSound(data.sound_type)
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }

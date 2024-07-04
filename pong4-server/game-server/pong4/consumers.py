@@ -195,14 +195,14 @@ class PongConsumer(AsyncWebsocketConsumer):
         timestamp = dt.utcnow().isoformat()
         if self.player_name != 'player1':
             self.game_continue = False
-        await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
 
     async def update_ball_and_send_data(self):
         self.right_paddle.move_for_multiple()
         self.left_paddle.move_for_multiple()
         self.upper_paddle.move_for_multiple()
         self.lower_paddle.move_for_multiple()
-        game_continue = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
+        game_continue, sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
                                                     self.lower_paddle, self.walls)
         ball_tmp = {
             'x': self.ball.x,
@@ -249,17 +249,19 @@ class PongConsumer(AsyncWebsocketConsumer):
             'left_paddle': left_paddle_tmp,
             'upper_paddle': upper_paddle_tmp,
             'lower_paddle': lower_paddle_tmp,
+            'sound_type': sound_type,
         })
         return game_continue
 
     async def ball_message(self, data):
         message = data['message']
         timestamp = data['timestamp']
+        sound_type = data['sound_type']
         if self.player_name != 'player1':
             await self.init_game_state_into_self(data)
-        await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=True, message=message, timestamp=timestamp, sound_type=sound_type)
 
-    async def send_game_data(self, game_status, message, timestamp):
+    async def send_game_data(self, game_status, message, timestamp, sound_type):
         await self.send(text_data=json.dumps({
             'message': message + f'\n{timestamp}\n\n',
             'game_status': game_status,
@@ -298,6 +300,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'vertical': self.lower_paddle.thickness,
                 'score': self.lower_paddle.score,
             },
+            'sound_type': sound_type,
         }))
 
     async def reset_game_data(self):
