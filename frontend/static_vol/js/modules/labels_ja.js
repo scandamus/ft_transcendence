@@ -58,6 +58,7 @@ export const labels_ja = {
         labelListFriends: '友達一覧',
         labelReceivedRequest: '受け取った友達申請',
         labelRecommended: 'あなたへのおすすめ',
+        msgNoRecommended: 'おすすめユーザーはいません',
     },
     lounge: {
         title: 'Lounge',

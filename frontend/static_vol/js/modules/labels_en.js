@@ -58,6 +58,7 @@ export const labels_en = {
         labelListFriends: 'friends',
         labelReceivedRequest: 'friend requests',
         labelRecommended: 'recommended',
+        msgNoRecommended: 'no recommended player',
     },
     lounge: {
         title: 'Lounge',

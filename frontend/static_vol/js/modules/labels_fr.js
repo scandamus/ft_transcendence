@@ -58,6 +58,7 @@ export const labels_fr = {
         labelListFriends: '',
         labelReceivedRequest: '',
         labelRecommended: '',
+        msgNoRecommended: '',
     },
     lounge: {
         title: '',
