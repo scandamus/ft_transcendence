@@ -183,7 +183,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def update_ball_and_send_data(self):
         self.right_paddle.move()
         self.left_paddle.move()
-        game_continue = self.ball.move(self.right_paddle, self.left_paddle)
+        game_continue, sound_type = self.ball.move(self.right_paddle, self.left_paddle)
         ball_tmp = {
             'x': self.ball.x,
             'y': self.ball.y,
@@ -213,6 +213,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             'ball': ball_tmp,
             'right_paddle': right_paddle_tmp,
             'left_paddle': left_paddle_tmp,
+            'sound_type': sound_type,
         })
         return game_continue
 

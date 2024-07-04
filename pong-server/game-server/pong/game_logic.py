@@ -141,7 +141,7 @@ class Ball:
             tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
             self.dx = tmp['dx']
             self.dy = tmp['dy']
-        return True
+        return True, sound_type
 
     def collision_detection(self, obj, obj_side):
         next_x = self.x + self.dx
