@@ -1623,13 +1623,14 @@ input.has-input:invalid {
 .wrapModal.is-show {
   display: block;
   opacity: 1;
+  z-index: 2;
 }
 
 .blockModal {
   position: fixed;
   width: 70%;
   min-height: 300px;
-  max-width: var(--base-content-width);
+  max-width: calc(var(--base-content-width) - 300px);
   inset: 50% auto auto 50%;
   translate: -50% -50%;
   padding: 30px;
