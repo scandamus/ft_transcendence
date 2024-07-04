@@ -158,8 +158,10 @@ export default class GamePlay extends PageBase {
                     sound = new Audio('../../sounds/8-bit-game-4-188106.mp3');
                 } else if (sound_type === 'wall_collision') {
                     sound = new Audio('../../sounds/8-bit-game-5-188107.mp3');
-                } else if (sound_type === 'scored' || sound_type === 'game_over') {
+                } else if (sound_type === 'scored') {
                     sound = new Audio('../../sounds/8-bit-game-6-188105.mp3');
+                } else if (sound_type === 'game_over') {
+                    sound = new Audio('../../sounds/game-fx-9-40197.mp3');
                 }
                 if (sound) {
                     sound.play();
