@@ -241,13 +241,14 @@ class RecommendedView(APIView):
         except Player.DoesNotExist:
             return Response({'detail': 'Player not found'}, status=404)
         current_friends = player.friends.all()
+        sent_requests = FriendRequest.objects.filter(from_user=player).values_list('to_user', flat=True)
         matches = Match.objects.filter(
             Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)
         ).order_by('-id')[:30]
         opponents = {
             opponent for match in matches
             for opponent in [match.player1, match.player2, match.player3, match.player4]
-            if opponent is not None and opponent != player and opponent not in current_friends
+            if opponent is not None and opponent != player and opponent not in current_friends and opponent.id not in sent_requests
         }
         opponents = list(opponents)
         random.shuffle(opponents)
