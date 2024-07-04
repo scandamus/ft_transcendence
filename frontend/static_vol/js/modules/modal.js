@@ -2,9 +2,10 @@
 
 import { accept_game, reject_game, cancel_game, join_game, request_game } from "./match.js";
 import { join_lounge_game, exit_lounge_match_room } from "./lounge_match.js";
-import { initToken } from "./token.js";
+import { getToken, initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
+import { router } from "./router.js";
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -182,6 +183,7 @@ const closeModalOnReturnToGame = (ev) => {
 }
 
 const closeModalOnExitGame = (ev) => {
+    ev.preventDefault();
     console.log('closeModalOnExitGame');
 
     initToken()
@@ -196,8 +198,14 @@ const closeModalOnExitGame = (ev) => {
                 btnExitGame.removeEventListener('click', closeModalOnExitGame);
             }
         })
-        .then(() => {
+        .then(async () => {
             closeModal();
+            history.pushState(null, null, ev.target.href);
+            try {
+                await router(getToken('accessToken'));
+            } catch (error) {
+                console.error(error);
+            }
         });
 }
 
