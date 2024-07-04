@@ -102,8 +102,8 @@ export default class LogIn extends PageBase {
                 return response.json();
             })
             .then(data => {
-                localStorage.setItem('accessToken', data.access_token);
-                localStorage.setItem('refreshToken', data.refresh_token);
+                sessionStorage.setItem('accessToken', data.access_token);
+                sessionStorage.setItem('refreshToken', data.refresh_token);
                 webSocketManager.openWebSocket('lounge', pongHandler)
                     .then(() => {
                         //return webSocketManager.sendAccessToken('lounge');
