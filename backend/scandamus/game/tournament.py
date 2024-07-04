@@ -10,7 +10,7 @@ from django.db import transaction, IntegrityError
 from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
 from django.utils.timezone import make_aware, now as django_now
-from .match_utils import send_match_jwt_to_all, authenticate_token, get_player_by_user, get_required_players
+from .match_utils import authenticate_token, get_player_by_user
 
 logger = logging.getLogger(__name__)
 
