@@ -10,7 +10,7 @@ import { router } from "./router.js";
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
     indicatorBar.removeEventListener('transitionend', endIndicator);
-    closeModalOnCancel(ev);
+    closeModalOnCancel();
 };
 
 //elHtmlのルート要素は`.blockModal`とする
@@ -64,9 +64,9 @@ const showModal = (elHtml) => {
     //todo: インディケータのないモーダルは何かしら閉じるようにしておく
 }
 
-const closeModalOnCancel = (ev) => {
+const closeModalOnCancel = () => {
     console.log('closeModalOnCancel');
-    const modal = ev.target.closest('.blockModal');
+    const modal = document.querySelector('.blockModal');
     const username = modal.getAttribute('data-modal-username');
     const matchType = modal.getAttribute('data-modal-match_type');
 
@@ -162,7 +162,7 @@ const closeModalOnAccept = (ev) => {
         });
 }
 
-const closeModalOnReturnToGame = (ev) => {
+const closeModalOnReturnToGame = () => {
     console.log('closeModalOnReturnToGame');
 
     initToken()
@@ -330,5 +330,5 @@ const showModalExitGame = (link) => {
     showModal(elHtml);
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame };
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame, closeModalOnReturnToGame };
 

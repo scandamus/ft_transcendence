@@ -89,7 +89,7 @@ const replaceView = async (matchRoute) => {
             if (matchRoute.route.path === routes.gamePlay.path) {
                 closeModal();
             } else {
-            closeModalOnCancel();
+                closeModalOnCancel();
             }
         }
         //view更新

@@ -3,8 +3,9 @@
 import PageBase from './PageBase.js';
 import { labels } from '../modules/labels.js';
 import { webSocketManager } from "../modules/websocket.js";
-import { router } from "../modules/router.js";
+import { router, routes } from "../modules/router.js";
 import { initToken } from '../modules/token.js';
+import { closeModalOnReturnToGame } from "../modules/modal.js";
 
 export default class GamePlay extends PageBase {
     constructor(params) {
@@ -102,6 +103,11 @@ export default class GamePlay extends PageBase {
 
                 if (!data.game_status) {
                     console.log("Game Over");
+                    //exitGameModalが開いていたら閉じる
+                    const elModal = document.querySelector('.blockModal');
+                    if (elModal) {
+                        closeModalOnReturnToGame();
+                    }
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
