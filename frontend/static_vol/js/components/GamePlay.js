@@ -170,8 +170,8 @@ export default class GamePlay extends PageBase {
                 try {
                     const data = JSON.parse(e.data);
                     // document.querySelector('#pong-log').value += (data.message + '\n');
-                    // console.log('received_data -> ', data);
-                    // console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
+                    console.log('received_data -> ', data);
+                    console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
                     updateGameObjects(data);
                     playSound(data.sound_type)
                 } catch (error) {
