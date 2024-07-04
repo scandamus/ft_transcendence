@@ -59,7 +59,6 @@ services:
       - ${CERTS}:/etc/nginx/ssl
     restart: always
     networks:
-      - frontend-network
       - backend-network
 
   db:
@@ -132,6 +131,4 @@ services:
 networks:
   backend-network:
     driver: bridge
-  frontend-network:
-    name: frontend-network
-    external: true
+    name: backend-network

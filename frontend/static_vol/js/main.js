@@ -10,18 +10,11 @@ import { SiteInfo } from "./modules/SiteInfo.js";
 document.addEventListener('DOMContentLoaded', async () => {
     const siteInfo = new SiteInfo();
     try {
-        await getUserInfo()
-            .then(data => {
-                if (data) {
-                    siteInfo.setUsername(data.username);
-                }
-            })
-        const username = siteInfo.getUsername();
-        if (username) {
-            await switchDisplayAccount(username);
+        await getUserInfo().then(() => {})
+        await switchDisplayAccount();
+        if (siteInfo.getUsername()) {
             await router(true);
         } else {
-            await switchDisplayAccount(false);
             await router(false);
         }
     } catch (error) {

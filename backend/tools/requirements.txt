@@ -13,3 +13,4 @@ timedelta==2020.12.3
 daphne
 channels
 channels_redis
+Pillow

@@ -86,7 +86,12 @@ const loadGameContent = async (data) => {
             });
             console.log('Token sent to pong-server');
             // TODO: ゲーム画面に変遷してゲーム続行
-            window.history.pushState({}, null, `/game/play:${gameMatchId}`);
+            if (game_name === 'pong') {
+                window.history.pushState({}, null, `/game/pong/play:${gameMatchId}`);
+            } else {
+                // game_name === 'pong4'
+                window.history.pushState({}, null, `/game/pong4/play:${gameMatchId}`);
+            }
             await router(true);
         } else {
             console.error('WebSocket is not in OPEN state.');
@@ -179,7 +184,9 @@ const handleFriendMatchRequestReceived = (data) => {
         addNotice(labels.matchRequest['rejected'], true);
     } else if (data.action === 'error') {
         closeModal();
-        if (data.error === 'userOffline') {
+        if (data.error === 'playerNotWaitingStatus') {
+            addNotice('対戦相手がビジーです', true);
+        } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
         } else {
             console.error(`Error: ${data.message}`);
