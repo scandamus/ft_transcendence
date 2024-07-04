@@ -7,7 +7,6 @@ from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
 from django.contrib.auth.models import User
 from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer
-from game.serializers import MatchSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -125,19 +124,11 @@ class UserInfoView(APIView):
     def get(self, request, format=None):
         user = request.user
         player = Player.objects.get(user=user)
-        current_match = player.current_match
-
-        if current_match:
-            match_serializer = MatchSerializer(current_match)
-            current_match_data = match_serializer.data
-        else:
-            current_match_data = None
 
         data = {
             'is_authenticated': user.is_authenticated,
             'username': user.username,
             'avatar': player.avatar.url if player.avatar else '',
-            'current_match': current_match_data,
         }
         return Response(data)
 

@@ -118,9 +118,6 @@ export default class LogIn extends PageBase {
                 if (data) {
                     switchDisplayAccount()
                         .then(() => {
-                            if (data.current_match) {
-                                window.history.pushState({}, null, `/game/${data.current_match.game_name}/play:${data.current_match.id}`);
-                            }
                             router(true).then(() => {});
                         });
                 }
