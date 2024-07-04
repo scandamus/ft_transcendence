@@ -98,7 +98,7 @@ export const labels_he = {
         labelReject: 'הזה עברית ',
         labelCapacity: 'הזה עברית ',
         labelAvailable: 'הזה עברית ',
-        labelExit:  '',
+        labelExitGame:  '',
         labelReturnToGame:  '',
         titleSendMatchRequest: 'הזה עברית ',
         titleReceiveMatchRequest: 'הזה עברית ',

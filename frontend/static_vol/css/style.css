@@ -1637,6 +1637,14 @@ input.has-input:invalid {
   background-color: var(--color-burn3);
 }
 
+.blockModal-micro {
+  min-height: 160px;
+}
+
+.blockModal-micro .blockModal_title {
+  margin-bottom: 30px;
+}
+
 .blockModal::before,
 .blockModal::after {
   content: "";

@@ -98,7 +98,7 @@ export const labels_ja = {
         labelReject: 'やめておく',
         labelCapacity: '定員',
         labelAvailable: '募集中',
-        labelExit:  '退出',
+        labelExitGame:  '退出',
         labelReturnToGame:  'ゲームに戻る',
         titleSendMatchRequest: '対戦を申し込みました',
         titleReceiveMatchRequest: '対戦申し込みがありました',

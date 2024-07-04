@@ -98,7 +98,7 @@ export const labels_en = {
         labelReject: 'reject',
         labelCapacity: 'capacity',
         labelAvailable: 'available',
-        labelExit:  'exit',
+        labelExitGame:  'exit',
         labelReturnToGame:  'Return to game',
         titleSendMatchRequest: 'sent a match request',
         titleReceiveMatchRequest: 'you received a match request',

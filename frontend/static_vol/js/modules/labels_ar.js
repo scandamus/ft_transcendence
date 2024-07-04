@@ -98,7 +98,7 @@ export const labels_ar = {
         labelReject: ' يؤُلاءِ العربية',
         labelCapacity: ' يؤُلاءِ العربية',
         labelAvailable: ' يؤُلاءِ العربية',
-        labelExit:  '',
+        labelExitGame:  '',
         labelReturnToGame:  '',
         titleSendMatchRequest: ' يؤُلاءِ العربية',
         titleReceiveMatchRequest: ' يؤُلاءِ العربية',

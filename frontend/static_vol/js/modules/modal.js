@@ -38,6 +38,18 @@ const showModal = (elHtml) => {
         btnReject.addEventListener('click', closeModalOnReject);
     }
 
+    //ReturnToGameボタンにaddEventListener
+    const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+    if (btnReturnToGame) {
+        btnReturnToGame.addEventListener('click', closeModalOnReturnToGame);
+    }
+
+    //ExitGameボタンにaddEventListener
+    const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+    if (btnExitGame) {
+        btnExitGame.addEventListener('click', closeModalOnExitGame);
+    }
+
     //インディケータがあれば進行、終了でcloseModalOnCancel
     const indicator = document.getElementById('indicator');
     if (indicator) {
@@ -143,6 +155,46 @@ const closeModalOnAccept = (ev) => {
             //todo:start game
             accept_game(args.request_id, args.username);
             console.log(`accept game: ${args.request_id}`);
+        })
+        .then(() => {
+            closeModal();
+        });
+}
+
+const closeModalOnReturnToGame = (ev) => {
+    console.log('closeModalOnReturnToGame');
+
+    initToken()
+        .then((accessToken) => {
+            //ReturnToGame, ExitGame removeEventListener
+            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+            if (btnReturnToGame) {
+                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
+            }
+            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+            if (btnExitGame) {
+                btnExitGame.removeEventListener('click', closeModalOnExitGame);
+            }
+        })
+        .then(() => {
+            closeModal();
+        });
+}
+
+const closeModalOnExitGame = (ev) => {
+    console.log('closeModalOnExitGame');
+
+    initToken()
+        .then((accessToken) => {
+            //ReturnToGame, ExitGame removeEventListener
+            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+            if (btnReturnToGame) {
+                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
+            }
+            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+            if (btnExitGame) {
+                btnExitGame.removeEventListener('click', closeModalOnExitGame);
+            }
         })
         .then(() => {
             closeModal();
@@ -263,7 +315,7 @@ const showModalExitGame = (link) => {
     const args = {
         titleModal: labels.modal.titleExitGame,
         link: link,
-        labelExit: labels.modal.labelExit,
+        labelExitGame: labels.modal.labelExitGame,
         labelReturnToGame: labels.modal.labelReturnToGame,
     }
     const elHtml = getModalHtml('exitGame', args);
