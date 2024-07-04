@@ -58,6 +58,7 @@ export const labels_ar = {
         labelListFriends: ' يؤُلاءِ العربية',
         labelReceivedRequest: ' يؤُلاءِ العربية',
         labelRecommended: ' يؤُلاءِ العربية',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',

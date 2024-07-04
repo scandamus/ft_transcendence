@@ -69,7 +69,7 @@ const updateRecommend = async (pageInstance) => {
         const RecommendedList = await fetchRecommend(false);
         const RecommendedWrapper = document.querySelector('.blockFriendRecommended_friends');
         if (!RecommendedList || RecommendedList.length === 0) {
-            console.log('no recommended')
+            RecommendedWrapper.innerHTML = `<p>${labels.friends.msgNoRecommended}</p>`
         } else {
             RecommendedWrapper.innerHTML = '';
             RecommendedList.forEach(player => {

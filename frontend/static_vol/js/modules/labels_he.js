@@ -58,6 +58,7 @@ export const labels_he = {
         labelListFriends: 'הזה עברית ',
         labelReceivedRequest: 'הזה עברית ',
         labelRecommended: 'הזה עברית ',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',
