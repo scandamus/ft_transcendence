@@ -6,10 +6,9 @@ import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { checkSimpleInputValid } from "../modules/form.js";
-import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
+import { updateFriendsList, updateFriendRequestList, updateRecommend } from '../modules/friendList.js';
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
     from '../modules/friendListener.js';
-import { updateRecommend } from "../modules/gameList.js";
 
 export default class Friends extends PageBase {
     constructor(params) {

@@ -212,19 +212,12 @@ class RecommendedView(APIView):
         matches = Match.objects.filter(
             Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)
         ).order_by('-id')[:30]
-        opponents = set()
-        for match in matches:
-            if match.player1 != player and match.player1 not in current_friends:
-                opponents.add(match.player1)
-            if match.player2 != player and match.player2 not in current_friends:
-                opponents.add(match.player2)
-            if match.player3 and match.player3 != player and match.player3 not in current_friends:
-                opponents.add(match.player3)
-            if match.player4 and match.player4 != player and match.player4 not in current_friends:
-                opponents.add(match.player4)
-
-            if len(opponents) > 3:
-                opponents = list(opponents)
-                random.shuffle(opponents)
-        serializer = RecommendedSerializer(list(opponents)[:3], many=True, context={'request': request})
+        opponents = {
+            opponent for match in matches
+            for opponent in [match.player1, match.player2, match.player3, match.player4]
+            if opponent is not None and opponent != player and opponent not in current_friends
+        }
+        opponents = list(opponents)
+        random.shuffle(opponents)
+        serializer = RecommendedSerializer(opponents[:5], many=True, context={'request': request})
         return Response(serializer.data)
