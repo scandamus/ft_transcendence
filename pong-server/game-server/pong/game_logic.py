@@ -84,10 +84,11 @@ class Ball:
         self.flag = True
 
     def move(self, paddle1, paddle2):
-        sound_type = {'paddle_collision': False, 'wall_collision': False, 'scored': False}
+        sound_type = None
         # 上下の壁との衝突判定 # if 上 or 下
         if self.y + self.dy < 0 or self.y + self.size + self.dy > CANVAS_HEIGHT:
             self.dy = -self.dy
+            sound_type = 'wall_collision'
         collision_with_paddle1 = False
         collision_with_paddle2 = False
         # 衝突判定
@@ -100,16 +101,16 @@ class Ball:
         if self.x + self.size + self.dx < 0:
             paddle1.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            sound_type['scored'] = True
-            return paddle1.score < 10
+            sound_type = 'scored'
+            return paddle1.score < 10, sound_type
         # 右の壁との衝突判定
         elif self.x + self.dx > CANVAS_WIDTH:
             paddle2.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            sound_type['scored'] = True
-            return paddle2.score < 10
+            sound_type = 'scored'
+            return paddle2.score < 10, sound_type
         if collision_with_paddle1 or collision_with_paddle2:
-            sound_type['paddle_collision'] = True
+            sound_type = 'paddle_collision'
             # 衝突判定がTrueの場合はpaddleにballを接触させるように
             # x座標の操作
             if collision_with_paddle1 == 'collision_front':
@@ -130,11 +131,9 @@ class Ball:
         if self.y + self.dy < 0:
             self.y = 0
             self.dy -= self.dy
-            sound_type['wall_collision'] = True
         elif CANVAS_HEIGHT < self.y + self.size:
             self.y = CANVAS_HEIGHT - self.size
             self.dy -= self.dy
-            sound_type['wall_collision'] = True
         else:
             self.y += self.dy
         if (self.y == 0 or self.y == CANVAS_HEIGHT - self.size) and self.dy == 0:
