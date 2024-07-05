@@ -5,6 +5,7 @@ import { labels } from '../modules/labels.js';
 import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
 import { initToken } from '../modules/token.js';
+import { SiteInfo } from '../modules/SiteInfo.js';
 
 export default class GamePlay extends PageBase {
     constructor(params) {
@@ -17,6 +18,7 @@ export default class GamePlay extends PageBase {
         this.player2 = 'player2';
         this.score1 = 0;
         this.score2 = 0;
+        this.accessibleMode = null;
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
     }
@@ -47,16 +49,20 @@ export default class GamePlay extends PageBase {
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext("2d");
 
+            const siteinfo = new SiteInfo();
+            const player_name = siteinfo.player_name; //TODO 本当にこれでいい?
+            console.log(`player_name = ${player_name}`);
+
             // sound
-            this.audioCtx = new window.AudioContext();
-            const ballNode = this.audioCtx.createOscillator();
-            const pannerNode = this.audioCtx.createStereoPanner();
-            const paddleNode = this.audioCtx.createOscillator();
-            const gainNode = this.audioCtx.createGain();
-            ballNode.connect(pannerNode).connect(this.audioCtx.destination);
-            ballNode.type = 'sine';
-            paddleNode.connect(gainNode).connect(this.audioCtx.destination);
-            paddleNode.type = 'sine';
+            this.audioContext = new (window.AudioContext)();// || window.webkitAudioContext)();
+            this.ballNode = this.audioContext.createOscillator();
+            this.ballGainNode = this.audioContext.createGain();
+            this.ballNode.connect(this.ballGainNode).connect(this.audioContext.destination);
+            this.ballNode.type = 'sine';
+            this.paddleNode = this.audioContext.createOscillator();
+            this.paddleGainNode = this.audioContext.createGain();
+            this.paddleNode.connect(this.paddleGainNode).connect(this.audioContext.destination);
+            this.paddleNode.type = 'sawtooth';
 
             function drawBackground() {
                 ctx.fillStyle = 'black';
@@ -98,19 +104,24 @@ export default class GamePlay extends PageBase {
             }
 
             const changeSound = (data) => {
-                // ball.y: 周波数を上下 
-                const freq = 440 * Math.pow(2, (data.ball.y / canvas.height) * -2 + 1);
-                ballNode.frequency.value = freq;
-                // ball.x: パンを左右 
-                const pan = ((data.ball.x / canvas.width) * 2 - 1) * 1.125;
+                if (!this.accessibleMode) {
+                    this.ballNode.frequency.value = 0;
+                    this.paddleNode.frequency.value = 0;
+                    return;
+                }
+                const my_paddle = (player_name == 'player1' ? data.left_paddle : data.right_paddle);
                 const clamp = (x, min, max) => Math.min(Math.max(min, x), max);
-                pannerNode.pan.value = clamp(pan, -1, +1);
+                const y_to_freq = (y) => 440 * Math.pow(2, (y / canvas.height) * -2 + 1);
+                // ball.y: 周波数を上下 
+                this.ballNode.frequency.value = y_to_freq(data.ball.y);
+                // ball.x: my_paddle との距離により強弱 
+                const ballDist = (Math.abs(data.ball.x - my_paddle.x) / canvas.width);
+                this.ballGainNode.gain.value = clamp(1 - ballDist, 0.125, 1);
 
                 // paddle.y: 周波数を上下 
-                const paddleFreq = 440 * Math.pow(2, (data.left_paddle.y / canvas.height) * -2 + 1); // TODO left or right
-                paddleNode.frequency.value = paddleFreq;
+                this.paddleNode.frequency.value = y_to_freq(my_paddle.y);
                 // currentTime: 周期的に強弱
-                gainNode.gain.value = clamp(Math.sin(this.audioCtx.currentTime * 32) * 0.25, 0, 0.25);
+                this.paddleGainNode.gain.value = clamp(Math.sin(this.audioContext.currentTime * 32) * 0.125, 0, 0.125);
             }
 
             const updateGameObjects = async (data) => {
@@ -144,32 +155,27 @@ export default class GamePlay extends PageBase {
                 }
             }
 
-            // 押されたとき
-            document.addEventListener("keydown", keyDownHandler, false);
-            // 離れたとき
-            document.addEventListener("keyup", keyUpHandler, false);
-
-            function keyDownHandler(e) {
+            const keyDownHandler= (e) => {
                 // send event to django websocket
                 if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
                     sendKeyEvent(e.key, true);
                 }
             }
 
-            function keyUpHandler(e) {
+            const keyUpHandler = (e) => {
                 // send event to django websocket
                 if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
                     sendKeyEvent(e.key, false);
                 } else if (e.key == ' ') {
-                    ballNode.start();
-                    paddleNode.start();
-                } else if (e.key == 'm') {
-                    ballNode.stop();
-                    paddleNode.stop();
+					if (this.accessibleMode === null) {
+                        this.ballNode.start();
+                        this.paddleNode.start();
+                    }
+                    this.accessibleMode = !this.accessibleMode;
                 }
             }
 
-            function sendKeyEvent(key, is_pressed) {
+            const sendKeyEvent = (key, is_pressed) => {
                 let data = {
                     action: 'key_event',
                     key: key,
@@ -178,12 +184,16 @@ export default class GamePlay extends PageBase {
                 webSocketManager.sendWebSocketMessage(containerId, data);
             }
 
-            pongSocket.onmessage = function (e) {
+            // 押されたとき
+            document.addEventListener("keydown", keyDownHandler, false);
+            // 離れたとき
+            document.addEventListener("keyup", keyUpHandler, false);
+
+            pongSocket.onmessage = (e) => {
                 try {
                     const data = JSON.parse(e.data);
-                    // document.querySelector('#pong-log').value += (data.message + '\n');
-                    console.log('received_data -> ', data);
-                    console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
+                    //console.log('received_data -> ', data);
+                    //console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
                     updateGameObjects(data);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
@@ -196,6 +206,6 @@ export default class GamePlay extends PageBase {
 
     destroy() {
         super.destroy();
-        this.audioCtx.close();
+        this.audioContext.close();
     }
 }

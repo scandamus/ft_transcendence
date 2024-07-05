@@ -7,6 +7,7 @@ import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
 import { updateModalAvailablePlayers } from "./modal.js";
+import { SiteInfo } from "./SiteInfo.js";
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -84,6 +85,8 @@ const loadGameContent = async (data) => {
             console.log('Token sent to pong-server');
             // TODO: player_name を渡す
             if (game_name === 'pong') {
+                const siteinfo = new SiteInfo();
+                siteinfo.player_name = player_name;
                 window.history.pushState({}, null, `/game/pong/play:${gameMatchId}`);
             } else {
                 // game_name === 'pong4'
