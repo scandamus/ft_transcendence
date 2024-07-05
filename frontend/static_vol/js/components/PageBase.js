@@ -11,7 +11,7 @@ export default class PageBase {
         this.params = params;
         this.title = '';
         this.breadcrumbLinks = [
-            { href: '/', text: 'dashboard' }
+            { href: '/dashboard', text: 'dashboard' }
         ];
         this.listAfterRenderHandlers = [];
         this.listListenInInstance = [];
