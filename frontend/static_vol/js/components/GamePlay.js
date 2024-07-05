@@ -53,12 +53,10 @@ export default class GamePlay extends PageBase {
             const pannerNode = this.audioCtx.createStereoPanner();
             const paddleNode = this.audioCtx.createOscillator();
             const gainNode = this.audioCtx.createGain();
-            ballNode.connect(pannerNode);
-            pannerNode.connect(this.audioCtx.destination);
+            ballNode.connect(pannerNode).connect(this.audioCtx.destination);
             ballNode.type = 'sine';
-            paddleNode.connect(gainNode);
-            gainNode.connect(this.audioCtx.destination);
-            paddleNode.type = 'sawtooth';
+            paddleNode.connect(gainNode).connect(this.audioCtx.destination);
+            paddleNode.type = 'sine';
 
             function drawBackground() {
                 ctx.fillStyle = 'black';
@@ -112,7 +110,7 @@ export default class GamePlay extends PageBase {
                 const paddleFreq = 440 * Math.pow(2, (data.left_paddle.y / canvas.height) * -2 + 1); // TODO left or right
                 paddleNode.frequency.value = paddleFreq;
                 // currentTime: 周期的に強弱
-                gainNode.gain.value = clamp(Math.sin(this.audioCtx.currentTime * 32), 0, 0.25);
+                gainNode.gain.value = clamp(Math.sin(this.audioCtx.currentTime * 32) * 0.25, 0, 0.25);
             }
 
             const updateGameObjects = async (data) => {

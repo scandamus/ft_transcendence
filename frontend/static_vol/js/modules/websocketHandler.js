@@ -82,7 +82,7 @@ const loadGameContent = async (data) => {
                 player_name: player_name,
             });
             console.log('Token sent to pong-server');
-            // TODO: ゲーム画面に変遷してゲーム続行
+            // TODO: player_name を渡す
             if (game_name === 'pong') {
                 window.history.pushState({}, null, `/game/pong/play:${gameMatchId}`);
             } else {
