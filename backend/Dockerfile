@@ -9,8 +9,6 @@ WORKDIR /app
 COPY tools/requirements.txt .
 RUN pip install -r requirements.txt
 
-# COPY ./backend/scandamus /app
-
 # backend container
 FROM base AS backend
 
