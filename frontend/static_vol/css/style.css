@@ -1066,6 +1066,7 @@ input.has-input:invalid {
 
 .blockLoungeRoom_title {
   margin-right: 1em;
+  padding: 0.3em 0;
 }
 
 .blockLoungeRoom_body {
@@ -1079,6 +1080,7 @@ input.has-input:invalid {
 }
 
 .blockLoungeRoom_button {
+  flex: 1 1 auto;
   text-align: right;
 }
 
