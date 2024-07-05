@@ -1,6 +1,8 @@
 services:
   backend:
-    build: backend
+    build: 
+      context: ./backend
+      target: backend
     container_name: backend
     ports:
       - "8001:8001"
@@ -59,7 +61,6 @@ services:
       - ${CERTS}:/etc/nginx/ssl
     restart: always
     networks:
-      - frontend-network
       - backend-network
 
   db:
@@ -129,9 +130,79 @@ services:
   # ports:
   #   - "6379:6379"
 
+  celery:
+    build: 
+      context: ./backend
+      target: celery
+    container_name: celery
+#    command: celery -A my_project worker --loglevel=info
+    volumes:
+      - ./backend/scandamus:/app
+    depends_on:
+      - backend
+      - redis
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
+      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
+      - CHANNEL_SECRET_KEY=${BACKEND_CHANNEL_SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - BACKEND_JWT_SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}
+      - DJANGO_SU_USER=${DJANGO_SU_USER}
+      - DJANGO_SU_MAIL=${DJANGO_SU_MAIL}
+      - DJANGO_SU_PASSWORD=${DJANGO_SU_PASSWORD}
+      - DJANGO_PLAYER1_USER=${DJANGO_PLAYER1_USER}
+      - DJANGO_PLAYER1_MAIL=${DJANGO_PLAYER1_MAIL}
+      - DJANGO_PLAYER1_PASSWORD=${DJANGO_PLAYER1_PASSWORD}
+      - DJANGO_PLAYER2_USER=${DJANGO_PLAYER2_USER}
+      - DJANGO_PLAYER2_MAIL=${DJANGO_PLAYER2_MAIL}
+      - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - backend-network
+
+  celery-beat:
+    build: 
+      context: ./backend
+      target: celery-beat
+    container_name: celery-beat
+#    command: celery -A my_project beat --loglevel=info
+    volumes:
+      - ./backend/scandamus:/app
+    depends_on:
+      - backend
+      - redis
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
+      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
+      - CHANNEL_SECRET_KEY=${BACKEND_CHANNEL_SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - BACKEND_JWT_SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}
+      - DJANGO_SU_USER=${DJANGO_SU_USER}
+      - DJANGO_SU_MAIL=${DJANGO_SU_MAIL}
+      - DJANGO_SU_PASSWORD=${DJANGO_SU_PASSWORD}
+      - DJANGO_PLAYER1_USER=${DJANGO_PLAYER1_USER}
+      - DJANGO_PLAYER1_MAIL=${DJANGO_PLAYER1_MAIL}
+      - DJANGO_PLAYER1_PASSWORD=${DJANGO_PLAYER1_PASSWORD}
+      - DJANGO_PLAYER2_USER=${DJANGO_PLAYER2_USER}
+      - DJANGO_PLAYER2_MAIL=${DJANGO_PLAYER2_MAIL}
+      - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - backend-network
+
 networks:
   backend-network:
     driver: bridge
-  frontend-network:
-    name: frontend-network
-    external: true
+    name: backend-network
