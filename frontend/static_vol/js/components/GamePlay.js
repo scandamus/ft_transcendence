@@ -192,7 +192,7 @@ export default class GamePlay extends PageBase {
                     console.log('received_data -> ', data);
                     console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
                     updateGameObjects(data);
-                    this.playSound(data.sound_type)
+                    this.playSound(data.sound_type);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }
