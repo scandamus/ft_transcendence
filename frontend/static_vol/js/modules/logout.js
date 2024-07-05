@@ -43,8 +43,8 @@ const handleLogout = (ev) => {
         .finally(() => {
             //todo: catchからここに入る場合は強制ログアウト。画面にエラー表示を出すか？
             //token rm
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('refreshToken');
             webSocketManager.closeWebSocket('lounge');
             webSocketManager.closeWebSocket('pong');
             const siteInfo = new SiteInfo();
