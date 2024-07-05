@@ -55,11 +55,13 @@ export const labels_ar = {
         labelApply: 'اللعب ضد',
         labelSearch: 'إرسال طلب صداقة',
         labelSendRequest: 'إرسال',
+        labelRequest: '',
         msgNoUsername: 'الرجاء إدخال اسم مستخدم لإرسال طلب صداقة إليه',
         msgNoFriends: 'ليس لديك أصدقاء بعد',
         labelListFriends: 'قائمة الأصدقاء',
         labelReceivedRequest: 'طلبات الصداقة المستلمة',
         labelRecommended: 'توصيات لك',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',

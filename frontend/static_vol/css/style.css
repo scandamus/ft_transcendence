@@ -788,7 +788,8 @@ input.has-input:invalid {
 
 /* no data */
 .blockFriends_friends p:only-child,
-.blockDashboardLog_listMatch p:only-child {
+.blockDashboardLog_listMatch p:only-child,
+.blockFriendRecommended_friends p:only-child {
   font-size: 1.8rem;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -875,7 +876,7 @@ input.has-input:invalid {
   justify-content: flex-end;
   align-items: center;
   padding-right: 0.5em;
-  flex: 1 1 calc(100% - 160px);
+  flex: 1 1 calc(100% - 170px);
   min-width: 60%;
 }
 

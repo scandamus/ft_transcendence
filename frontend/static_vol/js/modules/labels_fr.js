@@ -55,11 +55,13 @@ export const labels_fr = {
         labelApply: 'Jouer contre',
         labelSearch: 'Envoyer une demande d’ami',
         labelSendRequest: 'Envoyer',
+        labelRequest: '',
         msgNoUsername: 'Veuillez entrer un nom d’utilisateur à qui envoyer une demande d’ami',
         msgNoFriends: 'Vous n’avez pas encore d’amis',
         labelListFriends: 'Liste d’amis',
         labelReceivedRequest: 'Demandes d’amis reçues',
         labelRecommended: 'Recommandations pour vous',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',

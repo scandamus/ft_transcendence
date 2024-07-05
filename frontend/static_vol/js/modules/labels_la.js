@@ -45,6 +45,7 @@ export const labels_la = {
         msgInvalidFileFormat: 'forma fasciculi non accepta est (soli .jpg, .png)',
     },
     friends: {
+<<<<<<< HEAD
         title: 'Amici',
         labelMatch: 'pugnabo',
         labelReceiveMatch: 'pugnabo',
@@ -55,11 +56,13 @@ export const labels_la = {
         labelApply: 'pugno',
         labelSearch: 'petere amici esse',
         labelSendRequest: 'peto',
+        labelRequest: '',
         msgNoUsername: 'scriba nomen qui voles amici esse',
         msgNoFriends: 'nullus iam tibi amicus est',
         labelListFriends: 'index amicorum',
         labelReceivedRequest: 'tibi amici esse volunt',
         labelRecommended: 'usores commendati tibi',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Sessorium',

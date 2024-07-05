@@ -3,6 +3,7 @@
 import { fetchMatchLog } from "./gameApi.js";
 import { labels } from "./labels.js";
 import { SiteInfo } from "./SiteInfo.js";
+import { addListenSendFriendRequest } from "./friendListener.js";
 
 const getMatchLog = async () => {
     console.log('getMatchLog');

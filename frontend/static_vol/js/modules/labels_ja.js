@@ -55,11 +55,13 @@ export const labels_ja = {
         labelApply: '対戦する',
         labelSearch: '友達申請を送る',
         labelSendRequest: '送信',
+        labelRequest: '友達申請',
         msgNoUsername: '友達申請を送るユーザー名を入力してください',
         msgNoFriends: '友達はまだいません',
         labelListFriends: '友達一覧',
         labelReceivedRequest: '受け取った友達申請',
         labelRecommended: 'あなたへのおすすめ',
+        msgNoRecommended: 'おすすめユーザーはいません',
     },
     lounge: {
         title: 'Lounge',

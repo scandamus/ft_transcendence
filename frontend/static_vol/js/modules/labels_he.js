@@ -55,11 +55,13 @@ export const labels_he = {
         labelApply: 'לשחק נגד',
         labelSearch: 'לשלוח בקשת חברות',
         labelSendRequest: 'שלח',
+        labelRequest: '',
         msgNoUsername: 'אנא הזן שם משתמש כדי לשלוח אליו בקשת חברות',
         msgNoFriends: 'אין לך עדיין חברים',
         labelListFriends: 'רשימת חברים',
         labelReceivedRequest: 'בקשות חברות שקיבלת',
         labelRecommended: 'המלצות עבורך',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',
