@@ -155,7 +155,7 @@ export default class GamePlay extends PageBase {
                 }
                 let sound;
                 if (sound_type === 'paddle_collision') {
-                    sound = new Audio('../../sounds/8-bit-game-4-188106.mp3');
+                    sound = new Audio('../../sounds/pong-paddle.mp3');
                 } else if (sound_type === 'wall_collision') {
                     sound = new Audio('../../sounds/8-bit-game-5-188107.mp3');
                 } else if (sound_type === 'scored') {
