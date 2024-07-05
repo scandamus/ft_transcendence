@@ -19,6 +19,9 @@ export default class GamePlay extends PageBase {
         this.addAfterRenderHandler(this.initGame.bind(this));
         // sound
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // 音量の変更のため
+        this.gainNode = this.audioContext.createGain();
+        this.gainNode.connect(this.audioContext.destination);
         this.sounds = {};
     }
 
@@ -60,7 +63,8 @@ export default class GamePlay extends PageBase {
         const source = this.audioContext.createBufferSource();
         source.buffer = this.sounds[soundType];
         // 出力先に接続する
-        source.connect(this.audioContext.destination);
+        source.connect(this.gainNode);
+        this.gainNode.gain.value = 0.1;
         // 遅延0でで再生
         source.start(0);
     }
