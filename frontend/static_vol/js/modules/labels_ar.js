@@ -79,6 +79,7 @@ export const labels_ar = {
         labelWins: 'فوز',
         labelLosses: 'خسارة',
         fmtWinLoss: '$win فوز <br>$loss خسارة',
+        msgNoMatch: '',
     },
     tournament: {
         title: 'Tournament',

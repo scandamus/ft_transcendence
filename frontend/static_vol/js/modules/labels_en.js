@@ -79,6 +79,7 @@ export const labels_en = {
         labelWins: 'wins',
         labelLosses: 'losses',
         fmtWinLoss: '$win wins, $loss losses',
+        msgNoMatch: 'no match log',
     },
     tournament: {
         title: 'Tournament',
