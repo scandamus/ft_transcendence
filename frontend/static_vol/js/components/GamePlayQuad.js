@@ -13,6 +13,14 @@ export default class GamePlayQuad extends PageBase {
         this.title = 'GamePlayQuad';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+        this.player1 = 'player1';
+        this.player2 = 'player2';
+        this.player3 = 'player3';
+        this.player4 = 'player4';
+        this.avatar1 = '/images/avatar_default.png';
+        this.avatar2 = '/images/avatar_default.png';
+        this.avatar3 = '/images/avatar_default.png';
+        this.avatar4 = '/images/avatar_default.png';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
     }
@@ -20,7 +28,11 @@ export default class GamePlayQuad extends PageBase {
     async renderHtml() {
         return `
            <div class='playBoardWrap'>
-                <ul class='listPlayerActiveMatch'>
+                <ul class='listPlayerActiveMatch listPlayerActiveMatch-quad'>
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar1}" alt="" width="50" height="50"><span>${this.player1}</span></li>
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar2}" alt="" width="50" height="50"><span>${this.player2}</span></li>
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar3}" alt="" width="50" height="50"><span>${this.player3}</span></li>
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar4}" alt="" width="50" height="50"><span>${this.player4}</span></li>
                 </ul>
                 <canvas id='playBoard' width='650' height='650'></canvas>
             </div>

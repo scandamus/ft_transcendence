@@ -1088,15 +1088,60 @@ input.has-input:invalid {
 
 /* GamePlay */
 .playBoardWrap {
+  position: relative;
   padding-top: 50px;
 }
 
 .listPlayerActiveMatch {
   list-style: none;
+  font-size: 2.6rem;
+}
+
+.listPlayerActiveMatch-dual li:last-child {
   display: flex;
   justify-content: space-between;
+}
+
+.listPlayerActiveMatch-dual {
   margin-bottom: 0.6em;
-  font-size: 2.6rem;
+}
+
+.listPlayerActiveMatch-quad {
+  height: 0;
+}
+
+.listPlayerActiveMatch-quad li {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.listPlayerActiveMatch-quad li:nth-child(1) {
+  top: 0;
+  left: 0;
+  translate: 0 -10px;
+}
+
+.listPlayerActiveMatch-quad li:nth-child(2) {
+  top: 0;
+  left: calc(1024px + 10px);
+  transform-origin:0 100%;
+  rotate: 90deg;
+}
+
+.listPlayerActiveMatch-quad li:nth-child(3) {
+  flex-direction: row-reverse;
+  top: calc(1024px + 10px);
+  left: 1024px;
+  transform-origin: 0 0;
+  translate: -100% 100%;
+}
+
+.listPlayerActiveMatch-quad li:nth-child(4) {
+  top: 1024px;
+  left: -10px;
+  transform-origin: 0 100%;
+  rotate: 270deg;
 }
 
 .listPlayerActiveMatch li {
