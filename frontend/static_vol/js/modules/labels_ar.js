@@ -34,8 +34,8 @@ export const labels_ar = {
         tooShort: 'قصير جداً',
         passwordIsNotSame: 'الرجاء إدخال كلمة المرور نفسها',
         isExists: 'اسم المستخدم هذا قيد الاستخدام',
-        loginError1: '',
-        loginError2: '',
+        loginError1: 'يُرجى التحقق من اسم المستخدم وكلمة المرور',
+        loginError2: 'تعذر تسجيل الدخول',
     },
 
     dashboard: {
@@ -55,13 +55,13 @@ export const labels_ar = {
         labelApply: 'اللعب ضد',
         labelSearch: 'إرسال طلب صداقة',
         labelSendRequest: 'إرسال',
-        labelRequest: '',
+        labelRequest: 'تكوين صداقات مع',
         msgNoUsername: 'الرجاء إدخال اسم مستخدم لإرسال طلب صداقة إليه',
         msgNoFriends: 'ليس لديك أصدقاء بعد',
         labelListFriends: 'قائمة الأصدقاء',
         labelReceivedRequest: 'طلبات الصداقة المستلمة',
         labelRecommended: 'توصيات لك',
-        msgNoRecommended: '',
+        msgNoRecommended: 'لا توجد توصية',
     },
     lounge: {
         title: 'Lounge',
@@ -81,7 +81,7 @@ export const labels_ar = {
         labelWins: 'فوز',
         labelLosses: 'خسارة',
         fmtWinLoss: '$win فوز <br>$loss خسارة',
-        msgNoMatch: '',
+        msgNoMatch: 'لا توجد مباريات',
     },
     tournament: {
         title: 'Tournament',
@@ -96,7 +96,6 @@ export const labels_ar = {
         labelTournamentLog: 'سجلات البطولة',
     },
     modal: {
-        title: '',
         labelNickname: 'اللقب',
         labelEntry: 'طلب اللعب',
         labelCancel: 'إلغاء',

@@ -34,8 +34,8 @@ export const labels_fr = {
         tooShort: 'Trop court',
         passwordIsNotSame: 'Veuillez saisir le même mot de passe',
         isExists: 'Ce nom d’utilisateur est utilisé',
-        loginError1: '',
-        loginError2: '',
+        loginError1: 'Veuillez vérifier le nom d’utilisateur et le mot de passe',
+        loginError2: 'quelque chose s’est mal passé',
     },
 
     dashboard: {
@@ -55,13 +55,13 @@ export const labels_fr = {
         labelApply: 'Jouer contre',
         labelSearch: 'Envoyer une demande d’ami',
         labelSendRequest: 'Envoyer',
-        labelRequest: '',
+        labelRequest: 'être amis',
         msgNoUsername: 'Veuillez entrer un nom d’utilisateur à qui envoyer une demande d’ami',
         msgNoFriends: 'Vous n’avez pas encore d’amis',
         labelListFriends: 'Liste d’amis',
         labelReceivedRequest: 'Demandes d’amis reçues',
         labelRecommended: 'Recommandations pour vous',
-        msgNoRecommended: '',
+        msgNoRecommended: 'aucune recommandation',
     },
     lounge: {
         title: 'Lounge',
@@ -81,7 +81,7 @@ export const labels_fr = {
         labelWins: 'victoires',
         labelLosses: 'défaites',
         fmtWinLoss: '$win victoires, $loss défaites',
-        msgNoMatch: '',
+        msgNoMatch: 'aucune match',
     },
     tournament: {
         title: 'Tournament',
@@ -96,7 +96,6 @@ export const labels_fr = {
         labelTournamentLog: 'Journal du tournoi',
     },
     modal: {
-        title: '',
         labelNickname: 'pseudo',
         labelEntry: 'Demande d’entrée',
         labelCancel: 'Annuler',

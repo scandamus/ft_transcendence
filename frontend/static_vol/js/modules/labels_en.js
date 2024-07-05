@@ -96,7 +96,6 @@ export const labels_en = {
         labelTournamentLog: 'tournament log',
     },
     modal: {
-        title: '',
         labelNickname: 'nickname',
         labelEntry: 'entry',
         labelCancel: 'cancel',

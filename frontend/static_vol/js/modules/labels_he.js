@@ -34,8 +34,8 @@ export const labels_he = {
         tooShort: 'קצר מדי',
         passwordIsNotSame: 'אנא הזן את אותה סיסמה',
         isExists: 'שם המשתמש כבר בשימוש',
-        loginError1: '',
-        loginError2: '',
+        loginError1: 'בדק את שמך וסיסמה',
+        loginError2: 'משהו השתבש',
     },
 
     dashboard: {
@@ -55,13 +55,13 @@ export const labels_he = {
         labelApply: 'לשחק נגד',
         labelSearch: 'לשלוח בקשת חברות',
         labelSendRequest: 'שלח',
-        labelRequest: '',
+        labelRequest: 'להיות חברים',
         msgNoUsername: 'אנא הזן שם משתמש כדי לשלוח אליו בקשת חברות',
         msgNoFriends: 'אין לך עדיין חברים',
         labelListFriends: 'רשימת חברים',
         labelReceivedRequest: 'בקשות חברות שקיבלת',
-        labelRecommended: 'המלצות עבורך',
-        msgNoRecommended: '',
+        labelRecommended: 'מומלץ עבורך',
+        msgNoRecommended: 'אין מומלץ עבורך',
     },
     lounge: {
         title: 'Lounge',
@@ -81,7 +81,7 @@ export const labels_he = {
         labelWins: 'ניצחונות',
         labelLosses: 'הפסדים',
         fmtWinLoss: '$win ניצחונות <br>$loss הפסדים',
-        msgNoMatch: '',
+        msgNoMatch: 'אין תאמה',
     },
     tournament: {
         title: 'Tournament',
@@ -96,7 +96,6 @@ export const labels_he = {
         labelTournamentLog: 'שיאי טורניר',
     },
     modal: {
-        title: '',
         labelNickname: 'כינוי',
         labelEntry: 'להתכנס',
         labelCancel: 'לבטל',

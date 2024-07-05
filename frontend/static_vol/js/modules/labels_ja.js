@@ -96,7 +96,6 @@ export const labels_ja = {
         labelTournamentLog: 'トーナメント記録',
     },
     modal: {
-        title: '',
         labelNickname: 'ニックネーム',
         labelEntry: '出場申込',
         labelCancel: 'キャンセル',

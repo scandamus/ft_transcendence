@@ -34,8 +34,8 @@ export const labels_la = {
         tooShort: 'nimis brevis',
         passwordIsNotSame: 'non eadem tessera',
         isExists: 'nomen usoris alium selige',
-        loginError1: '',
-        loginError2: '',
+        loginError1: 'verifica iterum nomen et tesseram',
+        loginError2: 'nunc non potest nomen dare',
     },
 
     dashboard: {
@@ -45,24 +45,23 @@ export const labels_la = {
         msgInvalidFileFormat: 'forma fasciculi non accepta est (soli .jpg, .png)',
     },
     friends: {
-<<<<<<< HEAD
         title: 'Amici',
         labelMatch: 'pugnabo',
         labelReceiveMatch: 'pugnabo',
         labelCancel: 'reverte',
-        labelRmFriend: 'non iam amici',
+        labelRmFriend: 'non amici esse',
         labelAccept: 'accipio',
         labelDecline: 'nego',
         labelApply: 'pugno',
         labelSearch: 'petere amici esse',
         labelSendRequest: 'peto',
-        labelRequest: '',
+        labelRequest: 'amici esse',
         msgNoUsername: 'scriba nomen qui voles amici esse',
         msgNoFriends: 'nullus iam tibi amicus est',
         labelListFriends: 'index amicorum',
         labelReceivedRequest: 'tibi amici esse volunt',
         labelRecommended: 'usores commendati tibi',
-        msgNoRecommended: '',
+        msgNoRecommended: 'nullus iam commendatus',
     },
     lounge: {
         title: 'Sessorium',
@@ -82,7 +81,7 @@ export const labels_la = {
         labelWins: 'victoria',
         labelLosses: 'clades',
         fmtWinLoss: '$win victoriae - $loss clades',
-        msgNoMatch: '',
+        msgNoMatch: 'nullum iam ludum',
     },
     tournament: {
         title: 'Tournament',
@@ -97,7 +96,6 @@ export const labels_la = {
         labelTournamentLog: 'index certaminium',
     },
     modal: {
-        title: '',
         labelNickname: 'agnomen',
         labelEntry: 'intro',
         labelCancel: 'reverte',
