@@ -28,6 +28,8 @@ services:
       - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
       - POSTGRES_USER=${DB_USER}
     restart: always
+    networks:
+      - backend-network
 
   frontend:
     build:
@@ -54,6 +56,8 @@ services:
       - ./frontend/static_vol:/var/www/html
       - ${CERTS}:/etc/nginx/ssl
     restart: always
+    networks:
+      - backend-network
 
   db:
     image: postgres:13
@@ -67,6 +71,8 @@ services:
     ports:
       - "5432:5432"
     restart: always
+    networks:
+      - backend-network
 
   pong-server:
     build: pong-server
@@ -87,6 +93,8 @@ services:
     restart: always
     volumes:
       - ./pong-server/game-server:/app
+    networks:
+      - backend-network
 
   pong4-server:
     build: pong4-server
@@ -107,9 +115,18 @@ services:
     restart: always
     volumes:
       - ./pong4-server/game-server:/app
+    networks:
+      - backend-network
 
   redis:
     image: redis:7
     restart: always
+    networks:
+      - backend-network
   # ports:
   #   - "6379:6379"
+
+networks:
+  backend-network:
+    driver: bridge
+    name: backend-network

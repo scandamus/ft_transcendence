@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
@@ -13,6 +15,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser
 
 # from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
@@ -22,6 +25,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 # from django.views.decorators.http import require_POST
 # from django.core.exceptions import ValidationError
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class PlayersViewSet(viewsets.ModelViewSet):
@@ -59,6 +63,35 @@ class RegisterView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class DeleteUserView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        username = request.data.get('username')
+        logger.info(f'DeleteUserView in for {username}')
+        try:
+            user = User.objects.get(username=username)
+            user.delete()
+            logger.info(f'User deleted: {username}')
+            response = Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
+            logger.info(f'Delete response: {response.data}, headers: {response.headers}')
+            return response
+        except User.DoesNotExist:
+            response = Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            logger.info(f'Delete response: {response.data}, headers: {response.headers}')
+            return response
+        
+    def delete(self, request, username=None):
+        logger.info(f'DeleteUserView in for {username}')
+        try:
+            user = User.objects.get(username=username)
+            user.delete()
+            logger.info(f'User deleted: {username}')
+            return Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            logger.error(f'User {username} not found')
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class LoginView(APIView):
     authentication_classes = []
@@ -122,9 +155,12 @@ class UserInfoView(APIView):
 
     def get(self, request, format=None):
         user = request.user
+        player = Player.objects.get(user=user)
+
         data = {
             'is_authenticated': user.is_authenticated,
             'username': user.username,
+            'avatar': player.avatar.url if player.avatar else '',
         }
         return Response(data)
 
@@ -141,17 +177,6 @@ class UserInfoView(APIView):
 #             'user_id': user.pk,
 #             'username': user.username
 #         })
-
-class UserListView(generics.ListAPIView):
-    serializer_class = UserSerializer
-
-    def get_queryset(self):
-        queryset = (
-            User.objects.all()
-            .filter(is_superuser=False)
-            .exclude(id=self.request.user.id)
-        )
-        return queryset
 
 class FriendListView(generics.ListAPIView):
     serializer_class = UsernameSerializer # PlayerSerializer
@@ -170,4 +195,20 @@ class FriendRequestListView(generics.ListAPIView):
         user = self.request.user
         player = Player.objects.get(user=user)
         return FriendRequest.objects.filter(to_user=player)
-    
+
+class AvatarUploadView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def put(self, request, format=None):
+        user = request.user
+        player = Player.objects.get(user=user)
+        avatar_file = request.FILES.get('avatar')
+
+        if avatar_file:
+            player.avatar = avatar_file
+            player.save()
+            return Response({"newAvatar": player.avatar.url})
+        else:
+            return Response({"error": "No avatar file provided"}, status=400)

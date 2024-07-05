@@ -172,7 +172,6 @@ export default class GamePlay extends PageBase {
             }
 
             function sendKeyEvent(key, is_pressed) {
-                console.log("Error: ", key, " ----")
                 let data = {
                     action: 'key_event',
                     key: key,

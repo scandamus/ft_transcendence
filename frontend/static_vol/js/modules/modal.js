@@ -74,6 +74,7 @@ const closeModalOnCancel = (ev) => {
                 const indicatorBar = indicator.querySelector('.unitIndicator_bar');
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
+            console.log(`matchType: ${matchType}`);
             if (matchType === 'friendMatch') {
                 //cancel game
                 console.log(`cancel friend Match: ${username}`);
@@ -167,13 +168,12 @@ const getModalHtml = (modalType, args) => {
 
 const showModalSendMatchRequest = (ev) => {
     const button = ev.target;
-    const opponentName = button.dataset.username;
     const args = {
         titleModal: labels.modal.titleSendMatchRequest,
         username: button.dataset.username,
         avatar: button.dataset.avatar,
         labelCancel: labels.modal.labelCancel,
-        matchType: 'frinedMatch',
+        matchType: 'friendMatch',
     }
     const elHtml = getModalHtml('sendMatchRequest', args);
     request_game(button.dataset.username, button.dataset.id)
@@ -184,11 +184,12 @@ const showModalSendMatchRequest = (ev) => {
 
 const showModalReceiveMatchRequest = (data) => {
     // WebSocketから受け取った相手のusernameおよびavatarを表示
+    const avatar = data.avatar ? data.avatar : '/images/avatar_default.png';
     const args = {
         titleModal: labels.modal.titleReceiveMatchRequest,
         username: data.from,
         request_id: data.request_id,
-        avatar: '',
+        avatar: avatar,
         labelAccept: labels.modal.labelAccept,
         labelReject: labels.modal.labelReject,
     }
@@ -209,7 +210,7 @@ const showModalWaitForOpponent = (ev) => {
         labelCapacity: labels.modal.labelCapacity,
         labelAvailable: labels.modal.labelAvailable,
         labelCapacityNum: capacityNum,
-        MatchType: 'loungeMatch',
+        matchType: 'loungeMatch',
         game_name: gameName,
     };
     const elHtml = getModalHtml('waitForOpponent', args);

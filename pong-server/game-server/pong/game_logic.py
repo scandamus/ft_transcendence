@@ -55,20 +55,6 @@ class Paddle(Block):
         elif self.y + self.length > CANVAS_HEIGHT:
             self.y = CANVAS_HEIGHT - self.length
 
-    def move_for_multiple(self):
-        if self.orientation == 'horizontal':
-            self.x += self.speed
-            if self.x < CORNER_BLOCK_SIZE:
-                self.x = CORNER_BLOCK_SIZE
-            elif CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE < self.x + self.length:
-                self.x = CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE - self.length
-        elif self.orientation == 'vertical':
-            self.y += self.speed
-            if self.y < CORNER_BLOCK_SIZE:
-                self.y = CORNER_BLOCK_SIZE
-            elif CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE < self.y + self.length:
-                self.y = CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE - self.length
-
     def increment_score(self):
         self.score += 1
 
@@ -148,107 +134,6 @@ class Ball:
             tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
             self.dx = tmp['dx']
             self.dy = tmp['dy']
-        return True
-
-    def move_for_multiple(self, right_paddle, left_paddle, upper_paddle, lower_paddle, walls):
-        # 壁を超えているか
-        if CANVAS_WIDTH_MULTI < self.x + self.dx:
-            right_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return right_paddle.score > 0
-        elif self.x + self.size + self.dx < 0:
-            left_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return left_paddle.score > 0
-        elif self.y + self.size + self.dy < 0:
-            upper_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return upper_paddle.score > 0
-        elif CANVAS_HEIGHT_MULTI < self.y + self.dy:
-            lower_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return lower_paddle.score > 0
-
-        for wall in walls:
-            collision_detected = self.collision_detection(wall, wall.position)
-            if collision_detected == 'collision_front':
-                tmp = random.uniform(0, 0.5)
-                # 座標調整
-                if wall.position == 'RIGHT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
-                    self.x = wall.x - self.size
-                elif wall.position == 'LEFT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
-                    self.x = wall.thickness
-                elif wall.position == 'UPPER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy + tmp
-                    self.y = wall.y + wall.thickness
-                elif wall.position == 'LOWER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy
-                    self.y = wall.y - wall.thickness
-                return True
-            elif collision_detected == 'collision_side':
-                if wall.position == 'RIGHT' or wall.position == 'LEFT':
-                    self.dy = -self.dy
-                    self.x += self.dx
-                elif wall.position == 'UPPER' or wall.position == 'LOWER':
-                    self.dx = -self.dx
-                    self.y += self.dy
-                return True
-        # x座標の操作
-        collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
-        if collision_detected_right == 'collision_front':
-            self.reflect_ball(right_paddle, 'RIGHT')
-            # 位置調整
-            self.x = right_paddle.x - self.size
-        elif collision_detected_right == 'collision_side':
-            # 位置調整
-            self.y += self.dy
-            # 設定
-            self.dy = -self.dy
-            self.x += self.dx
-        collision_detected_left = self.collision_detection(left_paddle, 'LEFT')
-        if collision_detected_left == 'collision_front':
-            self.reflect_ball(left_paddle, 'LEFT')
-            # 位置調整
-            self.x = left_paddle.thickness
-        elif collision_detected_left == 'collision_side':
-            # 位置調整
-            self.y += self.dy
-            # 設定
-            self.dy = -self.dy
-            self.x += self.dx
-        if not collision_detected_right and not collision_detected_left:
-            self.y += self.dy
-        # y座標の操作
-        collision_detected_upper = self.collision_detection(upper_paddle, 'UPPER')
-        if collision_detected_upper == 'collision_front':
-            self.reflect_ball(upper_paddle, 'UPPER')
-            # 位置調整
-            self.y = upper_paddle.y + upper_paddle.thickness
-        elif collision_detected_upper == 'collision_side':
-            # 位置調整
-            self.x += self.dx
-            # 設定
-            self.dx = -self.dx
-            self.y += self.dy
-        collision_detected_lower = self.collision_detection(lower_paddle, 'LOWER')
-        if collision_detected_lower == 'collision_front':
-            self.reflect_ball(lower_paddle, 'LOWER')
-            # 位置調整
-            self.y = lower_paddle.y - self.size
-        elif collision_detected_lower == 'collision_side':
-            # 位置調整
-            self.x += self.dx
-            # 設定
-            self.dx = -self.dx
-            self.y += self.dy
-        if not collision_detected_upper and not collision_detected_lower:
-            self.x += self.dx
         return True
 
     def collision_detection(self, obj, obj_side):
