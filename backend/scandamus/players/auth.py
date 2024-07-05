@@ -36,7 +36,6 @@ async def handle_auth(consumer, token):
             consumer.player = player
             consumer.group_name = f'friends_{consumer.player.id}'
             await consumer.channel_layer.group_add(consumer.group_name, consumer.channel_name)
-            consumer.players[consumer.user.username] = consumer
             logger.info(f'Authentiated user_id: {user.id}, username: {user.username}, player_id: {player.id}')
             try:
                 await consumer.send(text_data=json.dumps({

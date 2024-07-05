@@ -38,6 +38,7 @@ class LoungeSession(AsyncWebsocketConsumer):
 
             if msg_type == 'authWebSocket':
                 await handle_auth(self, token)
+                LoungeSession.players[self.user.username] = self
             elif msg_type == 'friendMatchRequest':
                 if action == 'requestGame':
                     await handle_request_game(self, text_data_json)
@@ -89,7 +90,7 @@ class LoungeSession(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.username in self.players:
-            del self.players[self.user.username]
+            del LoungeSession.players[self.user.username]
             logger.info(f'User {self.user.username} disconnected and removed from players list.')
         else:
             logger.info('Disconnect called but no user found.')
