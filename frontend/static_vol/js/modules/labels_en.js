@@ -17,8 +17,8 @@ export const labels_en = {
         labelUsername: 'username',
         labelPassword: 'password',
         labelPasswordConfirm: 'confirm password',
-        descUsername: ['You can use lowercase alphabets, numbers, and underscore (a-z 0-9 _)', 'You need to use at least one alphabet or number', 'Between 3 and 32 characters long'],
-        descPassword: ['You can use uppercase and lowercase alphabets, numbers, and following symbols (@_#$%&!.,+*~\')', 'You need to use at least one uppercase, one lowercase, one number, and one symbol', 'Between 8 and 24 characters long'],
+        descUsername: ['You can use lowercase alphabets, numbers, and underscore (a-z 0-9 _)', 'You need to use at least one alphabet or number', '3 to 32 characters long'],
+        descPassword: ['You can use uppercase and lowercase alphabets, numbers, and following symbols (@_#$%&!.,+*~\')', 'You need to use at least one uppercase, one lowercase, one number, and one symbol', '8 to 24 characters long'],
         descPasswordConfirm: 'Please confirm the password',
         labelButtonConfirm: 'confirm',
         textConfirm: 'Do you want to register with the following information?',
@@ -40,9 +40,13 @@ export const labels_en = {
 
     dashboard: {
         title: 'Dashboard',
+        labelChangeAvatar: 'change avatar',
+        labelCancel: 'cancel',
+        labelUpload: 'upload',
         msgAvatarSwitched: 'avatar successfully changed',
         msgInvalidFile: 'file is invalid',
         msgInvalidFileFormat: 'invalid file format (only .jpg and .png are accepted)',
+        labelViewAllFriends: 'View all friends',
     },
     friends: {
         title: 'Friends',

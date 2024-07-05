@@ -40,9 +40,13 @@ export const labels_fr = {
 
     dashboard: {
         title: 'Tableau de bord',
+        labelChangeAvatar: 'Changer l’avatar',
+        labelCancel: 'Annuler',
+        labelUpload: 'Changer',
         msgAvatarSwitched : 'L’avatar a été modifié',
         msgInvalidFile : 'Fichier non valide',
         msgInvalidFileFormat : 'Format de fichier non valide (.jpg, .png uniquement)',
+        labelViewAllFriends: 'Voir la liste complète des amis',
     },
     friends: {
         title: 'Amis',

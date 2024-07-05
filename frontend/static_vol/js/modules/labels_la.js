@@ -40,9 +40,13 @@ export const labels_la = {
 
     dashboard: {
         title: 'Tabula',
+        labelChangeAvatar: 'iconem mutare',
+        labelCancel: 'reverte',
+        labelUpload: 'mutare',
         msgAvatarSwitched: 'icon tibi mutata est',
         msgInvalidFile: 'fasciculus non acceptus',
         msgInvalidFileFormat: 'forma fasciculi non accepta est (soli .jpg, .png)',
+        labelViewAllFriends: 'omnes amicos spectere',
     },
     friends: {
         title: 'Amici',

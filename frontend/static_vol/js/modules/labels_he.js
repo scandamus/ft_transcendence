@@ -34,15 +34,19 @@ export const labels_he = {
         tooShort: 'קצר מדי',
         passwordIsNotSame: 'אנא הזן את אותה סיסמה',
         isExists: 'שם המשתמש כבר בשימוש',
-        loginError1: 'בדק את שמך וסיסמה',
+        loginError1: 'בדק את שמך וסיסמתך',
         loginError2: 'משהו השתבש',
     },
 
     dashboard: {
         title: 'Dashboard',
+        labelChangeAvatar: 'לשנות את האווטאר',
+        labelCancel: 'לטבל',
+        labelUpload: 'לשנות',
         msgAvatarSwitched: 'האווטאר השתנה',
         msgInvalidFile: 'קובץ לא תקין',
         msgInvalidFileFormat: 'פורמט קובץ לא חוקי (רק .jpg, .png )',
+        labelViewAllFriends: 'לראות כל החברים',
     },
     friends: {
         title: 'Friends',

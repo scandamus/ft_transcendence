@@ -40,9 +40,13 @@ export const labels_ja = {
 
     dashboard: {
         title: 'Dashboard',
+        labelChangeAvatar: 'アバターを変更',
+        labelCancel: 'キャンセル',
+        labelUpload: '変更する',
         msgAvatarSwitched: 'アバターを変更しました',
         msgInvalidFile: '不正なファイルです',
         msgInvalidFileFormat: '不正なファイル形式です(.jpg, .png のみ設定できます)',
+        labelViewAllFriends: '全ての友達を見る',
     },
     friends: {
         title: 'Friends',

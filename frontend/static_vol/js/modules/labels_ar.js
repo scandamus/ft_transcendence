@@ -40,9 +40,13 @@ export const labels_ar = {
 
     dashboard: {
         title: 'Dashboard',
+        labelChangeAvatar: 'تغيير الصورة الرمزية',
+        labelCancel: 'إلغاء',
+        labelUpload: 'تغيير',
         msgAvatarSwitched: 'لقد قمت بتغيير الصورة الرمزية الخاصة بك',
         msgInvalidFile: 'ملف سيء',
         msgInvalidFileFormat: 'تنسيق ملف سيء (يمكن تعيين .jpg، .png فقط)',
+        labelViewAllFriends: 'عرض جميع الأصدقاء',
     },
     friends: {
         title: 'Friends',
