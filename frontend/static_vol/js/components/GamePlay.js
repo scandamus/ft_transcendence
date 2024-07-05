@@ -19,8 +19,27 @@ export default class GamePlay extends PageBase {
         this.score1 = 0;
         this.score2 = 0;
         this.accessibleMode = null;
+        const siteinfo = new SiteInfo();
+        this.player_name = siteinfo.player_name; //TODO 本当にこれでいい?
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
+        // sound
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // 音量の変更のため
+        this.gainNode = this.audioContext.createGain();
+        this.gainNode.connect(this.audioContext.destination);
+        this.sounds = {};
+
+        // sound for accessible mode
+        this.ballNode = this.audioContext.createOscillator();
+        this.ballGainNode = this.audioContext.createGain();
+        this.ballNode.connect(this.ballGainNode).connect(this.audioContext.destination);
+        this.ballNode.type = 'sine';
+        this.paddleNode = this.audioContext.createOscillator();
+        this.paddleGainNode = this.audioContext.createGain();
+        this.paddleNode.connect(this.paddleGainNode).connect(this.audioContext.destination);
+        this.paddleNode.type = 'sawtooth';
+
     }
 
     async renderHtml() {
@@ -36,6 +55,38 @@ export default class GamePlay extends PageBase {
         `;
     }
 
+    async loadSounds() {
+        const soundFiles = {
+            paddle_collision: '../../sounds/pong-paddle.mp3',
+            wall_collision: '../../sounds/8-bit-game-5-188107.mp3',
+            scored: '../../sounds/8-bit-game-6-188105.mp3',
+            game_over: '../../sounds/game-fx-9-40197.mp3',
+        };
+
+        for (const [key, url] of Object.entries(soundFiles)) {
+            const response = await fetch(url);
+            // バイナリデータを取り出す
+            const arrayBuffer = await response.arrayBuffer();
+            // 取り出した音声データをでコード
+            this.sounds[key] = await this.audioContext.decodeAudioData(arrayBuffer);
+        }
+    }
+
+    playSoundEffect = (soundType) => {
+        if (!soundType || !this.sounds[soundType]) {
+            console.info('sound_type is undefined or sound is not preloaded');
+            return;
+        }
+
+        const source = this.audioContext.createBufferSource();
+        source.buffer = this.sounds[soundType];
+        // 出力先に接続する
+        source.connect(this.gainNode);
+        this.gainNode.gain.value = 0.1;
+        // 遅延0でで再生
+        source.start(0);
+    }
+
     async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
@@ -43,26 +94,14 @@ export default class GamePlay extends PageBase {
             const containerId = `pong/${gameMatchId}`;
             console.log(`URL = ${containerId}`);
             const pongSocket = await webSocketManager.openWebSocket(containerId);
+            console.log(`player_name = ${this.player_name}`);
             // ノードを取得
             const canvas = document.getElementById("playBoard");
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext("2d");
-
-            const siteinfo = new SiteInfo();
-            const player_name = siteinfo.player_name; //TODO 本当にこれでいい?
-            console.log(`player_name = ${player_name}`);
-
-            // sound
-            this.audioContext = new (window.AudioContext)();// || window.webkitAudioContext)();
-            this.ballNode = this.audioContext.createOscillator();
-            this.ballGainNode = this.audioContext.createGain();
-            this.ballNode.connect(this.ballGainNode).connect(this.audioContext.destination);
-            this.ballNode.type = 'sine';
-            this.paddleNode = this.audioContext.createOscillator();
-            this.paddleGainNode = this.audioContext.createGain();
-            this.paddleNode.connect(this.paddleGainNode).connect(this.audioContext.destination);
-            this.paddleNode.type = 'sawtooth';
+            // サウンドを読み込んでおく
+            await this.loadSounds();
 
             function drawBackground() {
                 ctx.fillStyle = 'black';
@@ -103,13 +142,13 @@ export default class GamePlay extends PageBase {
                 ctx.closePath();
             }
 
-            const changeSound = (data) => {
+            const playAccessibleMode = (data) => {
                 if (!this.accessibleMode) {
                     this.ballNode.frequency.value = 0;
                     this.paddleNode.frequency.value = 0;
                     return;
                 }
-                const my_paddle = (player_name == 'player1' ? data.left_paddle : data.right_paddle);
+                const my_paddle = (this.player_name == 'player1' ? data.left_paddle : data.right_paddle);
                 const clamp = (x, min, max) => Math.min(Math.max(min, x), max);
                 const y_to_freq = (y) => 440 * Math.pow(2, (y / canvas.height) * -2 + 1);
                 // ball.y: 周波数を上下 
@@ -139,8 +178,6 @@ export default class GamePlay extends PageBase {
                 // 左
                 drawPaddle(data.left_paddle);
 
-                changeSound(data);
-
                 if (!data.game_status) {
                     console.log("Game Over");
                     pongSocket.send(JSON.stringify({
@@ -167,7 +204,7 @@ export default class GamePlay extends PageBase {
                 if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
                     sendKeyEvent(e.key, false);
                 } else if (e.key == ' ') {
-					if (this.accessibleMode === null) {
+                    if (this.accessibleMode === null) {
                         this.ballNode.start();
                         this.paddleNode.start();
                     }
@@ -195,6 +232,8 @@ export default class GamePlay extends PageBase {
                     //console.log('received_data -> ', data);
                     //console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
                     updateGameObjects(data);
+                    playAccessibleMode(data);
+                    this.playSoundEffect(data.sound_type);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }
