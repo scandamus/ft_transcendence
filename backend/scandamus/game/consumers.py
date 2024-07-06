@@ -34,13 +34,6 @@ class LoungeSession(AsyncWebsocketConsumer):
             }))
             return
 
-        # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
-        player = await get_player_by_user(self.user)
-        if player and player.status in ['friend_waiting', 'lounge_waiting']:
-            player.status = 'waiting'
-            await database_sync_to_async(player.save)()
-            logger.info(f'{self.user.username} status set to waiting')
-
     async def receive(self, text_data):
         logger.info(f'received text_data: {text_data}')
         try:

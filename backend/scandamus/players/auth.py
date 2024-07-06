@@ -38,6 +38,18 @@ async def handle_auth(consumer, token):
             await consumer.channel_layer.group_add(consumer.group_name, consumer.channel_name)
             consumer.players[consumer.user.username] = consumer
             logger.info(f'Authentiated user_id: {user.id}, username: {user.username}, player_id: {player.id}')
+
+            if not player.online:
+                player.online = True
+                await database_sync_to_async(player.save)()
+                logger.info(f'{user.username} online status is online')
+
+            # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
+            if player and player.status in ['friend_waiting', 'lounge_waiting']:
+                player.status = 'waiting'
+                await database_sync_to_async(player.save)()
+                logger.info(f'{user.username} status set to waiting')
+
             try:
                 await consumer.send(text_data=json.dumps({
                     'type': 'ack',
