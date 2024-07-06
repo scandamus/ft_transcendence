@@ -1091,7 +1091,6 @@ input.has-input:invalid {
 /* GamePlay */
 #playBoard {
   width: 100%;
-  background-color: var(--color-black-alpha);
 }
 
 .playBoardWrap {
@@ -1116,6 +1115,7 @@ input.has-input:invalid {
 }
 
 .playBoardWrap-quad .listPlayerActiveMatch-quad-second-half {
+  flex-direction: row-reverse;
   order: 3;
 }
 
@@ -1180,21 +1180,22 @@ input.has-input:invalid {
 }
 
 .listPlayerActiveMatch_item-player3 {
-  margin-top: 10px;
-}
-
-.listPlayerActiveMatch_item-player3 span {
-  padding-left: 0.6em;
-}
-.listPlayerActiveMatch_item-player4 {
   flex-direction: row-reverse;
   transform-origin: 100% 0;
   translate: 60px 0;
   rotate: 90deg;
 }
 
-.listPlayerActiveMatch_item-player4 span {
+.listPlayerActiveMatch_item-player3 span {
   padding-right: 0.6em;
+}
+
+.listPlayerActiveMatch_item-player4 {
+  margin-top: 10px;
+}
+
+.listPlayerActiveMatch_item-player4 span {
+  padding-left: 0.6em;
 }
 
 /* Lounge */
