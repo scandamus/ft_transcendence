@@ -92,6 +92,14 @@ const closeModalOnCancel = () => {
                 const indicatorBar = indicator.querySelector('.unitIndicator_bar');
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
+            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+            if (btnReturnToGame) {
+                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
+            }
+            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+            if (btnExitGame) {
+                btnExitGame.removeEventListener('click', closeModalOnExitGame);
+            }
             console.log(`matchType: ${matchType}`);
             if (matchType === 'friendMatch') {
                 //cancel game
@@ -184,25 +192,6 @@ const closeModalOnReturnToGame = () => {
         })
         .then(() => {
             window.history.pushState({}, null, `/game/${containerId}`);
-            closeModal();
-        });
-}
-
-const closeModalOnGameOver = () => {
-    console.log('/////closeModalOnGameOver');
-
-    initToken()
-        .then((accessToken) => {
-            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
-            if (btnReturnToGame) {
-                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
-            }
-            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
-            if (btnExitGame) {
-                btnExitGame.removeEventListener('click', closeModalOnExitGame);
-            }
-        })
-        .then(() => {
             closeModal();
         });
 }
@@ -382,5 +371,5 @@ const showModalExitGame = () => {
     showModal(elHtml);
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame, closeModalOnReturnToGame, closeModalOnGameOver };
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame, closeModalOnReturnToGame };
 

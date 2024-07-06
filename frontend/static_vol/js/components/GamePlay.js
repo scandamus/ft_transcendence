@@ -2,7 +2,6 @@
 
 import PageBase from './PageBase.js';
 
-import { closeModalOnGameOver } from "../modules/modal.js";
 import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
 
@@ -171,11 +170,6 @@ export default class GamePlay extends PageBase {
 
                 if (!data.game_status) {
                     console.log("Game Over");
-                    //exitGameModalが開いていたら閉じる
-                    const elModal = document.querySelector('.blockModal');
-                    if (elModal) {
-                        closeModalOnGameOver();
-                    }
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
