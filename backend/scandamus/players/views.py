@@ -4,11 +4,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
+from game.models import Match
 from django.contrib.auth.models import User
-from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer
+from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer, MatchLogSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -212,3 +214,18 @@ class AvatarUploadView(APIView):
             return Response({"newAvatar": player.avatar.url})
         else:
             return Response({"error": "No avatar file provided"}, status=400)
+
+class MatchLogView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        try:
+            player = Player.objects.get(user=user)
+        except Player.DoesNotExist:
+            return Response({'detail': 'Player not found'}, status=404)
+        matches = Match.objects.filter(
+            (Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)) & Q(tournament__isnull=True)
+        ).order_by('-id')[:5]
+        serializer = MatchLogSerializer(matches, many=True, context={'request': request})
+        return Response(serializer.data)
