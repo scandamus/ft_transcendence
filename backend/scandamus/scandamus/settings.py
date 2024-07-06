@@ -35,6 +35,7 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
+CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
 
 ALLOWED_HOSTS = ['backend', 'pong-server', 'frontend' ,'localhost', '127.0.0.1', '[::1]']
 
