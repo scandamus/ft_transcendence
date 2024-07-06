@@ -4,7 +4,13 @@ import PageBase from './PageBase.js';
 import { SiteInfo } from "../modules/SiteInfo.js";
 import { labels } from '../modules/labels.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
-import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend }
+import { getMatchLog } from '../modules/gameList.js';
+import {
+    removeListenMatchRequest,
+    removeListenAcceptFriendRequest,
+    removeListenDeclineFriendRequest,
+    removeListenRemoveFriend
+}
     from '../modules/friendListener.js';
 import { addListenerToList, removeListenerAndClearList } from "../modules/listenerCommon.js";
 import { getToken } from "../modules/token.js";
@@ -100,62 +106,7 @@ export default class Dashboard extends PageBase {
                     </section>
                     <section class="blockDashboardLog">
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
-                        <div class="blockDashboardLog_listMatch listLineDivide">
-                            <div class="blockMatch">
-                                <section class="blockMatch_player unitMatchPlayer">
-                                    <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
-                                        <h4 class="unitMatchPlayer_title">username</h4>
-                                    </header>
-                                    <p class="unitMatchPlayer_score">10</p>
-                                    <p class="unitMatchPlayer_result">win</p>
-                                </section>
-                                <p class="blockMatch_vs">VS</p>
-                                <section class="blockMatch_player unitMatchPlayer">
-                                    <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                        <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
-                                    </header>
-                                    <p class="unitMatchPlayer_score">3</p>
-                                </section>
-                            </div>
-                            <div class="blockMatch">
-                                <section class="blockMatch_player unitMatchPlayer">
-                                    <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
-                                        <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
-                                    </header>
-                                    <p class="unitMatchPlayer_score">5</p>
-                                </section>
-                                <p class="blockMatch_vs">VS</p>
-                                <section class="blockMatch_player unitMatchPlayer">
-                                    <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                        <h4 class="unitMatchPlayer_title">username</h4>
-                                    </header>
-                                    <p class="unitMatchPlayer_score">10</p>
-                                    <p class="unitMatchPlayer_result">win</p>
-                                </section>
-                            </div>
-                            <div class="blockMatch">
-                                <section class="blockMatch_player unitMatchPlayer">
-                                    <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=Aa Bb&background=e3ad03&color=ffffff" alt="" width="50" height="50">
-                                        <h4 class="unitMatchPlayer_title">01234567890123456789012345678901</h4>
-                                    </header>
-                                    <p class="unitMatchPlayer_score">5</p>
-                                </section>
-                                <p class="blockMatch_vs">VS</p>
-                                <section class="blockMatch_player unitMatchPlayer">
-                                    <header class="unitMatchPlayer_header">
-                                        <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                                        <h4 class="unitMatchPlayer_title">username</h4>
-                                    </header>
-                                    <p class="unitMatchPlayer_score">10</p>
-                                    <p class="unitMatchPlayer_result">win</p>
-                                </section>
-                            </div>
-                        </div>
+                        <div class="blockDashboardLog_listMatch listLineDivide"></div>
                     </section>
                 </div>
             </div>
@@ -166,6 +117,7 @@ export default class Dashboard extends PageBase {
         try {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
+            getMatchLog().then(() => {});
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;

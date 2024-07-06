@@ -76,6 +76,7 @@ export const labels_ja = {
         labelWins: '勝',
         labelLosses: '敗',
         fmtWinLoss: '$win勝 $loss敗',
+        msgNoMatch: '対戦結果がありません',
     },
     tournament: {
         title: 'Tournament',

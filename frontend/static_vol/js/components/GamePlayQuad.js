@@ -21,6 +21,12 @@ export default class GamePlayQuad extends PageBase {
         this.containerId = '';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
+        // sound
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // 音量の変更のため
+        this.gainNode = this.audioContext.createGain();
+        this.gainNode.connect(this.audioContext.destination);
+        this.sounds = {};
     }
 
     async renderHtml() {
@@ -31,6 +37,38 @@ export default class GamePlayQuad extends PageBase {
                 <canvas id='playBoard' width='650' height='650'></canvas>
             </div>
         `;
+    }
+
+    async loadSounds() {
+        const soundFiles = {
+            paddle_collision: '../../sounds/pong-paddle.mp3',
+            wall_collision: '../../sounds/8-bit-game-5-188107.mp3',
+            scored: '../../sounds/8-bit-game-6-188105.mp3',
+            game_over: '../../sounds/game-fx-9-40197.mp3',
+        };
+
+        for (const [key, url] of Object.entries(soundFiles)) {
+            const response = await fetch(url);
+            // バイナリデータを取り出す
+            const arrayBuffer = await response.arrayBuffer();
+            // 取り出した音声データをでコード
+            this.sounds[key] = await this.audioContext.decodeAudioData(arrayBuffer);
+        }
+    }
+
+    playSound = (soundType) => {
+        if (!soundType || !this.sounds[soundType]) {
+            console.info('sound_type is undefined or sound is not preloaded');
+            return;
+        }
+
+        const source = this.audioContext.createBufferSource();
+        source.buffer = this.sounds[soundType];
+        // 出力先に接続する
+        source.connect(this.gainNode);
+        this.gainNode.gain.value = 0.1;
+        // 遅延0でで再生
+        source.start(0);
     }
 
     async initGame() {
@@ -45,6 +83,7 @@ export default class GamePlayQuad extends PageBase {
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext('2d');
+            await this.loadSounds();
 
             function drawBackground() {
                 ctx.fillStyle = 'black';
@@ -198,13 +237,14 @@ export default class GamePlayQuad extends PageBase {
                 webSocketManager.sendWebSocketMessage(this.containerId, data);
             }
 
-            pongSocket.onmessage = function (e) {
+            pongSocket.onmessage = (e) => {
                 try {
                     const data = JSON.parse(e.data);
                     // document.querySelector('#pong-log').value += (data.message + '\n');
                     console.log('received_data -> ', data);
                     // console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score, 'UPPER_PADDLE: ', data.upper_paddle.score, '  LOWER_PADDLE: ', data.lower_paddle.score);
                     updateGameObjects(data);
+                    this.playSound(data.sound_type);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }

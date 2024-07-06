@@ -76,6 +76,7 @@ export const labels_fr = {
         labelWins: '',
         labelLosses: '',
         fmtWinLoss: '$win $loss',
+        msgNoMatch: '',
     },
     tournament: {
         title: '',

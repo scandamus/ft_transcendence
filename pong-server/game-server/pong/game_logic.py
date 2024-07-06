@@ -84,9 +84,11 @@ class Ball:
         self.flag = True
 
     def move(self, paddle1, paddle2):
+        sound_type = None
         # 上下の壁との衝突判定 # if 上 or 下
         if self.y + self.dy < 0 or self.y + self.size + self.dy > CANVAS_HEIGHT:
             self.dy = -self.dy
+            sound_type = 'wall_collision'
         collision_with_paddle1 = False
         collision_with_paddle2 = False
         # 衝突判定
@@ -99,26 +101,30 @@ class Ball:
         if self.x + self.size + self.dx < 0:
             paddle1.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle1.score < 10
+            sound_type = 'scored'
+            return paddle1.score < 10, sound_type
         # 右の壁との衝突判定
         elif self.x + self.dx > CANVAS_WIDTH:
             paddle2.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
-            return paddle2.score < 10
-        # 衝突判定がTrueの場合はpaddleにballを接触させるように
-        # x座標の操作
-        if collision_with_paddle1 == 'collision_front':
-            self.reflect_ball(paddle1, 'RIGHT')
-            self.x = paddle1.x - self.size
-        elif collision_with_paddle1 == 'collision_side':
-            self.dy = -self.dy
-            self.x += self.dx
-        elif collision_with_paddle2 == 'collision_front':
-            self.reflect_ball(paddle2, 'LEFT')
-            self.x = paddle2.x + paddle2.thickness
-        elif collision_with_paddle2 == 'collision_side':
-            self.dy = -self.dy
-            self.x += self.dx
+            sound_type = 'scored'
+            return paddle2.score < 10, sound_type
+        if collision_with_paddle1 or collision_with_paddle2:
+            sound_type = 'paddle_collision'
+            # 衝突判定がTrueの場合はpaddleにballを接触させるように
+            # x座標の操作
+            if collision_with_paddle1 == 'collision_front':
+                self.reflect_ball(paddle1, 'RIGHT')
+                self.x = paddle1.x - self.size
+            elif collision_with_paddle1 == 'collision_side':
+                self.dy = -self.dy
+                self.x += self.dx
+            elif collision_with_paddle2 == 'collision_front':
+                self.reflect_ball(paddle2, 'LEFT')
+                self.x = paddle2.x + paddle2.thickness
+            elif collision_with_paddle2 == 'collision_side':
+                self.dy = -self.dy
+                self.x += self.dx
         else:
             self.x += self.dx
         # y座標の操作
@@ -134,7 +140,7 @@ class Ball:
             tmp = get_ball_direction_and_random_speed(random.randint(30, 45), random.choice((-1, 1)))
             self.dx = tmp['dx']
             self.dy = tmp['dy']
-        return True
+        return True, sound_type
 
     def collision_detection(self, obj, obj_side):
         next_x = self.x + self.dx
