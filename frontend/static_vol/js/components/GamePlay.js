@@ -77,6 +77,29 @@ export default class GamePlay extends PageBase {
         source.start(0);
     }
 
+    sendKeyEvent = (key, is_pressed) => {
+        let data = {
+            action: 'key_event',
+            key: key,
+            is_pressed: is_pressed,
+        };
+        webSocketManager.sendWebSocketMessage(this.containerId, data);
+    }
+
+    keyDownHandler = (e) => {
+        // send event to django websocket
+        if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+            this.sendKeyEvent(e.key, true);
+        }
+    }
+
+    keyUpHandler = (e) => {
+        // send event to django websocket
+        if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+            this.sendKeyEvent(e.key, false);
+        }
+    }
+
     async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
@@ -161,8 +184,6 @@ export default class GamePlay extends PageBase {
                         action: 'end_game',
                         match_id: gameMatchId,
                     }));
-                    document.removeEventListener("keydown", keyDownHandler, false);
-                    document.removeEventListener("keyup", keyUpHandler, false);
                     webSocketManager.closeWebSocket(this.containerId);
                     this.containerId = '';
                     window.history.pushState({}, null, "/dashboard");
@@ -171,33 +192,9 @@ export default class GamePlay extends PageBase {
             }
 
             // 押されたとき
-            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keydown", this.keyDownHandler, false);
             // 離れたとき
-            document.addEventListener("keyup", keyUpHandler, false);
-
-            function keyDownHandler(e) {
-                // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
-                    sendKeyEvent(e.key, true);
-                }
-            }
-
-            function keyUpHandler(e) {
-                // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
-                    sendKeyEvent(e.key, false);
-                }
-            }
-
-            const sendKeyEvent = (key, is_pressed) => {
-                let data = {
-                    action: 'key_event',
-                    key: key,
-                    is_pressed: is_pressed,
-                };
-                webSocketManager.sendWebSocketMessage(this.containerId, data);
-            }
-
+            document.addEventListener("keyup", this.keyUpHandler, false);
 
             pongSocket.onmessage = (e) => {
                 try {
@@ -217,6 +214,8 @@ export default class GamePlay extends PageBase {
     }
 
     destroy() {
+        document.removeEventListener("keydown", this.keyDownHandler, false);
+        document.removeEventListener("keyup", this.keyUpHandler, false);
         GamePlay.instance = null;
         super.destroy();
     }
