@@ -2,16 +2,13 @@ import json
 import asyncio
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.auth.models import User
-from .utils import generate_game_jwt
 from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
 from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
 from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
-from .match_utils import get_player_by_user
+from players.friend_utils import send_status_to_friends
 from channels.db import database_sync_to_async
 from channels.auth import get_user
-from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
