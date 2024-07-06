@@ -13,6 +13,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, TokenBackendError
 #from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from django.conf import settings
+from players.friend_utils import send_status_to_friends
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ async def handle_auth(consumer, token):
         if player:
             consumer.user = user
             consumer.player = player
-            consumer.group_name = f'friends_{consumer.player.id}'
+            consumer.group_name = f'friends_{player.id}'
             await consumer.channel_layer.group_add(consumer.group_name, consumer.channel_name)
             consumer.players[consumer.user.username] = consumer
             logger.info(f'Authentiated user_id: {user.id}, username: {user.username}, player_id: {player.id}')
@@ -55,6 +56,7 @@ async def handle_auth(consumer, token):
                     'type': 'ack',
                     'message': 'Authentication successful'
                 }))
+                await send_status_to_friends(player, 'online')
             except () as e:
                 logger.error(f'Error in handle_auth can not send')
 

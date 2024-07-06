@@ -87,11 +87,37 @@ class LoungeSession(AsyncWebsocketConsumer):
             logger.error(f'aaaAttribute error: {str(e)}')
             await self.close()
 
+    async def friend_status(self, event):
+        logger.info(f'friend_status in : {self.user.username}')
+        changed_username = event['username']
+        online_status = event['online']
+        await self.send(text_data=json.dumps({
+            'type': 'friendStatus',
+            'action': 'change',
+            'username': changed_username,
+            'online': online_status,
+        }))
+        logger.info(f'sent online status: {online_status} of {changed_username} to {self.user.username}')
+
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.username in self.players:
-            del self.players[self.user.username]
+            await self.channel_layer.group_discard(
+                self.group_name,
+                self.channel_name
+            )
             logger.info(f'User {self.user.username} disconnected and removed from players list.')
 
+            # reset player status
+            player = self.player
+            if player:
+                if player.status in ['friend_waiting', 'lounge_waiting']:
+                    player.status = 'waiting'
+                    await database_sync_to_async(player.save)()
+                    logger.info(f'{self.user.username} status set to waiting')
+                player.online = False
+                await database_sync_to_async(player.save)()
+                await send_status_to_friends(player, 'offline')
+  
             # remove pending_requests
             request_to_remove = []
             for request_id, request in self.pending_requests.items():
@@ -112,12 +138,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                 else:
                     logger.error(f'Cancelled successfully but opponent is not online')
 
-            # reset player status
-            player = await get_player_by_user(self.user)
-            if player and player.status in ['friend_waiting', 'lounge_waiting']:
-                player.status = 'waiting'
-                await database_sync_to_async(player.save)()
-                logger.info(f'{self.user.username} status set to waiting')
-
+            del self.players[self.user.username]
         else:
             logger.info('Disconnect called but no user found.')
