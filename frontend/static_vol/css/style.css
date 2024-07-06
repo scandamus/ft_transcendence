@@ -1168,28 +1168,6 @@ input.has-input:invalid {
   background-color: var(--color-black);
 }
 
-/* listPlayers */
-.listPlayers {
-}
-
-.unitPlayerName {
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-  align-items: center;
-}
-.unitPlayerName h3 {
-  margin-left: 0.6em;
-}
-
-.unitPlayerScore {
-  display: flex;
-}
-
-.unitPlayerScore p:not(:last-child)::after {
-  content: "/";
-  margin: 0 1em;
-}
 
 /* Lounge */
 .blockLounge {
