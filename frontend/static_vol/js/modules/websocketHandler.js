@@ -39,6 +39,9 @@ export const pongHandler = (event, containerId) => {
         else if (data.type === 'tournament') {
             handleTournamentReceived(data);
         }
+        else if (data.type === 'tournamentMatch') {
+            handleTournamentMatchReceived(data);
+        }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
     }
@@ -237,4 +240,13 @@ const handleTournamentReceived = (data) => {
     } else if (data.action === 'invalidCancelRequest') {
         addNotice('トーナメントへのエントリーがありません');
     }
+}
+
+const handleTournamentMatchReceived = (data) => {
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
+
+    if (data.action === 'call') {
+        addNotice(`${data.message}`);
+    }
+
 }
