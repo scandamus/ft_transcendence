@@ -25,7 +25,7 @@ export default class GamePlay extends PageBase {
 
     async renderHtml() {
         return `
-           <div class="playBoardWrap">
+           <div class="playBoardWrap playBoardWrap-dual">
                 <ul class="listPlayerActiveMatch listPlayerActiveMatch-dual">
                     <li class="listPlayerActiveMatch_item"><img src="${this.avatar1}" alt="" width="50" height="50"><span>${this.player1}</span></li>
                     <li class="listPlayerActiveMatch_item"><img src="${this.avatar2}" alt="" width="50" height="50"><span>${this.player2}</span></li>
