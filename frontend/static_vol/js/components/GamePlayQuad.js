@@ -162,6 +162,7 @@ export default class GamePlayQuad extends PageBase {
                     document.removeEventListener('keydown', keyDownHandler, false);
                     document.removeEventListener('keyup', keyUpHandler, false);
                     webSocketManager.closeWebSocket(this.containerId);
+                    this.containerId = '';
                     window.history.pushState({}, null, '/dashboard');
                     await router(true);
                 }

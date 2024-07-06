@@ -75,13 +75,12 @@ const entryTournament = (args) => `
     </section>
 `;
 
-
 const exitGame = (args) => `
     <section class="blockModal blockModal-micro">
         <h2 class="blockModal_title">${args.titleModal}</h2>
         <ul class="unitListBtn unitListBtn-horizontal-center">
             <li class="unitListBtn_btn blockBtnReturnToGame"><button type="button" class="blockBtnReturnToGame_button unitButton">${args.labelReturnToGame}</button></li>
-            <li class="unitListBtn_btn blockBtnExitGame"><a href="${args.link}" class="blockBtnExitGame_button unitButton">${args.labelExitGame}</a></li>
+            <li class="unitListBtn_btn blockBtnExitGame"><a href="#" class="blockBtnExitGame_button unitButton">${args.labelExitGame}</a></li>
         </ul>
     </section>
 `;

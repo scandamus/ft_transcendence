@@ -6,6 +6,9 @@ import { getToken, initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
 import { router } from "./router.js";
+import GamePlay from "../components/GamePlay.js";
+import GamePlayQuad from "../components/GamePlayQuad.js";
+import { webSocketManager } from "./websocket.js";
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -164,10 +167,30 @@ const closeModalOnAccept = (ev) => {
 
 const closeModalOnReturnToGame = () => {
     console.log('closeModalOnReturnToGame');
+    const containerId = (GamePlay.instance) ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
 
     initToken()
         .then((accessToken) => {
-            //ReturnToGame, ExitGame removeEventListener
+            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+            if (btnReturnToGame) {
+                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
+            }
+            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+            if (btnExitGame) {
+                btnExitGame.removeEventListener('click', closeModalOnExitGame);
+            }
+        })
+        .then(() => {
+            window.history.pushState({}, null, `/game/${containerId}`);
+            closeModal();
+        });
+}
+
+const closeModalOnGameOver = () => {
+    console.log('/////closeModalOnGameOver');
+
+    initToken()
+        .then((accessToken) => {
             const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
             if (btnReturnToGame) {
                 btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
@@ -182,13 +205,14 @@ const closeModalOnReturnToGame = () => {
         });
 }
 
+//todo: =>router / socket切断
 const closeModalOnExitGame = (ev) => {
     ev.preventDefault();
-    console.log('closeModalOnExitGame');
+    console.log('/////closeModalOnExitGame');
+    const containerId = (GamePlay.instance) ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
 
     initToken()
         .then((accessToken) => {
-            //ReturnToGame, ExitGame removeEventListener
             const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
             if (btnReturnToGame) {
                 btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
@@ -200,7 +224,12 @@ const closeModalOnExitGame = (ev) => {
         })
         .then(async () => {
             closeModal();
-            history.pushState(null, null, ev.target.href);
+            webSocketManager.closeWebSocket(containerId);
+            if (GamePlay.instance) {
+                GamePlay.instance.containerId = '';
+            } else if (GamePlayQuad.instance) {
+                GamePlayQuad.instance.containerId = '';
+            }
             try {
                 await router(getToken('accessToken'));
             } catch (error) {
@@ -319,10 +348,9 @@ const updateModalAvailablePlayers = (availablePlayers) => {
     }
 }
 
-const showModalExitGame = (link) => {
+const showModalExitGame = () => {
     const args = {
         titleModal: labels.modal.titleExitGame,
-        link: link,
         labelExitGame: labels.modal.labelExitGame,
         labelReturnToGame: labels.modal.labelReturnToGame,
     }
@@ -330,5 +358,5 @@ const showModalExitGame = (link) => {
     showModal(elHtml);
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame, closeModalOnReturnToGame };
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame, closeModalOnReturnToGame, closeModalOnGameOver };
 

@@ -60,10 +60,6 @@ const linkSpa = async (ev) => {
     if (window.location.href === ev.target.href || !link) {
         return;
     }
-    if (window.location.href.indexOf('/game/pong/play') !== -1 || window.location.href.indexOf('/game/pong4/play') !== -1) {
-        showModalExitGame(link);
-        return;
-    }
     history.pushState(null, null, link);
     try {
         await router(getToken('accessToken'));
@@ -101,6 +97,11 @@ const replaceView = async (matchRoute) => {
 const router = async (accessToken) => {
     if (accessToken instanceof PopStateEvent) {
         accessToken = getToken('accessToken');
+    }
+    //game進行中のexit
+    if ((GamePlay.instance && GamePlay.instance.containerId) || (GamePlayQuad.instance && GamePlayQuad.instance.containerId)) {
+        showModalExitGame();
+        return ;
     }
 
     console.log('router in');
