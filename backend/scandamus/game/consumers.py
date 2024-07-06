@@ -66,11 +66,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                     await handle_reject_game(self, text_data_json)
                 elif action == 'cancelGame':
                     await handle_cancel_game(self, text_data_json)
-                # # join_gameは廃止？
-                # elif action == 'joinGame':
-                #     await handle_join_game(self, token)
-                # elif action == 'cancel':
-                #     await handle_join_game_cancel(self)
             elif msg_type == 'friendRequest':
                 if action == 'requestByUsername':
                     await send_friend_request_by_username(self, text_data_json['username'])
