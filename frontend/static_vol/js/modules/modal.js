@@ -9,6 +9,8 @@ import { router } from "./router.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
 import { webSocketManager } from "./websocket.js";
+import { SiteInfo } from "./SiteInfo.js";
+import PageBase from "../components/PageBase.js";
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -205,11 +207,30 @@ const closeModalOnGameOver = () => {
         });
 }
 
-//todo: =>router / socket切断
+const setScoreToInvalid = () => {
+    const siteInfo = new SiteInfo();
+    const userName = siteInfo.getUsername();
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'GamePlay') || PageBase.isInstance(PageBase.instance, 'GamePlayQuad'))
+                                ? PageBase.instance : null;
+    if (!currentPage) return;
+    for (let i = 0; i < 4; i++) {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay') && i > 2) break;
+        const player = `player${i+1}`;
+        const score = `score${i+1}`;
+
+        if (currentPage[player] === userName) {
+            // 対応するスコアを -1 に設定
+            currentPage[score] = -1;
+            console.log(`Set ${score} to -1 for player ${userName}`);
+            break ;
+        }
+    }
+}
+
 const closeModalOnExitGame = (ev) => {
     ev.preventDefault();
-    console.log('/////closeModalOnExitGame');
-    const containerId = (GamePlay.instance) ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
+    console.log('closeModalOnExitGame');
+    const containerId = PageBase.isInstance(PageBase.instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
 
     initToken()
         .then((accessToken) => {
@@ -225,11 +246,8 @@ const closeModalOnExitGame = (ev) => {
         .then(async () => {
             closeModal();
             webSocketManager.closeWebSocket(containerId);
-            if (GamePlay.instance) {
-                GamePlay.instance.containerId = '';
-            } else if (GamePlayQuad.instance) {
-                GamePlayQuad.instance.containerId = '';
-            }
+            //todo: score -1に
+            //setScoreToInvalid();
             try {
                 await router(getToken('accessToken'));
             } catch (error) {
@@ -352,7 +370,7 @@ const showModalExitGame = () => {
     const args = {
         titleModal: labels.modal.titleExitGame,
         labelExitGame: labels.modal.labelExitGame,
-        labelReturnToGame: labels.modal.labelReturnToGame,
+        labelReturnToGame: labels.modal.labelReturnToGame
     }
     const elHtml = getModalHtml('exitGame', args);
     showModal(elHtml);
