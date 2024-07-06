@@ -246,8 +246,14 @@ const closeModalOnExitGame = (ev) => {
         .then(async () => {
             closeModal();
             webSocketManager.closeWebSocket(containerId);
-            //todo: score -1に
+            if (GamePlay.instance) {
+                GamePlay.instance.containerId = '';
+            } else if (GamePlayQuad.instance) {
+                GamePlayQuad.instance.containerId = '';
+            }
+            //todo: score -1にする
             //setScoreToInvalid();
+            //todo: status, current_match更新
             try {
                 await router(getToken('accessToken'));
             } catch (error) {
