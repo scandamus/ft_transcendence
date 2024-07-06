@@ -57,8 +57,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
-        if self.scheduled_task:
-            self.scheduled_task.cancel()
         if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
             logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
             self.players_ids[self.match_id].remove(self.players_id)
@@ -168,6 +166,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                         'type': 'send_game_over_message',
                         'message': 'GameOver',
                     })
+                    self.scheduled_task.cancel()
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
             # 今は特に書いていないのでpass
