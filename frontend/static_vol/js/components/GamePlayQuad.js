@@ -18,6 +18,7 @@ export default class GamePlayQuad extends PageBase {
         this.title = 'GamePlayQuad';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+        this.containerId = '';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
     }
@@ -36,9 +37,9 @@ export default class GamePlayQuad extends PageBase {
         try {
             const gameMatchId = this.params['id'].substr(1);
             console.log('============ ', gameMatchId, ' ============');
-            const containerId = `pong4/${gameMatchId}`;
-            console.log(`URL = ${containerId}`);
-            const pongSocket = await webSocketManager.openWebSocket(containerId);
+            this.containerId = `pong4/${gameMatchId}`;
+            console.log(`URL = ${this.containerId}`);
+            const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById('playBoard');
             // 2dの描画コンテキストにアクセスできるように
@@ -160,7 +161,7 @@ export default class GamePlayQuad extends PageBase {
                     }));
                     document.removeEventListener('keydown', keyDownHandler, false);
                     document.removeEventListener('keyup', keyUpHandler, false);
-                    webSocketManager.closeWebSocket(containerId);
+                    webSocketManager.closeWebSocket(this.containerId);
                     window.history.pushState({}, null, '/dashboard');
                     await router(true);
                 }
@@ -187,13 +188,13 @@ export default class GamePlayQuad extends PageBase {
                 }
             }
 
-            function sendKeyEvent(key, is_pressed) {
+            const sendKeyEvent = (key, is_pressed) => {
                 let data = {
                     action: 'key_event',
                     key: key,
                     is_pressed: is_pressed,
                 };
-                webSocketManager.sendWebSocketMessage(containerId, data);
+                webSocketManager.sendWebSocketMessage(this.containerId, data);
             }
 
             pongSocket.onmessage = function (e) {
