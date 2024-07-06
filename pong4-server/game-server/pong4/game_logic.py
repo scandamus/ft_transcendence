@@ -91,27 +91,33 @@ class Ball:
         self.flag = True
 
     def move_for_multiple(self, right_paddle, left_paddle, upper_paddle, lower_paddle, walls):
+        sound_type = None
         # 壁を超えているか
         if CANVAS_WIDTH_MULTI < self.x + self.dx:
             right_paddle.decrement_score()
             self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return right_paddle.score > 0
+            sound_type = 'scored'
+            return right_paddle.score > 0, sound_type
         elif self.x + self.size + self.dx < 0:
             left_paddle.decrement_score()
             self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return left_paddle.score > 0
+            sound_type = 'scored'
+            return left_paddle.score > 0, sound_type
         elif self.y + self.size + self.dy < 0:
             upper_paddle.decrement_score()
             self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return upper_paddle.score > 0
+            sound_type = 'scored'
+            return upper_paddle.score > 0, sound_type
         elif CANVAS_HEIGHT_MULTI < self.y + self.dy:
             lower_paddle.decrement_score()
             self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
-            return lower_paddle.score > 0
+            sound_type = 'scored'
+            return lower_paddle.score > 0, sound_type
 
         for wall in walls:
             collision_detected = self.collision_detection(wall, wall.position)
             if collision_detected == 'collision_front':
+                sound_type = 'wall_collision'
                 tmp = random.uniform(0, 0.5)
                 # 座標調整
                 if wall.position == 'RIGHT':
@@ -130,15 +136,16 @@ class Ball:
                     tmp = tmp if self.x > 0 else -tmp
                     self.dy = -self.dy
                     self.y = wall.y - wall.thickness
-                return True
+                return True, sound_type
             elif collision_detected == 'collision_side':
+                sound_type = 'wall_collision'
                 if wall.position == 'RIGHT' or wall.position == 'LEFT':
                     self.dy = -self.dy
                     self.x += self.dx
                 elif wall.position == 'UPPER' or wall.position == 'LOWER':
                     self.dx = -self.dx
                     self.y += self.dy
-                return True
+                return True, sound_type
         # x座標の操作
         collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
         if collision_detected_right == 'collision_front':
@@ -189,7 +196,9 @@ class Ball:
             self.y += self.dy
         if not collision_detected_upper and not collision_detected_lower:
             self.x += self.dx
-        return True
+        if collision_detected_left or collision_detected_right or collision_detected_lower or collision_detected_upper:
+            sound_type = 'paddle_collision'
+        return True, sound_type
 
     def collision_detection(self, obj, obj_side):
         next_x = self.x + self.dx

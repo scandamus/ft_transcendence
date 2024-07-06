@@ -1,6 +1,6 @@
 import { getValidToken, refreshAccessToken } from "./token.js";
 import { webSocketManager } from "./websocket.js";
-import { closeModal, showModalReceiveMatchRequest } from "./modal.js";
+import { closeModal, showModalReceiveMatchRequest, showModalWaitForOpponent } from "./modal.js";
 import { addNotice } from "./notice.js";
 import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
@@ -37,6 +37,8 @@ export const pongHandler = (event, containerId) => {
         }
         else if (data.type === 'friendStatus') {
             handleFriendStatusReceived(data);
+        else if (data.type === 'tournament') {
+            handleTournamentReceived(data);
         }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
@@ -203,6 +205,7 @@ const handleLoungeMatchReceived = (data) => {
     }
 }
 
+
 const handleFriendStatusReceived = (data) => {
     const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
                                 ? PageBase.instance : null;
@@ -214,5 +217,18 @@ const handleFriendStatusReceived = (data) => {
         if (currentPage) {
             updateFriendsList(currentPage).then(() => {});
         }
+
+const handleTournamentReceived = (data) => {
+    if (data.action === 'created') {
+        const startUTC = new Date(data.start);
+        const startLocal = startUTC.toLocaleString();
+        console.log(`UTC Time: ${startUTC.toISOString()}`);
+        console.log(`Local Time: ${startLocal}`);
+        const message = `${data.name} - ${startLocal} が作成されました`;
+        console.log(`${message}`);
+        addNotice(message, false);
+    } else if (data.action === 'alreadyExists') {
+        const message = `同名のトーナメントがすでに存在しています`;
+        addNotice(message, true);
     }
 }

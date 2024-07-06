@@ -7,6 +7,8 @@ from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
 from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
 from players.friend_utils import send_status_to_friends
+from .tournament import handle_create_tournament
+from .match_utils import get_player_by_user
 from channels.db import database_sync_to_async
 from channels.auth import get_user
 
@@ -59,8 +61,6 @@ class LoungeSession(AsyncWebsocketConsumer):
             elif msg_type == 'friendRequest':
                 if action == 'requestByUsername':
                     await send_friend_request_by_username(self, text_data_json['username'])
-                elif action == 'sendRequest':
-                    await send_friend_request(self, text_data_json['user_id'])
                 elif action == 'acceptRequest':
                     await accept_friend_request(self, text_data_json['request_id'])
                 elif action == 'declineRequest':
@@ -72,6 +72,9 @@ class LoungeSession(AsyncWebsocketConsumer):
                     await handle_join_lounge_match(self, token, text_data_json['game'])
                 elif action == 'requestExitRoom':
                     await handle_exit_lounge_room(self, text_data_json['game'])
+            elif msg_type == 'tournament':
+                if action == 'createTournament':
+                    await handle_create_tournament(self, text_data_json)
             else:
                 await self.send(text_data=json.dumps({
                     'message': 'response from server'

@@ -178,12 +178,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         timestamp = dt.utcnow().isoformat()
         if self.player_name == 'player2':
             self.game_continue = False
-        await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
 
     async def update_ball_and_send_data(self):
         self.right_paddle.move()
         self.left_paddle.move()
-        game_continue = self.ball.move(self.right_paddle, self.left_paddle)
+        game_continue, sound_type = self.ball.move(self.right_paddle, self.left_paddle)
         ball_tmp = {
             'x': self.ball.x,
             'y': self.ball.y,
@@ -213,17 +213,19 @@ class PongConsumer(AsyncWebsocketConsumer):
             'ball': ball_tmp,
             'right_paddle': right_paddle_tmp,
             'left_paddle': left_paddle_tmp,
+            'sound_type': sound_type,
         })
         return game_continue
 
     async def ball_message(self, data):
         message = data['message']
         timestamp = data['timestamp']
+        sound_type = data['sound_type']
         if self.player_name != 'player1':
             await self.init_game_state_into_self(data)
-        await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=True, message=message, timestamp=timestamp, sound_type=sound_type)
 
-    async def send_game_data(self, game_status, message, timestamp):
+    async def send_game_data(self, game_status, message, timestamp, sound_type):
         await self.send(text_data=json.dumps({
             'message': message + f'\n{timestamp}\n\n',
             'game_status': game_status,
@@ -248,6 +250,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'vertical': self.left_paddle.length,
                 'score': self.left_paddle.score,
             },
+            'sound_type': sound_type,
         }))
 
     def reset_game_data(self):

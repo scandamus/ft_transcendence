@@ -3,10 +3,16 @@
 import { addListenerToList, removeListenerAndClearList } from './listenerCommon.js';
 import { showModalSendMatchRequest } from "./modal.js";
 import { acceptFriendRequest, declineFriendRequest, removeFriend, sendFriendRequest } from "./friendsRequest.js";
+import { labels } from "./labels.js";
 
 const sendFriendRequestHandler = (ev) => {
     const username = ev.target.dataset.username;
     sendFriendRequest(username);
+    const RecommendedWrapper = ev.target.closest('.blockFriendRecommended_friends');
+    ev.target.closest('.unitFriend').remove();
+    if (RecommendedWrapper.children.length === 0) {
+        RecommendedWrapper.innerHTML = `<p>${labels.friends.msgNoRecommended}</p>`
+    }
 }
 
 const acceptFriendRequestHandler = (ev) => {
@@ -100,12 +106,13 @@ const addListenRemoveFriend = (pageInstance) => {
     });
 }
 
-//RequestFriendは表示中の更新がないのでlistListenInInstance[]で管理
+// RequestFriend(Recommended)は表示中の増加がないのでlistListenInInstance[]で管理。
+// clickで消えるのでonceオプションのaddEventListenerに登録
 const addListenSendFriendRequest = (pageInstance) => {
     const btnRequestFriend = document.querySelectorAll('.unitFriendButton_friendRequest');
     const boundSendFriendRequestHandler = sendFriendRequestHandler.bind(pageInstance);
     btnRequestFriend.forEach((btn) => {
-        pageInstance.addListListenInInstance(btn, boundSendFriendRequestHandler, 'click');
+        pageInstance.addListListenOptOnesInInstance(btn, boundSendFriendRequestHandler, 'click');
         console.log(`[Add listener] send friend request to ${btn.dataset.username}`);
     });
 }
