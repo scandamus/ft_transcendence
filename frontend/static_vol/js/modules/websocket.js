@@ -70,10 +70,6 @@ class WebSocketManager {
         console.log(`Default handler message from ${containerId}:`, data)
     }
 
-    loadGameContent(jwt, containerId) {
-        console.log(`Loading ${containerId}`);
-   }
-
     handleMessage(containerId, event) {
         const handler = this.messageHandlers[containerId];
         if (handler) {

@@ -5,25 +5,42 @@ import { resetListenFriendList, resetListenFriendRequestList } from "./friendLis
 import { labels } from "./labels.js";
 import PageBase from "../components/PageBase.js";
 
+const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 const updateFriendsList = async (pageInstance) => {
     console.log('updateFriendList in');
     const isPageFriend = PageBase.isInstance(pageInstance, 'Friends');
     try {
-        const friends = await fetchFriends();
-        const listFriendsWrappr = document.querySelector('.blockFriends_friends');
-        if (friends.length === 0) {
-            listFriendsWrappr.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
+        let friends = await fetchFriends(false);
+        if (friends && !isPageFriend && friends.length > 1) {
+            shuffleArray(friends);
+        }
+        const listFriendsWrapper = document.querySelector('.blockFriends_friends');
+        if (!friends || friends.length === 0) {
+            listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
-            listFriendsWrappr.innerHTML = '';
-            friends.forEach(friend => {
+            listFriendsWrapper.innerHTML = '';
+            for (let i = 0; i < friends.length; i++) {
+                if (!isPageFriend && i >= 3) break; // isPageFriendがfalseの場合、3件で打ち切る
+                const friend = friends[i];
+                const avatar = friend.avatar ? friend.avatar : '/images/avatar_default.png';
+                //todo: friendsの状況に応じて online/ offline / busy で切り替える
+                const onlineStatus = 'online';
+                const disableMatchButton = onlineStatus === 'online' ? '' : 'disabled';
                 let friendElement = `
-                    <section class="unitFriend">
+                    <section class="unitFriend unitFriend-${onlineStatus}">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${friend.username}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${friend.username}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                            <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}">${labels.friends.labelMatch}</button></li>`;
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}" data-avatar="${avatar}" ${disableMatchButton}>${labels.friends.labelMatch}</button></li>`;
                 if (isPageFriend) {
                     friendElement += `
                             <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.friends.labelRmFriend}</button></li>
@@ -32,8 +49,8 @@ const updateFriendsList = async (pageInstance) => {
                 friendElement += `</ul>
                     </section>
                 `;
-                listFriendsWrappr.innerHTML += friendElement;
-            });
+                listFriendsWrapper.innerHTML += friendElement;
+            }
             resetListenFriendList(pageInstance);
         }
     } catch (error) {
@@ -44,10 +61,10 @@ const updateFriendsList = async (pageInstance) => {
 const updateFriendRequestList = async (pageInstance) => {
     console.log('updateFriendRequestList in');
     try {
-        const requests = await fetchFriendRequests();
-            const secRequestWrapper = document.querySelector('.blockFriendRequest');
-            const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (requests.length === 0) {
+        const requests = await fetchFriendRequests(false);
+        const secRequestWrapper = document.querySelector('.blockFriendRequest');
+        const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
+        if (!requests || requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
             }
@@ -57,11 +74,12 @@ const updateFriendRequestList = async (pageInstance) => {
             }
             listRequestWrapper.innerHTML = '';
             requests.forEach(request => {
+                const avatar = request.from_user_avatar ? request.from_user_avatar : '/images/avatar_default.png';
                 const requestElement = `
                     <section class="unitFriend">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${request.from_user}</h4>
-                            <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=${request.from_user}&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
+                            <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
                             <li><button type="button" class="unitFriendButton_friendAccept unitButton btnAccept" data-username="${request.from_user}" data-id="${request.id}">${labels.friends.labelAccept}</button></li>

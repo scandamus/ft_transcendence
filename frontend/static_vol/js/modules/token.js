@@ -1,9 +1,9 @@
 'use strict';
 
-//localstorageにtokenがkey自体ない=>ログアウト状態
+//sessionStorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
 const getToken = (nameToken) => {
-    const token = localStorage.getItem(nameToken);
+    const token = sessionStorage.getItem(nameToken);
     if (token === null) {
         return null;//未ログイン
     }
@@ -31,8 +31,8 @@ const refreshAccessToken = async () => {
         if (response.ok) {
             const refreshData = await response.json();
             console.log(`refreshData: `, refreshData);
-            localStorage.setItem('accessToken', refreshData.access);
-            localStorage.setItem('refreshToken', refreshData.refresh);
+            sessionStorage.setItem('accessToken', refreshData.access);
+            sessionStorage.setItem('refreshToken', refreshData.refresh);
             console.log(`Successfully token refreshed: ${refreshData.access}`);
             return refreshData.access;
         }

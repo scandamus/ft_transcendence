@@ -76,7 +76,7 @@ export default class SignUpConfirm extends PageBase {
             password: sessionStorage.getItem('password')
         };
 
-        fetch('https://localhost/api/players/register/', {
+        fetch('/api/players/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
