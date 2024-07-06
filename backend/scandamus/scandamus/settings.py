@@ -55,7 +55,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'channels',
     'players.apps.PlayersConfig',
-    'game.apps.GameConfig',
+    #'game.apps.GameConfig',
+    'game',
+    'django_celery_beat',
+    'django_celery_results',
     # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。
     # 'players',
     # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
@@ -270,3 +273,4 @@ CHANNEL_LAYERS = {
     },
 }
 
+CELERY_IMPORTS = ['game.tasks']

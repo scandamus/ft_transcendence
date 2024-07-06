@@ -3,6 +3,7 @@ import asyncio
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
+from players.models import Player
 from .utils import generate_game_jwt
 from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
 from players.auth import handle_auth
@@ -39,6 +40,7 @@ class LoungeSession(AsyncWebsocketConsumer):
             if msg_type == 'authWebSocket':
                 await handle_auth(self, token)
                 LoungeSession.players[self.user.username] = self
+                logger.info(f'LoungeSession.players: {list(LoungeSession.players.keys())}')
             elif msg_type == 'friendMatchRequest':
                 if action == 'requestGame':
                     await handle_request_game(self, text_data_json)
@@ -91,6 +93,21 @@ class LoungeSession(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.username in self.players:
             del LoungeSession.players[self.user.username]
+            await self.channel_layer.group_discard(
+                self.group_name,
+                self.chennel_name
+            )
             logger.info(f'User {self.user.username} disconnected and removed from players list.')
+            logger.info(f'LoungeSession.players: {list(LoungeSession.players.keys())}')
         else:
             logger.info('Disconnect called but no user found.')
+
+    async def send_notification(self, event):
+        player_id = event['player_id']
+        message = event['message']
+        logger.info(f'player_id:{player_id}  send_notification {message}')
+        await self.send(text_data=json.dumps({
+                'type': 'tournamentMatch',
+                'action': event['action'],
+                'message': message            
+        }))
