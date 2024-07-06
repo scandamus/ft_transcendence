@@ -12,7 +12,12 @@ import { switchDisplayAccount } from "../modules/auth.js";
 import { addNotice } from "../modules/notice.js";
 
 export default class Dashboard extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (Dashboard.instance) {
+            return Dashboard.instance;
+        }
         super(params);
         Dashboard.instance = this;
         this.siteInfo = new SiteInfo();
@@ -299,6 +304,7 @@ export default class Dashboard extends PageBase {
         //rmUploadAvatarList
         this.removeListenUploadAvatar();
 
+        Dashboard.instance = null;
         super.destroy();
     }
 }

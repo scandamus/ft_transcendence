@@ -7,7 +7,12 @@ import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
 
 export default class GamePlayQuad extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (GamePlayQuad.instance) {
+            return GamePlayQuad.instance;
+        }
         super(params);
         GamePlayQuad.instance = this;
         this.title = 'GamePlayQuad';
@@ -208,6 +213,7 @@ export default class GamePlayQuad extends PageBase {
     }
 
     destroy() {
+        GamePlayQuad.instance = null;
         super.destroy();
     }
 }

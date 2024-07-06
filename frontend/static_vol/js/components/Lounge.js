@@ -5,7 +5,12 @@ import { showModalWaitForOpponent } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
 
 export default class Lounge extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (Lounge.instance) {
+            return Lounge.instance;
+        }
         super(params);
         Lounge.instance = this;
         this.title = labels.lounge.title;
@@ -51,6 +56,7 @@ export default class Lounge extends PageBase {
     }
 
     destroy() {
+        Lounge.instance = null;
         super.destroy();
     }
 }

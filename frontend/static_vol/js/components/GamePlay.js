@@ -8,7 +8,12 @@ import { initToken } from '../modules/token.js';
 import { closeModalOnReturnToGame } from "../modules/modal.js";
 
 export default class GamePlay extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (GamePlay.instance) {
+            return GamePlay.instance;
+        }
         super(params);
         GamePlay.instance = this;
         this.title = 'GamePlay';
@@ -169,6 +174,7 @@ export default class GamePlay extends PageBase {
     }
 
     destroy() {
+        GamePlay.instance = null;
         super.destroy();
     }
 }
