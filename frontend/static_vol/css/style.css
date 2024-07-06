@@ -162,6 +162,10 @@ hr {
   cursor: pointer;
 }
 
+.headerNav-login:hover h2{
+  animation: 0.2s ease-out linkHover1;
+}
+
 .headerNav-login .thumb {
   margin-right: 6px;
 }
