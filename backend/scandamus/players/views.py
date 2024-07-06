@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
 from django.contrib.auth.models import User
-from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer
+from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, FriendSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -179,7 +179,7 @@ class UserInfoView(APIView):
 #         })
 
 class FriendListView(generics.ListAPIView):
-    serializer_class = UsernameSerializer # PlayerSerializer
+    serializer_class = FriendSerializer # PlayerSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

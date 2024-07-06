@@ -81,13 +81,13 @@ class PlayerSerializer(serializers.ModelSerializer):
         model = Player
         fields = '__all__'
 
-class UsernameSerializer(serializers.ModelSerializer):
+class FriendSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = Player
-        fields = ['username', 'avatar']
+        fields = ['username', 'avatar', 'online']
 
     def get_avatar(self, obj):
         return obj.avatar.url if obj.avatar else ''
