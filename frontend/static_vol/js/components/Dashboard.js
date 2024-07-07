@@ -14,7 +14,7 @@ import {
     from '../modules/friendListener.js';
 import { addListenerToList, removeListenerAndClearList } from "../modules/listenerCommon.js";
 import { getToken } from "../modules/token.js";
-import { switchDisplayAccount } from "../modules/auth.js";
+import { switchDisplayAccount, fetchLevel } from "../modules/auth.js";
 import { addNotice } from "../modules/notice.js";
 
 export default class Dashboard extends PageBase {
@@ -113,6 +113,7 @@ export default class Dashboard extends PageBase {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
             getMatchLog().then(() => {});
+            fetchLevel().then(() => {});
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;

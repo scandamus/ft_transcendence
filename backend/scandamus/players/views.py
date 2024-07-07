@@ -168,6 +168,23 @@ class UserInfoView(APIView):
         return Response(data)
 
 
+class UserLevelView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        player = Player.objects.get(user=user)
+
+        data = {
+            'is_authenticated': user.is_authenticated,
+            'level': player.level,
+            'win_count': player.win_count,
+            'lose_count': player.play_count - player.win_count,
+        }
+        return Response(data)
+
+
 # class CustomAuthToken(ObtainAuthToken):
 #     def post(self, request, *args, **kwargs):
 #         serializer = self.serializer_class(data=request.data,
