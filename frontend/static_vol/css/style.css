@@ -1097,6 +1097,12 @@ input.has-input:invalid {
   position: relative;
 }
 
+.playBoardWrap-quad {
+  display: flex;
+  flex-direction: column;
+  padding: 0 60px;
+}
+
 .listPlayerActiveMatch {
   display: flex;
   justify-content: space-between;
@@ -1104,10 +1110,9 @@ input.has-input:invalid {
   font-size: 2.6rem;
 }
 
-.playBoardWrap-quad {
-  display: flex;
-  flex-direction: column;
-  padding: 0 60px;
+.listPlayerActiveMatch-dual {
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .playBoardWrap-quad .listPlayerActiveMatch-quad-first-half {
@@ -1123,13 +1128,10 @@ input.has-input:invalid {
   order: 2;
 }
 
-.listPlayerActiveMatch-dual {
-  margin-bottom: 10px;
-}
-
 .listPlayerActiveMatch li {
   display: flex;
   align-items: flex-end;
+  flex: 1 1 auto;
   height: 50px;
 }
 
