@@ -88,6 +88,9 @@ export const labels_la = {
         labelTitleInPlay: '',
         labelTitleRecent: '',
         labelTournamentLog: '',
+        descTournamentTitle: [''],
+        descTournamentStart: [''],
+        descNickname: [''],
     },
     modal: {
         title: '',
