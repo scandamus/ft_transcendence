@@ -5,7 +5,7 @@ import logging
 from django.contrib.auth.models import User
 from .models import Player
 from .models import Tournament, Entry
-from .serializers import TournamentSerializer
+from .serializers import TournamentSerializer, EntrySerializer
 from django.conf import settings
 from django.db import transaction, IntegrityError
 from channels.db import database_sync_to_async
@@ -51,9 +51,10 @@ async def handle_create_tournament(consumer, data):
                 'period': tournament.start.isoformat(),
             }))
     else:
+        logger.error(f"invalid tournament name: {serializer.errors}")
         await consumer.send(text_data=json.dumps({
             'type': 'tournament',
-            'action': 'invalidData',
+            'action': 'invalidTournamentTitle',
             'message': serializer.errors
         }))
 
@@ -109,35 +110,44 @@ async def handle_entry_tournament(consumer, data):
         logger.error(f"No player found for user: {user.username}")
         await send_entry_error(consumer, 'invalidPlayer')
         return
-    
-    tournament, nickname = await get_tournament_and_nickname(consumer, data)
-    if tournament is None:
-        await send_entry_error(consumer, 'invalidTournament')
-        return
 
-    entry = await get_entry(tournament, player)
-    if entry:
-        logger.info(f"Entry already exists for player {user.username} in tournament {tournament.name}")
-        await send_entry_error(consumer, 'alreadyEnterd')
-        return
+    serializer = EntrySerializer(data=data)
+    if serializer.is_valid():
+        tournament, nickname = await get_tournament_and_nickname(consumer, data)
+        if tournament is None:
+            await send_entry_error(consumer, 'invalidTournament')
+            return
 
-    if await is_duplicate_nickname(tournament, nickname):
-        logger.info(f'Nickname {nickname} already exists in tournament {tournament}')
-        await send_entry_error(consumer, 'duplicateNickname')
-        return
+        entry = await get_entry(tournament, player)
+        if entry:
+            logger.info(f"Entry already exists for player {user.username} in tournament {tournament.name}")
+            await send_entry_error(consumer, 'alreadyEnterd')
+            return
 
-    result = await create_entry(tournament, player, nickname)
-    if result is 'capacityFull':
-        logger.info(f'{tournament.name} capacity is full')
-        await send_entry_error(consumer, 'capacityFull')
-        return
-    
-    logger.info(f'nickname {result.nickname} just entried {tournament.name}')
-    await consumer.send(text_data=json.dumps({
-        'type': 'tournament',
-        'action': 'entryDone',
-        'name': tournament.name
-    }))
+        if await is_duplicate_nickname(tournament, nickname):
+            logger.info(f'Nickname {nickname} already exists in tournament {tournament}')
+            await send_entry_error(consumer, 'duplicateNickname')
+            return
+
+        result = await create_entry(tournament, player, nickname)
+        if result is 'capacityFull':
+            logger.info(f'{tournament.name} capacity is full')
+            await send_entry_error(consumer, 'capacityFull')
+            return
+
+        logger.info(f'nickname {result.nickname} just entried {tournament.name}')
+        await consumer.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': 'entryDone',
+            'name': tournament.name
+        }))
+    else:
+        logger.error(f"invalid nickname: {serializer.errors}")
+        await consumer.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': 'invalidNickname',
+            'message': serializer.errors
+        }))
 
 async def handle_cancel_entry(consumer, data):
     user, error = await authenticate_token(data['token'])

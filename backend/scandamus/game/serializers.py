@@ -33,11 +33,7 @@ tournamentnameCharacterTypesValidator = RegexValidator(
 class CustomNicknameValidator:
     def __call__(self, nickname):
         errors = []
-
-        # unique check
-        if Tournament.objects.filter(name=nickname).exists():
-            errors.append('isExists')
-
+        
         # len
         if len(nickname) < 3 or len(nickname) > 20:
             errors.append('invalidNicknameLenBackend')
@@ -108,6 +104,12 @@ class MatchSerializer(serializers.ModelSerializer):
                 player.save()
 
 class EntrySerializer(serializers.ModelSerializer):
+    nickname = serializers.CharField(
+        validators=[CustomNicknameValidator(), nicknameCharacterTypesValidator],
+        required=True,
+        error_messages={'blank': 'invalidNicknameBlank'}
+    )
+
     class Meta:
         model = Entry
-        fields = '__all__'
+        fields = ['nickname']
