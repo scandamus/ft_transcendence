@@ -40,8 +40,6 @@ export default class Dashboard extends PageBase {
     }
 
     async renderHtml() {
-        const win = 70, loss = 20;
-        const textWinLoss = (labels.match.fmtWinLoss).replace('$win', win).replace('$loss', loss);
         return `
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">
@@ -56,7 +54,7 @@ export default class Dashboard extends PageBase {
                             <li><button type="submit" id="btnAvatarUpload" class="unitButton">Upload</button></li>
                         </ul>
                     </form>
-                    <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${textWinLoss}</p>
+                    <div class="blockPlayerDetail_stats unitBox"></div>
                     <ul class="unitListBtn unitListBtn-w100">
                         <li><a href="/lounge" class="unitButton" data-link>${labels.lounge.title}</a></li>
                         <li><a href="/tournament" class="unitButton" data-link>${labels.tournament.title}</a></li>
@@ -113,10 +111,23 @@ export default class Dashboard extends PageBase {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
             getMatchLog().then(() => {});
-            fetchLevel().then(() => {});
+            fetchLevel().then((data) => {
+                this.displayMatchStats(data);
+            });
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
+        }
+    }
+
+    displayMatchStats(data) {
+        const statsWrap = document.querySelector('.blockPlayerDetail_stats');
+        if (data) {
+            const textWinLoss = (labels.match.fmtWinLoss).replace('$win', data.win_count).replace('$loss', data.lose_count);
+            statsWrap.innerHTML = `
+                <p class="unitLevel">LEVEL: ${data.level}</p>
+                <p class="unitWinCount">${textWinLoss}</p>
+            `;
         }
     }
 
