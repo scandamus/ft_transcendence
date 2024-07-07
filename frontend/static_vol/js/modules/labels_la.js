@@ -88,8 +88,8 @@ export const labels_la = {
         msgNoMatch: 'nullum iam ludum',
     },
     tournament: {
-        title: 'Tournament',
-        labelCreateTournament: 'certamen facio',
+        title: 'Certamen',
+        labelCreateTournament: 'certamen facere',
         labelTournamentTitle: 'nomen certaminis',
         labelStart: 'tempus',
         labelEntry: 'intro',
