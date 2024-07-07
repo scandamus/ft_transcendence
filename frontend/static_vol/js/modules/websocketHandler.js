@@ -37,6 +37,7 @@ export const pongHandler = (event, containerId) => {
         }
         else if (data.type === 'friendStatus') {
             handleFriendStatusReceived(data);
+        }
         else if (data.type === 'tournament') {
             handleTournamentReceived(data);
         }
@@ -205,7 +206,6 @@ const handleLoungeMatchReceived = (data) => {
     }
 }
 
-
 const handleFriendStatusReceived = (data) => {
     const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
                                 ? PageBase.instance : null;
@@ -217,6 +217,8 @@ const handleFriendStatusReceived = (data) => {
         if (currentPage) {
             updateFriendsList(currentPage).then(() => {});
         }
+    }
+}
 
 const handleTournamentReceived = (data) => {
     if (data.action === 'created') {
