@@ -63,7 +63,7 @@ const entryTournament = (args) => `
         <form id="formEntryTournament" class="formEntryTournament blockForm" action="" method="post">
             <dl class="blockForm_el">
                 <dt>${args.labelNickname}</dt>
-                <dd><input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required /></dd>
+                <dd><input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="20" required /></dd>
             </dl>
             <input type="hidden" name="idTitle" value="${args.labelTournamentId}">
             

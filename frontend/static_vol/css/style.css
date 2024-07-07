@@ -667,10 +667,6 @@ input.has-input:invalid {
   width: 100%;
 }
 
-.unitFormInput_input .listAnnotation {
-  margin-top: 10px;
-}
-
 .unitFormInput_input-confirm {
   padding: 0 0.5em;
   font-size: 2.6rem;
@@ -761,6 +757,7 @@ input.has-input:invalid {
 /* listAnnotation */
 .listAnnotation {
   list-style: none;
+  margin-top: 10px;
 }
 
 .listAnnotation li {
@@ -1679,6 +1676,7 @@ input.has-input:invalid {
 .blockModal_title strong {
   font-size: 3.2rem;
   line-height: 2;
+  display: inline-block;
 }
 
 .blockModal_header {
