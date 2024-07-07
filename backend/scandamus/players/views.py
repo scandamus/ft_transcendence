@@ -4,17 +4,21 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
+from game.models import Match
 from django.contrib.auth.models import User
-from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer
+from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, UsernameSerializer, MatchLogSerializer, RecommendedSerializer
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.parsers import MultiPartParser
+import random
 
 # from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
@@ -154,9 +158,12 @@ class UserInfoView(APIView):
 
     def get(self, request, format=None):
         user = request.user
+        player = Player.objects.get(user=user)
+
         data = {
             'is_authenticated': user.is_authenticated,
             'username': user.username,
+            'avatar': player.avatar.url if player.avatar else '',
         }
         return Response(data)
 
@@ -173,17 +180,6 @@ class UserInfoView(APIView):
 #             'user_id': user.pk,
 #             'username': user.username
 #         })
-
-class UserListView(generics.ListAPIView):
-    serializer_class = UserSerializer
-
-    def get_queryset(self):
-        queryset = (
-            User.objects.all()
-            .filter(is_superuser=False)
-            .exclude(id=self.request.user.id)
-        )
-        return queryset
 
 class FriendListView(generics.ListAPIView):
     serializer_class = UsernameSerializer # PlayerSerializer
@@ -202,4 +198,59 @@ class FriendRequestListView(generics.ListAPIView):
         user = self.request.user
         player = Player.objects.get(user=user)
         return FriendRequest.objects.filter(to_user=player)
-    
+
+class AvatarUploadView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def put(self, request, format=None):
+        user = request.user
+        player = Player.objects.get(user=user)
+        avatar_file = request.FILES.get('avatar')
+
+        if avatar_file:
+            player.avatar = avatar_file
+            player.save()
+            return Response({"newAvatar": player.avatar.url})
+        else:
+            return Response({"error": "No avatar file provided"}, status=400)
+
+class MatchLogView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        try:
+            player = Player.objects.get(user=user)
+        except Player.DoesNotExist:
+            return Response({'detail': 'Player not found'}, status=404)
+        matches = Match.objects.filter(
+            (Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)) & Q(tournament__isnull=True)
+        ).order_by('-id')[:5]
+        serializer = MatchLogSerializer(matches, many=True, context={'request': request})
+        return Response(serializer.data)
+
+class RecommendedView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        try:
+            player = Player.objects.get(user=user)
+        except Player.DoesNotExist:
+            return Response({'detail': 'Player not found'}, status=404)
+        current_friends = player.friends.all()
+        sent_requests = FriendRequest.objects.filter(from_user=player).values_list('to_user', flat=True)
+        matches = Match.objects.filter(
+            Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)
+        ).order_by('-id')[:30]
+        opponents = {
+            opponent for match in matches
+            for opponent in [match.player1, match.player2, match.player3, match.player4]
+            if opponent is not None and opponent != player and opponent not in current_friends and opponent.id not in sent_requests
+        }
+        opponents = list(opponents)
+        random.shuffle(opponents)
+        serializer = RecommendedSerializer(opponents[:5], many=True, context={'request': request})
+        return Response(serializer.data)

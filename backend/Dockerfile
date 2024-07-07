@@ -13,6 +13,8 @@ RUN pip install -r requirements.txt
 FROM base AS backend
 
 COPY tools/docker-entrypoint.sh /usr/local/bin/
+COPY tools/user_dummy.sql /usr/local/bin/
+COPY tools/player_dummy.sql /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]

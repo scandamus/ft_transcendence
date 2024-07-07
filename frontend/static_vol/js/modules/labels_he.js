@@ -34,6 +34,8 @@ export const labels_he = {
         tooShort: 'הזה עברית ',
         passwordIsNotSame: 'הזה עברית ',
         isExists: 'הזה עברית ',
+        loginError1: '',
+        loginError2: '',
     },
 
     dashboard: {
@@ -50,11 +52,13 @@ export const labels_he = {
         labelApply: 'הזה עברית ',
         labelSearch: 'הזה עברית ',
         labelSendRequest: 'הזה עברית ',
+        labelRequest: '',
         msgNoUsername: 'הזה עברית ',
         msgNoFriends: 'הזה עברית ',
         labelListFriends: 'הזה עברית ',
         labelReceivedRequest: 'הזה עברית ',
         labelRecommended: 'הזה עברית ',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',
@@ -74,6 +78,7 @@ export const labels_he = {
         labelWins: 'הזה עברית ',
         labelLosses: 'הזה עברית ',
         fmtWinLoss: '$win הזה עברית <br> $loss הזה עברית ',
+        msgNoMatch: '',
     },
     tournament: {
         title: 'Tournament',

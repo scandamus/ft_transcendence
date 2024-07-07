@@ -34,6 +34,8 @@ export const labels_ja = {
         tooShort: '短すぎます',
         passwordIsNotSame: '同じパスワードを入力してください',
         isExists: 'このユーザー名は使われています',
+        loginError1: 'ログインに失敗しました。ユーザー名とパスワードを確認してください',
+        loginError2: 'ログインできません',
     },
 
     dashboard: {
@@ -50,11 +52,13 @@ export const labels_ja = {
         labelApply: '対戦する',
         labelSearch: '友達申請を送る',
         labelSendRequest: '送信',
+        labelRequest: '友達申請',
         msgNoUsername: '友達申請を送るユーザー名を入力してください',
         msgNoFriends: '友達はまだいません',
         labelListFriends: '友達一覧',
         labelReceivedRequest: '受け取った友達申請',
         labelRecommended: 'あなたへのおすすめ',
+        msgNoRecommended: 'おすすめユーザーはいません',
     },
     lounge: {
         title: 'Lounge',
@@ -74,6 +78,7 @@ export const labels_ja = {
         labelWins: '勝',
         labelLosses: '敗',
         fmtWinLoss: '$win勝 $loss敗',
+        msgNoMatch: '対戦結果がありません',
     },
     tournament: {
         title: 'Tournament',

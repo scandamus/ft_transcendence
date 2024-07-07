@@ -136,6 +136,7 @@ hr {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   box-shadow: 0 3px 10px rgba(24, 28, 28, 0.6);
   backdrop-filter: blur(5px);
   z-index: 1;
@@ -620,6 +621,16 @@ input.has-input:invalid {
   font-size: 2.6rem;
 }
 
+.blockForm_el + .listError {
+  margin-top: 50px;
+  margin-bottom: -30px;
+}
+
+.blockForm_el+.listError {
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
 .blockForm_el dt {
   margin-bottom: 10px;
   text-align: left;
@@ -728,6 +739,7 @@ input.has-input:invalid {
   margin-top: 10px;
   padding: 0.8em 1em 0.8em 2em;
   background: var(--color-error2-alpha);
+  font-size: 2.6rem; /* for min-width*/
 }
 
 .listError:empty {
@@ -739,6 +751,7 @@ input.has-input:invalid {
   text-shadow: none;
   font-size: 1.6rem;
   line-height: 1.3;
+  text-align: left;
 }
 
 .listError li:not(:last-child) {
@@ -772,6 +785,16 @@ input.has-input:invalid {
   box-shadow: -1px -1px var(--content-color1),
   1px 1px var(--content-color2);
 }
+
+/* no data */
+.blockFriends_friends p:only-child,
+.blockDashboardLog_listMatch p:only-child,
+.blockFriendRecommended_friends p:only-child {
+  font-size: 1.8rem;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 
 /* -----
  page
@@ -850,8 +873,11 @@ input.has-input:invalid {
 .unitFriend_header {
   display: flex;
   flex-direction: row-reverse;
+  justify-content: flex-end;
   align-items: center;
   padding-right: 0.5em;
+  flex: 1 1 calc(100% - 170px);
+  min-width: 60%;
 }
 
 .unitFriend_name {
@@ -935,17 +961,6 @@ input.has-input:invalid {
   margin: 0 20px;
 }
 
-.blockPlayerDetail_thumb {
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.blockPlayerDetail_thumb img {
-  display: inline;
-  width: 160px;
-  height: auto;
-}
-
 .blockPlayerDetail_score {
   font-size: 2.9rem;;
   text-align: center;
@@ -971,12 +986,6 @@ input.has-input:invalid {
   max-height: 40vh;
 }
 
-.blockFriends_friends p {
-  font-size: 1.8rem;
-  margin-top: 1em;
-  margin-bottom: 1em;
-}
-
 @media screen and (min-width: 768px) {
   .blockUsers {
     display: flex;
@@ -988,8 +997,8 @@ input.has-input:invalid {
   }
 
   .blockUsers_column .blockFriends_friends {
-    overflow-y: visible;
-    height: inherit;
+    max-height: calc(100vh - 350px);
+    min-height: 400px;
   }
 }
 
@@ -1413,20 +1422,24 @@ input.has-input:invalid {
   font-size: 2.2rem;;
 }
 
-.unitMatchPlayer {
+.unitMatchPlayer,
+.blockMatch_opponents {
   position: relative;
-  display: flex;
   flex: 0 0 calc(50% - 30px);/* blockMatch_vs width: 60px */
+}
+
+.unitMatchPlayer {
+  display: flex;
   justify-content: space-between;
   padding: 12px 0;
 }
 
-.unitMatchPlayer:first-child {
+.blockMatch > .unitMatchPlayer:first-child {
   flex-direction: row-reverse;
   /*padding-left: 66px; !* for unitMatchPlayer_result *!*/
 }
 
-.unitMatchPlayer:last-child {
+.blockMatch > .unitMatchPlayer:last-child {
   /*padding-right: 66px; !* for unitMatchPlayer_result *!*/
 }
 
@@ -1437,7 +1450,7 @@ input.has-input:invalid {
   word-break: break-all;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header {
   text-align: right;
 }
 
@@ -1449,19 +1462,24 @@ input.has-input:invalid {
 
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_title {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
   margin-left: -110px;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_title {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_title,
+.blockMatch_opponents .unitMatchPlayer_title {
   margin-right: -110px;
 }
 
 .unitMatchPlayer_header img {
   display: block;
+  width: 50px;
+  min-width: 30px;
+  height: 50px;
+  object-fit: contain;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header img {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header img {
   margin: 0 0 0 auto;
 }
 
@@ -1475,11 +1493,12 @@ input.has-input:invalid {
   font-size: 1.9rem;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_result {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_result {
   left: 0;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_result {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_result,
+.blockMatch_opponents .unitMatchPlayer_result {
   right: 0;
 }
 
@@ -1493,15 +1512,17 @@ input.has-input:invalid {
 
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_score {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score,
+.blockMatch_opponents .unitMatchPlayer_score {
   text-align: right;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
   margin-left: 62px;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child,
+.blockMatch_opponents .unitMatchPlayer_score:last-child {
   margin-right: 62px;
 }
 
@@ -1514,15 +1535,17 @@ input.has-input:invalid {
     padding-top: 0;
   }
 
-  .unitMatchPlayer {
+  .unitMatchPlayer,
+  .blockMatch_opponents {
     align-items: center;
   }
 
-  .unitMatchPlayer:first-child {
+  .blockMatch > .unitMatchPlayer:first-child {
     padding-left: 66px; /* for unitMatchPlayer_result */
   }
 
-  .unitMatchPlayer:last-child {
+  .blockMatch > .unitMatchPlayer:last-child,
+  .blockMatch_opponents .unitMatchPlayer {
     padding-right: 66px; /* for unitMatchPlayer_result */
   }
 
@@ -1532,7 +1555,7 @@ input.has-input:invalid {
     align-items: center;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_header {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header {
     flex-direction: row-reverse;
   }
 
@@ -1541,7 +1564,7 @@ input.has-input:invalid {
     margin-right: 10px;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_header img {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header img {
     margin-right: 0;
     margin-left: 10px;
   }
@@ -1550,27 +1573,29 @@ input.has-input:invalid {
 
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:first-child {
+  .blockDashboardLog_listMatch  .blockMatch > .unitMatchPlayer:first-child {
     flex: 0 0 165px;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:last-child {
+  .blockDashboardLog_listMatch .unitMatchPlayer:last-child,
+  .blockDashboardLog_listMatch .blockMatch_opponents {
     flex-grow: 1;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:last-child .unitMatchPlayer_header {
+  .blockDashboardLog_listMatch .blockMatch_opponents .unitMatchPlayer_header {
     flex-wrap: wrap;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:first-child .unitMatchPlayer_title {
+  .blockDashboardLog_listMatch .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
     display: none;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_title {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
     margin-left: 10px;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_title {
+  .blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_title,
+  .blockMatch_opponents .unitMatchPlayer_title {
     margin-right: 10px;
   }
 
@@ -1578,11 +1603,12 @@ input.has-input:invalid {
     position: absolute;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
     margin-left: 0;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
+  .blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child,
+  .blockMatch_opponents .unitMatchPlayer_score:last-child {
     margin-right: 0;
   }
 }
@@ -1797,4 +1823,44 @@ input.has-input:invalid {
 .unitNotice button {
   background-color: transparent;
   border: none;
+}
+
+/* .blockAvatar */
+.blockAvatar {
+  padding-bottom: 30px;
+}
+
+.blockAvatar_avatar {
+  width: 160px;
+  margin: 0 auto -6px;
+  text-align: center;
+}
+
+.blockAvatar_avatar img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+}
+
+.blockAvatar_button {
+  display: none;
+  width: 200px;
+  margin: 0 auto;
+  text-align: right;
+}
+
+.blockAvatar_button.is-show {
+  display: block;
+}
+
+.blockAvatar_listButton {
+    display: none;
+}
+
+.blockAvatar_listButton.is-show {
+    display: flex;
+}
+
+.formPartsHide {
+  display: none;
 }

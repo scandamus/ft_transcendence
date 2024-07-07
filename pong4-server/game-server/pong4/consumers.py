@@ -14,12 +14,11 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
-from .api_access import get_match_from_api
+from .api_access import get_match_from_api, patch_match_to_api
 
 #from .models import Match
 
 logger = logging.getLogger(__name__)
-
 
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
@@ -33,35 +32,44 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.username = None
         self.player_name = None
         self.scheduled_task = None
+        # 1vs1pongを引き継ぐためplayer1はleft_paddle
         self.right_paddle = None
+        # player2
         self.left_paddle = None
+        # player3
+        self.upper_paddle = None
+        # player4
+        self.lower_paddle = None
         self.ball = None
-        self.reset_game_data()
         self.game_continue = False
+        self.up_pressed = False
+        self.down_pressed = False
+        self.right_pressed = False
+        self.left_pressed = False
 
     async def connect(self):
         try:
             # URLからmatch_idを取得
-            self.match_id = self.scope["url_route"]["kwargs"].get("match_id")
+            self.match_id = self.scope['url_route']['kwargs'].get('match_id')
             if not self.match_id:
-                logger.error(f"Match ID is missing in URL path: {self.match_id}")
+                logger.error(f'Match ID is missing in URL path: {self.match_id}')
                 await self.close(code=4200)
                 return
             logger.info('match_id exists')
             await self.accept()
 
         except Exception as e:
-            logger.error(f"Error connecting: {e}")
+            logger.error(f'Error connecting: {e}')
 
     async def disconnect(self, close_code):
         # Leave room group
         if self.scheduled_task:
             self.scheduled_task.cancel()
         if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
-            logger.info(f"remove: players_ids[{self.match_id}]: {self.players_id}")
+            logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
             self.players_ids[self.match_id].remove(self.players_id)
             if not self.players_ids[self.match_id]:
-                logger.info(f"del: {self.players_ids}[{self.match_id}]")
+                logger.info(f'del: {self.players_ids}[{self.match_id}]')
                 del self.players_ids[self.match_id]
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
@@ -73,8 +81,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if action == 'authenticate':
             jwt = text_data_json.get('jwt')
-            self.player_name = text_data_json.get('player_name')
-            players_id, username, jwt_match_id = await self.auhtnticate_jwt(jwt)
+            players_id, player_name, username, jwt_match_id = await self.authenticate_jwt(jwt)
+            self.player_name = player_name
 
             if not players_id or not username or not jwt_match_id:
                 logger.error('Error occured while decoding JWT')
@@ -116,54 +124,51 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
-        action = text_data_json.get("action")
+        action = text_data_json.get('action')
         if action == 'key_event':
             key = text_data_json['key']
             is_pressed = text_data_json['is_pressed']
-            print(f"Key event received: {key}" f"\tis_pressed: {is_pressed}")  # コンソールにキーイベントを出力
+            print(f'Key event received: {key}' f'\tis_pressed: {is_pressed}')  # コンソールにキーイベントを出力
 
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
                 # typeキーはgroup_send メソッド内で指定されるキーで、どのハンドラ関数をトリガするかを指定する
-                "type": "pong.message",
+                'type': 'pong.message',
                 # ここで二つのキーを渡すことでpong_message内で辞書としてアクセスできる
-                "key": key,
-                "is_pressed": is_pressed,
-                "player_name": self.player_name,
+                'key': key,
+                'is_pressed': is_pressed,
+                'player_name': self.player_name,
             })
         else:
-            logger.info("unknown message:", text_data)
+            logger.info('unknown message:', text_data)
 
     # Receive message from room group
     async def pong_message(self, data):
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
-        player_name = data.get('player_name')
+        sent_player_name = data.get('player_name')
 
-        # キー入力によってパドルを操作
+        if key in ['ArrowUp', 'w']:
+            self.up_pressed = is_pressed
+        elif key in ['s', 'ArrowDown']:
+            self.down_pressed = is_pressed
+        vertical_speed = -7 * self.up_pressed + 7 * self.down_pressed
+
+        if key in ['ArrowRight', 'd']:
+            self.right_pressed = is_pressed
+        elif key in ['a', 'ArrowLeft']:
+            self.left_pressed = is_pressed
+        horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
+
         if self.player_name == 'player1':
-            if key and is_pressed:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = -7
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 7
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = -7
-                    elif key == "s":
-                        self.left_paddle.speed = 7
-            else:
-                if player_name == 'player2':
-                    if key == "ArrowUp":
-                        self.right_paddle.speed = 0
-                    elif key == "ArrowDown":
-                        self.right_paddle.speed = 0
-                elif player_name == 'player1':
-                    if key == "w":
-                        self.left_paddle.speed = 0
-                    elif key == "s":
-                        self.left_paddle.speed = 0
+            if sent_player_name == 'player1':
+                self.left_paddle.speed = vertical_speed
+            elif sent_player_name == 'player2':
+                self.right_paddle.speed = vertical_speed
+            elif sent_player_name == 'player3':
+                self.upper_paddle.speed = horizontal_speed
+            elif sent_player_name == 'player4':
+                self.lower_paddle.speed = horizontal_speed
 
     async def schedule_ball_update(self):
         self.game_continue = True
@@ -174,9 +179,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
+                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score,
+                                                   self.upper_paddle.score, self.lower_paddle.score, 'after')
                     await self.channel_layer.group_send(self.room_group_name, {
-                        "type": "send_game_over_message",
-                        "message": "GameOver",
+                        'type': 'send_game_over_message',
+                        'message': 'GameOver',
                     })
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
@@ -184,91 +191,177 @@ class PongConsumer(AsyncWebsocketConsumer):
             pass
 
     async def send_game_over_message(self, event):
-        message = event["message"]
+        message = event['message']
         timestamp = dt.utcnow().isoformat()
-        if self.player_name == 'player2':
+        if self.player_name != 'player1':
             self.game_continue = False
-        await self.send_game_data(game_status=False, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
 
     async def update_ball_and_send_data(self):
-        self.right_paddle.move()
-        self.left_paddle.move()
-        game_continue = self.ball.move(self.right_paddle, self.left_paddle)
+        self.right_paddle.move_for_multiple()
+        self.left_paddle.move_for_multiple()
+        self.upper_paddle.move_for_multiple()
+        self.lower_paddle.move_for_multiple()
+        game_continue, sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
+                                                    self.lower_paddle, self.walls)
         ball_tmp = {
-            "x": self.ball.x,
-            "y": self.ball.y,
-            "dx": self.ball.dx,
-            "dy": self.ball.dy,
-            "size": self.ball.size,
+            'x': self.ball.x,
+            'y': self.ball.y,
+            'dx': self.ball.dx,
+            'dy': self.ball.dy,
+            'size': self.ball.size,
         }
         right_paddle_tmp = {
-            "x": self.right_paddle.x,
-            "y": self.right_paddle.y,
-            "horizontal": self.right_paddle.thickness,
-            "vertical": self.right_paddle.length,
-            "score": self.right_paddle.score,
+            'x': self.right_paddle.x,
+            'y': self.right_paddle.y,
+            'horizontal': self.right_paddle.thickness,
+            'vertical': self.right_paddle.length,
+            'score': self.right_paddle.score,
         }
         left_paddle_tmp = {
-            "x": self.left_paddle.x,
-            "y": self.left_paddle.y,
-            "horizontal": self.left_paddle.thickness,
-            "vertical": self.left_paddle.length,
-            "score": self.left_paddle.score,
+            'x': self.left_paddle.x,
+            'y': self.left_paddle.y,
+            'horizontal': self.left_paddle.thickness,
+            'vertical': self.left_paddle.length,
+            'score': self.left_paddle.score,
+        }
+        upper_paddle_tmp = {
+            'x': self.upper_paddle.x,
+            'y': self.upper_paddle.y,
+            'horizontal': self.upper_paddle.length,
+            'vertical': self.upper_paddle.thickness,
+            'score': self.upper_paddle.score,
+        }
+        lower_paddle_tmp = {
+            'x': self.lower_paddle.x,
+            'y': self.lower_paddle.y,
+            'horizontal': self.lower_paddle.length,
+            'vertical': self.lower_paddle.thickness,
+            'score': self.lower_paddle.score,
         }
         await self.channel_layer.group_send(self.room_group_name, {
-            "type": "ball.message",
-            "message": "update_ball_pos",
-            "timestamp": dt.utcnow().isoformat(),
-            "player_name": self.player_name,
-            "ball": ball_tmp,
-            "right_paddle": right_paddle_tmp,
-            "left_paddle": left_paddle_tmp,
+            'type': 'ball.message',
+            'message': 'update_ball_pos',
+            'timestamp': dt.utcnow().isoformat(),
+            'player_name': self.player_name,
+            'ball': ball_tmp,
+            'right_paddle': right_paddle_tmp,
+            'left_paddle': left_paddle_tmp,
+            'upper_paddle': upper_paddle_tmp,
+            'lower_paddle': lower_paddle_tmp,
+            'sound_type': sound_type,
         })
         return game_continue
 
     async def ball_message(self, data):
-        message = data["message"]
-        timestamp = data["timestamp"]
+        message = data['message']
+        timestamp = data['timestamp']
+        sound_type = data['sound_type']
         if self.player_name != 'player1':
             await self.init_game_state_into_self(data)
-        await self.send_game_data(game_status=True, message=message, timestamp=timestamp)
+        await self.send_game_data(game_status=True, message=message, timestamp=timestamp, sound_type=sound_type)
 
-    async def send_game_data(self, game_status, message, timestamp):
+    async def send_game_data(self, game_status, message, timestamp, sound_type):
         await self.send(text_data=json.dumps({
-            "message": message + f'\n{timestamp}\n\n',
-            "game_status": game_status,
-            "ball": {
-                "x": self.ball.x,
-                "y": self.ball.y,
-                "dx": self.ball.dx,
-                "dy": self.ball.dy,
-                "size": self.ball.size,
+            'message': message + f'\n{timestamp}\n\n',
+            'game_status': game_status,
+            'ball': {
+                'x': self.ball.x,
+                'y': self.ball.y,
+                'dx': self.ball.dx,
+                'dy': self.ball.dy,
+                'size': self.ball.size,
             },
-            "right_paddle": {
-                "x": self.right_paddle.x,
-                "y": self.right_paddle.y,
-                "horizontal": self.right_paddle.thickness,
-                "vertical": self.right_paddle.length,
-                "score": self.right_paddle.score,
+            'right_paddle': {
+                'x': self.right_paddle.x,
+                'y': self.right_paddle.y,
+                'horizontal': self.right_paddle.thickness,
+                'vertical': self.right_paddle.length,
+                'score': self.right_paddle.score,
             },
-            "left_paddle": {
-                "x": self.left_paddle.x,
-                "y": self.left_paddle.y,
-                "horizontal": self.left_paddle.thickness,
-                "vertical": self.left_paddle.length,
-                "score": self.left_paddle.score,
+            'left_paddle': {
+                'x': self.left_paddle.x,
+                'y': self.left_paddle.y,
+                'horizontal': self.left_paddle.thickness,
+                'vertical': self.left_paddle.length,
+                'score': self.left_paddle.score,
             },
+            'upper_paddle': {
+                'x': self.upper_paddle.x,
+                'y': self.upper_paddle.y,
+                'horizontal': self.upper_paddle.length,
+                'vertical': self.upper_paddle.thickness,
+                'score': self.upper_paddle.score,
+            },
+            'lower_paddle': {
+                'x': self.lower_paddle.x,
+                'y': self.lower_paddle.y,
+                'horizontal': self.lower_paddle.length,
+                'vertical': self.lower_paddle.thickness,
+                'score': self.lower_paddle.score,
+            },
+            'sound_type': sound_type,
         }))
 
-    def reset_game_data(self):
+    async def reset_game_data(self):
         self.scheduled_task = None
-        self.right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
-                                   PADDLE_THICKNESS, PADDLE_LENGTH)
-        self.right_paddle.reset()
-        self.left_paddle = Paddle(PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2, PADDLE_THICKNESS, PADDLE_LENGTH)
-        self.left_paddle.reset()
-        self.ball = Ball(CANVAS_WIDTH / 2 - BALL_SIZE / 2, CANVAS_HEIGHT / 2 - BALL_SIZE / 2, BALL_SIZE)
+        # horizontal -> 横向き    vertical -> 縦向き
+        self.right_paddle = Paddle(CANVAS_WIDTH_MULTI - PADDLE_THICKNESS,
+                                   (CANVAS_HEIGHT_MULTI / 2) - (PADDLE_LENGTH / 2),
+                                   PADDLE_THICKNESS, PADDLE_LENGTH, 'vertical')
+        self.left_paddle = Paddle(0, (CANVAS_HEIGHT_MULTI / 2) - (PADDLE_LENGTH / 2), PADDLE_THICKNESS,
+                                  PADDLE_LENGTH, 'vertical')
+        self.upper_paddle = Paddle((CANVAS_WIDTH_MULTI / 2) - (PADDLE_LENGTH / 2), 0, PADDLE_LENGTH,
+                                   PADDLE_THICKNESS, 'horizontal')
+        self.lower_paddle = Paddle((CANVAS_WIDTH_MULTI / 2) - (PADDLE_LENGTH / 2),
+                                   CANVAS_HEIGHT_MULTI - PADDLE_THICKNESS,
+                                   PADDLE_LENGTH, PADDLE_THICKNESS, 'horizontal')
+        self.ball = Ball(CANVAS_WIDTH_MULTI / 2 - BALL_SIZE / 2, CANVAS_HEIGHT_MULTI / 2 - BALL_SIZE / 2, BALL_SIZE)
         self.game_continue = False
+
+    async def init_walls(self):
+        # 壁の初期化はplayer1が初回だけ行えばいい
+        # 1.左上横
+        wall_top_left_horizontal = Block(CORNER_BLOCK_THICKNESS, 0, CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS,
+                                         CORNER_BLOCK_THICKNESS, 'horizontal', 'UPPER')
+        # 2.左上縦
+        wall_top_left_vertical = Block(0, CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                       CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, 'vertical', 'LEFT')
+        # 3.右上横
+        wall_top_right_horizontal = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE, 0,
+                                          CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                          'horizontal', 'UPPER')
+        # 4.右上縦
+        wall_top_right_vertical = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                        CORNER_BLOCK_THICKNESS, CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS,
+                                        'vertical', 'RIGHT')
+        # 5.左下横
+        wall_bottom_left_horizontal = Block(CORNER_BLOCK_THICKNESS, CANVAS_HEIGHT_MULTI - CORNER_BLOCK_THICKNESS,
+                                            CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                            'horizontal', 'LOWER')
+        # 6.左下縦
+        wall_bottom_left_vertical = Block(0, CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE, CORNER_BLOCK_THICKNESS,
+                                          CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, 'vertical', 'LEFT')
+        # 7.右下横
+        wall_bottom_right_horizontal = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE,
+                                             CANVAS_HEIGHT_MULTI - CORNER_BLOCK_THICKNESS,
+                                             CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS, CORNER_BLOCK_THICKNESS,
+                                             'horizontal', 'LOWER')
+        # 8.右下縦
+        wall_bottom_right_vertical = Block(CANVAS_WIDTH_MULTI - CORNER_BLOCK_THICKNESS,
+                                           CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE,
+                                           CORNER_BLOCK_THICKNESS, CORNER_BLOCK_SIZE - CORNER_BLOCK_THICKNESS,
+                                           'vertical', 'RIGHT')
+        self.walls = {
+            wall_top_left_horizontal,
+            wall_top_left_vertical,
+            wall_top_right_horizontal,
+            wall_top_right_vertical,
+            wall_bottom_left_horizontal,
+            wall_bottom_left_vertical,
+            wall_bottom_right_horizontal,
+            wall_bottom_right_vertical
+        }
 
     async def init_game_state_into_self(self, data):
         # player1からオブジェクトを受け取る
@@ -292,9 +385,23 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.thickness = left_paddle_data['horizontal']
         self.left_paddle.length = left_paddle_data['vertical']
         self.left_paddle.score = left_paddle_data['score']
+        # upper_paddle
+        upper_paddle_data = data['upper_paddle']
+        self.upper_paddle.x = upper_paddle_data['x']
+        self.upper_paddle.y = upper_paddle_data['y']
+        self.upper_paddle.thickness = upper_paddle_data['vertical']
+        self.upper_paddle.length = upper_paddle_data['horizontal']
+        self.upper_paddle.score = upper_paddle_data['score']
+        # lower_paddle
+        lower_paddle_data = data['lower_paddle']
+        self.lower_paddle.x = lower_paddle_data['x']
+        self.lower_paddle.y = lower_paddle_data['y']
+        self.lower_paddle.thickness = lower_paddle_data['vertical']
+        self.lower_paddle.length = lower_paddle_data['horizontal']
+        self.lower_paddle.score = lower_paddle_data['score']
 
     @database_sync_to_async
-    def auhtnticate_jwt(self, jwt):
+    def authenticate_jwt(self, jwt):
         try:
             token_backend = TokenBackend(algorithm='HS256', signing_key=settings.SIMPLE_JWT['SIGNING_KEY'])
             validated_token = token_backend.decode(jwt, verify=True)
@@ -302,10 +409,11 @@ class PongConsumer(AsyncWebsocketConsumer):
             user_id = validated_token['user_id']
             username = validated_token['username']
             players_id = validated_token['players_id']
+            player_name = validated_token['player_name']
             match_id = validated_token['match_id']
             logger.info(
                 f'authenticate_jwt: user_id={user_id}, username={username}, players_id={players_id}, match_id={match_id}')
-            return players_id, username, match_id
+            return players_id, player_name, username, match_id
         except InvalidToken as e:
             logger.error('Error: invalid token in jwt')
             return None, None
@@ -328,7 +436,20 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
 
+    @database_sync_to_async
+    def update_match_status(self, match_id, score1, score2, score3, score4, game_state):
+        send_data = {
+            'score1': score1,
+            'score2': score2,
+            'score3': score3,
+            'score4': score4,
+            'status': game_state,
+        }
+        patch_match_to_api(match_id, send_data)
+
     async def start_game(self, event):
+        # ここで初期化しないとNoneTypeになってしまう
+        await self.reset_game_data()
         if self.player_name == 'player1':
-            self.reset_game_data()
+            await self.init_walls()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
