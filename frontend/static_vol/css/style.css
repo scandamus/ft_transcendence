@@ -1172,23 +1172,23 @@ input.has-input:invalid {
   padding-right: 0.6em;
 }
 
-.listPlayerActiveMatch_item-player2 {
+.listPlayerActiveMatch_item-player3 {
   flex-direction: row-reverse;
   padding-bottom: 10px;
 }
 
-.listPlayerActiveMatch_item-player2 span {
+.listPlayerActiveMatch_item-player3 span {
   padding-right: 0.6em;
 }
 
-.listPlayerActiveMatch_item-player3 {
+.listPlayerActiveMatch_item-player2 {
   flex-direction: row-reverse;
   transform-origin: 100% 0;
   translate: 60px 0;
   rotate: 90deg;
 }
 
-.listPlayerActiveMatch_item-player3 span {
+.listPlayerActiveMatch_item-player2 span {
   padding-right: 0.6em;
 }
 
