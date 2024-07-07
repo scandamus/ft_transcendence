@@ -221,6 +221,8 @@ const handleTournamentReceived = (data) => {
     } else if (data.action === 'alreadyExists') {
         const message = `同名のトーナメントがすでに存在しています`;
         addNotice(message, true);
+    } else if (data.action === 'invalidData') {
+        console.log(`///invalidData ${JSON.stringify(data.message)}`)
     } else if (data.action === 'entryDone') {
         addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
         if (currentPage) {

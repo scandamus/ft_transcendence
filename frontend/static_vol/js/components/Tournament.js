@@ -151,11 +151,6 @@ export default class Tournament extends PageBase {
         console.log("handleCreateTournament");
 
         const tournamentTitle = document.getElementById('inputTournamentTitle').value;
-        if (!tournamentTitle || !tournamentTitle.trim()) {
-            addNotice('トーナメントのタイトルを入力してください', true);
-            return;
-        }
-
         const startTimeInput = document.getElementById('startTime').value;
         const startTime = new Date(startTimeInput);
         const now = new Date();

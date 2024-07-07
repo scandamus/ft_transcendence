@@ -5,6 +5,7 @@ import logging
 from django.contrib.auth.models import User
 from .models import Player
 from .models import Tournament, Entry
+from .serializers import TournamentSerializer
 from django.conf import settings
 from django.db import transaction, IntegrityError
 from channels.db import database_sync_to_async
@@ -28,23 +29,32 @@ async def handle_create_tournament(consumer, data):
     player = await get_player_by_user(user)
     if not player:
         logger.error(f"No player found for user: {user.username}")
-
-    tournament, created = await create_tournament(data)
-    if tournament is None:
-        return # 無効なjsonを送ってきた場合はセキュリティの観点から無視
-    if created:
-        await consumer.send(text_data=json.dumps({
-            'type': 'tournament',
-            'action': 'created',
-            'name': tournament.name,
-            'start': tournament.start.isoformat(),
-        }))
+    serializer = TournamentSerializer(data = data)
+    if serializer.is_valid():
+        tournament, created = await create_tournament(data)
+        if tournament is None:
+            return  # 無効なjsonを送ってきた場合はセキュリティの観点から無視
+        if created:
+            await consumer.send(text_data=json.dumps({
+                'type': 'tournament',
+                'action': 'created',
+                'name': tournament.name,
+                'start': tournament.start.isoformat(),
+                'period': tournament.start.isoformat(),
+            }))
+        else:
+            await consumer.send(text_data=json.dumps({
+                'type': 'tournament',
+                'action': 'alreadyExists',
+                'name': tournament.name,
+                'start': tournament.start.isoformat(),
+                'period': tournament.start.isoformat(),
+            }))
     else:
         await consumer.send(text_data=json.dumps({
             'type': 'tournament',
-            'action': 'alreadyExists',
-            'name': tournament.name,
-            'start': tournament.start.isoformat(),
+            'action': 'invalidData',
+            'message': serializer.errors
         }))
 
 @database_sync_to_async
