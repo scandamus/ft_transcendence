@@ -45,11 +45,21 @@ async def handle_auth(consumer, token):
                 await database_sync_to_async(player.save)()
                 logger.info(f'{user.username} online status is online')
 
-            # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
-            if player and player.status in ['friend_waiting', 'lounge_waiting']:
-                player.status = 'waiting'
-                await database_sync_to_async(player.save)()
-                logger.info(f'{user.username} status set to waiting')
+            if player:
+                # continue match: マッチ中に切断したユーザーが再度接続した際にマッチへの復帰を試みる
+                if player.status in ['friend_match', 'lounge_match', 'tournament_match']:
+                    match = await database_sync_to_async(lambda: player.current_match)()    
+                    logger.info(f'handle_auth: {user.username} is in match_id {match.id}!!')
+                    # TODO: マッチ復帰トライ処理
+                    player.status = 'waiting'
+                    player.current_match = None
+                    await database_sync_to_async(player.save)()
+                    
+                # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
+                if player.status in ['friend_waiting', 'lounge_waiting']:
+                    player.status = 'waiting'
+                    await database_sync_to_async(player.save)()
+                    logger.info(f'{user.username} status set to waiting')
 
             try:
                 await consumer.send(text_data=json.dumps({
