@@ -25,7 +25,7 @@ const updateUpcomingTournamentList = async (pageInstance) => {
                     buttonHtml = `<p class="blockForm_button"><button type="button" disabled>FULL</p>`;
                 //    buttonHtml = `<p class="blockForm_button"><button type="button" disabled>${labels.tournament.labelFull}</p>`;
                 } else if (tournament.nickname === '') {
-                    buttonHtml = `<p class="blockForm_button"><button type="button" class="unitUpcomingTournamentButton_entry unitButton" data-name="${tournament.name}" data-id="${tournament.name}}">${labels.tournament.labelEntry}</button></p>`;
+                    buttonHtml = `<p class="blockForm_button"><button type="button" class="unitUpcomingTournamentButton_entry unitButton">${labels.tournament.labelEntry}</button></p>`;
                 } 
                 const tournamentElement = `
                     <section class="unitTournament">
