@@ -34,6 +34,7 @@ export const labels_ja = {
         tooShort: '短すぎます',
         passwordIsNotSame: '同じパスワードを入力してください',
         isExists: 'このユーザー名は使われています',
+        outOfRange: 'その日時は指定できません',
         loginError1: 'ログインに失敗しました。ユーザー名とパスワードを確認してください',
         loginError2: 'ログインできません',
     },

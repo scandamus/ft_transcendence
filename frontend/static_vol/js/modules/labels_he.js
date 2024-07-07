@@ -34,6 +34,7 @@ export const labels_he = {
         tooShort: 'הזה עברית ',
         passwordIsNotSame: 'הזה עברית ',
         isExists: 'הזה עברית ',
+        outOfRange: '',
         loginError1: '',
         loginError2: '',
     },

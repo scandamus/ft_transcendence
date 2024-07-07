@@ -34,6 +34,7 @@ export const labels_la = {
         tooShort: '',
         passwordIsNotSame: '',
         isExists: '',
+        outOfRange: '',
         loginError1: '',
         loginError2: '',
     },
