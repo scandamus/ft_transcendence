@@ -23,6 +23,7 @@ export default class Tournament extends PageBase {
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
         this.addAfterRenderHandler(this.updateLists.bind(this));
+        this.addAfterRenderHandler(this.setStartTime.bind(this));
 
         //Instance固有のlistenerList
         this.listListenEntryTournament = [];
@@ -179,6 +180,34 @@ export default class Tournament extends PageBase {
     //         console.log(`[Add listener] entry tournament to ${tournamentName}`);
     //     });
     // }
+
+    formatToDatetimeLocal(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    setStartTime() {
+        const elStartTime = document.getElementById('startTime');
+
+        let dateTime = new Date();
+        dateTime.setMinutes(dateTime.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
+        if (dateTime.getMinutes() !== 0) {
+            dateTime.setHours(dateTime.getHours() + 1);
+        }
+        dateTime.setMinutes(0);
+        dateTime.setSeconds(0);
+        dateTime.setMilliseconds(0);
+        const minTimeFormatted = this.formatToDatetimeLocal(dateTime);
+        dateTime.setMonth(dateTime.getMonth() + 1);
+        const maxTimeFormatted = this.formatToDatetimeLocal(dateTime);
+        elStartTime.min = minTimeFormatted;
+        elStartTime.max = maxTimeFormatted;
+        elStartTime.value = minTimeFormatted;
+    }
 
     destroy() {
         super.destroy();
