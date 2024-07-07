@@ -5,7 +5,7 @@ import { webSocketManager } from '../modules/websocket.js';
 import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
-import { checkSimpleInputValid } from "../modules/form.js";
+import { checkSearchFriendInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
     from '../modules/friendListener.js';
@@ -109,7 +109,7 @@ export default class Friends extends PageBase {
     async handleSearchFriend(ev) {
         ev.preventDefault();
         const inputFriendsName = document.getElementById('inputFriendsName');
-        checkSimpleInputValid(inputFriendsName);
+        checkSearchFriendInputValid(inputFriendsName);
         if (!ev.target.closest('form').checkValidity()) {
             return;
         }

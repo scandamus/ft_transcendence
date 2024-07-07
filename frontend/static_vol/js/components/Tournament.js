@@ -8,7 +8,7 @@ import { addNotice } from '../modules/notice.js';
 import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from '../modules/env.js';
 //import { fetchTournaments } from '../modules/tounamentApi.js';
 import { updateOngoingTournamentList, updateUpcomingTournamentList } from '../modules/tournamentList.js'
-import { checkSimpleInputValid, checkFormReady } from "../modules/form.js";
+import { checkTournamentInputValid, checkFormReady } from "../modules/form.js";
 
 export default class Tournament extends PageBase {
     constructor(params) {
@@ -69,7 +69,7 @@ export default class Tournament extends PageBase {
                 </form>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleUpcoming}</h3>
-                    <div class="blockTournamentList_upcoming listLineDivide">
+                    <div class="blockTournamentList_upcoming listLineDivide"></div>
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleInPlay}</h3>
@@ -140,8 +140,10 @@ export default class Tournament extends PageBase {
         this.addListListenInInstance(btnCreateTournament, boundHandleCreateTournament, 'click');
 
         const elTournamentTitle = document.getElementById('inputTournamentTitle');
+        const elTournamentStart = document.getElementById('startTime');
         const boundHandleInput = this.handleInput.bind(this);
         this.addListListenInInstance(elTournamentTitle, boundHandleInput, 'blur');
+        this.addListListenInInstance(elTournamentStart, boundHandleInput, 'blur');
     }
 
     handleCreateTournament(ev) {
@@ -238,7 +240,7 @@ export default class Tournament extends PageBase {
             elInput.classList.add(classHasInput);
         }
         //formの各input validate
-        checkSimpleInputValid(elInput);
+        checkTournamentInputValid(elInput);
         //ボタンenabled切り替え(ok=>ngもありうる)
         checkFormReady(elForm, btnCreateTournament);
     }

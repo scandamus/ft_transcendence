@@ -1285,7 +1285,7 @@ input.has-input:invalid {
 /* formCreateTournament */
 .formCreateTournament {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   box-sizing: border-box;
   flex-wrap: wrap;
@@ -1314,7 +1314,7 @@ input.has-input:invalid {
 }
 
 .formCreateTournament_button {
-  margin-top: 30px;
+  margin-top: 50px;
   margin-bottom: 0;
 }
 
