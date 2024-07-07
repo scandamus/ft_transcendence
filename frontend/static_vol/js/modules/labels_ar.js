@@ -77,7 +77,8 @@ export const labels_ar = {
         labelMatchLog: ' يؤُلاءِ العربية',
         labelWins: ' يؤُلاءِ العربية',
         labelLosses: ' يؤُلاءِ العربية',
-        fmtWinLoss: '$win يؤُلاءِ العربية  $loss يؤُلاءِ العربية',
+        fmtWin: '$win يؤُلاءِ العربية',
+        fmtLoss: '$loss يؤُلاءِ العربية',
         msgNoMatch: '',
     },
     tournament: {

@@ -976,6 +976,14 @@ input.has-input:invalid {
   line-height: 1.4;
 }
 
+.blockPlayerDetail_stats .unitWinCount span {
+  display: inline-block;
+}
+
+.blockPlayerDetail_stats .unitWinCount span:first-child {
+  margin-right: 0.3em;
+}
+
 /* blockDashboardLog */
 .blockDashboardLog:not(:last-child) {
   margin-bottom: 50px;

@@ -77,7 +77,8 @@ export const labels_he = {
         labelMatchLog: 'הזה עברית ',
         labelWins: 'הזה עברית ',
         labelLosses: 'הזה עברית ',
-        fmtWinLoss: '$win הזה עברית <br> $loss הזה עברית ',
+        fmtWin: '$win הזה עברית',
+        fmtLoss: '$loss הזה עברית ',
         msgNoMatch: '',
     },
     tournament: {

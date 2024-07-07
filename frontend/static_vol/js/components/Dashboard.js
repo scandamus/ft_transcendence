@@ -123,10 +123,11 @@ export default class Dashboard extends PageBase {
     displayMatchStats(data) {
         const statsWrap = document.querySelector('.blockPlayerDetail_stats');
         if (data) {
-            const textWinLoss = (labels.match.fmtWinLoss).replace('$win', data.win_count).replace('$loss', data.lose_count);
+            const textWin = (labels.match.fmtWin).replace('$win', data.win_count);
+            const textLoss = (labels.match.fmtLoss).replace('$loss', data.loss_count);
             statsWrap.innerHTML = `
                 <p class="unitLevel">LEVEL: ${data.level}</p>
-                <p class="unitWinCount">${textWinLoss}</p>
+                <p class="unitWinCount"><span>${textWin}</span><span>${textLoss}</span></p>
             `;
         }
     }

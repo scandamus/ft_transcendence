@@ -77,7 +77,8 @@ export const labels_ja = {
         labelMatchLog: '対戦記録',
         labelWins: '勝',
         labelLosses: '敗',
-        fmtWinLoss: '$win勝 $loss敗',
+        fmtWin: '$win勝',
+        fmtLoss: '$loss敗',
         msgNoMatch: '対戦結果がありません',
     },
     tournament: {
