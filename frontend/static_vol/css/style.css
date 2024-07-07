@@ -786,6 +786,16 @@ input.has-input:invalid {
   1px 1px var(--content-color2);
 }
 
+/* no data */
+.blockFriends_friends p:only-child,
+.blockDashboardLog_listMatch p:only-child,
+.blockFriendRecommended_friends p:only-child {
+  font-size: 1.8rem;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+
 /* -----
  page
 ----- */
@@ -866,7 +876,7 @@ input.has-input:invalid {
   justify-content: flex-end;
   align-items: center;
   padding-right: 0.5em;
-  flex: 1 1 calc(100% - 160px);
+  flex: 1 1 calc(100% - 170px);
   min-width: 60%;
 }
 
@@ -974,12 +984,6 @@ input.has-input:invalid {
 .blockUsers_column .blockFriends_friends {
   overflow-y: auto;
   max-height: 40vh;
-}
-
-.blockFriends_friends p {
-  font-size: 1.8rem;
-  margin-top: 1em;
-  margin-bottom: 1em;
 }
 
 @media screen and (min-width: 768px) {
@@ -1418,20 +1422,24 @@ input.has-input:invalid {
   font-size: 2.2rem;;
 }
 
-.unitMatchPlayer {
+.unitMatchPlayer,
+.blockMatch_opponents {
   position: relative;
-  display: flex;
   flex: 0 0 calc(50% - 30px);/* blockMatch_vs width: 60px */
+}
+
+.unitMatchPlayer {
+  display: flex;
   justify-content: space-between;
   padding: 12px 0;
 }
 
-.unitMatchPlayer:first-child {
+.blockMatch > .unitMatchPlayer:first-child {
   flex-direction: row-reverse;
   /*padding-left: 66px; !* for unitMatchPlayer_result *!*/
 }
 
-.unitMatchPlayer:last-child {
+.blockMatch > .unitMatchPlayer:last-child {
   /*padding-right: 66px; !* for unitMatchPlayer_result *!*/
 }
 
@@ -1442,7 +1450,7 @@ input.has-input:invalid {
   word-break: break-all;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header {
   text-align: right;
 }
 
@@ -1454,19 +1462,24 @@ input.has-input:invalid {
 
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_title {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
   margin-left: -110px;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_title {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_title,
+.blockMatch_opponents .unitMatchPlayer_title {
   margin-right: -110px;
 }
 
 .unitMatchPlayer_header img {
   display: block;
+  width: 50px;
+  min-width: 30px;
+  height: 50px;
+  object-fit: contain;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_header img {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header img {
   margin: 0 0 0 auto;
 }
 
@@ -1480,11 +1493,12 @@ input.has-input:invalid {
   font-size: 1.9rem;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_result {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_result {
   left: 0;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_result {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_result,
+.blockMatch_opponents .unitMatchPlayer_result {
   right: 0;
 }
 
@@ -1498,15 +1512,17 @@ input.has-input:invalid {
 
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_score {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score,
+.blockMatch_opponents .unitMatchPlayer_score {
   text-align: right;
 }
 
-.unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+.blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
   margin-left: 62px;
 }
 
-.unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
+.blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child,
+.blockMatch_opponents .unitMatchPlayer_score:last-child {
   margin-right: 62px;
 }
 
@@ -1519,15 +1535,17 @@ input.has-input:invalid {
     padding-top: 0;
   }
 
-  .unitMatchPlayer {
+  .unitMatchPlayer,
+  .blockMatch_opponents {
     align-items: center;
   }
 
-  .unitMatchPlayer:first-child {
+  .blockMatch > .unitMatchPlayer:first-child {
     padding-left: 66px; /* for unitMatchPlayer_result */
   }
 
-  .unitMatchPlayer:last-child {
+  .blockMatch > .unitMatchPlayer:last-child,
+  .blockMatch_opponents .unitMatchPlayer {
     padding-right: 66px; /* for unitMatchPlayer_result */
   }
 
@@ -1537,7 +1555,7 @@ input.has-input:invalid {
     align-items: center;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_header {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header {
     flex-direction: row-reverse;
   }
 
@@ -1546,7 +1564,7 @@ input.has-input:invalid {
     margin-right: 10px;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_header img {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_header img {
     margin-right: 0;
     margin-left: 10px;
   }
@@ -1555,27 +1573,29 @@ input.has-input:invalid {
 
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:first-child {
+  .blockDashboardLog_listMatch  .blockMatch > .unitMatchPlayer:first-child {
     flex: 0 0 165px;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:last-child {
+  .blockDashboardLog_listMatch .unitMatchPlayer:last-child,
+  .blockDashboardLog_listMatch .blockMatch_opponents {
     flex-grow: 1;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:last-child .unitMatchPlayer_header {
+  .blockDashboardLog_listMatch .blockMatch_opponents .unitMatchPlayer_header {
     flex-wrap: wrap;
   }
 
-  .blockDashboardLog_listMatch .unitMatchPlayer:first-child .unitMatchPlayer_title {
+  .blockDashboardLog_listMatch .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
     display: none;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_title {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_title {
     margin-left: 10px;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_title {
+  .blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_title,
+  .blockMatch_opponents .unitMatchPlayer_title {
     margin-right: 10px;
   }
 
@@ -1583,11 +1603,12 @@ input.has-input:invalid {
     position: absolute;
   }
 
-  .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
+  .blockMatch > .unitMatchPlayer:first-child .unitMatchPlayer_score:last-child {
     margin-left: 0;
   }
 
-  .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child {
+  .blockMatch > .unitMatchPlayer:last-child .unitMatchPlayer_score:last-child,
+  .blockMatch_opponents .unitMatchPlayer_score:last-child {
     margin-right: 0;
   }
 }

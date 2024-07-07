@@ -74,6 +74,11 @@ export default class PageBase {
         this.listListenInInstance.push({element: el, callback: cb, event: ev});
     }
 
+    addListListenOptOnesInInstance(el, cb, ev) {
+        el.addEventListener(ev, cb, { once: true });
+        this.listListenInInstance.push({element: el, callback: cb, event: ev});
+    }
+
     destroy() {
         window.scrollTo({
             top: 0,

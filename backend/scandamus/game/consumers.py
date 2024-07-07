@@ -75,8 +75,6 @@ class LoungeSession(AsyncWebsocketConsumer):
             elif msg_type == 'friendRequest':
                 if action == 'requestByUsername':
                     await send_friend_request_by_username(self, text_data_json['username'])
-                elif action == 'sendRequest':
-                    await send_friend_request(self, text_data_json['user_id'])
                 elif action == 'acceptRequest':
                     await accept_friend_request(self, text_data_json['request_id'])
                 elif action == 'declineRequest':
