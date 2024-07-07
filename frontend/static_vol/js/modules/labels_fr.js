@@ -18,7 +18,7 @@ export const labels_fr = {
         labelPassword: 'Mot de passe',
         labelPasswordConfirm: 'Confirmez le mot de passe',
         descUsername: ['[Disponible] lettres minuscules, chiffres et symboles (_)]', '[Obligatoire] une lettre minuscule ou un chiffre', '3-32 caractères'],
-        descPassword: ['[Disponible] Caractères alphanumériques et symboles (@_#$%&!.,+*~\')', '[[Obligatoire] une majuscule, une minuscule, un chiffre et un symbol', '8-24 caractères'],
+        descPassword: ['[Disponible] Caractères alphanumériques et symboles (@_#$%&!.,+*~\')', '[Obligatoire] une majuscule, une minuscule, un chiffre et un symbol', '8-24 caractères'],
         descPasswordConfirm: 'Veuillez saisir à nouveau votre mot de passe pour confirmation',
         labelButtonConfirm: 'Confirmer',
         textConfirm: 'Souhaitez-vous vous enregistrer avec les informations suivantes ?',
