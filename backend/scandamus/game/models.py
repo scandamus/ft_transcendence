@@ -18,7 +18,7 @@ class Tournament(models.Model):
     )
     max_participants = models.IntegerField(
         verbose_name='最大人数',
-        default=50
+        default=16
     )
 
     # 毎回カウントする方式にするのでコメントアウトしておく
