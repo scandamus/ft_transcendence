@@ -22,7 +22,7 @@ const errorMessages = {
     //for LogIn
     'loginError1': labels.formErrorMessages.loginError1,
     'loginError2': labels.formErrorMessages.loginError2,
-};
+}
 
 const addErrorMessage = (errWrapper, errorType) => {
     const elError = document.createElement('li');
@@ -95,7 +95,7 @@ const checkInputValid = (elInput) => {
         }
     });
     return false;
-};
+}
 
 const checkSimpleInputValid = (elInput) => {
     const errWrapper = elInput.closest('form').querySelector('.listError');
@@ -125,6 +125,19 @@ const checkSimpleInputValid = (elInput) => {
         }
     });
     return false;
-};
+}
 
-export { errorTypes, addErrorMessage, addErrorMessageCustom, checkInputValid, checkSimpleInputValid };
+const checkFormReady = (form, button) => {
+    console.log(`/////checkFormReady`)
+    if (form.checkValidity()) {
+        if (button.hasAttribute('disabled')) {
+            button.removeAttribute('disabled');
+        }
+        return true;
+    } else if (!button.hasAttribute('disabled')) {
+        button.setAttribute('disabled', '');
+        return false;
+    }
+}
+
+export { errorTypes, addErrorMessage, addErrorMessageCustom, checkInputValid, checkSimpleInputValid, checkFormReady };
