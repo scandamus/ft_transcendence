@@ -8,6 +8,7 @@ import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
 import { updateModalAvailablePlayers } from "./modal.js";
 import { updateUpcomingTournamentList } from "./tournamentList.js";
+import { handleReceiveWsTournamentValidationError } from './form.js';
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -222,7 +223,7 @@ const handleTournamentReceived = (data) => {
         const message = `同名のトーナメントがすでに存在しています`;
         addNotice(message, true);
     } else if (data.action === 'invalidTournamentTitle') {
-        console.log(`///invalidTournamentTitle ${JSON.stringify(data.message)}`)
+        handleReceiveWsTournamentValidationError(data);
     } else if (data.action === 'entryDone') {
         addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
         if (currentPage) {
@@ -246,6 +247,6 @@ const handleTournamentReceived = (data) => {
     } else if (data.action === 'invalidCancelRequest') {
         addNotice('トーナメントへのエントリーがありません');
     } else if (data.action === 'invalidNickname') {
-        console.log(`///invalidNickname ${JSON.stringify(data.message)}`)
+        handleReceiveWsTournamentValidationError(data);
     }
 }

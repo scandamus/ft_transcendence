@@ -1,6 +1,7 @@
 'use strict';
 
 import { labels } from './labels.js';
+import PageBase from '../components/PageBase.js';
 
 const errorTypes = ['valueMissing', 'patternMismatch', 'tooLong', 'tooShort', 'rangeOverflow', 'rangeUnderflow', 'customError'];
 
@@ -22,7 +23,7 @@ const errorMessages = {
     'invalidPasswordCharacterTypesBackend': 'password is invalid.(character types - backend)',
     'invalidPasswordBlank': 'password is required.(required - backend)',
     //for Tournament
-    'invalidTournamentNameLenBackend': 'Tournament title is invalid.(len - backend)',
+    'invalidTournamentnameLenBackend': 'Tournament title is invalid.(len - backend)',
     'invalidTournamentnameCharacterTypesBackend': 'Tournament title is invalid.(character types - backend)',
     'invalidTournamentnameBlank': 'Tournament title is required.(required - backend)',
     'invalidNicknameLenBackend': 'Nickname is invalid.(len - backend)',
@@ -183,8 +184,53 @@ const checkTournamentInputValid = (elInput) => {
     return false;
 }
 
+const handleReceiveWsTournamentValidationError = (error) => {
+    if (!PageBase.isInstance(PageBase.instance, 'Tournament')) {
+        return;
+    }
+    let btn, elInput, errWrapper, tmpValue;
+    const btnCreateTournament = document.getElementById('btnCreateTournament');
+    const btnEntryTournament = document.getElementById('btnEntryTournament');
+    const elInputName = document.getElementById('inputTournamentTitle');
+    const elInputNickname = document.getElementById('inputNickname');
+
+    const errorObject = error.message;
+
+    Object.keys(errorObject).forEach((key) => {
+        if (key === 'nickname') {
+            elInput = elInputNickname;
+            btn = btnEntryTournament;
+        } else if (key === 'name') {
+            elInput = elInputName;
+            btn = btnCreateTournament;
+        } else {
+            return;
+        }
+        btn.setAttribute('disabled', '');
+        errWrapper = elInput.parentNode.querySelector('.listError');
+        errorObject[key].forEach((value) => {
+            //console.log(`value: ${value}`)
+            elInput.setCustomValidity(value);
+            addErrorMessageCustom(errWrapper, value);
+        });
+        // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
+        elInput.addEventListener('focus', () => {
+            tmpValue = elInput.value;
+        });
+        elInput.addEventListener('blur', () => {
+            if (tmpValue !== elInput.value) {
+                const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
+                listLiCustomError.forEach((li) => {
+                    li.remove();
+                });
+                elInput.setCustomValidity('');
+                checkFormReady(btn.closest('form'), btn);
+            }
+        });
+    });
+}
+
 const checkFormReady = (form, button) => {
-    console.log(`/////checkFormReady`)
     if (form.checkValidity()) {
         if (button.hasAttribute('disabled')) {
             button.removeAttribute('disabled');
@@ -196,4 +242,4 @@ const checkFormReady = (form, button) => {
     }
 }
 
-export { errorTypes, addErrorMessage, addErrorMessageCustom, checkInputValid, checkSearchFriendInputValid, checkTournamentInputValid, checkFormReady };
+export { errorTypes, addErrorMessage, addErrorMessageCustom, checkInputValid, checkSearchFriendInputValid, checkTournamentInputValid, handleReceiveWsTournamentValidationError, checkFormReady };
