@@ -233,12 +233,16 @@ const handleTournamentReceived = (data) => {
     } else if (data.action === 'duplicateNickname') {
         addNotice(`すでに同名のニックネームが使われています`, true);
     } else if (data.action === 'alreadyEnterd') {
+        closeModalOnEntryDone();
         addNotice(`すでにエントリー済みのトーナメントです`, true);
     } else if (data.action === 'capacityFull') {
+        closeModalOnEntryDone();
         addNotice(`満員のためトーナメントにエントリー出来ませんでした`, true);
     } else if (data.action === 'invalidTournament') {
+        closeModalOnEntryDone();
         addNotice('無効なトーナメントへのリクエストです', true);
     } else if (data.action === 'invalidPlayer') {
+        closeModalOnEntryDone();
         addNotice('トーナメントにエントリー出来ませんでした', true);
     } else if (data.action === 'removeEntryDone') {
         addNotice(`トーナメント【${data.name}】への参加をキャンセルしました`);

@@ -229,6 +229,7 @@ export default class Tournament extends PageBase {
     handleInput(ev) {
         const elForm = ev.target.closest('form');
         const btnCreateTournament = document.getElementById('btnCreateTournament');
+        const btnEntryTournament = document.getElementById('btnEntryTournament');
         const elInput = ev.target;
         //初回入力時、invalid styleが当たるようにclass付与
         const classHasInput = 'has-input';
@@ -238,7 +239,8 @@ export default class Tournament extends PageBase {
         //formの各input validate
         checkTournamentInputValid(elInput);
         //ボタンenabled切り替え(ok=>ngもありうる)
-        checkFormReady(elForm, btnCreateTournament);
+        const btn = (elForm.classList.contains('formEntryTournament')) ? btnEntryTournament : btnCreateTournament;
+        checkFormReady(elForm, btn);
     }
 
     destroy() {
