@@ -89,6 +89,7 @@ export const labels_ja = {
         labelTitleInPlay: '試合中のトーナメント',
         labelTitleRecent: '終了したトーナメント',
         labelTournamentLog: 'トーナメント記録',
+        labelUpdateLists: 'リストを再読み込み',
         descTournamentTitle: ['[使用可能] 半角英小文字,半角数字,ひらがな,カタカナ,漢字,記号(@_#$%&!.+*~)', '3〜50文字'],
         descTournamentStart: ['[指定可能範囲] 1時間後〜1ヶ月後'],
         descNickname: ['[使用可能] 半角英小文字,半角数字,ひらがな,カタカナ,漢字,記号(@_#$%&!.+*~)', '3〜20文字'],

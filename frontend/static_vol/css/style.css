@@ -1328,6 +1328,11 @@ input.has-input:invalid {
   margin-bottom: 0;
 }
 
+.btnUpdateTournamentLists {
+  margin-bottom: 15px;
+  text-align: right;
+}
+
 .blockTournamentRanking {
   display: flex;
   flex-direction: column;

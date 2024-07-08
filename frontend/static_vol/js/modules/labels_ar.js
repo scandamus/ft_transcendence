@@ -89,6 +89,7 @@ export const labels_ar = {
         labelTitleInPlay: ' يؤُلاءِ العربية',
         labelTitleRecent: ' يؤُلاءِ العربية',
         labelTournamentLog: ' يؤُلاءِ العربية',
+        labelUpdateLists: '',
         descTournamentTitle: [''],
         descTournamentStart: [''],
         descNickname: [''],

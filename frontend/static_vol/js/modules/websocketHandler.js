@@ -214,6 +214,7 @@ const handleTournamentReceived = (data) => {
         console.log(`UTC Time: ${startUTC.toISOString()}`);
         console.log(`Local Time: ${startLocal}`);
         if (currentPage) {
+            PageBase.instance.resetFormCreateTournament();
             updateUpcomingTournamentList(currentPage).then(() => {});
         }
         const message = `${data.name} - ${startLocal} が作成されました`;

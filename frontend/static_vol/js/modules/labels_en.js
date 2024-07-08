@@ -89,6 +89,7 @@ export const labels_en = {
         labelTitleInPlay: 'ongoing tournaments',
         labelTitleRecent: 'finished tournaments',
         labelTournamentLog: 'tournament log',
+        labelUpdateLists: 'Update Lists',
         descTournamentTitle: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 50 characters long'],
         descTournamentStart: ['[Allowable Range] From 1 hour later to 1 month later.'],
         descNickname: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 20 characters long'],

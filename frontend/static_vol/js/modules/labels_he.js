@@ -89,6 +89,7 @@ export const labels_he = {
         labelTitleInPlay: 'הזה עברית ',
         labelTitleRecent: 'הזה עברית ',
         labelTournamentLog: 'הזה עברית ',
+        labelUpdateLists: '',
         descTournamentTitle: [''],
         descTournamentStart: [''],
         descNickname: [''],

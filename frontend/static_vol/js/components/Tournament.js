@@ -24,7 +24,7 @@ export default class Tournament extends PageBase {
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
         this.addAfterRenderHandler(this.updateLists.bind(this));
-        this.addAfterRenderHandler(this.setStartTime.bind(this));
+        this.addAfterRenderHandler(this.resetFormCreateTournament.bind(this));
 
         //Instance固有のlistenerList
         this.listListenEntryTournament = [];
@@ -68,6 +68,7 @@ export default class Tournament extends PageBase {
                     </dl>
                     <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton" disabled>${labels.tournament.labelCreateTournament}</button></p>
                 </form>
+                <p class="btnUpdateTournamentLists"><button type="button" id="btnUpdateTournamentLists_button" class="unitButton unitButton-small">${labels.tournament.labelUpdateLists}</button></p>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleUpcoming}</h3>
                     <div class="blockTournamentList_upcoming listLineDivide"></div>
@@ -145,6 +146,10 @@ export default class Tournament extends PageBase {
         const boundHandleInput = this.handleInput.bind(this);
         this.addListListenInInstance(elTournamentTitle, boundHandleInput, 'blur');
         this.addListListenInInstance(elTournamentStart, boundHandleInput, 'blur');
+
+        const btnUpdateList = document.getElementById('btnUpdateTournamentLists_button');
+        const boundUpdateLists = this.updateLists.bind(this);
+        this.addListListenInInstance(btnUpdateList, boundUpdateLists, 'click');
     }
 
     handleCreateTournament(ev) {
@@ -207,9 +212,16 @@ export default class Tournament extends PageBase {
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
-    setStartTime() {
+    resetFormCreateTournament() {
+        const elTournamentTitle = document.getElementById('inputTournamentTitle');
         const elStartTime = document.getElementById('startTime');
 
+        //clear tournament title
+        if (elTournamentTitle.classList.contains('has-input')) {
+            elTournamentTitle.classList.remove('has-input');
+        }
+        elTournamentTitle.value = '';
+        //reset data
         let dateTime = new Date();
         dateTime.setMinutes(dateTime.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
         if (dateTime.getMinutes() !== 0) {
