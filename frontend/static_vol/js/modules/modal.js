@@ -216,10 +216,19 @@ const setScoreToInvalid = () => {
     }
 }
 
+const handleExitGame = (instance) => {
+    console.log('handleExitGame')
+    const containerId = PageBase.isInstance(instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
+    webSocketManager.closeWebSocket(containerId);
+    instance.containerId = ''
+    //todo: score -1にする
+    //setScoreToInvalid();
+    //todo: status, current_match更新
+}
+
 const closeModalOnExitGame = (ev) => {
     ev.preventDefault();
     console.log('closeModalOnExitGame');
-    const containerId = PageBase.isInstance(PageBase.instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
 
     initToken()
         .then((accessToken) => {
@@ -234,15 +243,7 @@ const closeModalOnExitGame = (ev) => {
         })
         .then(async () => {
             closeModal();
-            webSocketManager.closeWebSocket(containerId);
-            if (GamePlay.instance) {
-                GamePlay.instance.containerId = '';
-            } else if (GamePlayQuad.instance) {
-                GamePlayQuad.instance.containerId = '';
-            }
-            //todo: score -1にする
-            //setScoreToInvalid();
-            //todo: status, current_match更新
+            handleExitGame(PageBase.instance);
             try {
                 await router(getToken('accessToken'));
             } catch (error) {
@@ -371,5 +372,5 @@ const showModalExitGame = () => {
     showModal(elHtml);
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, showModalExitGame, closeModalOnReturnToGame };
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, handleExitGame, showModalExitGame, closeModalOnReturnToGame };
 
