@@ -89,6 +89,12 @@ class Player(models.Model):
         default='waiting',
         verbose_name="ステータス"
     )
+    online = models.BooleanField(
+        default=False,
+        null=True,
+        blank=True,
+        verbose_name="オンラインステータス"
+    )
     current_match = models.ForeignKey(
         'game.Match',
         null=True,

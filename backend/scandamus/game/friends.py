@@ -45,7 +45,7 @@ def get_player_from_user(user):
 @database_sync_to_async
 def get_user_by_username(username):
     logger.info(f'get_user_by_username: username= {username}')
-    return User.objects.get(username=username)
+    return User.objects.get(username=username, is_superuser=False)
 
 @database_sync_to_async
 def create_friend_request(from_user, to_user):
