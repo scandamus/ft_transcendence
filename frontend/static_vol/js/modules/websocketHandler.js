@@ -6,7 +6,7 @@ import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
-import { updateModalAvailablePlayers } from "./modal.js";
+import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
 import { updateUpcomingTournamentList } from "./tournamentList.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
 
@@ -225,6 +225,7 @@ const handleTournamentReceived = (data) => {
     } else if (data.action === 'invalidTournamentTitle') {
         handleReceiveWsTournamentValidationError(data);
     } else if (data.action === 'entryDone') {
+        closeModalOnEntryDone();
         addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
         if (currentPage) {
             updateUpcomingTournamentList(currentPage).then(() => {});

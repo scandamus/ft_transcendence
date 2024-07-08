@@ -6,6 +6,9 @@ import { initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
 import { entryUpcomingTournament } from "./tournament.js";
+import { entryTournament } from "./modalContents.js";
+import PageBase from '../components/PageBase.js';
+import { addListenerToList, removeListenerAndClearList } from './listenerCommon.js';
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -233,6 +236,10 @@ const showModalEntryTournament = (ev) => {
         //formから取得するデータが無い
         return;
     }
+    let listDesc = '';
+    for (let i = 0; i < labels.tournament.descNickname.length; i++) {
+        listDesc += `<li>${labels.tournament.descNickname[i]}</li>`;
+    }
     const args = {
         titleModal: labels.modal.titleEntryTournament,
         labelNickname: labels.modal.labelNickname,
@@ -241,25 +248,41 @@ const showModalEntryTournament = (ev) => {
         labelTournamentId: data['idTitle'],
         labelTournamentTitle: data['title'],
         labelTournamentStart: data['start'],
+        desc: listDesc
     }
     const elHtml = getModalHtml('entryTournament', args);
     showModal(elHtml);
 
     const formEntry = document.getElementById('formEntryTournament');
+    const elNickname = document.getElementById('inputNickname');
+
+    const boundHandleInput = PageBase.instance.handleInput.bind(PageBase.instance);
+    addListenerToList(
+        PageBase.instance.listListenElEntryTournament,
+        elNickname,
+        boundHandleInput,
+        'blur'
+    );
+
     if (formEntry) {
         formEntry.addEventListener('submit', async (ev) => {
             ev.preventDefault();
-            const nickname = formEntry.querySelector('#inputNickname').value;
+            const nickname = elNickname.value;
             try {
                 data.nickname = nickname;
                 await entryUpcomingTournament(data);
-                closeModal();
+                //closeModal();はdata.action === 'entryDone'で呼ぶ
                 console.log(`Tournament ID: ${data['idTitle']}, Nickname: ${nickname}`);
             } catch (error) {
                 console.error('Entry failed:', error);
             }
         });
     }
+}
+
+const closeModalOnEntryDone = () => {
+    removeListenerAndClearList(PageBase.instance.listListenElEntryTournament);
+    closeModal();
 }
 
 const updateModalAvailablePlayers = (availablePlayers) => {
@@ -272,5 +295,5 @@ const updateModalAvailablePlayers = (availablePlayers) => {
     }
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers };
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, closeModalOnEntryDone };
 

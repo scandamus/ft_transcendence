@@ -29,6 +29,7 @@ export default class Tournament extends PageBase {
         //Instance固有のlistenerList
         this.listListenEntryTournament = [];
         this.listListenCancelEntryTournament = [];
+        this.listListenElEntryTournament = [];
     }
 
     async renderHtml() {
