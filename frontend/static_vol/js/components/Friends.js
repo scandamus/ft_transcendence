@@ -5,8 +5,10 @@ import { webSocketManager } from '../modules/websocket.js';
 import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
+
 import { checkSearchFriendInputValid } from "../modules/form.js";
-import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
+import { updateFriendsList, updateFriendRequestList, updateRecommend } from '../modules/friendList.js';
+
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
     from '../modules/friendListener.js';
 
@@ -53,35 +55,7 @@ export default class Friends extends PageBase {
                     </section>
                     <section class="blockFriendRecommended">
                         <h3 class="blockFriendRecommended_title unitTitle1">${labels.friends.labelRecommended}</h3>
-                        <div class="blockFriendRecommended_friends listFriends listLineDivide">
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">${'username'}</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="playertest1" data-id="dummyId1">${labels.friends.labelApply}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">${'01234567890123456789012345678901'}</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="playertest1" data-id="dummyId2">${labels.friends.labelApply}</button></li>
-                                </ul>
-                            </section>
-                            <section class="unitFriend">
-                                <header class="unitFriend_header">
-                                    <h4 class="unitFriend_name">${'012'}</h4>
-                                    <p class="unitFriend_thumb"><img src="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff" alt="" width="100" height="100"></p>
-                                </header>
-                                <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                                    <li><button type="button" class="unitFriendButton_matchRequest unitButton btnApply" data-username="playertest1" data-id="dummyId3">${labels.friends.labelApply}</button></li>
-                                </ul>
-                            </section>
-                        </div>
+                        <div class="blockFriendRecommended_friends listFriends listLineDivide"></div>
                     </section>
                 </div>
             </div>
@@ -92,6 +66,7 @@ export default class Friends extends PageBase {
         try {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
+            updateRecommend(this).then(() => {});
             //recommendedのaddListener
             addListenSendFriendRequest(this);
         } catch (error) {

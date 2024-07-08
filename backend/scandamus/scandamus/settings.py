@@ -243,7 +243,12 @@ LOGGING = {
         'django': {
             'handlers': ['console'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'WARNING',  # データベースのログを無視
+            'propagate': False,
         },
         'scandamus' : {
             'handlers': ['console'],
@@ -253,7 +258,7 @@ LOGGING = {
         'django.channels': {
             'handlers': ['console'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
     },
 }

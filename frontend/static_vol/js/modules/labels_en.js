@@ -53,11 +53,13 @@ export const labels_en = {
         labelApply: 'start a match',
         labelSearch: 'send friend request',
         labelSendRequest: 'send',
+        labelRequest: 'friend request',
         msgNoUsername: 'Enter a username to send friend request',
         msgNoFriends: 'no friends yet',
         labelListFriends: 'friends',
         labelReceivedRequest: 'friend requests',
         labelRecommended: 'recommended',
+        msgNoRecommended: 'no recommended player',
     },
     lounge: {
         title: 'Lounge',
@@ -77,6 +79,7 @@ export const labels_en = {
         labelWins: 'wins',
         labelLosses: 'losses',
         fmtWinLoss: '$win wins, $loss losses',
+        msgNoMatch: 'no match log',
     },
     tournament: {
         title: 'Tournament',

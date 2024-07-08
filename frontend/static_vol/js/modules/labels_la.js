@@ -53,11 +53,13 @@ export const labels_la = {
         labelApply: '',
         labelSearch: '',
         labelSendRequest: '',
+        labelRequest: '',
         msgNoUsername: '',
         msgNoFriends: '',
         labelListFriends: '',
         labelReceivedRequest: '',
         labelRecommended: '',
+        msgNoRecommended: '',
     },
     lounge: {
         title: '',
@@ -77,6 +79,7 @@ export const labels_la = {
         labelWins: '',
         labelLosses: '',
         fmtWinLoss: '$win $loss',
+        msgNoMatch: '',
     },
     tournament: {
         title: '',
