@@ -58,13 +58,6 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         # Leave room group
         if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
-            if self.scheduled_task is not None:
-                self.scheduled_task.cancel()
-                self.scheduled_task = None
-                await self.channel_layer.group_send(self.room_group_name, {
-                    'type': 'start.game',
-                    'state': 'ongoing',
-                })
             logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
             self.players_ids[self.match_id].remove(self.players_id)
             if not self.players_ids[self.match_id]:
