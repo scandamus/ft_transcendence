@@ -70,9 +70,19 @@ class PongConsumer(AsyncWebsocketConsumer):
             if not self.players_ids[self.match_id]:
                 logger.info(f'del: {self.players_ids}[{self.match_id}]')
                 del self.players_ids[self.match_id]
+            else:
+                new_next_master = sorted(self.players_ids[self.match_id])[0]
+                await self.channel_layer.group_send(self.room_group_name, {
+                    'type': 'start_game',
+                    'master_id': new_next_master,
+                    'state': 'ongoing',
+                })
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
+        if self.scheduled_task is not None:
+            self.scheduled_task.cancel()
+            self.scheduled_task = None
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
@@ -110,6 +120,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     self.players_ids[self.match_id] = set()
                 self.players_ids[self.match_id].add(self.players_id)
                 if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
+                    initial_master = sorted(self.players_ids[self.match_id])[0]
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'start.game',
                         'master_id': initial_master,
