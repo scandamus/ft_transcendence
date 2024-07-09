@@ -20,6 +20,7 @@ from .api_access import get_match_from_api, patch_match_to_api
 
 logger = logging.getLogger(__name__)
 
+
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
@@ -186,8 +187,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.game_continue = True
         try:
             while self.game_continue:
-                #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                # await asyncio.sleep(0.1)  # 60Hz
+                # await asyncio.sleep(0.1)
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
@@ -468,8 +468,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if state == 'start':
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
-        logger.info(f"Before start game: [{self.players_id}]{self.player_name}")
-
+            await self.init_walls()
         if self.players_id == master_id:
             logger.info(f"New master appointed: [{self.players_id}]{self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
