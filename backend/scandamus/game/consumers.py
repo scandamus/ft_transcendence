@@ -148,6 +148,7 @@ class LoungeSession(AsyncWebsocketConsumer):
             logger.info('Disconnect called but no user found.')
 
     async def send_notification(self, event):
+        try:
         player_id = event['player_id']
         message = event['message']
         logger.info(f'player_id:{player_id}  send_notification {message}')
@@ -156,3 +157,5 @@ class LoungeSession(AsyncWebsocketConsumer):
                 'action': event['action'],
                 'message': message            
         }))
+        except Exception as e:
+            logger.error(f'Error in send_notification: {e}')
