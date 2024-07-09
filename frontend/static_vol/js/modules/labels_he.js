@@ -52,11 +52,13 @@ export const labels_he = {
         labelApply: 'הזה עברית ',
         labelSearch: 'הזה עברית ',
         labelSendRequest: 'הזה עברית ',
+        labelRequest: '',
         msgNoUsername: 'הזה עברית ',
         msgNoFriends: 'הזה עברית ',
         labelListFriends: 'הזה עברית ',
         labelReceivedRequest: 'הזה עברית ',
         labelRecommended: 'הזה עברית ',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',

@@ -788,7 +788,8 @@ input.has-input:invalid {
 
 /* no data */
 .blockFriends_friends p:only-child,
-.blockDashboardLog_listMatch p:only-child {
+.blockDashboardLog_listMatch p:only-child,
+.blockFriendRecommended_friends p:only-child {
   font-size: 1.8rem;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -875,7 +876,7 @@ input.has-input:invalid {
   justify-content: flex-end;
   align-items: center;
   padding-right: 0.5em;
-  flex: 1 1 calc(100% - 160px);
+  flex: 1 1 calc(100% - 170px);
   min-width: 60%;
 }
 
@@ -1069,6 +1070,7 @@ input.has-input:invalid {
 
 .blockLoungeRoom_title {
   margin-right: 1em;
+  padding: 0.3em 0;
 }
 
 .blockLoungeRoom_body {
@@ -1082,6 +1084,7 @@ input.has-input:invalid {
 }
 
 .blockLoungeRoom_button {
+  flex: 1 1 auto;
   text-align: right;
 }
 
@@ -1090,44 +1093,115 @@ input.has-input:invalid {
 }
 
 /* GamePlay */
+#playBoard {
+  width: 100%;
+}
+
 .playBoardWrap {
-  padding-top: 50px;
+  position: relative;
+}
+
+.playBoardWrap-quad {
+  display: flex;
+  flex-direction: column;
+  padding: 0 60px;
 }
 
 .listPlayerActiveMatch {
-  list-style: none;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.4em;
+  list-style: none;
   font-size: 2.6rem;
 }
 
-#playBoard {
-  width: 100%;
-  background-color: var(--color-black);
+.listPlayerActiveMatch-dual {
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-/* listPlayers */
-.listPlayers {
+.playBoardWrap-quad .listPlayerActiveMatch-quad-first-half {
+  order: 1;
 }
 
-.unitPlayerName {
-  display: flex;
+.playBoardWrap-quad .listPlayerActiveMatch-quad-second-half {
   flex-direction: row-reverse;
-  justify-content: flex-end;
-  align-items: center;
-}
-.unitPlayerName h3 {
-  margin-left: 0.6em;
+  order: 3;
 }
 
-.unitPlayerScore {
+.playBoardWrap-quad #playBoard {
+  order: 2;
+}
+
+.listPlayerActiveMatch li {
   display: flex;
+  align-items: flex-end;
+  flex: 1 1 auto;
+  height: 50px;
 }
 
-.unitPlayerScore p:not(:last-child)::after {
-  content: "/";
-  margin: 0 1em;
+.listPlayerActiveMatch li img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.listPlayerActiveMatch li span {
+  margin-bottom: 2px;
+}
+
+.listPlayerActiveMatch-dual li:first-child {
+}
+
+.listPlayerActiveMatch-dual li:first-child span {
+  padding-left: 0.6em;
+}
+
+.listPlayerActiveMatch-dual li:last-child {
+  flex-direction: row-reverse;
+}
+
+.listPlayerActiveMatch-dual li:last-child span {
+  padding-right: 0.6em;
+}
+
+
+.listPlayerActiveMatch_item-player1 {
+  flex-direction: row-reverse;
+  transform-origin: 100% 100%;
+  translate: calc(-100% - 10px) 0;
+  rotate: -90deg;
+}
+
+.listPlayerActiveMatch_item-player1 span {
+  padding-right: 0.6em;
+}
+
+.listPlayerActiveMatch_item-player3 {
+  flex-direction: row-reverse;
+  padding-bottom: 10px;
+}
+
+.listPlayerActiveMatch_item-player3 span {
+  padding-right: 0.6em;
+}
+
+.listPlayerActiveMatch_item-player2 {
+  flex-direction: row-reverse;
+  transform-origin: 100% 0;
+  translate: 60px 0;
+  rotate: 90deg;
+}
+
+.listPlayerActiveMatch_item-player2 span {
+  padding-right: 0.6em;
+}
+
+.listPlayerActiveMatch_item-player4 {
+  margin-top: 10px;
+}
+
+.listPlayerActiveMatch_item-player4 span {
+  padding-left: 0.6em;
 }
 
 /* Lounge */

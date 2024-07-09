@@ -52,11 +52,13 @@ export const labels_ar = {
         labelApply: ' يؤُلاءِ العربية',
         labelSearch: ' يؤُلاءِ العربية',
         labelSendRequest: ' يؤُلاءِ العربية',
+        labelRequest: '',
         msgNoUsername: ' يؤُلاءِ العربية',
         msgNoFriends: ' يؤُلاءِ العربية',
         labelListFriends: ' يؤُلاءِ العربية',
         labelReceivedRequest: ' يؤُلاءِ العربية',
         labelRecommended: ' يؤُلاءِ العربية',
+        msgNoRecommended: '',
     },
     lounge: {
         title: 'Lounge',

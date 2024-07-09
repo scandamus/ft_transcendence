@@ -2,17 +2,15 @@ import json
 import asyncio
 import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.auth.models import User
-from .utils import generate_game_jwt
 from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
 from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
 from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
+from players.friend_utils import send_status_to_friends
 from .tournament import handle_create_tournament
 from .match_utils import get_player_by_user
 from channels.db import database_sync_to_async
 from channels.auth import get_user
-from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -34,13 +32,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                 'message': 'Anonymous user webscoket access'
             }))
             return
-
-        # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
-        player = await get_player_by_user(self.user)
-        if player and player.status in ['friend_waiting', 'lounge_waiting']:
-            player.status = 'waiting'
-            await database_sync_to_async(player.save)()
-            logger.info(f'{self.user.username} status set to waiting')
 
     async def receive(self, text_data):
         logger.info(f'received text_data: {text_data}')
@@ -67,16 +58,9 @@ class LoungeSession(AsyncWebsocketConsumer):
                     await handle_reject_game(self, text_data_json)
                 elif action == 'cancelGame':
                     await handle_cancel_game(self, text_data_json)
-                # # join_gameは廃止？
-                # elif action == 'joinGame':
-                #     await handle_join_game(self, token)
-                # elif action == 'cancel':
-                #     await handle_join_game_cancel(self)
             elif msg_type == 'friendRequest':
                 if action == 'requestByUsername':
                     await send_friend_request_by_username(self, text_data_json['username'])
-                elif action == 'sendRequest':
-                    await send_friend_request(self, text_data_json['user_id'])
                 elif action == 'acceptRequest':
                     await accept_friend_request(self, text_data_json['request_id'])
                 elif action == 'declineRequest':
@@ -103,11 +87,37 @@ class LoungeSession(AsyncWebsocketConsumer):
             logger.error(f'aaaAttribute error: {str(e)}')
             await self.close()
 
+    async def friend_status(self, event):
+        logger.info(f'friend_status in : {self.user.username}')
+        changed_username = event['username']
+        online_status = event['online']
+        await self.send(text_data=json.dumps({
+            'type': 'friendStatus',
+            'action': 'change',
+            'username': changed_username,
+            'online': online_status,
+        }))
+        logger.info(f'sent online status: {online_status} of {changed_username} to {self.user.username}')
+
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.username in self.players:
-            del self.players[self.user.username]
+            await self.channel_layer.group_discard(
+                self.group_name,
+                self.channel_name
+            )
             logger.info(f'User {self.user.username} disconnected and removed from players list.')
 
+            # reset player status
+            player = self.player
+            if player:
+                if player.status in ['friend_waiting', 'lounge_waiting']:
+                    player.status = 'waiting'
+                    await database_sync_to_async(player.save)()
+                    logger.info(f'{self.user.username} status set to waiting')
+                player.online = False
+                await database_sync_to_async(player.save)()
+                await send_status_to_friends(player, 'offline')
+  
             # remove pending_requests
             request_to_remove = []
             for request_id, request in self.pending_requests.items():
@@ -128,12 +138,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                 else:
                     logger.error(f'Cancelled successfully but opponent is not online')
 
-            # reset player status
-            player = await get_player_by_user(self.user)
-            if player and player.status in ['friend_waiting', 'lounge_waiting']:
-                player.status = 'waiting'
-                await database_sync_to_async(player.save)()
-                logger.info(f'{self.user.username} status set to waiting')
-
+            del self.players[self.user.username]
         else:
             logger.info('Disconnect called but no user found.')
