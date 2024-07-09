@@ -17,8 +17,10 @@ export default class GamePlay extends PageBase {
         this.title = 'GamePlay';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        this.player1 = 'player1'; // TODO fetch from backend?
+        this.player1 = 'player1';
         this.player2 = 'player2';
+        this.avatar1 = '/images/avatar_default.png';
+        this.avatar2 = '/images/avatar_default.png';
         this.score1 = 0;
         this.score2 = 0;
         this.containerId = '';
@@ -34,10 +36,10 @@ export default class GamePlay extends PageBase {
 
     async renderHtml() {
         return `
-           <div class="playBoardWrap">
-                <ul class="listPlayerActiveMatch">
-                    <li class="listPlayerActiveMatch_item">${this.player1}</li>
-                    <li class="listPlayerActiveMatch_item">${this.player2}</li>
+           <div class="playBoardWrap playBoardWrap-dual">
+                <ul class="listPlayerActiveMatch listPlayerActiveMatch-dual">
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar1}" alt="" width="50" height="50"><span>${this.player1}</span></li>
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar2}" alt="" width="50" height="50"><span>${this.player2}</span></li>
                 </ul>
                 <canvas id="playBoard" width="650" height="450"></canvas>
             </div>

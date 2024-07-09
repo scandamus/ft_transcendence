@@ -35,6 +35,9 @@ export const pongHandler = (event, containerId) => {
         else if (data.type === 'lounge') {
             handleLoungeMatchReceived(data);
         }
+        else if (data.type === 'friendStatus') {
+            handleFriendStatusReceived(data);
+        }
         else if (data.type === 'tournament') {
             handleTournamentReceived(data);
         }
@@ -185,7 +188,7 @@ const handleFriendMatchRequestReceived = (data) => {
     } else if (data.action === 'error') {
         closeModal();
         if (data.error === 'playerNotWaitingStatus') {
-            addNotice('対戦相手がビジーです', true);
+            addNotice(labels.matchRequest['playerNotWaitingStatus'], true);
         } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
         } else {
@@ -199,7 +202,21 @@ const handleLoungeMatchReceived = (data) => {
         updateModalAvailablePlayers(data.availablePlayers);
     } else if (data.action === 'error') {
         closeModal();
-        alert(`エラー:${data.message}`);
+        alert(`Error: ${data.message}`);
+    }
+}
+
+const handleFriendStatusReceived = (data) => {
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+                                ? PageBase.instance : null;
+
+    if (data.action === 'change') {
+        const online_status_msg = data.online === 'online' ? 'ログイン' : 'ログアウト';
+        console.log(`friendStatus change: ${data.username} to ${online_status_msg}`);
+        addNotice(`${data.username}が${online_status_msg}しました`, false);
+        if (currentPage) {
+            updateFriendsList(currentPage).then(() => {});
+        }
     }
 }
 
