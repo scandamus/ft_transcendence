@@ -51,6 +51,13 @@ class Paddle(Block):
 
     def deactivate(self):
         self.is_active = False
+        self.convert_to_wall()
+
+    def convert_to_wall(self):
+        if self.orientation == 'vertical':
+            self.length = CANVAS_HEIGHT_MULTI
+        elif self.orientation == 'horizontal':
+            self.length = CANVAS_WIDTH_MULTI
 
     def move_for_multiple(self):
         if self.orientation == 'horizontal':
