@@ -159,7 +159,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.down_pressed = is_pressed
         speed = -7 * self.up_pressed + 7 * self.down_pressed
 
-        # if self.player_name == 'player1':
         if self.scheduled_task is not None:
             if sent_player_name == 'player1':
                 self.left_paddle.speed = speed
@@ -170,8 +169,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.game_continue = True
         try:
             while self.game_continue:
-                #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                # await asyncio.sleep(0.1)  # 60Hz
+                # await asyncio.sleep(0.1)
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
@@ -189,7 +187,6 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def send_game_over_message(self, event):
         message = event['message']
         timestamp = dt.utcnow().isoformat()
-        # if self.player_name == 'player2':
         if self.scheduled_task is None:
             self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')

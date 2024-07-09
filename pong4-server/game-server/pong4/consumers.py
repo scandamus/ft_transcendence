@@ -172,7 +172,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.left_pressed = is_pressed
         horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
 
-        # if self.player_name == 'player1':
         if self.scheduled_task is not None:
             if sent_player_name == 'player1':
                 self.left_paddle.speed = vertical_speed
@@ -206,7 +205,6 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def send_game_over_message(self, event):
         message = event['message']
         timestamp = dt.utcnow().isoformat()
-        # if self.player_name != 'player1':
         if self.scheduled_task is None:
             self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
@@ -271,7 +269,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         message = data['message']
         timestamp = data['timestamp']
         sound_type = data['sound_type']
-        # if self.player_name != 'player1':
         if self.scheduled_task is None:
             await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp, sound_type=sound_type)
