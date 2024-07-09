@@ -32,7 +32,7 @@ export default class SignUp extends PageBase {
                 <dl class="unitFormInput">
                     <dt class="unitFormInput_label"><label for="registerUsername">${labels.register.labelUsername}</label></dt>
                     <dd class="unitFormInput_input">
-                        <input type="text" id="registerUsername" title="${labels.register.descUsername}" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" aria-describedby="annotationRegisterUsername errorRegisterUsername" required />
+                        <input type="text" id="registerUsername" title="${labels.register.descUsername}" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" aria-describedby="annotationRegisterUsername errorRegisterUsername" required aria-required="true" />
                         <ul id="errorRegisterUsername" class="listError"></ul>
                         <ul id="annotationRegisterUsername" class="listAnnotation">${listDescUsername}</ul>
                     </dd>
@@ -41,7 +41,7 @@ export default class SignUp extends PageBase {
                     <dt class="unitFormInput_label"><label for="registerPassword">${labels.register.labelPassword}</label></dt>
                     <dd class="unitFormInput_input">
                         <input type="password" id="registerPassword" title="${labels.register.descPassword}" placeholder="Enter password"
-                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" aria-describedby="annotationRegisterPassword errorRegisterPassword" required />
+                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" aria-describedby="annotationRegisterPassword errorRegisterPassword" required aria-required="true" />
                         <ul id="errorRegisterPassword" class="listError"></ul>
                         <ul id="annotationRegisterPassword" class="listAnnotation">${listDescPassword}</ul>
                     </dd>
@@ -50,7 +50,7 @@ export default class SignUp extends PageBase {
                     <dt class="unitFormInput_label"><label for="registerPasswordConfirm">${labels.register.labelPasswordConfirm}</label></dt>
                     <dd class="unitFormInput_input">
                         <input type="password" id="registerPasswordConfirm" title="${labels.register.descPasswordConfirm}" placeholder="Enter password(confirm)"
-                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" aria-describedby="annotationRegisterPasswordConfirm errorRegisterPasswordConfirm" required />
+                            pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" aria-describedby="annotationRegisterPasswordConfirm errorRegisterPasswordConfirm" required aria-required="true" />
                         <ul id="errorRegisterPasswordConfirm" class="listError"></ul>
                         <ul id="annotationRegisterPasswordConfirm" class="listAnnotation"><li>${labels.register.descPasswordConfirm}</li></ul>
                     </dd>

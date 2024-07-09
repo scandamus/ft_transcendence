@@ -30,7 +30,7 @@ export default class Tournament extends PageBase {
                 <form id="formCreateTournament" class="formCreateTournament blockForm unitBox" action="" method="post">
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-title">
                         <dt>${labels.tournament.labelTournamentTitle}</dt>
-                        <dd><input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required /></dd>
+                        <dd><input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required aria-required="true" /></dd>
                     </dl>
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-start">
                         <dt>${labels.tournament.labelStart}</dt>

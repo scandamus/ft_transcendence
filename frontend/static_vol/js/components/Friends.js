@@ -46,7 +46,7 @@ export default class Friends extends PageBase {
                     <section class="blockSearchFriend">
                         <h3 class="blockSearchFriend_title unitTitle1">${labels.friends.labelSearch}</h3>
                         <form action="" method="post" class="blockSearchFriend_form blockForm" id="friendSearchForm">
-                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required></p>
+                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required aria-required="true" /></p>
                             <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${labels.friends.labelSendRequest}</button></p>
                             <ul class="listError"></ul>
                         </form>
