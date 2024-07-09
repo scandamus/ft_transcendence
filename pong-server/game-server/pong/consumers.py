@@ -58,6 +58,13 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         # Leave room group
         if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
+            if self.scheduled_task is not None:
+                self.scheduled_task.cancel()
+                self.scheduled_task = None
+                await self.channel_layer.group_send(self.room_group_name, {
+                    'type': 'start.game',
+                    'state': 'ongoing',
+                })
             logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
             self.players_ids[self.match_id].remove(self.players_id)
             if not self.players_ids[self.match_id]:
@@ -105,6 +112,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'start.game',
+                        'state': 'start',
                     })
                 # TODO: 2人揃わない場合のタイムアウト処理
             else:
@@ -146,7 +154,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.down_pressed = is_pressed
         speed = -7 * self.up_pressed + 7 * self.down_pressed
 
-        if self.player_name == 'player1':
+        # if self.player_name == 'player1':
+        if self.scheduled_task is not None:
             if sent_player_name == 'player1':
                 self.left_paddle.speed = speed
             elif sent_player_name == 'player2':
@@ -175,7 +184,8 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def send_game_over_message(self, event):
         message = event['message']
         timestamp = dt.utcnow().isoformat()
-        if self.player_name == 'player2':
+        # if self.player_name == 'player2':
+        if self.scheduled_task is None:
             self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
 
@@ -330,6 +340,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
-        if self.player_name == 'player1':
+        if event['state'] == 'start' and self.player_name == 'player1':
             self.reset_game_data()
+            self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
+        elif event['state'] == 'ongoing' and self.player_name == 'player2':
+            logger.info(f'i am {self.player_name}, start_game called')
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
