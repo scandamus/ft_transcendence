@@ -67,16 +67,18 @@ const updateFriendRequestList = async (pageInstance) => {
         if (!requests || requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
+                secRequestWrapper.ariaHidden = 'true';
             }
         } else {
             if (secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.remove('is-noRequest');
+                secRequestWrapper.ariaHidden = 'false';
             }
             listRequestWrapper.innerHTML = '';
             requests.forEach(request => {
                 const avatar = request.from_user_avatar ? request.from_user_avatar : '/images/avatar_default.png';
                 const requestElement = `
-                    <section class="unitFriend">
+                    <section class="unitFriend" aria-live="polite">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${request.from_user}</h4>
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
@@ -108,7 +110,7 @@ const updateRecommend = async (pageInstance) => {
             RecommendedList.forEach(player => {
                 const avatar = player.avatar ? player.avatar : '/images/avatar_default.png';
                 const requestElement = `
-                    <section class="unitFriend">
+                    <section class="unitFriend" aria-live="polite">
                         <header class="unitFriend_header">
                             <h4 class="unitFriend_name">${player.username}</h4>
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
