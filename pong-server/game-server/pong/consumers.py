@@ -235,7 +235,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         message = data['message']
         timestamp = data['timestamp']
         sound_type = data['sound_type']
-        if self.player_name != 'player1':
+        if self.scheduled_task is None:
             await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp, sound_type=sound_type)
 
