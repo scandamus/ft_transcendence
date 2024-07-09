@@ -5,7 +5,12 @@ import { router, routes } from '../modules/router.js';
 import { labels } from '../modules/labels.js';
 
 export default class SignUpComplete extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (SignUpComplete.instance) {
+            return SignUpComplete.instance;
+        }
         super(params);
         SignUpComplete.instance = this;
         this.title = 'SIGN UP';
@@ -39,6 +44,7 @@ export default class SignUpComplete extends PageBase {
     }
 
     destroy() {
+        SignUpComplete.instance = null;
         super.destroy();
     }
 }
