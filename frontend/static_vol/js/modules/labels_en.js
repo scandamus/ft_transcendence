@@ -1,12 +1,12 @@
 'use strict';
 
 export const labels_en = {
-	langCode: 'en',
-	langName: 'English',
+    langCode: 'en',
+    langName: 'English',
     home: {
         title: 'Home',
-        labelUsername: 'username', 
-        labelPassword: 'password', 
+        labelUsername: 'username',
+        labelPassword: 'password',
         labelButtonLogin: 'log in',
         labelButtonLogout: 'log out',
         textSignUp: 'If you don\'t have an account:',
@@ -14,11 +14,11 @@ export const labels_en = {
     },
     register: {
         title: 'Register',
-        labelUsername: 'username', 
-        labelPassword: 'password', 
-        labelPasswordConfirm: 'confirm password', 
-        descUsername: ['You can use lowercase alphabets, numbers, and underscore (a-z 0-9 _)', 'You need to use at least one alphabet or number', 'Between 3 and 32 characters long'],
-        descPassword: ['You can use uppercase and lowercase alphabets, numbers, and following symbols (@_#$%&!.,+*~\')', 'You need to use at least one uppercase, one lowercase, one number, and one symbol', 'Between 8 and 24 characters long'],
+        labelUsername: 'username',
+        labelPassword: 'password',
+        labelPasswordConfirm: 'confirm password',
+        descUsername: ['You can use lowercase alphabets, numbers, and underscore (a-z 0-9 _)', 'You need to use at least one alphabet or number', '3 to 32 characters long'],
+        descPassword: ['You can use uppercase and lowercase alphabets, numbers, and following symbols (@_#$%&!.,+*~\')', 'You need to use at least one uppercase, one lowercase, one number, and one symbol', '8 to 24 characters long'],
         descPasswordConfirm: 'Please confirm the password',
         labelButtonConfirm: 'confirm',
         textConfirm: 'Do you want to register with the following information?',
@@ -33,13 +33,20 @@ export const labels_en = {
         tooLong: 'Too many characters.',
         tooShort: 'Too few characters.',
         passwordIsNotSame: 'The passwords do not match.',
-        isExists: 'This username is already talen.',
+        isExists: 'This username is already taken.',
         loginError1: 'Login failed. Please check your username and password.',
         loginError2: 'Something went wrong. Unable to log in.',
     },
 
     dashboard: {
         title: 'Dashboard',
+        labelChangeAvatar: 'change avatar',
+        labelCancel: 'cancel',
+        labelUpload: 'upload',
+        msgAvatarSwitched: 'avatar successfully changed',
+        msgInvalidFile: 'file is invalid',
+        msgInvalidFileFormat: 'invalid file format (only .jpg and .png are accepted)',
+        labelViewAllFriends: 'View all friends',
     },
     friends: {
         title: 'Friends',
@@ -68,7 +75,7 @@ export const labels_en = {
         labelQuadGame: '4-player match',
         labelCapacity: 'capacity',
         labelAvailable: 'available',
-        labelWaiting: 'looking for an opponent',
+        labelWaiting: 'looking for opponent',
     },
     match: {
         title: '',
@@ -93,7 +100,6 @@ export const labels_en = {
         labelTournamentLog: 'tournament log',
     },
     modal: {
-        title: '',
         labelNickname: 'nickname',
         labelEntry: 'entry',
         labelCancel: 'cancel',
@@ -124,5 +130,6 @@ export const labels_en = {
         cancelled: 'opponent cancelled the match',
         rejected: 'opponent has rejected to play',
         userOffline: 'opponent is offline',
+        playerNotWaitingStatus: 'opponent is busy now',
     },
 };
