@@ -267,7 +267,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             'sound_type': sound_type,
         }))
 
-    def reset_game_data(self):
+    async def reset_game_data(self):
         self.scheduled_task = None
         self.right_paddle = Paddle(CANVAS_WIDTH - PADDLE_THICKNESS - PADDING, (CANVAS_HEIGHT - PADDLE_LENGTH) / 2,
                                    PADDLE_THICKNESS, PADDLE_LENGTH)
@@ -347,8 +347,9 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def start_game(self, event):
         master_id = event['master_id']
         state = event['state']
+        if state == 'start':
+            # ここで初期化しないとNoneTypeになってしまう
+            await self.reset_game_data()
         if self.players_id == master_id:
             logger.info(f"New master appointed: {self.player_name}")
-            if state != 'ongoing':
-                self.reset_game_data()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
