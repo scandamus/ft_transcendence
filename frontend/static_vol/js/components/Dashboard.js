@@ -76,7 +76,7 @@ export default class Dashboard extends PageBase {
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.tournament.labelTournamentLog}</h3>
                         <div class="blockDashboardLog_listTournament listLineDivide">
                             <section class="unitTournamentResult unitTournament-link">
-                                <a href="/tournament/detail_id" data-link>
+                                <a href="/tournament/detail_id" data-link aria-label="TournamentTitle1 2024/07/3 13:00 Rank 1">
                                     <header class="unitTournament_header">
                                         <h4 class="unitTournament_title">TournamentTitle1</h4>
                                         <p class="unitTournament_start">2024/07/3 13:00</p>
@@ -87,7 +87,7 @@ export default class Dashboard extends PageBase {
                                 </a>
                             </section>
                             <section class="unitTournamentResult unitTournament-link">
-                                <a href="/tournament/detail_id" data-link>
+                                <a href="/tournament/detail_id" data-link aria-label="TournamentTitle2 2024/07/5 21:00 Rank 10">
                                     <header class="unitTournament_header">
                                         <h4 class="unitTournament_title">TournamentTitle2</h4>
                                         <p class="unitTournament_start">2024/07/5 21:00</p>
