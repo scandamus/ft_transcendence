@@ -9,9 +9,9 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/players/', include('players.urls.players')),
     path('api/friends/', include('players.urls.friends')),
-    path('api/tournaments/', include('game.urls')),
-    path('api-internal/game/', include('game.urls')),
-    path('ws/lounge/', include('game.urls')),
+    path('api/tournaments/', include('game.urls.tournaments')),
+    path('api-internal/game/', include('game.urls.game')),
+    path('ws/lounge/', include('game.urls.lounge')),
     path('health/', health_check),
     path('api/test/', include('players.urls.players')), # for test use only
 ]
