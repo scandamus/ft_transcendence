@@ -10,6 +10,7 @@ from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
 from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
 from .tournament import handle_create_tournament, handle_entry_tournament, handle_cancel_entry
+from .tournament_match import handle_enter_tournament_room
 from .match_utils import get_player_by_user
 from channels.db import database_sync_to_async
 from channels.auth import get_user
@@ -20,6 +21,7 @@ class LoungeSession(AsyncWebsocketConsumer):
     players = {}
     gamePlayers = {}
     pending_requests = {}
+    tournament_entry = {}
     matchmaking_lock = asyncio.Lock()
 
     async def connect(self): 
@@ -69,11 +71,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                     await handle_reject_game(self, text_data_json)
                 elif action == 'cancelGame':
                     await handle_cancel_game(self, text_data_json)
-                # # join_gameは廃止？
-                # elif action == 'joinGame':
-                #     await handle_join_game(self, token)
-                # elif action == 'cancel':
-                #     await handle_join_game_cancel(self)
             elif msg_type == 'friendRequest':
                 if action == 'requestByUsername':
                     await send_friend_request_by_username(self, text_data_json['username'])
@@ -95,6 +92,8 @@ class LoungeSession(AsyncWebsocketConsumer):
                     await handle_entry_tournament(self, text_data_json)
                 elif action == 'cancelEntry':
                     await handle_cancel_entry(self, text_data_json)
+                elif action == 'enterRoomRequest':
+                    await handle_enter_tournament_room(self, token, text_data_json)
             else:
                 await self.send(text_data=json.dumps({
                     'message': 'response from server'
@@ -149,13 +148,15 @@ class LoungeSession(AsyncWebsocketConsumer):
 
     async def send_notification(self, event):
         try:
-        player_id = event['player_id']
-        message = event['message']
-        logger.info(f'player_id:{player_id}  send_notification {message}')
-        await self.send(text_data=json.dumps({
-                'type': 'tournamentMatch',
-                'action': event['action'],
-                'message': message            
-        }))
+            player_id = event['player_id']
+            action = event['action']
+            name = event['name']
+            logger.info(f'player_id:{player_id} tournament:{name} {action}')
+
+            await self.send(text_data=json.dumps({
+                    'type': 'tournamentMatch',
+                    'action': action,
+                    'name': name
+            }))
         except Exception as e:
             logger.error(f'Error in send_notification: {e}')

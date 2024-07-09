@@ -60,4 +60,22 @@ const cancelEntryTournament = async(tournamentId, tournamentName) => {
         console.error('Failed to open or send through WebSocket: ', error);
     }   
 }
-export { createTournament, entryUpcomingTournament, cancelEntryTournament };
+
+const enterTournamentRoomRequest = async(tournamentName) => {
+    console.log(`enterTournamentRoom ${tournamentName}`);
+    try {
+        const accessToken = await initToken();
+        await webSocketManager.openWebSocket('lounge', pongHandler);
+        webSocketManager.sendWebSocketMessage('lounge', {
+            type: 'tournament',
+            action: 'enterRoomRequest',
+            name: tournamentName,
+            token: accessToken.token
+        });
+        console.log(`Sent entering request tournament room ${tournamentName}`);
+    } catch (error) {
+        console.error('Failed to open or send through WebSocket: ', error);  
+    }
+}
+
+export { createTournament, entryUpcomingTournament, cancelEntryTournament, enterTournamentRoomRequest };

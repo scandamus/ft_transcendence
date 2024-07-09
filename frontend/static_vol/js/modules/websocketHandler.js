@@ -8,6 +8,7 @@ import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
 import { updateModalAvailablePlayers } from "./modal.js";
 import { updateUpcomingTournamentList } from "./tournamentList.js";
+import { enterTournamentRoomRequest } from "./tournament.js";
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -252,8 +253,15 @@ const handleTournamentReceived = (data) => {
 const handleTournamentMatchReceived = (data) => {
     const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
 
-    if (data.action === 'call') {
-        addNotice(`${data.message}`);
+    if (data.action === 'tournament_prepare') {
+        addNotice(`トーナメント ${data.name} の開始５分前になりました`);
+    } else if (data.action === 'tournament_call') {
+        addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
+        enterTournamentRoomRequest(data.name);
+    } else if (data.action === 'tournament_match') {
+        addNotice(`トーナメント ${data.name} を開始します`);
+    } else if (data.action === 'enterRoom') {
+        addNotice(`トーナメント ${data.name} の控室に移動します`);
     }
-
+    console.log(`${data.name} ${data.action}の通知です`);
 }
