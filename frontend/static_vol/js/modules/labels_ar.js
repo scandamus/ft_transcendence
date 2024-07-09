@@ -107,10 +107,13 @@ export const labels_ar = {
         labelReject: 'لا تلعب',
         labelCapacity: 'القدرة',
         labelAvailable: 'مفتوح للمنافسة',
+        labelExitGame:  '',
+        labelReturnToGame:  '',
         titleSendMatchRequest: ' لقد تقدمت بطلب للمشاركة في مباراة',
         titleReceiveMatchRequest: 'لقد تقدمت بطلب للعب ضدك',
         titleWaitForOpponent: 'في انتظار الخصم...',
         titleEntryTournament:  'أنا أشارك في البطولة',
+        titleExitGame:  '',
     },
     friendRequest: {
         alreadyFriends: '$name صديق بالفعل',

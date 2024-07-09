@@ -107,10 +107,13 @@ export const labels_he = {
         labelReject: 'לא עכשיו',
         labelCapacity: 'קיבולת',
         labelAvailable: 'עוד שחקן',
+        labelExitGame:  '',
+        labelReturnToGame:  '',
         titleSendMatchRequest: 'הגשת בקשה לשחק נגד',
         titleReceiveMatchRequest: 'קיבלת בקשת משחק',
         titleWaitForOpponent: 'מחכה ליריב...',
         titleEntryTournament:  'קיבלת בקשת משחק',
+        titleExitGame:  '',
     },
     friendRequest: {
         alreadyFriends: '$name כבר חבר',

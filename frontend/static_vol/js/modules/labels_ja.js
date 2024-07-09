@@ -107,10 +107,13 @@ export const labels_ja = {
         labelReject: 'やめておく',
         labelCapacity: '定員',
         labelAvailable: '募集中',
+        labelExitGame:  '退出',
+        labelReturnToGame:  'ゲームに戻る',
         titleSendMatchRequest: '対戦を申し込みました',
         titleReceiveMatchRequest: '対戦申し込みがありました',
         titleWaitForOpponent: '対戦相手を待っています...',
         titleEntryTournament:  'トーナメントに出場する',
+        titleExitGame:  'ゲームから退出しますか?',
     },
     friendRequest: {
         alreadyFriends: '$name さんはすでに友達です',

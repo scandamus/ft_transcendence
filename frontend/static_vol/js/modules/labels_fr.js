@@ -107,10 +107,13 @@ export const labels_fr = {
         labelReject: 'Ne le fais pas',
         labelCapacity: 'Capacité',
         labelAvailable: 'Disponible',
+        labelExitGame:  '',
+        labelReturnToGame:  '',
         titleSendMatchRequest: 'Vous avez demandé un match',
         titleReceiveMatchRequest: 'Vous avez reçu une demande de match',
         titleWaitForOpponent: 'En attente d’un adversaire...',
         titleEntryTournament:  'Entrer',
+        titleExitGame:  '',
     },
     friendRequest: {
         alreadyFriends: '$name est déjà un ami',

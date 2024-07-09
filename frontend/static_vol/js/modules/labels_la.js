@@ -107,10 +107,13 @@ export const labels_la = {
         labelReject: 'nolo',
         labelCapacity: 'capacitas',
         labelAvailable: 'alii',
+        labelExitGame:  '',
+        labelReturnToGame:  '',
         titleSendMatchRequest: 'petivisti pugnare',
         titleReceiveMatchRequest: 'petivit pugnare',
         titleWaitForOpponent: 'exspecto opponentes...',
         titleEntryTournament:  'intrare certamen',
+        titleExitGame:  '',
     },
     friendRequest: {
         alreadyFriends: '$name et tu iam amici',

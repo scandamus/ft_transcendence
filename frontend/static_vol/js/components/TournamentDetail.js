@@ -5,7 +5,12 @@ import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/
 import { labels } from '../modules/labels.js';
 
 export default class TournamentDetail extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (TournamentDetail.instance) {
+            return TournamentDetail.instance;
+        }
         super(params);
         TournamentDetail.instance = this;
         this.title = 'TournamentTitle1';
@@ -321,6 +326,7 @@ export default class TournamentDetail extends PageBase {
     }
 
     destroy() {
+        TournamentDetail.instance = null;
         super.destroy();
     }
 }
