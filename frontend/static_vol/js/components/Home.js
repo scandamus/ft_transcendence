@@ -27,13 +27,13 @@ export default class LogIn extends PageBase {
             <form id="formLogin" class="blockForm blockForm-home" action="" method="post">
                 <dl class="blockForm_el">
                     <dt>${labels.home.labelUsername}</dt>
-                    <dd><input type="text" id="loginUsername" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required aria-required="true" /></dd>
+                    <dd><input type="text" id="loginUsername" placeholder="Enter username" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" aria-describedby="errorLoginForm" required aria-required="true" /></dd>
                 </dl>
                 <dl class="blockForm_el">
                     <dt>${labels.home.labelPassword}</dt>
-                    <dd><input type="password" id="loginPassword" placeholder="Enter password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" required aria-required="true" /></dd>
+                    <dd><input type="password" id="loginPassword" placeholder="Enter password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@_#$%&!.,+*~'])[\\w@_#$%&!.,+*~']+" minlength="8" maxlength="24" aria-describedby="errorLoginForm" required aria-required="true" /></dd>
                 </dl>
-                <ul class="blockForm_el listError"></ul>
+                <ul id="errorLoginForm" class="blockForm_el listError"></ul>
                 <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>
             </form>
             <hr />
