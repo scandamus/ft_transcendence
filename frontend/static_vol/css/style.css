@@ -228,14 +228,55 @@ hr {
 .mainFooter {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   flex-wrap: wrap;
-  height: 40px;
-  line-height: 40px;
+  height: 60px;
+  line-height: 60px;
   padding: 0 20px;
   border-top: 1px solid var(--color-black-alpha);
   text-align: right;
   font-size: 2rem;
+}
+
+.blockFontSize {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.blockFontSize_title {
+  font-size: 1.6rem;
+}
+
+.blockFontSize_title::after {
+  content: ":";
+  margin: 0 0.7em 0 0.4em;
+}
+
+.blockFontSize_list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.blockFontSize li:not(:last-child) {
+  margin-right: 3px;
+}
+
+.blockFontSize_button {
+  height: 1.8em;
+  line-height: 1.8em;
+  padding: 0 0.6em;
+  background-color: var(--color-burn1);
+  border: none;
+  font-size: 2rem;
+  color: var(--color-white);
+}
+
+.blockFontSize_button:hover {
+  animation: 0.2s ease-out linkHover1;
+  opacity: 1;
 }
 
 .formSwitchLang {

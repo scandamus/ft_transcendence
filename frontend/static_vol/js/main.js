@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 言語切り替え
     switchLanguage();
+    changeFontSize();
 });
 
 //reload
@@ -39,3 +40,21 @@ window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
 });
+
+//changeFontSige
+const changeFontSize = () => {
+    const elHtml = document.querySelector('html');
+    const btnTextSmall = document.getElementById('btnTextSmall');
+    const btnTextMid = document.getElementById('btnTextMid');
+    const btnTextBig = document.getElementById('btnTextBig');
+
+    btnTextSmall.addEventListener('click', () => {
+        elHtml.style.fontSize = '52.5%';
+    });
+    btnTextMid.addEventListener('click', () => {
+        elHtml.style.fontSize = '62.5%';
+    });
+    btnTextBig.addEventListener('click', () => {
+        elHtml.style.fontSize = '80%';
+    });
+}
