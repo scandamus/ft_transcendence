@@ -7,7 +7,7 @@ import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { addErrorMessage } from '../modules/form.js';
-import { setLang } from '../modules/switchLanguage.js';
+import { getLang, setLang, updateDbLang } from '../modules/switchLanguage.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class LogIn extends PageBase {
@@ -122,9 +122,10 @@ export default class LogIn extends PageBase {
             })
             .then((data) => {
                 if (data) {
-                    if (data.lang !== localStorage.getItem('configLang')) {
-                    //todo: localStorageとDBがずれてたらDB合わせ
-                        setLang(data.lang);
+                    const langStorage = getLang();
+                    if (data.lang !== langStorage) {
+                        const elSelectLang = document.getElementById('languageSelect');
+                        setLang(elSelectLang, langStorage);
                     }
                     switchDisplayAccount()
                         .then(() => {

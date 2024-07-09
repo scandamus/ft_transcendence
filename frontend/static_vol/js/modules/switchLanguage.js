@@ -1,6 +1,6 @@
 'use strict';
 
-import { switchLabels } from './labels.js';
+import { labels, switchLabels } from './labels.js';
 import { router } from './router.js';
 import { getToken } from './token.js';
 import { languageLabels } from './labels.js';
@@ -17,23 +17,50 @@ const setLangAttrSelected = (elSelectLang, selectedLanguage) => {
 }
 
 const setLang = (elSelectLang, lang) => {
-    localStorage.setItem('configLang', lang);
+    if (localStorage.getItem('configLang') !== lang) {
+        localStorage.setItem('configLang', lang);
+    }
     setLangAttrSelected(elSelectLang, lang);
     switchLabels(lang);
-    router(getToken('accessToken'));
+    updateDbLang(lang);
 }
 
-const getLang = (lang) => {
-    if (!lang || !(lang in languageLabels)) {
+const getLang = () => {
+    const langStorage = localStorage.getItem('configLang');
+    if (!langStorage || !(langStorage in languageLabels)) {
         localStorage.setItem('configLang', 'en');
         return 'en';
     }
-    return lang;
+    return langStorage;
 };
 
-// todo: DB: ユーザーの意図した言語でバックアップ。
-// todo: localStorage: 普段遣い。ログアウト時も保持。
-// todo: DBに保存し、localStorageにも随時反映して保持。急にログアウトしてしまった時も保持できるように。
-//  login時点でDB, localStorageに異なる場合DB優先しlocalStorageにも反映。（他の端末で変更したかもしれない。）
+const updateDbLang = (lang) => {
+    const accessToken = getToken('accessToken');
+    if (accessToken === null) {
+        return Promise.resolve(null);
+    }
+    console.log(`updateDbLang: ${lang}`)
+    fetch('/api/players/lang/', {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({lang}),
+    })
+        .then( async (response) => {
+            if (!response.ok) {
+                throw new Error(response.status);
+             }
+            return response.json();
+        })
+        .then((data) => {
+            console.log('Language updated successfully:', data.message);
+            return data;
+        })
+        .catch((error) => {
+            console.error('Error update Lang', error);
+        });
+}
 
-export { setLangAttrSelected, setLang, getLang };
+export { setLangAttrSelected, setLang, getLang, updateDbLang };
