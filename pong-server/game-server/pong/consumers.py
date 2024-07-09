@@ -112,6 +112,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'start.game',
+                        'master_id': initial_master,
                         'state': 'start',
                     })
                 # TODO: 2人揃わない場合のタイムアウト処理
@@ -340,9 +341,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
-        if event['state'] == 'start' and self.player_name == 'player1':
-            self.reset_game_data()
-            self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
-        elif event['state'] == 'ongoing' and self.player_name == 'player2':
-            logger.info(f'i am {self.player_name}, start_game called')
+        master_id = event['master_id']
+        state = event['state']
+        if self.players_id == master_id:
+            logger.info(f"New master appointed: {self.player_name}")
+            if state != 'ongoing':
+                self.reset_game_data()
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
