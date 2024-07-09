@@ -36,6 +36,9 @@ export const pongHandler = (event, containerId) => {
         else if (data.type === 'lounge') {
             handleLoungeMatchReceived(data);
         }
+        else if (data.type === 'friendStatus') {
+            handleFriendStatusReceived(data);
+        }
         else if (data.type === 'tournament') {
             handleTournamentReceived(data);
         }
@@ -203,6 +206,20 @@ const handleLoungeMatchReceived = (data) => {
     } else if (data.action === 'error') {
         closeModal();
         alert(`エラー:${data.message}`);
+    }
+}
+
+const handleFriendStatusReceived = (data) => {
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+                                ? PageBase.instance : null;
+
+    if (data.action === 'change') {
+        const online_status_msg = data.online === 'online' ? 'ログイン' : 'ログアウト';
+        console.log(`friendStatus change: ${data.username} to ${online_status_msg}`);
+        addNotice(`${data.username}が${online_status_msg}しました`, false);
+        if (currentPage) {
+            updateFriendsList(currentPage).then(() => {});
+        }
     }
 }
 
