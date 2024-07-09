@@ -69,7 +69,7 @@ export default class Dashboard extends PageBase {
                     </section>
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
-                        <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <div class="blockFriends_friends listFriends listLineDivide" aria-live="polite"></div>
                         <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
                     </section>
                     <section class="blockDashboardLog">
@@ -101,7 +101,7 @@ export default class Dashboard extends PageBase {
                     </section>
                     <section class="blockDashboardLog">
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
-                        <div class="blockDashboardLog_listMatch listLineDivide"></div>
+                        <div class="blockDashboardLog_listMatch listLineDivide" aria-live="polite"></div>
                     </section>
                 </div>
             </div>

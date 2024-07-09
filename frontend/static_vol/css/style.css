@@ -795,6 +795,12 @@ input.has-input:invalid {
   margin-bottom: 1em;
 }
 
+/* for screen reader */
+.forScreenReader {
+  visibility: hidden;
+  height: 0;
+}
+
 
 /* -----
  page
