@@ -14,7 +14,4 @@ for i in {60..0}; do
     echo "wait counter: $i"
 done
 
-python manage.py makemigrations
-python manage.py migrate
-
 exec "$@"
