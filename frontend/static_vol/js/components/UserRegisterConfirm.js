@@ -5,7 +5,12 @@ import { router, routes } from '../modules/router.js';
 import { labels } from '../modules/labels.js';
 
 export default class SignUpConfirm extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (SignUpConfirm.instance) {
+            return SignUpConfirm.instance;
+        }
         super(params);
         SignUpConfirm.instance = this;
         this.title = 'SIGN UP';
@@ -100,6 +105,7 @@ export default class SignUpConfirm extends PageBase {
     }
 
     destroy() {
+        SignUpConfirm.instance = null;
         super.destroy();
     }
 }

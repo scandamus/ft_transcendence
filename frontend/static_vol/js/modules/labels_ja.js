@@ -1,12 +1,12 @@
 'use strict';
 
 export const labels_ja = {
-	langCode: 'ja',
-	langName: '日本語',
+    langCode: 'ja',
+    langName: '日本語',
     home: {
         title: 'Home',
-        labelUsername: 'ユーザー名', 
-        labelPassword: 'パスワード', 
+        labelUsername: 'ユーザー名',
+        labelPassword: 'パスワード',
         labelButtonLogin: 'ログイン',
         labelButtonLogout: 'ログアウト',
         textSignUp: '初めての方はこちら',
@@ -14,9 +14,9 @@ export const labels_ja = {
     },
     register: {
         title: 'Register',
-        labelUsername: 'ユーザー名', 
-        labelPassword: 'パスワード', 
-        labelPasswordConfirm: 'パスワード(再入力)', 
+        labelUsername: 'ユーザー名',
+        labelPassword: 'パスワード',
+        labelPasswordConfirm: 'パスワード(再入力)',
         descUsername: ['[使用可能] 半角英小文字,半角数字,記号(_)', '[使用必須] 半角英小文字,半角数字 のいずれか', '3〜32文字'],
         descPassword: ['[使用可能] 半角英数字と記号(@_#$%&!.,+*~\')', '[使用必須] 英小文字,英大文字,数字,記号 のそれぞれ1文字', '8〜24文字'],
         descPasswordConfirm: '確認のためパスワードをもう一度入力してください',
@@ -40,6 +40,13 @@ export const labels_ja = {
 
     dashboard: {
         title: 'Dashboard',
+        labelChangeAvatar: 'アバターを変更',
+        labelCancel: 'キャンセル',
+        labelUpload: '変更する',
+        msgAvatarSwitched: 'アバターを変更しました',
+        msgInvalidFile: '不正なファイルです',
+        msgInvalidFileFormat: '不正なファイル形式です(.jpg, .png のみ設定できます)',
+        labelViewAllFriends: '全ての友達を見る',
     },
     friends: {
         title: 'Friends',
@@ -94,7 +101,6 @@ export const labels_ja = {
         labelTournamentLog: 'トーナメント記録',
     },
     modal: {
-        title: '',
         labelNickname: 'ニックネーム',
         labelEntry: '出場申込',
         labelCancel: 'キャンセル',
@@ -102,10 +108,13 @@ export const labels_ja = {
         labelReject: 'やめておく',
         labelCapacity: '定員',
         labelAvailable: '募集中',
+        labelExitGame:  '退出',
+        labelReturnToGame:  'ゲームに戻る',
         titleSendMatchRequest: '対戦を申し込みました',
         titleReceiveMatchRequest: '対戦申し込みがありました',
         titleWaitForOpponent: '対戦相手を待っています...',
         titleEntryTournament:  'トーナメントに出場する',
+        titleExitGame:  'ゲームから退出しますか?',
     },
     friendRequest: {
         alreadyFriends: '$name さんはすでに友達です',
@@ -122,8 +131,9 @@ export const labels_ja = {
     },
     matchRequest: {
         accepted: '対戦が始まります',
-        cancelled: '対戦がキャンセルされました',
+        cancelled: '相手が対戦をキャンセルしました',
         rejected: '相手は対戦したくない気分です',
         userOffline: '相手はオフラインです',
+        playerNotWaitingStatus: '相手は取り込み中です',
     },
 };

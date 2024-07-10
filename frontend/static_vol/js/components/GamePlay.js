@@ -1,20 +1,29 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import {webSocketManager} from "../modules/websocket.js";
-import {router} from "../modules/router.js";
+
+import { webSocketManager } from "../modules/websocket.js";
+import { router } from "../modules/router.js";
 
 export default class GamePlay extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (GamePlay.instance) {
+            return GamePlay.instance;
+        }
         super(params);
         GamePlay.instance = this;
         this.title = 'GamePlay';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        this.player1 = 'player1'; // TODO fetch from backend?
+        this.player1 = 'player1';
         this.player2 = 'player2';
+        this.avatar1 = '/images/avatar_default.png';
+        this.avatar2 = '/images/avatar_default.png';
         this.score1 = 0;
         this.score2 = 0;
+        this.containerId = '';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
         // sound
@@ -27,10 +36,10 @@ export default class GamePlay extends PageBase {
 
     async renderHtml() {
         return `
-           <div class="playBoardWrap">
-                <ul class="listPlayerActiveMatch">
-                    <li class="listPlayerActiveMatch_item">${this.player1}</li>
-                    <li class="listPlayerActiveMatch_item">${this.player2}</li>
+           <div class="playBoardWrap playBoardWrap-dual">
+                <ul class="listPlayerActiveMatch listPlayerActiveMatch-dual">
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar1}" alt="" width="50" height="50"><span>${this.player1}</span></li>
+                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar2}" alt="" width="50" height="50"><span>${this.player2}</span></li>
                 </ul>
                 <canvas id="playBoard" width="650" height="450"></canvas>
             </div>
@@ -69,13 +78,36 @@ export default class GamePlay extends PageBase {
         source.start(0);
     }
 
+    sendKeyEvent = (key, is_pressed) => {
+        let data = {
+            action: 'key_event',
+            key: key,
+            is_pressed: is_pressed,
+        };
+        webSocketManager.sendWebSocketMessage(this.containerId, data);
+    }
+
+    keyDownHandler = (e) => {
+        // send event to django websocket
+        if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+            this.sendKeyEvent(e.key, true);
+        }
+    }
+
+    keyUpHandler = (e) => {
+        // send event to django websocket
+        if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
+            this.sendKeyEvent(e.key, false);
+        }
+    }
+
     async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
             console.log("============ ", gameMatchId, " ============");
-            const containerId = `pong/${gameMatchId}`;
-            console.log(`URL = ${containerId}`);
-            const pongSocket = await webSocketManager.openWebSocket(containerId);
+            this.containerId = `pong/${gameMatchId}`;
+            console.log(`URL = ${this.containerId}`);
+            const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById("playBoard");
             // 2dの描画コンテキストにアクセスできるように
@@ -148,42 +180,17 @@ export default class GamePlay extends PageBase {
                         action: 'end_game',
                         match_id: gameMatchId,
                     }));
-                    document.removeEventListener("keydown", keyDownHandler, false);
-                    document.removeEventListener("keyup", keyUpHandler, false);
-                    webSocketManager.closeWebSocket(containerId);
+                    webSocketManager.closeWebSocket(this.containerId);
+                    this.containerId = '';
                     window.history.pushState({}, null, "/dashboard");
                     await router(true);
                 }
             }
 
             // 押されたとき
-            document.addEventListener("keydown", keyDownHandler, false);
+            document.addEventListener("keydown", this.keyDownHandler, false);
             // 離れたとき
-            document.addEventListener("keyup", keyUpHandler, false);
-
-            function keyDownHandler(e) {
-                // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
-                    sendKeyEvent(e.key, true);
-                }
-            }
-
-            function keyUpHandler(e) {
-                // send event to django websocket
-                if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "w" || e.key === "s") {
-                    sendKeyEvent(e.key, false);
-                }
-            }
-
-            function sendKeyEvent(key, is_pressed) {
-                let data = {
-                    action: 'key_event',
-                    key: key,
-                    is_pressed: is_pressed,
-                };
-                webSocketManager.sendWebSocketMessage(containerId, data);
-            }
-
+            document.addEventListener("keyup", this.keyUpHandler, false);
 
             pongSocket.onmessage = (e) => {
                 try {
@@ -203,6 +210,9 @@ export default class GamePlay extends PageBase {
     }
 
     destroy() {
+        document.removeEventListener("keydown", this.keyDownHandler, false);
+        document.removeEventListener("keyup", this.keyUpHandler, false);
+        GamePlay.instance = null;
         super.destroy();
     }
 }
