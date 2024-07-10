@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     elSelectLang.addEventListener('change', (ev) => {
         const elSelectLang = ev.target;
         const selectedLanguage = elSelectLang.value;
-        const currentLang = localStorage.getItem('configLang')
+        const currentLang = localStorage.getItem('configLang');
         if (selectedLanguage !== currentLang) {
             setLang(elSelectLang, selectedLanguage);
             router(getToken('accessToken'));

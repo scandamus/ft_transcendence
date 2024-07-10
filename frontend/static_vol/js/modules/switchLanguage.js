@@ -27,11 +27,14 @@ const setLang = (elSelectLang, lang) => {
 
 const getLang = () => {
     const langStorage = localStorage.getItem('configLang');
-    if (!langStorage || !(langStorage in languageLabels)) {
-        localStorage.setItem('configLang', 'en');
-        return 'en';
+    if (langStorage && (langStorage in languageLabels)) {
+        return langStorage;
     }
-    return langStorage;
+    if (langStorage && !(langStorage in languageLabels)) {
+        localStorage.removeItem('configLang');
+    }
+    return 'en';
+
 };
 
 const updateDbLang = (lang) => {

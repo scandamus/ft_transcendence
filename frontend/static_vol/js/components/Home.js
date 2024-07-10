@@ -122,10 +122,13 @@ export default class LogIn extends PageBase {
             })
             .then((data) => {
                 if (data) {
-                    const langStorage = getLang();
-                    if (data.lang !== langStorage) {
-                        const elSelectLang = document.getElementById('languageSelect');
+                    const langStorage = localStorage.getItem('configLang');
+                    const elSelectLang = document.getElementById('languageSelect');
+                    //localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
+                    if (langStorage && (data.lang !== langStorage)) {
                         setLang(elSelectLang, langStorage);
+                    } else {
+                        setLang(elSelectLang, data.lang);
                     }
                     switchDisplayAccount()
                         .then(() => {
