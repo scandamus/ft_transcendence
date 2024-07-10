@@ -189,7 +189,7 @@ const handleFriendMatchRequestReceived = (data) => {
     } else if (data.action === 'error') {
         closeModal();
         if (data.error === 'playerNotWaitingStatus') {
-            addNotice('対戦相手がビジーです', true);
+            addNotice(labels.matchRequest['playerNotWaitingStatus'], true);
         } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
         } else {
@@ -203,7 +203,7 @@ const handleLoungeMatchReceived = (data) => {
         updateModalAvailablePlayers(data.availablePlayers);
     } else if (data.action === 'error') {
         closeModal();
-        alert(`エラー:${data.message}`);
+        alert(`Error: ${data.message}`);
     }
 }
 
