@@ -13,6 +13,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, TokenBackendError
 #from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from django.conf import settings
+from players.friend_utils import send_status_to_friends
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +35,37 @@ async def handle_auth(consumer, token):
         if player:
             consumer.user = user
             consumer.player = player
-            consumer.group_name = f'friends_{consumer.player.id}'
+            consumer.group_name = f'friends_{player.id}'
             await consumer.channel_layer.group_add(consumer.group_name, consumer.channel_name)
             logger.info(f'Authentiated user_id: {user.id}, username: {user.username}, player_id: {player.id}')
+
+            if not player.online:
+                player.online = True
+                await database_sync_to_async(player.save)()
+                logger.info(f'{user.username} online status is online')
+
+            if player:
+                # continue match: マッチ中に切断したユーザーが再度接続した際にマッチへの復帰を試みる
+                if player.status in ['friend_match', 'lounge_match', 'tournament_match']:
+                    match = await database_sync_to_async(lambda: player.current_match)()    
+                    logger.info(f'handle_auth: {user.username} is in match_id {match.id}!!')
+                    # TODO: マッチ復帰トライ処理
+                    player.status = 'waiting'
+                    player.current_match = None
+                    await database_sync_to_async(player.save)()
+                    
+                # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
+                if player.status in ['friend_waiting', 'lounge_waiting']:
+                    player.status = 'waiting'
+                    await database_sync_to_async(player.save)()
+                    logger.info(f'{user.username} status set to waiting')
+
             try:
                 await consumer.send(text_data=json.dumps({
                     'type': 'ack',
                     'message': 'Authentication successful'
                 }))
+                await send_status_to_friends(player, 'online')
             except () as e:
                 logger.error(f'Error in handle_auth can not send')
 

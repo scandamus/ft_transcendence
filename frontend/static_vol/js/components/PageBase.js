@@ -4,14 +4,12 @@ import { addLinkPageEvClick } from "../modules/router.js";
 import { linkSpa } from "../modules/router.js";
 
 export default class PageBase {
-    static instance = null;
-
     constructor(params) {
         PageBase.instance = this;
         this.params = params;
         this.title = '';
         this.breadcrumbLinks = [
-            { href: '/', text: 'dashboard' }
+            { href: '/dashboard', text: 'dashboard' }
         ];
         this.listAfterRenderHandlers = [];
         this.listListenInInstance = [];

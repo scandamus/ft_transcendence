@@ -5,7 +5,12 @@ import { showModalReceiveMatchRequest } from '../modules/modal.js';
 import { labels } from '../modules/labels.js';
 
 export default class PageList extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (PageList.instance) {
+            return PageList.instance;
+        }
         super(params);
         PageList.instance = this;
         this.title = 'PageList';
@@ -46,6 +51,7 @@ export default class PageList extends PageBase {
     }
 
     destroy() {
+        PageList.instance = null;
         super.destroy();
     }
 }
