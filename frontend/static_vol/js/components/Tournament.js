@@ -8,7 +8,12 @@ import { addNotice } from '../modules/notice.js';
 import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from '../modules/env.js';
 
 export default class Tournament extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (Tournament.instance) {
+            return Tournament.instance;
+        }
         super(params);
         Tournament.instance = this;
         this.title = 'Tournament';
@@ -218,6 +223,7 @@ export default class Tournament extends PageBase {
     }
 
     destroy() {
+        Tournament.instance = null;
         super.destroy();
     }
 }

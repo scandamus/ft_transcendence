@@ -6,7 +6,12 @@ import { addErrorMessageCustom, checkInputValid } from '../modules/form.js';
 import { labels } from '../modules/labels.js';
 
 export default class SignUp extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (SignUp.instance) {
+            return SignUp.instance;
+        }
         super(params);
         SignUp.instance = this;
         this.title = 'SIGN UP';
@@ -205,6 +210,7 @@ export default class SignUp extends PageBase {
     }
 
     destroy() {
+        SignUp.instance = null;
         super.destroy();
     }
 }
