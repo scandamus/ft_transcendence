@@ -20,6 +20,7 @@ from .api_access import get_match_from_api, patch_match_to_api
 
 logger = logging.getLogger(__name__)
 
+
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
@@ -40,6 +41,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.upper_paddle = None
         # player4
         self.lower_paddle = None
+        self.active_paddle_count = 4
         self.ball = None
         self.game_continue = False
         self.up_pressed = False
@@ -197,14 +199,41 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
 
-    async def get_state(self):
+    async def count_active_paddle(self):
         active_count = sum([
             self.left_paddle.is_active,
             self.right_paddle.is_active,
             self.upper_paddle.is_active,
             self.lower_paddle.is_active,
         ])
-        return active_count > 1
+        return active_count
+
+    async def remove_wall(self):
+        if self.left_paddle.is_active:
+            # 左上縦
+            # 左下縦
+            await self.remove_wall_by_position_and_orientation('vertical', 'LEFT')
+        elif self.right_paddle.is_active:
+            # 右上縦
+            # 右下縦
+            await self.remove_wall_by_position_and_orientation('vertical', 'RIGHT')
+        elif self.upper_paddle.is_active:
+            # 左上横
+            # 右上横
+            await self.remove_wall_by_position_and_orientation('horizontal', 'UPPER')
+        elif self.lower_paddle.is_active:
+            # 左下横
+            # 右下横
+            await self.remove_wall_by_position_and_orientation('horizontal', 'LOWER')
+
+    async def remove_wall_by_position_and_orientation(self, orientation, position):
+        walls_to_remove = [wall for wall in self.walls if wall.orientation == orientation and wall.position == position]
+        if walls_to_remove:
+            for wall in walls_to_remove:
+                self.walls.remove(wall)
+            logger.info("Wall removed")
+        else:
+            logger.info("No wall removed")
 
     async def update_ball_and_send_data(self):
         self.right_paddle.move_for_multiple()
@@ -212,7 +241,11 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.upper_paddle.move_for_multiple()
         self.lower_paddle.move_for_multiple()
         sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
-                                                    self.lower_paddle, self.walls)
+                                                 self.lower_paddle, self.walls)
+        active_count = await self.count_active_paddle()
+        if self.active_paddle_count != active_count:
+            await self.remove_wall()
+            self.active_paddle_count = active_count
         ball_tmp = {
             'x': self.ball.x,
             'y': self.ball.y,
@@ -260,7 +293,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             'lower_paddle': lower_paddle_tmp,
             'sound_type': sound_type,
         })
-        game_continue = await self.get_state()
+        game_continue = active_count > 1
         return game_continue
 
     async def ball_message(self, data):
