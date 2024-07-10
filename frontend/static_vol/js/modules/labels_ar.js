@@ -84,7 +84,7 @@ export const labels_ar = {
         labelMatchLog: 'سجل المباريات',
         labelWins: 'فوز',
         labelLosses: 'خسارة',
-        fmtWin: 'فوز $win',
+        fmtWin: 'فوز $win -',
         fmtLoss: 'خسارة $loss',
         msgNoMatch: 'لا توجد مباريات',
     },

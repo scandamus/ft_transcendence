@@ -84,7 +84,7 @@ export const labels_he = {
         labelMatchLog: 'שיא התאמה',
         labelWins: 'ניצחונות',
         labelLosses: 'הפסדים',
-        fmtWin: '$win ניצחונות ',
+        fmtWin: '$win ניצחונות -',
         fmtLoss: '$loss הפסדים',
         msgNoMatch: 'אין תאמה',
     },
