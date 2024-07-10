@@ -1,7 +1,6 @@
 'use strict';
 
 import { labels, switchLabels } from './labels.js';
-import { router } from './router.js';
 import { getToken } from './token.js';
 import { languageLabels } from './labels.js';
 
@@ -14,12 +13,17 @@ const setLangAttrSelected = (elSelectLang, selectedLanguage) => {
     if (elSelectedOption) {
         elSelectedOption.setAttribute('selected', 'selected');
     }
+
+    const previousElement = elSelectLang.previousElementSibling;
+    if (previousElement && previousElement.tagName.toLowerCase() === 'label') {
+        previousElement.textContent = `${labels.common.switchLang} :`;
+    }
 }
 
-const setLang = (elSelectLang, lang) => {
+const setLang = async (elSelectLang, lang) => {
     document.documentElement.lang = lang;
+    await switchLabels(lang);
     setLangAttrSelected(elSelectLang, lang);
-    switchLabels(lang);
 }
 
 const saveLang = (lang) => {

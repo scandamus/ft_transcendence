@@ -3,6 +3,9 @@
 export const labels_en = {
     langCode: 'en',
     langName: 'English',
+    common: {
+        switchLang: 'Switch Language'
+    },
     home: {
         title: 'Home',
         labelUsername: 'username',
