@@ -56,22 +56,25 @@ class Paddle(Block):
     def convert_to_wall(self):
         if self.orientation == 'vertical':
             self.length = CANVAS_HEIGHT_MULTI
+            self.y = 0
         elif self.orientation == 'horizontal':
             self.length = CANVAS_WIDTH_MULTI
+            self.x = 0
 
     def move_for_multiple(self):
-        if self.orientation == 'horizontal':
-            self.x += self.speed
-            if self.x < CORNER_BLOCK_SIZE:
-                self.x = CORNER_BLOCK_SIZE
-            elif CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE < self.x + self.length:
-                self.x = CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE - self.length
-        elif self.orientation == 'vertical':
-            self.y += self.speed
-            if self.y < CORNER_BLOCK_SIZE:
-                self.y = CORNER_BLOCK_SIZE
-            elif CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE < self.y + self.length:
-                self.y = CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE - self.length
+        if self.is_active:
+            if self.orientation == 'horizontal':
+                self.x += self.speed
+                if self.x < CORNER_BLOCK_SIZE:
+                    self.x = CORNER_BLOCK_SIZE
+                elif CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE < self.x + self.length:
+                    self.x = CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE - self.length
+            elif self.orientation == 'vertical':
+                self.y += self.speed
+                if self.y < CORNER_BLOCK_SIZE:
+                    self.y = CORNER_BLOCK_SIZE
+                elif CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE < self.y + self.length:
+                    self.y = CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE - self.length
 
     def increment_score(self):
         self.score += 1
