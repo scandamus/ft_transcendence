@@ -209,21 +209,17 @@ class PongConsumer(AsyncWebsocketConsumer):
         return active_count
 
     async def remove_wall(self):
-        if self.left_paddle.is_active:
-            # 左上縦
-            # 左下縦
+        if not self.left_paddle.is_active:
+            # 左上縦 左下縦
             await self.remove_wall_by_position_and_orientation('vertical', 'LEFT')
-        elif self.right_paddle.is_active:
-            # 右上縦
-            # 右下縦
+        elif not self.right_paddle.is_active:
+            # 右上縦 右下縦
             await self.remove_wall_by_position_and_orientation('vertical', 'RIGHT')
-        elif self.upper_paddle.is_active:
-            # 左上横
-            # 右上横
+        elif not self.upper_paddle.is_active:
+            # 左上横 右上横
             await self.remove_wall_by_position_and_orientation('horizontal', 'UPPER')
-        elif self.lower_paddle.is_active:
-            # 左下横
-            # 右下横
+        elif not self.lower_paddle.is_active:
+            # 左下横 右下横
             await self.remove_wall_by_position_and_orientation('horizontal', 'LOWER')
 
     async def remove_wall_by_position_and_orientation(self, orientation, position):
