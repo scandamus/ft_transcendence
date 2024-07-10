@@ -2,7 +2,7 @@
 
 import { getUserInfo, switchDisplayAccount } from './modules/auth.js';
 import { addLinkPageEvClick, router } from './modules/router.js';
-import { setLangAttrSelected, setLang, getLang, updateDbLang } from './modules/switchLanguage.js';
+import { setLangAttrSelected, setLang, saveLang, getLang } from './modules/switchLanguage.js';
 import { switchLabels } from "./modules/labels.js";
 import { getToken } from "./modules/token.js";
 
@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     //lang設定
     const lang = getLang();
     const elSelectLang = document.getElementById('languageSelect');
-    setLangAttrSelected(elSelectLang, lang);
-    switchLabels(lang);
+    setLang(elSelectLang, lang);
 
     //router
     try {
@@ -35,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const currentLang = localStorage.getItem('configLang');
         if (selectedLanguage !== currentLang) {
             setLang(elSelectLang, selectedLanguage);
+            saveLang(selectedLanguage);
             router(getToken('accessToken'));
         }
     });

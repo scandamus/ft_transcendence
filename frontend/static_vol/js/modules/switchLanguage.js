@@ -17,11 +17,15 @@ const setLangAttrSelected = (elSelectLang, selectedLanguage) => {
 }
 
 const setLang = (elSelectLang, lang) => {
+    document.documentElement.lang = lang;
+    setLangAttrSelected(elSelectLang, lang);
+    switchLabels(lang);
+}
+
+const saveLang = (lang) => {
     if (localStorage.getItem('configLang') !== lang) {
         localStorage.setItem('configLang', lang);
     }
-    setLangAttrSelected(elSelectLang, lang);
-    switchLabels(lang);
     updateDbLang(lang);
 }
 
@@ -66,4 +70,4 @@ const updateDbLang = (lang) => {
         });
 }
 
-export { setLangAttrSelected, setLang, getLang, updateDbLang };
+export { setLangAttrSelected, setLang, saveLang, getLang, updateDbLang };
