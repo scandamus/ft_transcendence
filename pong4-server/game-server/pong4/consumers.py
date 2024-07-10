@@ -197,12 +197,21 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
 
+    async def get_state(self):
+        active_count = sum([
+            self.left_paddle.is_active,
+            self.right_paddle.is_active,
+            self.upper_paddle.is_active,
+            self.lower_paddle.is_active,
+        ])
+        return active_count > 1
+
     async def update_ball_and_send_data(self):
         self.right_paddle.move_for_multiple()
         self.left_paddle.move_for_multiple()
         self.upper_paddle.move_for_multiple()
         self.lower_paddle.move_for_multiple()
-        game_continue, sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
+        sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
                                                     self.lower_paddle, self.walls)
         ball_tmp = {
             'x': self.ball.x,
@@ -251,6 +260,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             'lower_paddle': lower_paddle_tmp,
             'sound_type': sound_type,
         })
+        game_continue = await self.get_state()
         return game_continue
 
     async def ball_message(self, data):
