@@ -410,4 +410,4 @@ const showModalExitGame = () => {
     showModal(elHtml);
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, handleExitGame, showModalExitGame, closeModalOnReturnToGame };
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, handleExitGame, showModalExitGame, closeModalOnReturnToGame, closeModalOnEntryDone };
