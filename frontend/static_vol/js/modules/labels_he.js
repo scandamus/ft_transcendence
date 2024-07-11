@@ -7,7 +7,7 @@ export const labels_he = {
         switchLang: ''
     },
     home: {
-        title: 'Home',
+        title: 'Log In',
         labelUsername: 'שם משתמש',
         labelPassword: 'סיסמה',
         labelButtonLogin: 'להתחבר',

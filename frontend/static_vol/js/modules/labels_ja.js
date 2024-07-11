@@ -7,7 +7,7 @@ export const labels_ja = {
         switchLang: '言語選択'
     },
     home: {
-        title: 'Home',
+        title: 'Log In',
         labelUsername: 'ユーザー名',
         labelPassword: 'パスワード',
         labelButtonLogin: 'ログイン',

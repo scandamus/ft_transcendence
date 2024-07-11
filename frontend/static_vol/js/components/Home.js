@@ -19,6 +19,7 @@ export default class LogIn extends PageBase {
         }
         super(params);
         LogIn.instance = this;
+        this.title = labels.home.title;
         this.setTitle(this.title);
         this.clearBreadcrumb();
         this.loginErrorType = '';

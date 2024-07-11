@@ -7,7 +7,7 @@ export const labels_ar = {
         switchLang: ''
     },
     home: {
-        title: 'Home',
+        title: 'Log In',
         labelUsername: 'اسم المستخدم',
         labelPassword: 'كلمة المرور',
         labelButtonLogin: 'تسجيل الدخول',
