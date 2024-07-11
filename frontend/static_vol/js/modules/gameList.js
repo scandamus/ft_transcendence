@@ -47,7 +47,7 @@ const getMatchLog = async () => {
 
                 // 全体のHTMLを結合
                 const requestElement = `
-                    <div class="blockMatch" aria-live="polite">
+                    <div class="blockMatch">
                         ${myResultHTML}
                         <p class="blockMatch_vs">VS</p>
                         <div class="blockMatch_opponents">
