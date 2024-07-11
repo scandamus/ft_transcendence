@@ -5,6 +5,7 @@ import { join_lounge_game, exit_lounge_match_room } from "./lounge_match.js";
 import { getToken, initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
+import { entryUpcomingTournament } from "./tournament.js";
 import { router } from "./router.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
@@ -108,6 +109,8 @@ const closeModalOnCancel = () => {
             } else if (matchType === 'loungeMatch') {
                 console.log('cancel lounge match');
                 exit_lounge_match_room(modal.getAttribute('data-modal-game_name'));
+            } else if (matchType === 'entryTournament') {
+                console.log('cancel entry tournament');
             }
         })
         .then(() => {
@@ -318,7 +321,6 @@ const showModalWaitForOpponent = (ev) => {
         game_name: gameName,
     };
     const elHtml = getModalHtml('waitForOpponent', args);
-
     join_lounge_game(gameName)
         .then(r => {
             showModal(elHtml);
@@ -344,12 +346,24 @@ const showModalEntryTournament = (ev) => {
         labelTournamentTitle: data['title'],
         labelTournamentStart: data['start'],
     }
-    //args.labelTournamentTitle = data['title'];
     const elHtml = getModalHtml('entryTournament', args);
-    join_game()
-        .then(r => {
-            showModal(elHtml);
+    showModal(elHtml);
+
+    const formEntry = document.getElementById('formEntryTournament');
+    if (formEntry) {
+        formEntry.addEventListener('submit', async (ev) => {
+            ev.preventDefault();
+            const nickname = formEntry.querySelector('#inputNickname').value;
+            try {
+                data.nickname = nickname;
+                await entryUpcomingTournament(data);
+                closeModal();
+                console.log(`Tournament ID: ${data['idTitle']}, Nickname: ${nickname}`);
+            } catch (error) {
+                console.error('Entry failed:', error);
+            }
         });
+    }
 }
 
 const updateModalAvailablePlayers = (availablePlayers) => {
