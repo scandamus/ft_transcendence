@@ -48,6 +48,16 @@ window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('refreshToken');
 });
 
+const unitChangeFontSize = (size, target, elHtml) => {
+    const listSize = target.closest('.blockFontSize_list');
+    const btnCurrent = listSize.querySelector('button.is-current');
+    if (btnCurrent !== target) {
+        btnCurrent.classList.remove('is-current');
+        elHtml.style.fontSize = size;
+        target.classList.add('is-current');
+    }
+}
+
 //changeFontSige
 const changeFontSize = () => {
     const elHtml = document.querySelector('html');
@@ -55,13 +65,15 @@ const changeFontSize = () => {
     const btnTextMid = document.getElementById('btnTextMid');
     const btnTextBig = document.getElementById('btnTextBig');
 
-    btnTextSmall.addEventListener('click', () => {
-        elHtml.style.fontSize = '52.5%';
+    btnTextMid.classList.add('is-current');
+    btnTextSmall.addEventListener('click', (ev) => {
+        unitChangeFontSize('52.5%', ev.target, elHtml);
+
     });
-    btnTextMid.addEventListener('click', () => {
-        elHtml.style.fontSize = '62.5%';
+    btnTextMid.addEventListener('click', (ev) => {
+        unitChangeFontSize('62.5%', ev.target, elHtml);
     });
-    btnTextBig.addEventListener('click', () => {
-        elHtml.style.fontSize = '80%';
+    btnTextBig.addEventListener('click', (ev) => {
+        unitChangeFontSize('80%', ev.target, elHtml);
     });
 }

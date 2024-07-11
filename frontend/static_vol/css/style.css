@@ -272,7 +272,7 @@ hr {
   height: 1.8em;
   line-height: 1.8em;
   padding: 0 0.6em;
-  background-color: var(--color-burn1);
+  background-color: var(--color-burn2);
   border: none;
   font-size: 2rem;
   color: var(--color-white);
@@ -281,6 +281,10 @@ hr {
 .blockFontSize_button:hover {
   animation: 0.2s ease-out linkHover1;
   opacity: 1;
+}
+
+.blockFontSize_button.is-current {
+  background-color: var(--color-burn1);
 }
 
 .formSwitchLang {
