@@ -10,7 +10,12 @@ import { addErrorMessage } from '../modules/form.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class LogIn extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (LogIn.instance) {
+            return LogIn.instance;
+        }
         super(params);
         LogIn.instance = this;
         this.setTitle(this.title);
@@ -136,6 +141,7 @@ export default class LogIn extends PageBase {
     }
 
     destroy() {
+        LogIn.instance = null;
         super.destroy();
     }
 }

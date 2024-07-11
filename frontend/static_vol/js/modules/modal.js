@@ -2,14 +2,21 @@
 
 import { accept_game, reject_game, cancel_game, join_game, request_game } from "./match.js";
 import { join_lounge_game, exit_lounge_match_room } from "./lounge_match.js";
-import { initToken } from "./token.js";
+import { getToken, initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
+import { entryUpcomingTournament } from "./tournament.js";
+import { router } from "./router.js";
+import GamePlay from "../components/GamePlay.js";
+import GamePlayQuad from "../components/GamePlayQuad.js";
+import { webSocketManager } from "./websocket.js";
+import { SiteInfo } from "./SiteInfo.js";
+import PageBase from "../components/PageBase.js";
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
     indicatorBar.removeEventListener('transitionend', endIndicator);
-    closeModalOnCancel(ev);
+    closeModalOnCancel();
 };
 
 //elHtmlのルート要素は`.blockModal`とする
@@ -38,6 +45,18 @@ const showModal = (elHtml) => {
         btnReject.addEventListener('click', closeModalOnReject);
     }
 
+    //ReturnToGameボタンにaddEventListener
+    const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+    if (btnReturnToGame) {
+        btnReturnToGame.addEventListener('click', closeModalOnReturnToGame);
+    }
+
+    //ExitGameボタンにaddEventListener
+    const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+    if (btnExitGame) {
+        btnExitGame.addEventListener('click', closeModalOnExitGame);
+    }
+
     //インディケータがあれば進行、終了でcloseModalOnCancel
     const indicator = document.getElementById('indicator');
     if (indicator) {
@@ -51,9 +70,9 @@ const showModal = (elHtml) => {
     //todo: インディケータのないモーダルは何かしら閉じるようにしておく
 }
 
-const closeModalOnCancel = (ev) => {
+const closeModalOnCancel = () => {
     console.log('closeModalOnCancel');
-    const modal = ev.target.closest('.blockModal');
+    const modal = document.querySelector('.blockModal');
     const username = modal.getAttribute('data-modal-username');
     const matchType = modal.getAttribute('data-modal-match_type');
 
@@ -74,6 +93,14 @@ const closeModalOnCancel = (ev) => {
                 const indicatorBar = indicator.querySelector('.unitIndicator_bar');
                 indicatorBar.removeEventListener('transitionend', endIndicator);
             }
+            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+            if (btnReturnToGame) {
+                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
+            }
+            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+            if (btnExitGame) {
+                btnExitGame.removeEventListener('click', closeModalOnExitGame);
+            }
             console.log(`matchType: ${matchType}`);
             if (matchType === 'friendMatch') {
                 //cancel game
@@ -82,6 +109,8 @@ const closeModalOnCancel = (ev) => {
             } else if (matchType === 'loungeMatch') {
                 console.log('cancel lounge match');
                 exit_lounge_match_room(modal.getAttribute('data-modal-game_name'));
+            } else if (matchType === 'entryTournament') {
+                console.log('cancel entry tournament');
             }
         })
         .then(() => {
@@ -149,6 +178,83 @@ const closeModalOnAccept = (ev) => {
         });
 }
 
+const closeModalOnReturnToGame = () => {
+    console.log('closeModalOnReturnToGame');
+    const containerId = (GamePlay.instance) ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
+
+    initToken()
+        .then((accessToken) => {
+            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+            if (btnReturnToGame) {
+                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
+            }
+            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+            if (btnExitGame) {
+                btnExitGame.removeEventListener('click', closeModalOnExitGame);
+            }
+        })
+        .then(() => {
+            window.history.pushState({}, null, `/game/${containerId}`);
+            closeModal();
+        });
+}
+
+const setScoreToInvalid = () => {
+    const siteInfo = new SiteInfo();
+    const userName = siteInfo.getUsername();
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'GamePlay') || PageBase.isInstance(PageBase.instance, 'GamePlayQuad'))
+                                ? PageBase.instance : null;
+    if (!currentPage) return;
+    for (let i = 0; i < 4; i++) {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay') && i > 2) break;
+        const player = `player${i+1}`;
+        const score = `score${i+1}`;
+
+        if (currentPage[player] === userName) {
+            // 対応するスコアを -1 に設定
+            currentPage[score] = -1;
+            console.log(`Set ${score} to -1 for player ${userName}`);
+            break ;
+        }
+    }
+}
+
+const handleExitGame = (instance) => {
+    console.log('handleExitGame')
+    const containerId = PageBase.isInstance(instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
+    webSocketManager.closeWebSocket(containerId);
+    instance.containerId = ''
+    //todo: score -1にする
+    //setScoreToInvalid();
+    //todo: status, current_match更新
+}
+
+const closeModalOnExitGame = (ev) => {
+    ev.preventDefault();
+    console.log('closeModalOnExitGame');
+
+    initToken()
+        .then((accessToken) => {
+            const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+            if (btnReturnToGame) {
+                btnReturnToGame.removeEventListener('click', closeModalOnReturnToGame);
+            }
+            const btnExitGame = document.querySelector('.blockBtnExitGame_button');
+            if (btnExitGame) {
+                btnExitGame.removeEventListener('click', closeModalOnExitGame);
+            }
+        })
+        .then(async () => {
+            closeModal();
+            handleExitGame(PageBase.instance);
+            try {
+                await router(getToken('accessToken'));
+            } catch (error) {
+                console.error(error);
+            }
+        });
+}
+
 const closeModal = () => {
     const elModal = document.getElementById('wrapModal');
     elModal.classList.remove('is-show');
@@ -159,7 +265,8 @@ const contModal = {
     sendMatchRequest: mc.sendMatchRequest,
     receiveMatchRequest: mc.receiveMatchRequest,
     waitForOpponent: mc.waitForOpponent,
-    entryTournament: mc.entryTournament
+    entryTournament: mc.entryTournament,
+    exitGame: mc.exitGame
 };
 
 const getModalHtml = (modalType, args) => {
@@ -214,7 +321,6 @@ const showModalWaitForOpponent = (ev) => {
         game_name: gameName,
     };
     const elHtml = getModalHtml('waitForOpponent', args);
-
     join_lounge_game(gameName)
         .then(r => {
             showModal(elHtml);
@@ -240,12 +346,24 @@ const showModalEntryTournament = (ev) => {
         labelTournamentTitle: data['title'],
         labelTournamentStart: data['start'],
     }
-    //args.labelTournamentTitle = data['title'];
     const elHtml = getModalHtml('entryTournament', args);
-    join_game()
-        .then(r => {
-            showModal(elHtml);
+    showModal(elHtml);
+
+    const formEntry = document.getElementById('formEntryTournament');
+    if (formEntry) {
+        formEntry.addEventListener('submit', async (ev) => {
+            ev.preventDefault();
+            const nickname = formEntry.querySelector('#inputNickname').value;
+            try {
+                data.nickname = nickname;
+                await entryUpcomingTournament(data);
+                closeModal();
+                console.log(`Tournament ID: ${data['idTitle']}, Nickname: ${nickname}`);
+            } catch (error) {
+                console.error('Entry failed:', error);
+            }
         });
+    }
 }
 
 const updateModalAvailablePlayers = (availablePlayers) => {
@@ -258,5 +376,15 @@ const updateModalAvailablePlayers = (availablePlayers) => {
     }
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers };
+const showModalExitGame = () => {
+    const args = {
+        titleModal: labels.modal.titleExitGame,
+        labelExitGame: labels.modal.labelExitGame,
+        labelReturnToGame: labels.modal.labelReturnToGame
+    }
+    const elHtml = getModalHtml('exitGame', args);
+    showModal(elHtml);
+}
+
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, handleExitGame, showModalExitGame, closeModalOnReturnToGame };
 

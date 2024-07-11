@@ -1,6 +1,6 @@
 'use strict';
 
-const addNoticeMod = async　(textNotice, isError) => {
+const addNoticeMod = async (textNotice, isError) => {
     const elNoticeWrap = document.getElementById('wrapNotice');
     const noticeClass = isError ? 'unitNotice unitNotice-error' : 'unitNotice';
     const elNoticeHtml = `
@@ -23,7 +23,7 @@ const addNoticeMod = async　(textNotice, isError) => {
     return newNotice;
 }
 
-const removeNoticeMod =　(elNotice) => {
+const removeNoticeMod = (elNotice) => {
     if (elNotice && document.body.contains(elNotice)) {
         elNotice.classList.add('unitNotice-disappear');
         elNotice.addEventListener('transitionend', () => {

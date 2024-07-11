@@ -7,12 +7,18 @@ import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
 
 export default class GamePlayQuad extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (GamePlayQuad.instance) {
+            return GamePlayQuad.instance;
+        }
         super(params);
         GamePlayQuad.instance = this;
         this.title = 'GamePlayQuad';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+        this.containerId = '';
         this.player1 = 'player1';
         this.player2 = 'player2';
         this.player3 = 'player3';
@@ -79,13 +85,38 @@ export default class GamePlayQuad extends PageBase {
         source.start(0);
     }
 
+    sendKeyEvent = (key, is_pressed) => {
+        let data = {
+            action: 'key_event',
+            key: key,
+            is_pressed: is_pressed,
+        };
+        webSocketManager.sendWebSocketMessage(this.containerId, data);
+    }
+
+    keyDownHandler = (e) => {
+        // send event to django websocket
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
+            || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
+            this.sendKeyEvent(e.key, true);
+        }
+    }
+
+    keyUpHandler = (e) => {
+        // send event to django websocket
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
+            || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
+            this.sendKeyEvent(e.key, false);
+        }
+    }
+
     async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
             console.log('============ ', gameMatchId, ' ============');
-            const containerId = `pong4/${gameMatchId}`;
-            console.log(`URL = ${containerId}`);
-            const pongSocket = await webSocketManager.openWebSocket(containerId);
+            this.containerId = `pong4/${gameMatchId}`;
+            console.log(`URL = ${this.containerId}`);
+            const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById('playBoard');
             // 2dの描画コンテキストにアクセスできるように
@@ -206,43 +237,17 @@ export default class GamePlayQuad extends PageBase {
                         action: 'end_game',
                         match_id: gameMatchId,
                     }));
-                    document.removeEventListener('keydown', keyDownHandler, false);
-                    document.removeEventListener('keyup', keyUpHandler, false);
-                    webSocketManager.closeWebSocket(containerId);
+                    webSocketManager.closeWebSocket(this.containerId);
+                    this.containerId = '';
                     window.history.pushState({}, null, '/dashboard');
                     await router(true);
                 }
             }
 
             // 押されたとき
-            document.addEventListener('keydown', keyDownHandler, false);
+            document.addEventListener('keydown', this.keyDownHandler, false);
             // 離れたとき
-            document.addEventListener('keyup', keyUpHandler, false);
-
-            function keyDownHandler(e) {
-                // send event to django websocket
-                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
-                    || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
-                    sendKeyEvent(e.key, true);
-                }
-            }
-
-            function keyUpHandler(e) {
-                // send event to django websocket
-                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
-                    || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
-                    sendKeyEvent(e.key, false);
-                }
-            }
-
-            function sendKeyEvent(key, is_pressed) {
-                let data = {
-                    action: 'key_event',
-                    key: key,
-                    is_pressed: is_pressed,
-                };
-                webSocketManager.sendWebSocketMessage(containerId, data);
-            }
+            document.addEventListener('keyup', this.keyUpHandler, false);
 
             pongSocket.onmessage = (e) => {
                 try {
@@ -262,6 +267,9 @@ export default class GamePlayQuad extends PageBase {
     }
 
     destroy() {
+        document.removeEventListener('keydown', this.keyDownHandler, false);
+        document.removeEventListener('keyup', this.keyUpHandler, false);
+        GamePlayQuad.instance = null;
         super.destroy();
     }
 }

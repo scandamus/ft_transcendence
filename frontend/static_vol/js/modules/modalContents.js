@@ -54,7 +54,7 @@ const waitForOpponent = (args) => `
 `;
 
 const entryTournament = (args) => `
-    <section class="blockModal" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}">
+    <section class="blockModal" data-modal-match_type="entryTournament">
         <header class="blockModal_header">
             <h2 class="blockModal_title">${args.titleModal}: <strong>${args.labelTournamentTitle}</strong></h2>
             <p class="blockModal_date">(${args.labelTournamentStart})</p>
@@ -68,11 +68,21 @@ const entryTournament = (args) => `
             <input type="hidden" name="idTitle" value="${args.labelTournamentId}">
             
             <ul class="unitListBtn unitListBtn-horizontal-center">
-                <li><button type="submit" id="btnCreateTournament" class="unitButton">${args.labelEntry}</button></li>
+                <li><button type="submit" id="btnEntryTournament" class="unitButton">${args.labelEntry}</button></li>
                 <li><button type="button" class="blockBtnCancel_button unitButtonDecline unitButton-small">${args.labelCancel}</button></li>
             </ul>
         </form>
     </section>
 `;
 
-export { sendMatchRequest, receiveMatchRequest, waitForOpponent, entryTournament };
+const exitGame = (args) => `
+    <section class="blockModal blockModal-micro">
+        <h2 class="blockModal_title">${args.titleModal}</h2>
+        <ul class="unitListBtn unitListBtn-horizontal-center">
+            <li class="unitListBtn_btn blockBtnReturnToGame"><button type="button" class="blockBtnReturnToGame_button unitButton">${args.labelReturnToGame}</button></li>
+            <li class="unitListBtn_btn blockBtnExitGame"><a href="#" class="blockBtnExitGame_button unitButton">${args.labelExitGame}</a></li>
+        </ul>
+    </section>
+`;
+
+export { sendMatchRequest, receiveMatchRequest, waitForOpponent, entryTournament, exitGame };
