@@ -163,6 +163,10 @@ hr {
   cursor: pointer;
 }
 
+.headerNav-login:hover h2{
+  animation: 0.2s ease-out linkHover1;
+}
+
 .headerNav-login .thumb {
   margin-right: 6px;
 }
@@ -1070,6 +1074,7 @@ input.has-input:invalid {
 
 .blockLoungeRoom_title {
   margin-right: 1em;
+  padding: 0.3em 0;
 }
 
 .blockLoungeRoom_body {
@@ -1083,6 +1088,7 @@ input.has-input:invalid {
 }
 
 .blockLoungeRoom_button {
+  flex: 1 1 auto;
   text-align: right;
 }
 
@@ -1091,44 +1097,115 @@ input.has-input:invalid {
 }
 
 /* GamePlay */
+#playBoard {
+  width: 100%;
+}
+
 .playBoardWrap {
-  padding-top: 50px;
+  position: relative;
+}
+
+.playBoardWrap-quad {
+  display: flex;
+  flex-direction: column;
+  padding: 0 60px;
 }
 
 .listPlayerActiveMatch {
-  list-style: none;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.4em;
+  list-style: none;
   font-size: 2.6rem;
 }
 
-#playBoard {
-  width: 100%;
-  background-color: var(--color-black);
+.listPlayerActiveMatch-dual {
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-/* listPlayers */
-.listPlayers {
+.playBoardWrap-quad .listPlayerActiveMatch-quad-first-half {
+  order: 1;
 }
 
-.unitPlayerName {
-  display: flex;
+.playBoardWrap-quad .listPlayerActiveMatch-quad-second-half {
   flex-direction: row-reverse;
-  justify-content: flex-end;
-  align-items: center;
-}
-.unitPlayerName h3 {
-  margin-left: 0.6em;
+  order: 3;
 }
 
-.unitPlayerScore {
+.playBoardWrap-quad #playBoard {
+  order: 2;
+}
+
+.listPlayerActiveMatch li {
   display: flex;
+  align-items: flex-end;
+  flex: 1 1 auto;
+  height: 50px;
 }
 
-.unitPlayerScore p:not(:last-child)::after {
-  content: "/";
-  margin: 0 1em;
+.listPlayerActiveMatch li img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.listPlayerActiveMatch li span {
+  margin-bottom: 2px;
+}
+
+.listPlayerActiveMatch-dual li:first-child {
+}
+
+.listPlayerActiveMatch-dual li:first-child span {
+  padding-left: 0.6em;
+}
+
+.listPlayerActiveMatch-dual li:last-child {
+  flex-direction: row-reverse;
+}
+
+.listPlayerActiveMatch-dual li:last-child span {
+  padding-right: 0.6em;
+}
+
+
+.listPlayerActiveMatch_item-player1 {
+  flex-direction: row-reverse;
+  transform-origin: 100% 100%;
+  translate: calc(-100% - 10px) 0;
+  rotate: -90deg;
+}
+
+.listPlayerActiveMatch_item-player1 span {
+  padding-right: 0.6em;
+}
+
+.listPlayerActiveMatch_item-player3 {
+  flex-direction: row-reverse;
+  padding-bottom: 10px;
+}
+
+.listPlayerActiveMatch_item-player3 span {
+  padding-right: 0.6em;
+}
+
+.listPlayerActiveMatch_item-player2 {
+  flex-direction: row-reverse;
+  transform-origin: 100% 0;
+  translate: 60px 0;
+  rotate: 90deg;
+}
+
+.listPlayerActiveMatch_item-player2 span {
+  padding-right: 0.6em;
+}
+
+.listPlayerActiveMatch_item-player4 {
+  margin-top: 10px;
+}
+
+.listPlayerActiveMatch_item-player4 span {
+  padding-left: 0.6em;
 }
 
 /* Lounge */
@@ -1658,17 +1735,26 @@ input.has-input:invalid {
 .wrapModal.is-show {
   display: block;
   opacity: 1;
+  z-index: 2;
 }
 
 .blockModal {
   position: fixed;
   width: 70%;
   min-height: 300px;
-  max-width: var(--base-content-width);
+  max-width: calc(var(--base-content-width) - 300px);
   inset: 50% auto auto 50%;
   translate: -50% -50%;
   padding: 30px;
   background-color: var(--color-burn3);
+}
+
+.blockModal-micro {
+  min-height: 160px;
+}
+
+.blockModal-micro .blockModal_title {
+  margin-bottom: 30px;
 }
 
 .blockModal::before,

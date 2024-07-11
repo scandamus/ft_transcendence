@@ -11,7 +11,12 @@ import { updateOngoingTournamentList, updateUpcomingTournamentList } from '../mo
 import { checkTournamentInputValid, checkFormReady } from "../modules/form.js";
 
 export default class Tournament extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (Tournament.instance) {
+            return Tournament.instance;
+        }
         super(params);
         Tournament.instance = this;
         this.title = 'Tournament';
@@ -256,6 +261,7 @@ export default class Tournament extends PageBase {
     }
 
     destroy() {
+        Tournament.instance = null;
         super.destroy();
     }
 }

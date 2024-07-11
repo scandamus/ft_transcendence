@@ -13,7 +13,12 @@ import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListen
     from '../modules/friendListener.js';
 
 export default class Friends extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (Friends.instance) {
+            return Friends.instance;
+        }
         super(params);
         Friends.instance = this;
         this.title = labels.friends.title;
@@ -112,6 +117,7 @@ export default class Friends extends PageBase {
         removeListenAcceptFriendRequest(this);
         removeListenDeclineFriendRequest(this);
 
+        Friends.instance = null;
         super.destroy();
     }
 }

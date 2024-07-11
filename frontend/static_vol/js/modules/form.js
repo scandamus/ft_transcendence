@@ -5,6 +5,7 @@ import PageBase from '../components/PageBase.js';
 
 const errorTypes = ['valueMissing', 'patternMismatch', 'tooLong', 'tooShort', 'rangeOverflow', 'rangeUnderflow', 'customError'];
 
+
 const errorMessages = {
     'valueMissing': labels.formErrorMessages.valueMissing,
     'patternMismatch': labels.formErrorMessages.patternMismatch,
@@ -34,16 +35,48 @@ const errorMessages = {
     'loginError2': labels.formErrorMessages.loginError2,
 }
 
+const getErrorMessage = (key) => {
+    return {
+        'valueMissing': labels.formErrorMessages.valueMissing,
+        'patternMismatch': labels.formErrorMessages.patternMismatch,
+        'tooLong': labels.formErrorMessages.tooLong,
+        'tooShort': labels.formErrorMessages.tooShort,
+        'rangeOverflow': labels.formErrorMessages.outOfRange,
+        'rangeUnderflow': labels.formErrorMessages.outOfRange,
+        //for customError
+        'passwordIsNotSame': labels.formErrorMessages.passwordIsNotSame,
+        'isExists': labels.formErrorMessages.isExists,
+        //以下はfront validate弾けているはずができずにbackend validateでエラーになるパターン
+        'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
+        'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
+        'invalidUsernameBlank': 'username is required.(required - backend)',
+        'invalidPasswordLenBackend': 'password is invalid.(len - backend)',
+        'invalidPasswordCharacterTypesBackend': 'password is invalid.(character types - backend)',
+        'invalidPasswordBlank': 'password is required.(required - backend)',
+        //for Tournament
+        'invalidTournamentnameLenBackend': 'Tournament title is invalid.(len - backend)',
+        'invalidTournamentnameCharacterTypesBackend': 'Tournament title is invalid.(character types - backend)',
+        'invalidTournamentnameBlank': 'Tournament title is required.(required - backend)',
+        'invalidNicknameLenBackend': 'Nickname is invalid.(len - backend)',
+        'invalidNicknameCharacterTypesBackend': 'Nickname is invalid.(character types - backend)',
+        'invalidNicknameBlank': 'Nickname is required.(required - backend)',
+        //for LogIn
+        'loginError1': labels.formErrorMessages.loginError1,
+        'loginError2': labels.formErrorMessages.loginError2,
+    }[key];
+};
+
+
 const addErrorMessage = (errWrapper, errorType) => {
     const elError = document.createElement('li');
-    elError.textContent = errorMessages[errorType];
+    elError.textContent = getErrorMessage(errorType);
     elError.setAttribute('data-error-type', errorType);
     errWrapper.appendChild(elError);
 }
 
 const addErrorMessageCustom = (errWrapper, errorKey) => {
     const elError = document.createElement('li');
-    elError.textContent = errorMessages[errorKey];
+    elError.textContent = getErrorMessage(errorKey);
     elError.setAttribute('data-error-type', 'customError');
     elError.setAttribute('data-error-custom', errorKey);
     errWrapper.appendChild(elError);
