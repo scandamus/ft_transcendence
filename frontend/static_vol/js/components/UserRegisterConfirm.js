@@ -100,10 +100,12 @@ export default class SignUpConfirm extends PageBase {
                 history.pushState(null, null, '/register/complete');
                 await router(false);
             })
-            .catch(error => {
+            .catch( async (error) => {
                 const errorObject = JSON.parse(error.message);
                 if (errorObject.username && errorObject.username.includes('isExists')) {
-                    //todo: 入力画面に戻る
+                    sessionStorage.setItem('isExist', 'true');
+                    sessionStorage.setItem('errorMessage', error.message);
+                    this.handleBack();
                 } else {
                     console.error('register failed:', error);
                 }
