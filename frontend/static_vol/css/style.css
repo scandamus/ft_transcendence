@@ -264,18 +264,31 @@ hr {
   list-style: none;
 }
 
+.blockFontSize_list li {
+  height: 40px;
+}
+
 .blockFontSize li:not(:last-child) {
   margin-right: 3px;
 }
 
 .blockFontSize_button {
-  height: 1.8em;
-  line-height: 1.8em;
-  padding: 0 0.6em;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
   background-color: var(--color-burn2);
   border: none;
-  font-size: 2rem;
+  font-size: 24px;
   color: var(--color-white);
+  vertical-align: top;
+}
+
+.blockFontSize_button-big {
+  font-size: 30px;
+}
+
+.blockFontSize_button-small {
+  font-size: 18px;
 }
 
 .blockFontSize_button:hover {
