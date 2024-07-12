@@ -11,7 +11,6 @@ urlpatterns = [
     path('api/friends/', include('players.urls.friends')),
     path('api/tournaments/', include('game.urls.tournaments')),
     path('api-internal/game/', include('game.urls.game')),
-    path('ws/lounge/', include('game.urls.lounge')),
     path('health/', health_check),
     path('api/test/', include('players.urls.players')), # for test use only
 ]
