@@ -230,9 +230,6 @@ const handleExitGame = (instance) => {
     });
     webSocketManager.closeWebSocket(containerId);
     instance.containerId = '';
-    //todo: score -1にする
-    //setScoreToInvalid();
-    //todo: status, current_match更新
 }
 
 const closeModalOnExitGame = (ev) => {
