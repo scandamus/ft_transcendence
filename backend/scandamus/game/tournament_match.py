@@ -33,44 +33,48 @@ async def handle_enter_tournament_room(consumer, token, data):
     player = await get_player_by_user(user)
     if not player:
         logger.error(f"No player found for user: {user.username}")
-    if player.status != 'tournament_call':
+    if player.status != 'tournament_room':
         logger.error(f'{user.username} can not enter tournament room as status: {player.status}')
-        send_entry_error(consumer, 'invalidEnter')
+        await send_entry_error(consumer, 'invalidEnter')
         return
     
     tournament_name = data.get('name')
-    entry = get_entry(player, tournament_name)
+    entry = await get_entry(player, tournament_name)
     if entry is None:
         logger.error(f'{user.username} can not enter tournament room')
-        send_entry_error(consumer, 'invalidEnter')
+        await send_entry_error(consumer, 'invalidEnter')
         return
 
+    if tournament_name not in LoungeSession.tournament_entry:
+        LoungeSession.tournament_entry[tournament_name] = []
     LoungeSession.tournament_entry[tournament_name].append(entry)
+    tournament = await database_sync_to_async(lambda: entry.tournament)()
+    tournament_id = await database_sync_to_async(lambda: entry.tournament.id)()
+    nickname = entry.nickname
+    start = tournament.start
 
     message = json.dumps({
         'type': 'tournamentMatch',
         'action': 'enterRoom',
-        'id': entry.tournament.id,
-        'name': tournament_name
+        'id': tournament_id,
+        'nickname': nickname,
+        'name': tournament_name,
+        'start': start.isoformat()
     })
-    send_to_client(consumer, message)
+    await send_to_client(consumer, message)
     logger.info(f'Sent {tournament_name} room permission to {user.username}')
-
-async def start_tournament_match(consumer, tournament_name):
-    from .consumers import LoungeSession
-
-    
-
-
 
 # ongoingのトーナメントである場合にEntryを返す
 @database_sync_to_async
 def get_entry(player, tournament_name):
     try:
-        tournament = Tournament.objects.filter(name=tournament_name, status='ongoing')
+        tournament = Tournament.objects.get(name=tournament_name, status='ongoing')
     except Tournament.DoesNotExist:
         return None
-    return Entry.objects.filter(player=player, tournament=tournament)
+    try:
+        return Entry.objects.get(player=player, tournament=tournament)
+    except Entry.DoesNotExist:
+        return None
 
 async def send_entry_error(websocket, action):
     message = json.dumps({

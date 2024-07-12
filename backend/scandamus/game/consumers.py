@@ -12,7 +12,7 @@ from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
 from .tournament import handle_create_tournament, handle_entry_tournament, handle_cancel_entry
 from .tournament_match import handle_enter_tournament_room
 from players.friend_utils import send_status_to_friends
-from .match_utils import get_player_by_user
+from .match_utils import get_player_by_user, send_tournament_match_jwt, update_player_status
 from channels.db import database_sync_to_async
 from channels.auth import get_user
 
@@ -97,7 +97,10 @@ class LoungeSession(AsyncWebsocketConsumer):
             logger.error(f'JSON decode error: {str(e)}')
             await self.close()
         except AttributeError as e:
-            logger.error(f'aaaAttribute error: {str(e)}')
+            logger.error(f'Attribute error in receive: {str(e)} - {text_data}')
+            await self.close()
+        except Exception as e:
+            logger.error(f'Unexpected error: {str(e)}')
             await self.close()
 
     async def friend_status(self, event):
@@ -153,9 +156,16 @@ class LoungeSession(AsyncWebsocketConsumer):
                 else:
                     logger.error(f'Cancelled successfully but opponent is not online')
 
-            del self.players[self.user.username]
+            # del self.players[self.user.username]
         else:
             logger.info('Disconnect called but no user found.')
+
+    # jsonのスタイルに合わせてここはcamelCaseのまま（受け取ったjsonをそのまま送るため）
+    async def gameSessionTournament(self, data):
+        try:
+            await self.send(text_data=json.dumps(data))
+        except Exception as e:
+            logger.error(f'Error in gameSessionTournament: {e}')
 
     async def send_notification(self, event):
         try:
@@ -169,5 +179,10 @@ class LoungeSession(AsyncWebsocketConsumer):
                     'action': action,
                     'name': name
             }))
+#            if action == 'startMatch':
+#                await send_tournament_match_jwt(self, event)
+            if action == 'canceled':
+                player = await get_player_by_user(self.user)
+                await update_player_status(player, 'waiting')
         except Exception as e:
             logger.error(f'Error in send_notification: {e}')
