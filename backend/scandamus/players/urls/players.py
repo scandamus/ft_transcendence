@@ -14,4 +14,5 @@ urlpatterns = [
     path('avatar/', AvatarUploadView.as_view(), name='avatar_upload'),
     path('matchlog/', MatchLogView.as_view(), name='log-match'),
     path('recommend/', RecommendedView.as_view(), name='recommend'),
+    path('level/', UserLevelView.as_view(), name='user_level'),
 ]
