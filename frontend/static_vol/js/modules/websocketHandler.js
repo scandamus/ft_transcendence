@@ -6,7 +6,9 @@ import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
-import { updateModalAvailablePlayers } from "./modal.js";
+import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
+import { updateUpcomingTournamentList } from "./tournamentList.js";
+import { handleReceiveWsTournamentValidationError } from './form.js';
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -221,16 +223,53 @@ const handleFriendStatusReceived = (data) => {
 }
 
 const handleTournamentReceived = (data) => {
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
+
     if (data.action === 'created') {
         const startUTC = new Date(data.start);
         const startLocal = startUTC.toLocaleString();
         console.log(`UTC Time: ${startUTC.toISOString()}`);
         console.log(`Local Time: ${startLocal}`);
+        if (currentPage) {
+            PageBase.instance.resetFormCreateTournament();
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
         const message = `${data.name} - ${startLocal} が作成されました`;
         console.log(`${message}`);
         addNotice(message, false);
     } else if (data.action === 'alreadyExists') {
         const message = `同名のトーナメントがすでに存在しています`;
         addNotice(message, true);
+    } else if (data.action === 'invalidTournamentTitle') {
+        handleReceiveWsTournamentValidationError(data);
+    } else if (data.action === 'entryDone') {
+        closeModalOnEntryDone();
+        addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'duplicateNickname') {
+        addNotice(`すでに同名のニックネームが使われています`, true);
+    } else if (data.action === 'alreadyEnterd') {
+        closeModalOnEntryDone();
+        addNotice(`すでにエントリー済みのトーナメントです`, true);
+    } else if (data.action === 'capacityFull') {
+        closeModalOnEntryDone();
+        addNotice(`満員のためトーナメントにエントリー出来ませんでした`, true);
+    } else if (data.action === 'invalidTournament') {
+        closeModalOnEntryDone();
+        addNotice('無効なトーナメントへのリクエストです', true);
+    } else if (data.action === 'invalidPlayer') {
+        closeModalOnEntryDone();
+        addNotice('トーナメントにエントリー出来ませんでした', true);
+    } else if (data.action === 'removeEntryDone') {
+        addNotice(`トーナメント【${data.name}】への参加をキャンセルしました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'invalidCancelRequest') {
+        addNotice('トーナメントへのエントリーがありません');
+    } else if (data.action === 'invalidNickname') {
+        handleReceiveWsTournamentValidationError(data);
     }
 }
