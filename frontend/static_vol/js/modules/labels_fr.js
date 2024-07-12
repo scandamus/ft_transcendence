@@ -84,7 +84,8 @@ export const labels_fr = {
         labelMatchLog: 'Journal du match',
         labelWins: 'victoires',
         labelLosses: 'défaites',
-        fmtWinLoss: '$win victoires, $loss défaites',
+        fmtWin: '$win victoires',
+        fmtLoss: '$loss défaites',
         msgNoMatch: 'aucune match',
     },
     tournament: {

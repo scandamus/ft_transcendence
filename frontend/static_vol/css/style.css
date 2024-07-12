@@ -965,10 +965,27 @@ input.has-input:invalid {
   margin: 0 20px;
 }
 
-.blockPlayerDetail_score {
-  font-size: 2.9rem;;
+.blockPlayerDetail_stats {
+  padding: 10px 0 16px;
   text-align: center;
-  line-height: 1.7;
+}
+
+.blockPlayerDetail_stats .unitLevel {
+  margin-bottom: 10px;
+  font-size: 2.9rem;
+}
+
+.blockPlayerDetail_stats .unitWinCount {
+  font-size: 2.3rem;;
+  line-height: 1.4;
+}
+
+.blockPlayerDetail_stats .unitWinCount span {
+  display: inline-block;
+}
+
+.blockPlayerDetail_stats .unitWinCount span:first-child {
+  margin-right: 0.3em;
 }
 
 /* blockDashboardLog */
