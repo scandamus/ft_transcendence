@@ -152,7 +152,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.scheduled_task.cancel()
             self.scheduled_task = None
 
-
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json.get('action')
