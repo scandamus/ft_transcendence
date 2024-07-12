@@ -34,6 +34,7 @@ export const labels_he = {
         tooShort: 'קצר מדי',
         passwordIsNotSame: 'אנא הזן את אותה סיסמה',
         isExists: 'שם המשתמש כבר בשימוש',
+        outOfRange: '',
         loginError1: 'בדק את שמך וסיסמתך',
         loginError2: 'משהו השתבש',
     },
@@ -99,6 +100,10 @@ export const labels_he = {
         labelTitleInPlay: 'טורנירים בעיצומם',
         labelTitleRecent: 'טורנירים שהושלמו',
         labelTournamentLog: 'שיאי טורניר',
+        labelUpdateLists: '',
+        descTournamentTitle: [''],
+        descTournamentStart: [''],
+        descNickname: [''],
     },
     modal: {
         labelNickname: 'כינוי',

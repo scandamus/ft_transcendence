@@ -8,6 +8,7 @@ import { addNotice } from '../modules/notice.js';
 import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from '../modules/env.js';
 //import { fetchTournaments } from '../modules/tounamentApi.js';
 import { updateOngoingTournamentList, updateUpcomingTournamentList } from '../modules/tournamentList.js'
+import { checkTournamentInputValid, checkFormReady } from "../modules/form.js";
 
 export default class Tournament extends PageBase {
     static instance = null;
@@ -28,19 +29,33 @@ export default class Tournament extends PageBase {
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
         this.addAfterRenderHandler(this.updateLists.bind(this));
+        this.addAfterRenderHandler(this.resetFormCreateTournament.bind(this));
 
         //Instance固有のlistenerList
         this.listListenEntryTournament = [];
         this.listListenCancelEntryTournament = [];
+        this.listListenElEntryTournament = [];
     }
 
     async renderHtml() {
+        let listDescTournamentTitle = '';
+        for (let i = 0; i < labels.tournament.descTournamentTitle.length; i++) {
+            listDescTournamentTitle += `<li>${labels.tournament.descTournamentTitle[i]}</li>`;
+        }
+        let listDescTournamentStart = '';
+        for (let i = 0; i < labels.tournament.descTournamentStart.length; i++) {
+            listDescTournamentStart += `<li>${labels.tournament.descTournamentStart[i]}</li>`;
+        }
         return `
             <div class="wrapTournament">
                 <form id="formCreateTournament" class="formCreateTournament blockForm unitBox" action="" method="post">
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-title">
                         <dt>${labels.tournament.labelTournamentTitle}</dt>
-                        <dd><input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required /></dd>
+                        <dd>
+                            <input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="50" required />
+                            <ul class="listError"></ul>
+                            <ul class="listAnnotation">${listDescTournamentTitle}</ul>
+                        </dd>
                     </dl>
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-start">
                         <dt>${labels.tournament.labelStart}</dt>
@@ -52,13 +67,16 @@ export default class Tournament extends PageBase {
                               value="2024-07-01T21:00"
                               min="2024-07-01T21:00"
                               max="2024-08-01T21:00" />
+                            <ul class="listError"></ul>
+                            <ul class="listAnnotation">${listDescTournamentStart}</ul>
                         </dd>
                     </dl>
-                    <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton">${labels.tournament.labelCreateTournament}</button></p>
+                    <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton" disabled>${labels.tournament.labelCreateTournament}</button></p>
                 </form>
+                <p class="btnUpdateTournamentLists"><button type="button" id="btnUpdateTournamentLists_button" class="unitButton unitButton-small">${labels.tournament.labelUpdateLists}</button></p>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleUpcoming}</h3>
-                    <div class="blockTournamentList_upcoming listLineDivide">
+                    <div class="blockTournamentList_upcoming listLineDivide"></div>
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleInPlay}</h3>
@@ -127,6 +145,16 @@ export default class Tournament extends PageBase {
         const btnCreateTournament = document.getElementById('btnCreateTournament');
         const boundHandleCreateTournament = this.handleCreateTournament.bind(this);
         this.addListListenInInstance(btnCreateTournament, boundHandleCreateTournament, 'click');
+
+        const elTournamentTitle = document.getElementById('inputTournamentTitle');
+        const elTournamentStart = document.getElementById('startTime');
+        const boundHandleInput = this.handleInput.bind(this);
+        this.addListListenInInstance(elTournamentTitle, boundHandleInput, 'blur');
+        this.addListListenInInstance(elTournamentStart, boundHandleInput, 'blur');
+
+        const btnUpdateList = document.getElementById('btnUpdateTournamentLists_button');
+        const boundUpdateLists = this.updateLists.bind(this);
+        this.addListListenInInstance(btnUpdateList, boundUpdateLists, 'click');
     }
 
     handleCreateTournament(ev) {
@@ -134,11 +162,6 @@ export default class Tournament extends PageBase {
         console.log("handleCreateTournament");
 
         const tournamentTitle = document.getElementById('inputTournamentTitle').value;
-        if (!tournamentTitle || !tournamentTitle.trim()) {
-            addNotice('トーナメントのタイトルを入力してください', true);
-            return;
-        }
-
         const startTimeInput = document.getElementById('startTime').value;
         const startTime = new Date(startTimeInput);
         const now = new Date();
@@ -184,6 +207,58 @@ export default class Tournament extends PageBase {
     //         console.log(`[Add listener] entry tournament to ${tournamentName}`);
     //     });
     // }
+
+    formatToDatetimeLocal(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+
+    resetFormCreateTournament() {
+        const elTournamentTitle = document.getElementById('inputTournamentTitle');
+        const elStartTime = document.getElementById('startTime');
+
+        //clear tournament title
+        if (elTournamentTitle.classList.contains('has-input')) {
+            elTournamentTitle.classList.remove('has-input');
+        }
+        elTournamentTitle.value = '';
+        //reset data
+        let dateTime = new Date();
+        dateTime.setMinutes(dateTime.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
+        if (dateTime.getMinutes() !== 0) {
+            dateTime.setHours(dateTime.getHours() + 1);
+        }
+        dateTime.setMinutes(0);
+        dateTime.setSeconds(0);
+        dateTime.setMilliseconds(0);
+        const minTimeFormatted = this.formatToDatetimeLocal(dateTime);
+        dateTime.setMonth(dateTime.getMonth() + 1);
+        const maxTimeFormatted = this.formatToDatetimeLocal(dateTime);
+        elStartTime.min = minTimeFormatted;
+        elStartTime.max = maxTimeFormatted;
+        elStartTime.value = minTimeFormatted;
+    }
+
+    handleInput(ev) {
+        const elForm = ev.target.closest('form');
+        const btnCreateTournament = document.getElementById('btnCreateTournament');
+        const btnEntryTournament = document.getElementById('btnEntryTournament');
+        const elInput = ev.target;
+        //初回入力時、invalid styleが当たるようにclass付与
+        const classHasInput = 'has-input';
+        if (!elInput.classList.contains(classHasInput)) {
+            elInput.classList.add(classHasInput);
+        }
+        //formの各input validate
+        checkTournamentInputValid(elInput);
+        //ボタンenabled切り替え(ok=>ngもありうる)
+        const btn = (elForm.classList.contains('formEntryTournament')) ? btnEntryTournament : btnCreateTournament;
+        checkFormReady(elForm, btn);
+    }
 
     destroy() {
         Tournament.instance = null;

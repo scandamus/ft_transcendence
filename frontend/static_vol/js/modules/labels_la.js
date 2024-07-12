@@ -34,6 +34,7 @@ export const labels_la = {
         tooShort: 'nimis brevis',
         passwordIsNotSame: 'non eadem tessera',
         isExists: 'nomen usoris alium selige',
+        outOfRange: '',
         loginError1: 'verifica iterum nomen et tesseram',
         loginError2: 'nunc non potest nomen dare',
     },
@@ -99,6 +100,10 @@ export const labels_la = {
         labelTitleInPlay: 'certamina praesentia',
         labelTitleRecent: 'certamina perfecta',
         labelTournamentLog: 'index certaminium',
+        labelUpdateLists: '',
+        descTournamentTitle: [''],
+        descTournamentStart: [''],
+        descNickname: [''],
     },
     modal: {
         labelNickname: 'agnomen',

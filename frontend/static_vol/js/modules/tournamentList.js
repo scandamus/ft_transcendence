@@ -22,7 +22,7 @@ const updateUpcomingTournamentList = async (pageInstance) => {
                     nicknameHtml = `<p class="unitTournament_nickname">as ${tournament.nickname}</p>`;
                     buttonHtml = `<p class="blockForm_button"><button type="submit" class="unitUpcomingTournamentButton_cancel unitButtonDecline" data-name="${tournament.name}" data-id="${tournament.id}">${labels.tournament.labelCancelEntry}</button></p>`;                   
                 } else if (tournament.current_participants >= tournament.max_participants) {
-                    buttonHtml = `<p class="blockForm_button"><button type="button" disabled>FULL</p>`;
+                    buttonHtml = `<p class="blockForm_label">FULL</p>`;
                 //    buttonHtml = `<p class="blockForm_button"><button type="button" disabled>${labels.tournament.labelFull}</p>`;
                 } else if (tournament.nickname === '') {
                     buttonHtml = `<p class="blockForm_button"><button type="button" class="unitUpcomingTournamentButton_entry unitButton">${labels.tournament.labelEntry}</button></p>`;

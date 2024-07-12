@@ -34,6 +34,7 @@ export const labels_fr = {
         tooShort: 'Trop court',
         passwordIsNotSame: 'Veuillez saisir le même mot de passe',
         isExists: 'Ce nom d’utilisateur est utilisé',
+        outOfRange: '',
         loginError1: 'Veuillez vérifier le nom d’utilisateur et le mot de passe',
         loginError2: 'quelque chose s’est mal passé',
     },
@@ -99,6 +100,10 @@ export const labels_fr = {
         labelTitleInPlay: 'Tournoi en cours',
         labelTitleRecent: 'Tournoi terminé',
         labelTournamentLog: 'Journal du tournoi',
+        labelUpdateLists: '',
+        descTournamentTitle: [''],
+        descTournamentStart: [''],
+        descNickname: [''],
     },
     modal: {
         labelNickname: 'pseudo',

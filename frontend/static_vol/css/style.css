@@ -25,6 +25,7 @@
   --color-error1: rgba(243, 0, 67, 0.7);
   --color-error1-alpha: rgba(243, 0, 67, 0.1);
   --color-error1-alpha2: rgba(243, 0, 67, 0.5);
+  --color-error1-alpha3: rgba(243, 0, 67, 0.3);
   --color-error2: rgb(250, 216, 228);
   --color-error2-alpha: rgba(250, 216, 228, 0.7);
   --color-online: var(--content-color1);
@@ -671,10 +672,6 @@ input.has-input:invalid {
   width: 100%;
 }
 
-.unitFormInput_input .listAnnotation {
-  margin-top: 10px;
-}
-
 .unitFormInput_input-confirm {
   padding: 0 0.5em;
   font-size: 2.6rem;
@@ -765,6 +762,7 @@ input.has-input:invalid {
 /* listAnnotation */
 .listAnnotation {
   list-style: none;
+  margin-top: 10px;
 }
 
 .listAnnotation li {
@@ -791,14 +789,16 @@ input.has-input:invalid {
 }
 
 /* no data */
-.blockFriends_friends p:only-child,
 .blockDashboardLog_listMatch p:only-child,
-.blockFriendRecommended_friends p:only-child {
+.blockFriends_friends p:only-child,
+.blockFriendRecommended_friends p:only-child,
+.blockTournamentList_upcoming p:only-child,
+.blockTournamentList_ongoing p:only-child,
+.blockTournamentList_list p:only-child {
   font-size: 1.8rem;
   margin-top: 1em;
   margin-bottom: 1em;
 }
-
 
 /* -----
  page
@@ -1377,10 +1377,19 @@ input.has-input:invalid {
   margin-left: 16px;
 }
 
+.unitTournament_form .blockForm_label {
+  width: 5em;
+  background-color: var(--color-error1-alpha3);
+  font-size: 1.6rem;
+  padding: 0.2em 0;
+  text-align: center;
+  margin: 0 0 0 auto;
+}
+
 /* formCreateTournament */
 .formCreateTournament {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   box-sizing: border-box;
   flex-wrap: wrap;
@@ -1409,8 +1418,13 @@ input.has-input:invalid {
 }
 
 .formCreateTournament_button {
-  margin-top: 30px;
+  margin-top: 50px;
   margin-bottom: 0;
+}
+
+.btnUpdateTournamentLists {
+  margin-bottom: 15px;
+  text-align: right;
 }
 
 .blockTournamentRanking {
@@ -1797,6 +1811,7 @@ input.has-input:invalid {
 .blockModal_title strong {
   font-size: 3.2rem;
   line-height: 2;
+  display: inline-block;
 }
 
 .blockModal_header {
@@ -1864,6 +1879,7 @@ input.has-input:invalid {
   left: 0;
   margin: auto;
   list-style: none;
+  z-index: 2;
 }
 
 .unitNotice {
