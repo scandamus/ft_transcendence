@@ -44,7 +44,6 @@ async def handle_auth(consumer, token):
                 await database_sync_to_async(player.save)()
                 logger.info(f'{user.username} online status is online')
 
-            if player:
                 # continue match: マッチ中に切断したユーザーが再度接続した際にマッチへの復帰を試みる
                 if player.status in ['friend_match', 'lounge_match', 'tournament_match']:
                     match = await database_sync_to_async(lambda: player.current_match)()    
