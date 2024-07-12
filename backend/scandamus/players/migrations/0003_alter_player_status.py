@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='player',
             name='status',
-            field=models.CharField(choices=[('friend_match', 'フレンドマッチ中'), ('lounge_match', 'ラウンジマッチ中'), ('tournament_match', 'トーナメントマッチ中'), ('tournament_call', 'トーナメント控室'), ('tournament_prepare', 'トーナメント準備中'), ('tournament', 'トーナメント中'), ('friend_waiting', 'フレンドマッチ待機中'), ('lounge_waiting', 'ラウンジマッチ待機中'), ('waiting', '待機中')], default='waiting', max_length=20, verbose_name='ステータス'),
+            field=models.CharField(choices=[('friend_match', 'フレンドマッチ中'), ('lounge_match', 'ラウンジマッチ中'), ('tournament_match', 'トーナメントマッチ中'), ('tournament_room', 'トーナメント控室'), ('tournament_prepare', 'トーナメント準備中'), ('tournament', 'トーナメント中'), ('friend_waiting', 'フレンドマッチ待機中'), ('lounge_waiting', 'ラウンジマッチ待機中'), ('waiting', '待機中')], default='waiting', max_length=20, verbose_name='ステータス'),
         ),
     ]
