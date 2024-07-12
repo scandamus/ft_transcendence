@@ -6,7 +6,7 @@ import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
-import { updateModalAvailablePlayers } from "./modal.js";
+import { updateModalAvailablePlayers, showModalTournamentRoom } from "./modal.js";
 import { updateUpcomingTournamentList } from "./tournamentList.js";
 import { enterTournamentRoomRequest } from "./tournament.js";
 
@@ -23,6 +23,9 @@ export const pongHandler = (event, containerId) => {
             // Playersクラスにステータスが要りそう（オンライン、オフライン、ゲーム中、ゲーム中ならばmatch_idも）
         }
         if (data.type === 'gameSession') {
+            loadGameContent(data);
+        }
+        else if (data.type === 'gameSessionTournament') {
             loadGameContent(data);
         }
         else if (data.type === 'friendMatchRequest') {
@@ -279,6 +282,9 @@ const handleTournamentMatchReceived = (data) => {
         addNotice(`トーナメント ${data.name} を開始します`);
     } else if (data.action === 'enterRoom') {
         addNotice(`トーナメント ${data.name} の控室に移動します`);
+        showModalTournamentRoom(data);
+    } else if (data.action === 'canceled') {
+        addNotice(`トーナメント ${data.name} は催行人数に達しなかったためキャンセルされました`);
     }
     console.log(`${data.name} ${data.action}の通知です`);
 }
