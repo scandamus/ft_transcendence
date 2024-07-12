@@ -225,8 +225,11 @@ const setScoreToInvalid = () => {
 const handleExitGame = (instance) => {
     console.log('handleExitGame')
     const containerId = PageBase.isInstance(instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
+    webSocketManager.sendWebSocketMessage(containerId, {
+        'action': 'exit_game',
+    });
     webSocketManager.closeWebSocket(containerId);
-    instance.containerId = ''
+    instance.containerId = '';
     //todo: score -1にする
     //setScoreToInvalid();
     //todo: status, current_match更新

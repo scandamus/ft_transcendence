@@ -126,6 +126,32 @@ class PongConsumer(AsyncWebsocketConsumer):
                 return
         elif action == 'key_event':
             await self.handle_game_message(text_data)
+        elif action == 'exit_game':
+            await self.handle_exit_message(text_data)
+
+    async def handle_exit_message(self, event):
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'exit_game',
+            'player_name': self.player_name,
+            'players_id': self.players_id,
+        })
+
+    async def exit_game(self, event):
+        if self.scheduled_task is not None:
+            exited_player = event['player_name']
+            logger.info(f"{exited_player}")
+            if exited_player == 'player1':
+                self.left_paddle.score = -1
+            elif exited_player == 'player2':
+                self.right_paddle.score = -1
+            await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+            await self.channel_layer.group_send(self.room_group_name, {
+                'type': 'send_game_over_message',
+                'message': 'GameOver',
+            })
+            self.scheduled_task.cancel()
+            self.scheduled_task = None
+
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
