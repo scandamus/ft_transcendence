@@ -49,7 +49,8 @@ class Paddle(Block):
         self.speed = 0
         self.score = 4
 
-    def deactivate(self):
+    def deactivate(self, score=0):
+        self.score = score
         self.is_active = False
         self.convert_to_wall()
 
