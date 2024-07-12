@@ -178,7 +178,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                         'type': 'send_game_over_message',
                         'message': 'GameOver',
                     })
-                    self.scheduled_task.cancel()
+                    if self.scheduled_task is not None:
+                        self.scheduled_task.cancel()
+                        self.scheduled_task = None
         except asyncio.CancelledError:
             # タスクがキャンセルされたときのエラーハンドリング
             # 今は特に書いていないのでpass
