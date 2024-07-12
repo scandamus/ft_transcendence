@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .models import Player
 from .models import Match
 from channels.db import database_sync_to_async
+from channels.layers import get_channel_layer
 from datetime import datetime, timedelta
 from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, TokenBackendError
@@ -37,6 +38,41 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
 
         await update_player_status_and_match(player, match, 'frined_match')
         
+
+async def send_tournament_match_jwt(match, game_name='pong'):
+    logger.info('send_tournament_match_jwt in')
+    #from .consumers import LoungeSession
+
+    if not match.tournament:
+        logger.error('Error match is not for tournament')
+        return
+    
+    player1 = await database_sync_to_async(lambda: match.player1)()
+    player2 = await database_sync_to_async(lambda: match.player2)()
+    
+    for player in [player1, player2]:
+        player_name = 'player1' if player == player1 else 'player2'
+        user = await database_sync_to_async(lambda: player.user)()
+        game_token = await issue_jwt(user, player_name, player.id, match.id, game_name)
+        #websocket =  LoungeSession.players.get(player.user.username)
+        channel_layer = get_channel_layer()
+
+        try:
+            #await websocket.send(text_data=json.dumps({
+            await channel_layer.group_send(
+                f'friends_{player.id}',
+                {
+                    'type': 'gameSessionTournament',
+                    'game_name': game_name,
+                    'jwt': game_token,
+                    'username': player.user.username,
+                    'match_id': match.id,
+                    'player_name': player_name
+                }
+            )
+            await update_player_status_and_match(player, match, 'tournament_match')
+        except Exception as e:
+            logger.error(f'Failed to send message to {player.user.username}: {e}')
 
 async def send_lounge_match_jwt_to_all(consumer, players_list, game_name):
     match = await create_match_universal(players_list, game_name)
