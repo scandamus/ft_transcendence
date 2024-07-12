@@ -129,7 +129,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         elif action == 'exit_game':
             await self.handle_exit_message(text_data)
 
-    async def handle_exit_message(self, event):
+    async def handle_exit_message(self, text_data):
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'exit_game',
             'player_name': self.player_name,
