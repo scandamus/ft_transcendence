@@ -63,10 +63,13 @@ const entryTournament = (args) => `
         <form id="formEntryTournament" class="formEntryTournament blockForm" action="" method="post">
             <dl class="blockForm_el">
                 <dt>${args.labelNickname}</dt>
-                <dd><input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required /></dd>
+                <dd>
+                    <input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="20" required />
+                    <ul class="listError"></ul>
+                    <ul class="listAnnotation">${args.desc}</ul>
+                </dd>
             </dl>
             <input type="hidden" name="idTitle" value="${args.labelTournamentId}">
-            
             <ul class="unitListBtn unitListBtn-horizontal-center">
                 <li><button type="submit" id="btnEntryTournament" class="unitButton">${args.labelEntry}</button></li>
                 <li><button type="button" class="blockBtnCancel_button unitButtonDecline unitButton-small">${args.labelCancel}</button></li>
@@ -75,4 +78,14 @@ const entryTournament = (args) => `
     </section>
 `;
 
-export { sendMatchRequest, receiveMatchRequest, waitForOpponent, entryTournament };
+const exitGame = (args) => `
+    <section class="blockModal blockModal-micro">
+        <h2 class="blockModal_title">${args.titleModal}</h2>
+        <ul class="unitListBtn unitListBtn-horizontal-center">
+            <li class="unitListBtn_btn blockBtnReturnToGame"><button type="button" class="blockBtnReturnToGame_button unitButton">${args.labelReturnToGame}</button></li>
+            <li class="unitListBtn_btn blockBtnExitGame"><a href="#" class="blockBtnExitGame_button unitButton">${args.labelExitGame}</a></li>
+        </ul>
+    </section>
+`;
+
+export { sendMatchRequest, receiveMatchRequest, waitForOpponent, entryTournament, exitGame };

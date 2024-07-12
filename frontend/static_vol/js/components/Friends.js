@@ -5,13 +5,20 @@ import { webSocketManager } from '../modules/websocket.js';
 import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
-import { checkSimpleInputValid } from "../modules/form.js";
+
+import { checkSearchFriendInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList, updateRecommend } from '../modules/friendList.js';
+
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
     from '../modules/friendListener.js';
 
 export default class Friends extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (Friends.instance) {
+            return Friends.instance;
+        }
         super(params);
         Friends.instance = this;
         this.title = labels.friends.title;
@@ -82,7 +89,7 @@ export default class Friends extends PageBase {
     async handleSearchFriend(ev) {
         ev.preventDefault();
         const inputFriendsName = document.getElementById('inputFriendsName');
-        checkSimpleInputValid(inputFriendsName);
+        checkSearchFriendInputValid(inputFriendsName);
         if (!ev.target.closest('form').checkValidity()) {
             return;
         }
@@ -110,6 +117,7 @@ export default class Friends extends PageBase {
         removeListenAcceptFriendRequest(this);
         removeListenDeclineFriendRequest(this);
 
+        Friends.instance = null;
         super.destroy();
     }
 }
