@@ -182,7 +182,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                         self.scheduled_task.cancel()
                         self.scheduled_task = None
         except asyncio.CancelledError:
-            # タスクがキャンセルされたときのエラーハンドリング
+            # タスクがキャンセルされたと後に非同期処理を行った際のハンドリング
             # 今は特に書いていないのでpass
             pass
 
