@@ -4,12 +4,12 @@ import { labels, switchLabels } from './labels.js';
 import { getToken } from './token.js';
 import { languageLabels } from './labels.js';
 
-const setLangAttrSelected = (elSelectLang, selectedLanguage) => {
+const setLangAttrSelected = (elSelectLang, lang) => {
     const options = elSelectLang.querySelectorAll('option');
     options.forEach(option => {
         option.removeAttribute('selected');
     });
-    const elSelectedOption = elSelectLang.querySelector(`option[value="${selectedLanguage}"]`);
+    const elSelectedOption = elSelectLang.querySelector(`option[value="${lang}"]`);
     if (elSelectedOption) {
         elSelectedOption.setAttribute('selected', 'selected');
     }
@@ -20,10 +20,18 @@ const setLangAttrSelected = (elSelectLang, selectedLanguage) => {
     }
 }
 
+const setLangLogout = () => {
+    const btnLogout = document.getElementById('btnLogoutForm');
+    if (btnLogout) {
+        btnLogout.innerText = labels.home.labelButtonLogout;
+    }
+}
+
 const setLang = async (elSelectLang, lang) => {
     document.documentElement.lang = lang;
     await switchLabels(lang);
     setLangAttrSelected(elSelectLang, lang);
+    setLangLogout();
 }
 
 const saveLang = (lang) => {
