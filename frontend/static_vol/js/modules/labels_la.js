@@ -37,6 +37,7 @@ export const labels_la = {
         tooShort: 'nimis brevis',
         passwordIsNotSame: 'non eadem tessera',
         isExists: 'nomen usoris alium selige',
+        outOfRange: '',
         loginError1: 'verifica iterum nomen et tesseram',
         loginError2: 'nunc non potest nomen dare',
     },
@@ -87,7 +88,8 @@ export const labels_la = {
         labelMatchLog: 'index ludorum',
         labelWins: 'victoria',
         labelLosses: 'clades',
-        fmtWinLoss: '$win victoriae - $loss clades',
+        fmtWin: '$win victoriae',
+        fmtLoss: '$loss clades',
         msgNoMatch: 'nullum iam ludum',
     },
     tournament: {
@@ -101,6 +103,10 @@ export const labels_la = {
         labelTitleInPlay: 'certamina praesentia',
         labelTitleRecent: 'certamina perfecta',
         labelTournamentLog: 'index certaminium',
+        labelUpdateLists: '',
+        descTournamentTitle: [''],
+        descTournamentStart: [''],
+        descNickname: [''],
     },
     modal: {
         labelNickname: 'agnomen',

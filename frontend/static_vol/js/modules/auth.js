@@ -50,6 +50,36 @@ const getUserInfo = async () => {
         })
 }
 
+const fetchLevel = async (isRefresh) => {
+    const accessToken = getToken('accessToken');
+    if (accessToken === null) {
+        return Promise.resolve(null);
+    }
+    try {
+        const response = await fetch('/api/players/level/', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        if (!response.ok) { //response.status=>403
+            if (!isRefresh) {
+                if (!await refreshAccessToken()) {
+                    throw new Error('fail refresh token');
+                }
+                return await fetchLevel(true);
+            } else {
+                throw new Error('refreshed accessToken is invalid.');
+            }
+            throw new Error(`Failed to fetch rank: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('fetchLevel API response: ', data);
+        return data;
+    } catch (error) {
+        console.error('Error fetch rank: ', error);
+    }
+}
+
 const showMenu = () => {
     const classIsShow = 'is-show';
     const navGlobal = document.getElementById('navGlobal');
@@ -115,4 +145,4 @@ const switchDisplayAccount = async () => {
     }
 }
 
-export { getUserInfo, switchDisplayAccount };
+export { getUserInfo, fetchLevel, switchDisplayAccount };
