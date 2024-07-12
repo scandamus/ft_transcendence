@@ -152,7 +152,7 @@ class Ball:
                     tmp = tmp if self.x > 0 else -tmp
                     self.dy = -self.dy
                     self.y = wall.y - wall.thickness
-                return True, sound_type
+                return sound_type
             elif collision_detected == 'collision_side':
                 sound_type = 'wall_collision'
                 if wall.position == 'RIGHT' or wall.position == 'LEFT':
