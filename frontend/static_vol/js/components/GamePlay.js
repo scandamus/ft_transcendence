@@ -213,7 +213,6 @@ export default class GamePlay extends PageBase {
         document.removeEventListener("keydown", this.keyDownHandler, false);
         document.removeEventListener("keyup", this.keyUpHandler, false);
         GamePlay.instance = null;
-        console.log("i am called");
         super.destroy();
     }
 }
