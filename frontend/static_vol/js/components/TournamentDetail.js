@@ -3,6 +3,7 @@
 import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
+import { fetchTournamentDetail } from "../modules/tounamentApi.js";
 
 export default class TournamentDetail extends PageBase {
     static instance = null;
@@ -13,16 +14,20 @@ export default class TournamentDetail extends PageBase {
         }
         super(params);
         TournamentDetail.instance = this;
-        this.title = 'TournamentTitle1';
-        this.setTitle(this.title);
+        //setTitleはrenderHtml()で取得後に行う
+        this.id = params.id.split(':')[1];
         this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
-        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
     }
 
     async renderHtml() {
+        const tournamentData = await fetchTournamentDetail(this.id, false);
+        console.log(`${tournamentData}`);
+        this.title = tournamentData.name;
+        this.setTitle(this.title);
+        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         return `
             <div class="wrapTournament">
-                <p class="blockTournamentStart">2024/07/3 13:00 START</p>
+                <p class="blockTournamentStart">${tournamentData.start} START</p>
                 <div class="blockTournamentRanking unitBox">
                     <dl class="unitRanker">
                         <dt class="unitRanker_rank unitRanker_rank-1">Rank <strong>1</strong></dt>
