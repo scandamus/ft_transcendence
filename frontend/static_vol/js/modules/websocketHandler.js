@@ -199,6 +199,8 @@ const handleFriendMatchRequestReceived = (data) => {
             addNotice(labels.matchRequest['playerNotWaitingStatus'], true);
         } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
+        } else if (data.error === 'tournament') {
+            addNotice('トーナメント中にマッチリクエストできません', true);
         } else {
             console.error(`Error: ${data.message}`);
         }
@@ -210,7 +212,11 @@ const handleLoungeMatchReceived = (data) => {
         updateModalAvailablePlayers(data.availablePlayers);
     } else if (data.action === 'error') {
         closeModal();
-        alert(`Error: ${data.message}`);
+        if (data.error === 'tournament') {
+            addNotice('トーナメント中にマッチリクエストできません', true);
+        } else {
+            alert(`Error: ${data.message}`);
+        }
     }
 }
 
