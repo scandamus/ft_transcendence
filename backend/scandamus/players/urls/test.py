@@ -11,6 +11,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('validate/', ValidateView.as_view(), name='validate'),
     path('register/', RegisterView.as_view(), name='register'),
+    path('delete/<str:username>/', DeleteUserView.as_view(), name='delete_user'),
     path('avatar/', AvatarUploadView.as_view(), name='avatar_upload'),
     path('matchlog/', MatchLogView.as_view(), name='log-match'),
     path('recommend/', RecommendedView.as_view(), name='recommend'),
