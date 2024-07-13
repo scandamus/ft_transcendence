@@ -98,6 +98,10 @@ export const labels_ja = {
         labelTitleInPlay: '試合中のトーナメント',
         labelTitleRecent: '終了したトーナメント',
         labelTournamentLog: 'トーナメント記録',
+        labelRound1: '第1ラウンド',
+        labelRound2: '第2ラウンド',
+        labelRound3: '第3ラウンド',
+        labelRoundFinal: '決勝',
     },
     modal: {
         labelNickname: 'ニックネーム',

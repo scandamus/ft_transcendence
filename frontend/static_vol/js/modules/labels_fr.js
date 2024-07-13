@@ -98,6 +98,10 @@ export const labels_fr = {
         labelTitleInPlay: 'Tournoi en cours',
         labelTitleRecent: 'Tournoi terminé',
         labelTournamentLog: 'Journal du tournoi',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundFinal: '',
     },
     modal: {
         labelNickname: 'pseudo',

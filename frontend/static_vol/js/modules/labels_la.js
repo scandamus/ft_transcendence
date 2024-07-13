@@ -98,6 +98,10 @@ export const labels_la = {
         labelTitleInPlay: 'certamina praesentia',
         labelTitleRecent: 'certamina perfecta',
         labelTournamentLog: 'index certaminium',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundFinal: '',
     },
     modal: {
         labelNickname: 'agnomen',

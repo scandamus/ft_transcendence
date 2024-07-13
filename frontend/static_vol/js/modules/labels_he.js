@@ -98,6 +98,10 @@ export const labels_he = {
         labelTitleInPlay: 'טורנירים בעיצומם',
         labelTitleRecent: 'טורנירים שהושלמו',
         labelTournamentLog: 'שיאי טורניר',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundFinal: '',
     },
     modal: {
         labelNickname: 'כינוי',

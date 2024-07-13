@@ -98,6 +98,10 @@ export const labels_ar = {
         labelTitleInPlay: 'بطولة قيد التنفيذ',
         labelTitleRecent: 'البطولات المكتملة',
         labelTournamentLog: 'سجلات البطولة',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundFinal: '',
     },
     modal: {
         labelNickname: 'اللقب',
