@@ -1185,11 +1185,10 @@ input.has-input:invalid {
   padding-right: 0.6em;
 }
 
-
 .listPlayerActiveMatch_item-player1 {
   flex-direction: row-reverse;
   transform-origin: 100% 100%;
-  translate: calc(-100% - 10px) 0;
+  translate: calc(-100% - 10px) 10px;
   rotate: -90deg;
 }
 
@@ -1199,7 +1198,7 @@ input.has-input:invalid {
 
 .listPlayerActiveMatch_item-player3 {
   flex-direction: row-reverse;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .listPlayerActiveMatch_item-player3 span {
@@ -1223,6 +1222,74 @@ input.has-input:invalid {
 
 .listPlayerActiveMatch_item-player4 span {
   padding-left: 0.6em;
+}
+
+.listButtonControl {
+  position: absolute;
+  list-style: none;
+}
+
+.listButtonControl-dual {
+  top: 70px;
+  height: calc(100% - 80px);
+}
+
+.listButtonControl-quad.listButtonControl-updown {
+  top: 80px;
+  height: calc(100% - 160px);
+}
+
+.listButtonControl-quad.listButtonControl-leftright {
+  left: 80px;
+  width: calc(100% - 160px);
+}
+
+.listButtonControl-dual.listButtonControl-player1 {
+  left: 10px;
+}
+
+.listButtonControl-dual.listButtonControl-player2 {
+  right: 10px;
+}
+
+.listButtonControl-quad.listButtonControl-player1 {
+  left: 80px;
+}
+
+.listButtonControl-quad.listButtonControl-player2 {
+  right: 80px;
+}
+
+.listButtonControl-quad.listButtonControl-player3 {
+  top: 80px;
+}
+
+.listButtonControl-quad.listButtonControl-player4 {
+  bottom: 80PX;
+}
+
+.listButtonControl_btn button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-burn1);
+  border: none;
+  font-size: 2rem;
+  color: var(--color-white);
+  word-break: keep-all;
+}
+
+.listButtonControl-updown {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40px;
+}
+
+.listButtonControl-leftright {
+  display: flex;
+  justify-content: space-between;
+  height: 40px;
 }
 
 /* Lounge */

@@ -42,6 +42,10 @@ export default class GamePlay extends PageBase {
                     <li class="listPlayerActiveMatch_item"><img src="${this.avatar2}" alt="" width="50" height="50"><span>${this.player2}</span></li>
                 </ul>
                 <canvas id="playBoard" width="650" height="450"></canvas>
+                <ol class="listButtonControl listButtonControl-dual listButtonControl-updown listButtonControl-player1">
+                    <li class="listButtonControl_btn listButtonControl_btn-top"><button type="button">↑</button></li>
+                    <li class="listButtonControl_btn listButtonControl_btn-bottom"><button type="button">↓</button></li>
+                </ol>
             </div>
         `;
     }

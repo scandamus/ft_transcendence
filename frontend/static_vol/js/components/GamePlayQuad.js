@@ -49,6 +49,14 @@ export default class GamePlayQuad extends PageBase {
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player4"><img src="${this.avatar4}" alt="" width="50" height="50"><span>${this.player4}</span></li>
                 </ul>
                 <canvas id='playBoard' width='650' height='650'></canvas>
+                <ol class="listButtonControl listButtonControl-quad listButtonControl-updown listButtonControl-player2">
+                    <li class="listButtonControl_btn listButtonControl_btn-top"><button type="button">↑</button></li>
+                    <li class="listButtonControl_btn listButtonControl_btn-bottom"><button type="button">↓</button></li>
+                </ol>
+                <ol class="listButtonControl listButtonControl-quad listButtonControl-leftright listButtonControl-player4">
+                    <li class="listButtonControl_btn listButtonControl_btn-left"><button type="button">←</button></li>
+                    <li class="listButtonControl_btn listButtonControl_btn-right"><button type="button">→</button></li>
+                </ol>
             </div>
         `;
     }
