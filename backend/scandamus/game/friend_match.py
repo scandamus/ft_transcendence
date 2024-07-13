@@ -34,8 +34,18 @@ async def handle_request_game(consumer, data):
     player = await get_player_by_user(user)
     if not player:
         logger.error(f"No player found for user: {user.username}")
+        return
+    
     if player.status != 'waiting':
         logger.error(f'{user.username} can not request new game as playing the match')
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': 'friendMatchRequest',
+                'action': 'error',
+                'error': 'tournament'
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
         return
 
     try:

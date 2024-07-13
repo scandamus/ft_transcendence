@@ -32,8 +32,18 @@ async def handle_join_lounge_match(consumer, token, game_name):
     player = await get_player_by_user(user)
     if not player:
         logger.error(f"No player found for user: {user.username}")
+        return
+
     if player.status != 'waiting':
         logger.error(f'{user.username} can not request new game as playing the match')
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': 'lounge',
+                'action': 'error',
+                'error': 'tournament'
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
         return
 
     async with consumer.matchmaking_lock:
