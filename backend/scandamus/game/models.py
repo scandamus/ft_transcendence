@@ -45,6 +45,7 @@ class Tournament(models.Model):
     )
     matches = models.ManyToManyField(
         'Match',
+        blank=True,
         related_name='tournament_matches',
         verbose_name="全マッチ"
     )
