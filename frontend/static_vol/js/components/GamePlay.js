@@ -114,6 +114,14 @@ export default class GamePlay extends PageBase {
             const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById("playBoard");
+
+            if (isTouchDevice()) {
+                const canvasHeight = canvas.getBoundingClientRect().height;
+                const elControl = canvas.closest('div').querySelector('.listButtonControl');
+                if (elControl) {
+                    elControl.style.height = `${canvasHeight - 20}px`;
+                }
+            }
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext("2d");

@@ -1120,6 +1120,7 @@ input.has-input:invalid {
 
 .playBoardWrap {
   position: relative;
+  line-height: 0;
 }
 
 .playBoardWrap-quad {
@@ -1133,6 +1134,7 @@ input.has-input:invalid {
   justify-content: space-between;
   list-style: none;
   font-size: 2.6rem;
+  line-height: 1.5;
 }
 
 .listPlayerActiveMatch-dual {
@@ -1230,7 +1232,7 @@ input.has-input:invalid {
 }
 
 .listButtonControl-dual {
-  top: 70px;
+  bottom: 10px;
   height: calc(100% - 80px);
 }
 
