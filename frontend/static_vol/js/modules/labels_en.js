@@ -102,6 +102,9 @@ export const labels_en = {
         labelRound2: 'Second Round',
         labelRound3: 'Third Round',
         labelRoundFinal: 'Final Round',
+        labelWinner: '<strong>Winner</strong>',
+        labelSecondPlace: 'Rank <strong>2</strong>',
+        labelThirdPlace: 'Rank <strong>3</strong>',
     },
     modal: {
         labelNickname: 'nickname',

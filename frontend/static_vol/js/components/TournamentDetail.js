@@ -39,7 +39,7 @@ export default class TournamentDetail extends PageBase {
             const avatar = tournamentData.winner_avatar ? tournamentData.winner_avatar : `/images/avatar_default.png`;
             detailHtml += `
                 <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-1">Rank <strong>1</strong></dt>
+                    <dt class="unitRanker_rank unitRanker_rank-1"><span>${labels.tournament.labelWinner}</span></dt>
                     <dd class="unitRanker_user">
                         <img src="${avatar}" alt="" width="50" height="50">
                         ${tournamentData.winner}
@@ -50,7 +50,7 @@ export default class TournamentDetail extends PageBase {
             const avatar = tournamentData.second_avatar ? tournamentData.second_avatar : `/images/avatar_default.png`;
             detailHtml += `
                 <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-2">Rank <strong>2</strong></dt>
+                    <dt class="unitRanker_rank unitRanker_rank-2"><span>${labels.tournament.labelSecondPlace}</span></dt>
                     <dd class="unitRanker_user">
                         <img src="${avatar}" alt="" width="50" height="50">
                         ${tournamentData.second}
@@ -61,7 +61,7 @@ export default class TournamentDetail extends PageBase {
             const avatar = tournamentData.third_avatar ? tournamentData.third_avatar : `/images/avatar_default.png`;
             detailHtml += `
                 <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-3">Rank <strong>3</strong></dt>
+                    <dt class="unitRanker_rank unitRanker_rank-3"><span>${labels.tournament.labelThirdPlace}</span></dt>
                     <dd class="unitRanker_user">
                         <img src="${avatar}" alt="" width="50" height="50">
                         ${tournamentData.third}

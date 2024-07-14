@@ -102,6 +102,9 @@ export const labels_he = {
         labelRound2: '',
         labelRound3: '',
         labelRoundFinal: '',
+        labelWinner: '<strong>1</strong>',
+        labelSecondPlace: '<strong>2</strong>',
+        labelThirdPlace: '<strong>3</strong>',
     },
     modal: {
         labelNickname: 'כינוי',

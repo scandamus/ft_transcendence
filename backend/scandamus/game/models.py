@@ -105,7 +105,7 @@ class Tournament(models.Model):
                     "score2": match.score2,
                     "winner": match.winner.nickname if match.winner else None
                 })
-            result.append({
+            result.insert(0, {
                 "round": round_num,
                 "matches": round_result
             })

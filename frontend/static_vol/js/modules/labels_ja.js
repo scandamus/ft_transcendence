@@ -102,6 +102,9 @@ export const labels_ja = {
         labelRound2: '第2ラウンド',
         labelRound3: '第3ラウンド',
         labelRoundFinal: '決勝',
+        labelWinner: '<strong>優勝</strong>',
+        labelSecondPlace: '<strong>2</strong>位',
+        labelThirdPlace: '<strong>3</strong>位',
     },
     modal: {
         labelNickname: 'ニックネーム',

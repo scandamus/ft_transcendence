@@ -1419,7 +1419,7 @@ input.has-input:invalid {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 145px;
+  width: 7.5em;
   font-size: 2.2rem;;
   /*text-shadow: 0.09em 0.05em var(--content-color1), -0.09em -0.05em var(--content-color2);*/
 }
@@ -1457,7 +1457,7 @@ input.has-input:invalid {
 
 .unitRanker_rank strong  {
   flex: 1 0 auto;
-  padding-left: 5px;
+  padding: 0 5px;
   font-size: 120%;
 }
 
