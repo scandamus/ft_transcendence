@@ -15,6 +15,7 @@ const createTournament = async(tournamentTitle, startTime) => {
             action: 'createTournament',
             name: tournamentTitle,
             start: startTime,
+            period: startTime,
             token: accessToken.token
         });
         console.log(`Create tournament: ${tournamentTitle}  sent to backend.`);

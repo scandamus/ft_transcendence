@@ -84,6 +84,7 @@ async def handle_auth(consumer, token):
                     'type': 'ack',
                     'message': 'Authentication successful'
                 }))
+                await send_status_to_friends(player, 'online')
             except () as e:
                 logger.error(f'Error in handle_auth can not send')
 
