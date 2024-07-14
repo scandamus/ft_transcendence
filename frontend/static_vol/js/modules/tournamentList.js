@@ -3,7 +3,7 @@
 import { labels } from "./labels.js";
 import { fetchTournaments } from "./tounamentApi.js";
 import { formatDateToLocal } from "./formatDateToLocal.js";
-import { resetListenUpcomingTournamentList } from "./tournamentListListener.js";
+import { resetListenUpcomingTournamentList, addListenFinishedTournamentDetail } from "./tournamentListListener.js";
 
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
@@ -65,17 +65,19 @@ const updateOngoingTournamentList = async (pageInstance) => {
             listWrapper.innerHTML = '';
             tournaments.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
+                const nicknameHtml = tournament.nickname ? `
+                    <div class="unitTournament_body">
+                        <p class="unitTournament_nickname">as ${tournament.nickname}</p>
+                    </div>`:'';
                 const tournamentElement = `
                     <section class="unitTournament unitTournament-link">
-                        <a href="/tournament/${tournament.id}" data-link>
+                        <span>
                             <header class="unitTournament_header">
                                 <h4 class="unitTournament_title">${tournament.name}</h4>
                                 <p class="unitTournament_start">${formatedStartDate}</p>
                             </header>
-                            <div class="unitTournament_body">
-                                <p class="unitTournament_nickname">as ${tournament.nickname}</p>
-                            </div>
-                        </a>
+                            ${nicknameHtml}
+                        </span>
                     </section>
                 `;
                 listWrapper.innerHTML += tournamentElement;
@@ -86,4 +88,39 @@ const updateOngoingTournamentList = async (pageInstance) => {
     }
 };
 
-export { updateUpcomingTournamentList, updateOngoingTournamentList };
+const updateFinishedTournamentList = async (pageInstance) => {
+    try {
+        const tournaments = await fetchTournaments('finished');
+        const listWrapper = document.querySelector('.blockTournamentList_finished');
+        if (tournaments.length === 0) {
+            listWrapper.innerHTML = `<p>${'No finished tournament'}</p>`;
+//            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
+        } else {
+            listWrapper.innerHTML = '';
+            tournaments.forEach(tournament => {
+                const formatedStartDate = formatDateToLocal(tournament.start);
+                const nicknameHtml = tournament.nickname ? `
+                    <div class="unitTournament_body">
+                        <p class="unitTournament_nickname">as ${tournament.nickname}</p>
+                    </div>`:'';
+                const tournamentElement = `
+                    <section class="unitTournament unitTournament-link">
+                        <a href="/tournament/detail:${tournament.id}" data-link>
+                            <header class="unitTournament_header">
+                                <h4 class="unitTournament_title">${tournament.name}</h4>
+                                <p class="unitTournament_start">${formatedStartDate}</p>
+                            </header>
+                            ${nicknameHtml}
+                        </a>
+                    </section>
+                `;
+                listWrapper.innerHTML += tournamentElement;
+            });
+            addListenFinishedTournamentDetail(pageInstance)
+        }
+    } catch (error) {
+        console.error('Failed to update upcoming tournaments list: ', error);
+    }
+};
+
+export { updateUpcomingTournamentList, updateOngoingTournamentList, updateFinishedTournamentList };
