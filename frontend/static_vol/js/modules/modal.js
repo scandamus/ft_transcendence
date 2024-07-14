@@ -12,15 +12,7 @@ import GamePlayQuad from "../components/GamePlayQuad.js";
 import { webSocketManager } from "./websocket.js";
 import { SiteInfo } from "./SiteInfo.js";
 import PageBase from "../components/PageBase.js";
-
-import { router } from "./router.js";
-import GamePlay from "../components/GamePlay.js";
-import GamePlayQuad from "../components/GamePlayQuad.js";
-import { webSocketManager } from "./websocket.js";
-import { SiteInfo } from "./SiteInfo.js";
-import PageBase from "../components/PageBase.js";
 import { addListenerToList, removeListenerAndClearList } from './listenerCommon.js';
-
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
