@@ -17,12 +17,6 @@ export default class GamePlay extends PageBase {
         this.title = 'GamePlay';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        this.player1 = 'player1';
-        this.player2 = 'player2';
-        this.avatar1 = '/images/avatar_default.png';
-        this.avatar2 = '/images/avatar_default.png';
-        this.score1 = 0;
-        this.score2 = 0;
         this.containerId = '';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
@@ -35,11 +29,12 @@ export default class GamePlay extends PageBase {
     }
 
     async renderHtml() {
+        const listPlayer = JSON.parse(sessionStorage.getItem('all_usernames'));
         return `
            <div class="playBoardWrap playBoardWrap-dual">
                 <ul class="listPlayerActiveMatch listPlayerActiveMatch-dual">
-                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar1}" alt="" width="50" height="50"><span>${this.player1}</span></li>
-                    <li class="listPlayerActiveMatch_item"><img src="${this.avatar2}" alt="" width="50" height="50"><span>${this.player2}</span></li>
+                    <li class="listPlayerActiveMatch_item"><img src="${listPlayer[0].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[0].username}</span></li>
+                    <li class="listPlayerActiveMatch_item"><img src="${listPlayer[1].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[1].username}</span></li>
                 </ul>
                 <canvas id="playBoard" width="650" height="450"></canvas>
                 <ol class="listButtonControl listButtonControl-dual listButtonControl-updown listButtonControl-player1">
@@ -216,6 +211,7 @@ export default class GamePlay extends PageBase {
     destroy() {
         document.removeEventListener("keydown", this.keyDownHandler, false);
         document.removeEventListener("keyup", this.keyUpHandler, false);
+        sessionStorage.removeItem('all_usernames');
         GamePlay.instance = null;
         super.destroy();
     }
