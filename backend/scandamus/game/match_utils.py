@@ -43,7 +43,8 @@ async def send_tournament_match_jwt(match, game_name='pong'):
     logger.info('send_tournament_match_jwt in')
     #from .consumers import LoungeSession
 
-    if not match.tournament:
+    tournament = await database_sync_to_async(lambda: match.tournament)()
+    if not tournament:
         logger.error('Error match is not for tournament')
         return
     
@@ -67,7 +68,9 @@ async def send_tournament_match_jwt(match, game_name='pong'):
                     'jwt': game_token,
                     'username': player.user.username,
                     'match_id': match.id,
-                    'player_name': player_name
+                    'player_name': player_name,
+                    'tournament_name': tournament.name,
+                    'round': match.round 
                 }
             )
             await update_player_status_and_match(player, match, 'tournament_match')
