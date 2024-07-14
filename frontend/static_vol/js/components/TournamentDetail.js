@@ -104,8 +104,14 @@ export default class TournamentDetail extends PageBase {
                                 <header class="unitMatchPlayer_header">
                                     <img src="${avatar1}" alt="" width="50" height="50">
                                     <h4 class="unitMatchPlayer_title">${match.player1}</h4>
-                                </header>
+                                </header>`;
+                if (match.winner) {
+                    resultHtml += `
                                 <p class="unitMatchPlayer_score">${match.score1}</p>`;
+                } else {
+                    resultHtml += `
+                                <p class="unitMatchPlayer_score">?</p>`;
+                }
                 if (match.winner === match.player1) {
                     resultHtml += `
                                 <p class="unitMatchPlayer_result">win</p>`;
@@ -117,8 +123,14 @@ export default class TournamentDetail extends PageBase {
                                 <header class="unitMatchPlayer_header">
                                     <img src="${avatar2}" alt="" width="50" height="50">
                                     <h4 class="unitMatchPlayer_title">${match.player2}</h4>
-                                </header>
+                                </header>`;
+                if (match.winner) {
+                    resultHtml += `
                                 <p class="unitMatchPlayer_score">${match.score2}</p>`;
+                } else {
+                    resultHtml += `
+                                <p class="unitMatchPlayer_score">?</p>`;
+                }
                 if (match.winner === match.player2) {
                     resultHtml += `
                                 <p class="unitMatchPlayer_result">win</p>`;
