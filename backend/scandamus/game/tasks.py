@@ -125,6 +125,7 @@ def report_match_result(match_id):
     match = Match.objects.get(id=match_id)
     tournament = match.tournament
     current_round = match.round
+    logger.info(f'report_match_result in roundN{current_round}')
 
     matched_in_round = tournament.matches.filter(round=current_round)
     if all(m.status == 'after' for m in matched_in_round):
@@ -134,6 +135,7 @@ def report_match_result(match_id):
             create_next_round(tournament, current_round)
 
 def finalize_tournament(tournament):
+    logger.info('finalize_tournament in')
     final_match = tournament.matches.get(round=-1)
     third_place_match = tournament.matches.get(round=-3)
 
@@ -145,6 +147,7 @@ def finalize_tournament(tournament):
     tournament.save()
 
 def create_next_round(tournament, current_round):
+    logger.info('create_next_round in')
     previous_round_matches = tournament.matches.filter(round=current_round)
     winners = [match.winner for match in previous_round_matches if match.winner]
 
@@ -164,6 +167,7 @@ def create_next_round(tournament, current_round):
     tournament.save()
 
 def create_final_round(tournament, winners, previous_round_matches):
+    logger.info('create_final_round in')
     # 決勝戦
     create_match(tournament, winners[0], winners[1], round=-1)
 
@@ -175,7 +179,7 @@ def create_final_round(tournament, winners, previous_round_matches):
 
 def create_match(tournament, player1, player2, round, game_name='pong'):
     match = Match.objects.create(
-        tournamen=tournament,
+        tournament=tournament,
         player1=player1,
         player2=player2,
         round=round,
@@ -183,8 +187,9 @@ def create_match(tournament, player1, player2, round, game_name='pong'):
         status='before'
     )
     match.save()
-    tournament.matchs.add(match)
+    tournament.matches.add(match)
     tournament.save()
+    async_to_sync(send_tournament_match_jwt)(match)
 
 def create_matches(tournament, players, round_number):
     number_of_players = len(players)
