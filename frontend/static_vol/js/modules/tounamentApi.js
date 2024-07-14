@@ -28,7 +28,7 @@ const fetchTournamentDetail = async (id, isRefresh) => {
         return Promise.resolve(null);
     }
     try {
-        const response = await fetch(`/api/tournaments/tournaments/${id}/`, {
+        const response = await fetch(`/api/tournaments/tournaments/${id}/result/`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }

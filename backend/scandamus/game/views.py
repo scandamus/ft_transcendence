@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Tournament, Match, Entry
+from players.models import Player
 from .serializers import TournamentSerializer, MatchSerializer, EntrySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions, status
@@ -18,7 +19,29 @@ class TournamentViewSet(ModelViewSet):
     @action(detail=True, methods=['get'], url_path='result')
     def result(self, request, pk=None):
         tournament = self.get_object()
+        try:
+            winner_entry = Entry.objects.get(player=tournament.winner, tournament=tournament) if tournament.winner else None
+        except Entry.DoesNotExist:
+            winner_entry = None
+        try:
+            second_entry = Entry.objects.get(player=tournament.second_place, tournament=tournament) if tournament.second_place else None
+        except Entry.DoesNotExist:
+            second_entry = None
+        try:
+            third_entry = Entry.objects.get(player=tournament.third_place, tournament=tournament) if tournament.third_place else None
+        except Entry.DoesNotExist:
+            third_entry = None
+
         return Response({
+            "name": tournament.name,
+            "start": tournament.start,
+            "winner": winner_entry.nickname if winner_entry else '',
+            "winner_avatar": tournament.winner.avatar.url if winner_entry and tournament.winner.avatar else '',
+            "second": second_entry.nickname if second_entry else '',
+            "second_avatar": tournament.second_place.avatar.url if second_entry and tournament.second_place.avatar else '',
+            "third": third_entry.nickname if third_entry else '',
+            "third_avatar": tournament.third_place.avatar.url if third_entry and tournament.third_place.avatar else '',
+            "round": tournament.current_round,
             "result": tournament.result_json
             },
             status=status.HTTP_200_OK

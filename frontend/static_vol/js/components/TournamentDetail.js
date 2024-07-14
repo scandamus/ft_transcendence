@@ -4,6 +4,7 @@ import PageBase from './PageBase.js';
 import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
 import { fetchTournamentDetail } from "../modules/tounamentApi.js";
+import { formatDateToLocal } from "../modules/formatDateToLocal.js";
 
 export default class TournamentDetail extends PageBase {
     static instance = null;
@@ -21,40 +22,60 @@ export default class TournamentDetail extends PageBase {
 
     async renderHtml() {
         const tournamentData = await fetchTournamentDetail(this.id, false);
-        const result = JSON.parse(tournamentData.result_json);
+        const result = JSON.parse(tournamentData.result);
         this.title = tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         const RoundList = await this.generateRoundList(result, tournamentData.current_round);
-        return `
+        let detailHtml = ``;
+        detailHtml += `
             <div class="wrapTournament">
-                <p class="blockTournamentStart">${tournamentData.start} START</p>
-                <div class="blockTournamentRanking unitBox">
-                    <dl class="unitRanker">
-                        <dt class="unitRanker_rank unitRanker_rank-1">Rank <strong>1</strong></dt>
-                        <dd class="unitRanker_user">
-                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                            username
-                        </dd>
-                    </dl>
-                    <dl class="unitRanker">
-                        <dt class="unitRanker_rank unitRanker_rank-2">Rank <strong>2</strong></dt>
-                        <dd class="unitRanker_user">
-                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                            012
-                        </dd>
-                    </dl>
-                    <dl class="unitRanker">
-                        <dt class="unitRanker_rank unitRanker_rank-3">Rank <strong>3</strong></dt>
-                        <dd class="unitRanker_user">
-                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
-                            01234567890123456789012345678901
-                        </dd>
-                    </dl>
-                </div>
-                ${RoundList}
-            </div>
-        `;
+                <p class="blockTournamentStart">${formatDateToLocal(tournamentData.start)} START</p>`;
+        if (tournamentData.winner || tournamentData.second || tournamentData.third) {
+            detailHtml += `
+                <div class="blockTournamentRanking unitBox">`;
+        }
+        if (tournamentData.winner) {
+            const avatar = tournamentData.winner_avatar ? tournamentData.winner_avatar : `/images/avatar_default.png`;
+            detailHtml += `
+                <dl class="unitRanker">
+                    <dt class="unitRanker_rank unitRanker_rank-1">Rank <strong>1</strong></dt>
+                    <dd class="unitRanker_user">
+                        <img src="${avatar}" alt="" width="50" height="50">
+                        ${tournamentData.winner}
+                    </dd>
+                </dl>`;
+        }
+        if (tournamentData.second) {
+            const avatar = tournamentData.second_avatar ? tournamentData.second_avatar : `/images/avatar_default.png`;
+            detailHtml += `
+                <dl class="unitRanker">
+                    <dt class="unitRanker_rank unitRanker_rank-2">Rank <strong>2</strong></dt>
+                    <dd class="unitRanker_user">
+                        <img src="${avatar}" alt="" width="50" height="50">
+                        ${tournamentData.second}
+                    </dd>
+                </dl>`;
+        }
+        if (tournamentData.third) {
+            const avatar = tournamentData.third_avatar ? tournamentData.third_avatar : `/images/avatar_default.png`;
+            detailHtml += `
+                <dl class="unitRanker">
+                    <dt class="unitRanker_rank unitRanker_rank-3">Rank <strong>3</strong></dt>
+                    <dd class="unitRanker_user">
+                        <img src="${avatar}" alt="" width="50" height="50">
+                        ${tournamentData.third}
+                    </dd>
+                </dl>`;
+        }
+        if (tournamentData.winner || tournamentData.second || tournamentData.third) {
+            detailHtml += `
+                </div>`;
+        }
+        detailHtml += `${RoundList}
+            </div>`;
+
+        return `${detailHtml}`;
     }
 
     async generateRoundList(result, countRound) {
