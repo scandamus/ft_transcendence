@@ -6,7 +6,7 @@ import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
-import { updateModalAvailablePlayers, showModalTournamentRoom } from "./modal.js";
+import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
 import { updateUpcomingTournamentList } from "./tournamentList.js";
 import { enterTournamentRoomRequest } from "./tournament.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
@@ -72,7 +72,6 @@ const pongGameHandler = (event, containerId) => {
         console.error(data.error);
         refreshAccessToken();
     }
-    console.log(`Message from ${containerId}: `, data);
 }
 
 const loadGameContent = async (data) => {
