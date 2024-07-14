@@ -8,6 +8,7 @@ from rest_framework import permissions, status
 from rest_framework.permissions import AllowAny
 from scandamus.authentication import InternalNetworkAuthentication
 from .tasks import report_match_result
+from django.db.models import Q
 
 class TournamentViewSet(ModelViewSet):
     queryset = Tournament.objects.all()
@@ -32,6 +33,8 @@ class TournamentListView(generics.ListAPIView):
     def get_queryset(self):
         status = self.kwargs.get('status')
         if status:
+            if status == 'ongoing': # frontendでは'preparing'も含める
+                return Tournament.objects.filter(Q(status=status) | Q(status='preparing')).order_by('start')
             return Tournament.objects.filter(status=status).order_by('start')
         return Tournament.objects.all().order_by('start')
 

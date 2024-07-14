@@ -35,6 +35,7 @@ class Tournament(models.Model):
         max_length=10,
         choices=[
             ('upcoming', '開始前'),
+            ('preparing', '準備中'),
             ('ongoing', '進行中'),
             ('finished', '終了'),
             ('canceled', 'キャンセル'),

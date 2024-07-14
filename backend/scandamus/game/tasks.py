@@ -30,13 +30,26 @@ def check_tournament_start_times():
     tournaments = Tournament.objects.filter(start__lte=check_time, status='upcoming')
 
     for tournament in tournaments:
-        logger.info(f'Tournament {tournament.name} is starting now!')
-        tournament.status = 'ongoing'
+        logger.info(f'Tournament {tournament.name} is preparing')
+        tournament.status = 'preparing'
         tournament.save()
 
         tournament_name = tournament.name
+        
+        # 5分前までのエントリーが有効
         entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
 
+        # エントリーしている人数が４人未満の場合はトーナメントをキャンセル
+        number_of_players = len(entried_players_id_list)
+        if number_of_players < 4: # 4人揃わない場合は中止
+            logger.info(f'Entried players in this entry list {number_of_players} <= 4, so cancel tournament {tournament_name}')
+            tournament.status = 'canceled'
+            tournament.save()
+            notify_players.delay(tournament_name, entried_players_id_list, 'canceled', False)
+            return
+        
+        logger.info(f'{number_of_players} players entries {tournament_name}')
+    
         # 5分前に準備の通知
         notify_players.delay(tournament_name, entried_players_id_list, 'tournament_prepare', True)
 
@@ -91,11 +104,14 @@ def create_initial_round(tournament_id, entried_players_id_list):
         logger.error('Error in create_initial_round: tournament DoesNotExist')
         return
     
-    online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
-    numbers_of_players = online_players.count()
+    tournament.status = 'ongoing'
+    tournament.save()
 
-    if numbers_of_players < 4: # 4人揃わない場合は中止
-        logger.info(f'Online player in this entry list {numbers_of_players}<= 1, so cancel tournament {tournament.name}')
+    online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
+    number_of_players = online_players.count()
+
+    if number_of_players < 4: # 4人揃わない場合は中止
+        logger.info(f'Online player in this entry list {number_of_players}<= 1, so cancel tournament {tournament.name}')
         tournament.status = 'canceled'
         tournament.save()
         notify_players(tournament.name, entried_players_id_list, 'canceled', False)
