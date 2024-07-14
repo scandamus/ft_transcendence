@@ -4,6 +4,7 @@ import PageBase from './PageBase.js';
 
 import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
+import { isTouchDevice } from "../modules/judgeTouchDevice.js";
 
 export default class GamePlay extends PageBase {
     static instance = null;
@@ -18,6 +19,7 @@ export default class GamePlay extends PageBase {
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.containerId = '';
+        this.player_name = sessionStorage.getItem('player_name');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
         // sound
@@ -30,19 +32,22 @@ export default class GamePlay extends PageBase {
 
     async renderHtml() {
         const listPlayer = JSON.parse(sessionStorage.getItem('all_usernames'));
-        return `
-           <div class="playBoardWrap playBoardWrap-dual">
+        let resultHtml = `
+            <div class="playBoardWrap playBoardWrap-dual">
                 <ul class="listPlayerActiveMatch listPlayerActiveMatch-dual">
                     <li class="listPlayerActiveMatch_item"><img src="${listPlayer[0].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[0].username}</span></li>
                     <li class="listPlayerActiveMatch_item"><img src="${listPlayer[1].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[1].username}</span></li>
                 </ul>
-                <canvas id="playBoard" width="650" height="450"></canvas>
-                <ol class="listButtonControl listButtonControl-dual listButtonControl-updown listButtonControl-player1">
+                <canvas id="playBoard" width="650" height="450"></canvas>`;
+        if (isTouchDevice()) {
+            resultHtml += `
+                <ol class="listButtonControl listButtonControl-dual listButtonControl-updown listButtonControl-${this.player_name}">
                     <li class="listButtonControl_btn listButtonControl_btn-top"><button type="button">↑</button></li>
                     <li class="listButtonControl_btn listButtonControl_btn-bottom"><button type="button">↓</button></li>
-                </ol>
-            </div>
-        `;
+                </ol>`;
+        }
+        resultHtml += `</div>`;
+        return resultHtml;
     }
 
     async loadSounds() {
@@ -212,6 +217,7 @@ export default class GamePlay extends PageBase {
         document.removeEventListener("keydown", this.keyDownHandler, false);
         document.removeEventListener("keyup", this.keyUpHandler, false);
         sessionStorage.removeItem('all_usernames');
+        sessionStorage.removeItem('player_name');
         GamePlay.instance = null;
         super.destroy();
     }
