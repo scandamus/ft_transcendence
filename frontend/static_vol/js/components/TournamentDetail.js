@@ -22,7 +22,7 @@ export default class TournamentDetail extends PageBase {
 
     async renderHtml() {
         const tournamentData = await fetchTournamentDetail(this.id, false);
-        const result = JSON.parse(tournamentData.result);
+        const result = tournamentData.result ? JSON.parse(tournamentData.result) : '';
         this.title = tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
