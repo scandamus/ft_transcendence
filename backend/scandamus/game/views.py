@@ -9,6 +9,11 @@ from rest_framework import permissions, status
 from rest_framework.permissions import AllowAny
 from scandamus.authentication import InternalNetworkAuthentication
 from .tasks import report_match_result
+from django.db.models import Q
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TournamentViewSet(ModelViewSet):
     queryset = Tournament.objects.all()
@@ -55,6 +60,8 @@ class TournamentListView(generics.ListAPIView):
     def get_queryset(self):
         status = self.kwargs.get('status')
         if status:
+            if status == 'ongoing': # frontendでは'preparing'も含める
+                return Tournament.objects.filter(Q(status=status) | Q(status='preparing')).order_by('start')
             return Tournament.objects.filter(status=status).order_by('start')
         return Tournament.objects.all().order_by('start')
 
@@ -95,7 +102,7 @@ class MatchViewSet(ModelViewSet):
     def update_player_status_after_match(self, match):
         num_matches = match.tournament.matches.filter(round=match.round).count()
         if num_matches == 2: # 準決勝
-            self.set_all_players_status('tournament_room')
+            self.set_all_players_status(match, 'tournament_room')
         elif match.round > 0:
             loser = match.player1 if match.winner == match.player1 else match.player2
             loser.status = 'waiting'
@@ -103,7 +110,7 @@ class MatchViewSet(ModelViewSet):
             match.winner.status = 'tournament_room'
             match.winner.save()
         elif match.round in [-1, -3]: # 決勝or3位決定戦
-            self.reset_all_players_status(self, match)
+            self.reset_all_players_status(match)
 
     def set_all_players_status(self, match, status):
         players = [match.player1, match.player2, match.player3, match.player4]
@@ -118,6 +125,8 @@ class MatchViewSet(ModelViewSet):
     
     def is_all_matches_finished(self, tournament, current_round):
         matches = tournament.matches.filter(round=current_round)
+        number_of_finished_matches = len(matches)
+        logger.info(f'number of matches_finished for round:{current_round} = {number_of_finished_matches}')
         return all(match.status == 'after' for match in matches)
 
 class EntryViewSet(ModelViewSet):

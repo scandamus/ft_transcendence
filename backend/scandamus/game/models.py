@@ -35,6 +35,7 @@ class Tournament(models.Model):
         max_length=10,
         choices=[
             ('upcoming', '開始前'),
+            ('preparing', '準備中'),
             ('ongoing', '進行中'),
             ('finished', '終了'),
             ('canceled', 'キャンセル'),
@@ -44,6 +45,7 @@ class Tournament(models.Model):
     )
     matches = models.ManyToManyField(
         'Match',
+        blank=True,
         related_name='tournament_matches',
         verbose_name="全マッチ"
     )
@@ -98,12 +100,13 @@ class Tournament(models.Model):
             for match in matches:
                 player1_entry = Entry.objects.get(player=match.player1, tournament=self) if match.player1 else None
                 player2_entry = Entry.objects.get(player=match.player2, tournament=self) if match.player2 else None
+                winner_entry = Entry.objects.get(player=match.winner, tournament=self) if match.winner else None
                 round_result.append({
                     "player1": player1_entry.nickname if player1_entry else None,
                     "player2": player2_entry.nickname if player2_entry else None,
                     "score1": match.score1,
                     "score2": match.score2,
-                    "winner": match.winner.nickname if match.winner else None
+                    "winner": winner_entry.nickname if winner_entry else None
                 })
             result.insert(0, {
                 "round": round_num,

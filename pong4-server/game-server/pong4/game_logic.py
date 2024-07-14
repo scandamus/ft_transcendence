@@ -45,22 +45,36 @@ class Paddle(Block):
     # 第三引数:horizontal->横の長さ   第四引数:vertical->縦の長さ   第五引数:orientation->paddleの移動方向
     def __init__(self, x, y, horizontal, vertical, orientation='vertical'):
         super().__init__(x, y, horizontal, vertical, orientation)
+        self.is_active = True
         self.speed = 0
         self.score = 4
 
+    def deactivate(self):
+        self.is_active = False
+        self.convert_to_wall()
+
+    def convert_to_wall(self):
+        if self.orientation == 'vertical':
+            self.length = CANVAS_HEIGHT_MULTI
+            self.y = 0
+        elif self.orientation == 'horizontal':
+            self.length = CANVAS_WIDTH_MULTI
+            self.x = 0
+
     def move_for_multiple(self):
-        if self.orientation == 'horizontal':
-            self.x += self.speed
-            if self.x < CORNER_BLOCK_SIZE:
-                self.x = CORNER_BLOCK_SIZE
-            elif CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE < self.x + self.length:
-                self.x = CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE - self.length
-        elif self.orientation == 'vertical':
-            self.y += self.speed
-            if self.y < CORNER_BLOCK_SIZE:
-                self.y = CORNER_BLOCK_SIZE
-            elif CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE < self.y + self.length:
-                self.y = CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE - self.length
+        if self.is_active:
+            if self.orientation == 'horizontal':
+                self.x += self.speed
+                if self.x < CORNER_BLOCK_SIZE:
+                    self.x = CORNER_BLOCK_SIZE
+                elif CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE < self.x + self.length:
+                    self.x = CANVAS_WIDTH_MULTI - CORNER_BLOCK_SIZE - self.length
+            elif self.orientation == 'vertical':
+                self.y += self.speed
+                if self.y < CORNER_BLOCK_SIZE:
+                    self.y = CORNER_BLOCK_SIZE
+                elif CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE < self.y + self.length:
+                    self.y = CANVAS_HEIGHT_MULTI - CORNER_BLOCK_SIZE - self.length
 
     def increment_score(self):
         self.score += 1
@@ -90,29 +104,31 @@ class Ball:
         self.dy = tmp['dy']
         self.flag = True
 
+    def handle_scored(self, paddle):
+        paddle.decrement_score()
+        self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
+        if paddle.score <= 0:
+            paddle.deactivate()
+
     def move_for_multiple(self, right_paddle, left_paddle, upper_paddle, lower_paddle, walls):
         sound_type = None
         # 壁を超えているか
         if CANVAS_WIDTH_MULTI < self.x + self.dx:
-            right_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
+            self.handle_scored(right_paddle)
             sound_type = 'scored'
-            return right_paddle.score > 0, sound_type
+            return sound_type
         elif self.x + self.size + self.dx < 0:
-            left_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
+            self.handle_scored(left_paddle)
             sound_type = 'scored'
-            return left_paddle.score > 0, sound_type
+            return sound_type
         elif self.y + self.size + self.dy < 0:
-            upper_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
+            self.handle_scored(upper_paddle)
             sound_type = 'scored'
-            return upper_paddle.score > 0, sound_type
+            return sound_type
         elif CANVAS_HEIGHT_MULTI < self.y + self.dy:
-            lower_paddle.decrement_score()
-            self.reset(CANVAS_WIDTH_MULTI / 2, CANVAS_HEIGHT_MULTI / 2)
+            self.handle_scored(lower_paddle)
             sound_type = 'scored'
-            return lower_paddle.score > 0, sound_type
+            return sound_type
 
         for wall in walls:
             collision_detected = self.collision_detection(wall, wall.position)
@@ -136,7 +152,7 @@ class Ball:
                     tmp = tmp if self.x > 0 else -tmp
                     self.dy = -self.dy
                     self.y = wall.y - wall.thickness
-                return True, sound_type
+                return sound_type
             elif collision_detected == 'collision_side':
                 sound_type = 'wall_collision'
                 if wall.position == 'RIGHT' or wall.position == 'LEFT':
@@ -145,7 +161,7 @@ class Ball:
                 elif wall.position == 'UPPER' or wall.position == 'LOWER':
                     self.dx = -self.dx
                     self.y += self.dy
-                return True, sound_type
+                return sound_type
         # x座標の操作
         collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
         if collision_detected_right == 'collision_front':
@@ -198,7 +214,7 @@ class Ball:
             self.x += self.dx
         if collision_detected_left or collision_detected_right or collision_detected_lower or collision_detected_upper:
             sound_type = 'paddle_collision'
-        return True, sound_type
+        return sound_type
 
     def collision_detection(self, obj, obj_side):
         next_x = self.x + self.dx

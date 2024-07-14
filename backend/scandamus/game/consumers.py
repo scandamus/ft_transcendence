@@ -115,6 +115,18 @@ class LoungeSession(AsyncWebsocketConsumer):
         }))
         logger.info(f'sent online status: {online_status} of {changed_username} to {self.user.username}')
 
+    async def friend_status(self, event):
+        logger.info(f'friend_status in : {self.user.username}')
+        changed_username = event['username']
+        online_status = event['online']
+        await self.send(text_data=json.dumps({
+            'type': 'friendStatus',
+            'action': 'change',
+            'username': changed_username,
+            'online': online_status,
+        }))
+        logger.info(f'sent online status: {online_status} of {changed_username} to {self.user.username}')
+
     async def disconnect(self, close_code):
         if hasattr(self, 'user') and self.user.username in self.players:
             del LoungeSession.players[self.user.username]
@@ -155,8 +167,6 @@ class LoungeSession(AsyncWebsocketConsumer):
                     logger.info(f'Cancelled successfully and informed opponent player')
                 else:
                     logger.error(f'Cancelled successfully but opponent is not online')
-
-            # del self.players[self.user.username]
         else:
             logger.info('Disconnect called but no user found.')
 
