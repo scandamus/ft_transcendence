@@ -75,13 +75,15 @@ async def handle_auth(consumer, token):
                     player.status = 'waiting'
                     await database_sync_to_async(player.save)()
                     logger.info(f'{user.username} status set to waiting')
+                
+                # オフラインからオンラインになった場合にフレンドへ通知
+                await send_status_to_friends(player, 'online')
 
             try:
                 await consumer.send(text_data=json.dumps({
                     'type': 'ack',
                     'message': 'Authentication successful'
                 }))
-                await send_status_to_friends(player, 'online')
             except () as e:
                 logger.error(f'Error in handle_auth can not send')
 
