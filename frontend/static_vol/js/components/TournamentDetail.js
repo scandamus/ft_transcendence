@@ -26,7 +26,7 @@ export default class TournamentDetail extends PageBase {
         this.title = tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        const RoundList = await this.generateRoundList(result, tournamentData.current_round);
+        const RoundList = await this.generateRoundList(result, tournamentData.round);
         let detailHtml = ``;
         detailHtml += `
             <div class="wrapTournament">
