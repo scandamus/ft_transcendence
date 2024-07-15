@@ -1233,18 +1233,32 @@ input.has-input:invalid {
 }
 
 .listButtonControl-dual {
+  width: 40px;
   bottom: 10px;
-  height: calc(100% - 80px);
+  height: calc(100% - 80px);/* tmp(adjust by js) */
+}
+
+.listButtonControl-updown {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40px;
+}
+
+.listButtonControl-leftright {
+  display: flex;
+  justify-content: space-between;
+  height: 40px;
 }
 
 .listButtonControl-quad.listButtonControl-updown {
-  top: 80px;
-  height: calc(100% - 160px);
+  top: 70px;
+  height: calc(100% - 140px);
 }
 
 .listButtonControl-quad.listButtonControl-leftright {
-  left: 80px;
-  width: calc(100% - 160px);
+  left: 70px;
+  width: calc(100% - 140px);
 }
 
 .listButtonControl-dual.listButtonControl-player1 {
@@ -1256,19 +1270,19 @@ input.has-input:invalid {
 }
 
 .listButtonControl-quad.listButtonControl-player1 {
-  left: 80px;
+  left: 70px;
 }
 
 .listButtonControl-quad.listButtonControl-player2 {
-  right: 80px;
+  right: 70px;
 }
 
 .listButtonControl-quad.listButtonControl-player3 {
-  top: 80px;
+  top: 70px;
 }
 
 .listButtonControl-quad.listButtonControl-player4 {
-  bottom: 80PX;
+  bottom: 70PX;
 }
 
 .listButtonControl_btn button {
@@ -1288,17 +1302,61 @@ input.has-input:invalid {
   padding: 0;
 }
 
-.listButtonControl-updown {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 40px;
-}
+@media screen and (min-width: 768px) {
+  .listButtonControl-dual {
+    width: 60px;
+    bottom: 20px;
+    height: calc(100% - 100px);/* tmp(adjust by js) */
+  }
 
-.listButtonControl-leftright {
-  display: flex;
-  justify-content: space-between;
-  height: 40px;
+  .listButtonControl-updown {
+    width: 60px;
+  }
+
+  .listButtonControl-leftright {
+    height: 60px;
+  }
+
+  .listButtonControl-quad.listButtonControl-updown {
+    top: 80px;
+    width: 60px;
+    height: calc(100% - 160px);
+  }
+
+  .listButtonControl-quad.listButtonControl-leftright {
+    left: 80px;
+    width: calc(100% - 160px);
+    height: 60px;
+  }
+
+  .listButtonControl-dual.listButtonControl-player1 {
+    left: 20px;
+  }
+
+  .listButtonControl-dual.listButtonControl-player2 {
+    right: 20px;
+  }
+
+  .listButtonControl-quad.listButtonControl-player1 {
+    left: 80px;
+  }
+
+  .listButtonControl-quad.listButtonControl-player2 {
+    right: 80px;
+  }
+
+  .listButtonControl-quad.listButtonControl-player3 {
+    top: 80px;
+  }
+
+  .listButtonControl-quad.listButtonControl-player4 {
+    bottom: 80PX;
+  }
+
+  .listButtonControl_btn button {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 /* Lounge */

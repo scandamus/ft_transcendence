@@ -5,7 +5,7 @@ import { labels } from '../modules/labels.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
-import { isTouchDevice, resetControlSize } from "../modules/judgeTouchDevice.js";
+import { isTouchDevice } from "../modules/judgeTouchDevice.js";
 import { buttonControlManager } from "../modules/ButtonControlManager.js";
 
 export default class GamePlayQuad extends PageBase {
@@ -132,7 +132,6 @@ export default class GamePlayQuad extends PageBase {
             const canvas = document.getElementById('playBoard');
             if (isTouchDevice()) {
                 const elControl = canvas.closest('div').querySelector('.listButtonControl');
-                resetControlSize(canvas, elControl);
                 buttonControlManager.listenButtonControl(elControl, this);
             }
             // 2dの描画コンテキストにアクセスできるように

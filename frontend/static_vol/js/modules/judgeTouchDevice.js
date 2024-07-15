@@ -10,7 +10,11 @@ const isTouchDevice = () => {
 
 const resetControlSize = (elCanvas, elControl) => {
     const canvasHeight = elCanvas.getBoundingClientRect().height;
-    elControl.style.height = `${canvasHeight - 20}px`;
+    if (window.innerWidth < 768) {
+        elControl.style.height = `${canvasHeight - 20}px`;
+    } else {
+        elControl.style.height = `${canvasHeight - 20}px`;
+    }
 }
 
 export { isTouchDevice, resetControlSize };
