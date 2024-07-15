@@ -82,7 +82,7 @@ export default class TournamentDetail extends PageBase {
         let resultHtml = ``;
         for (const round of result) {
             let labelRound = '';
-            if (round.round === 4 || round.round === countRound) {
+            if (round.matches.length === 1) {
                 labelRound = labels.tournament.labelRoundFinal;
             } else if (round.round === 3) {
                 labelRound = labels.tournament.labelRound3;
@@ -105,7 +105,7 @@ export default class TournamentDetail extends PageBase {
                                     <img src="${avatar1}" alt="" width="50" height="50">
                                     <h4 class="unitMatchPlayer_title">${match.player1}</h4>
                                 </header>`;
-                if (match.winner) {
+                if (match.score1) {
                     resultHtml += `
                                 <p class="unitMatchPlayer_score">${match.score1}</p>`;
                 } else {
@@ -124,7 +124,7 @@ export default class TournamentDetail extends PageBase {
                                     <img src="${avatar2}" alt="" width="50" height="50">
                                     <h4 class="unitMatchPlayer_title">${match.player2}</h4>
                                 </header>`;
-                if (match.winner) {
+                if (match.score2) {
                     resultHtml += `
                                 <p class="unitMatchPlayer_score">${match.score2}</p>`;
                 } else {

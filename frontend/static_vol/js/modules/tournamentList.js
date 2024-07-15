@@ -4,6 +4,7 @@ import { labels } from "./labels.js";
 import { fetchTournaments } from "./tounamentApi.js";
 import { formatDateToLocal } from "./formatDateToLocal.js";
 import { resetListenUpcomingTournamentList, addListenFinishedTournamentDetail, addListenLinkTournamentEntered } from "./tournamentListListener.js";
+import { linkSpa } from "./router.js";
 
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
@@ -76,8 +77,14 @@ const updateOngoingTournamentList = async (pageInstance) => {
                             ${nicknameHtml}
                         </span>
                     </section>
+                    <p><a href="/tournament/detail:${tournament.id}" data-link style="font-size:2rem;color:#b6fa1d;text-shadow: none;">&gt; preview</a></p>
                 `;
                 listWrapper.innerHTML += tournamentElement;
+            });
+            //todo: delete (tmp for preview)
+            const link = document.querySelectorAll('.blockTournamentList_ongoing a[data-link]');
+            link.forEach((linkPage) => {
+                pageInstance.addListListenInInstance(linkPage, linkSpa, 'click');
             });
         }
     } catch (error) {
