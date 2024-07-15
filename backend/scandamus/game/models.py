@@ -92,29 +92,54 @@ class Tournament(models.Model):
     def __str__(self):
         return self.name
 
-    def update_result_json(self):
-        result = []
-        for round_num in range(1, self.current_round + 1):
-            matches = self.matches.filter(round=round_num)
-            round_result = []
-            for match in matches:
-                player1_entry = Entry.objects.get(player=match.player1, tournament=self) if match.player1 else None
-                player2_entry = Entry.objects.get(player=match.player2, tournament=self) if match.player2 else None
-                winner_entry = Entry.objects.get(player=match.winner, tournament=self) if match.winner else None
-                round_result.append({
-                    "player1": player1_entry.nickname if player1_entry else None,
-                    "player2": player2_entry.nickname if player2_entry else None,
-                    "score1": match.score1,
-                    "score2": match.score2,
-                    "avatar1": match.player1.avatar.url if match.player1.avatar else None,
-                    "avatar2": match.player2.avatar.url if match.player2.avatar else None,
-                    "winner": winner_entry.nickname if winner_entry else None
-                })
-            result.insert(0, {
-                "round": round_num,
-                "matches": round_result
-            })
+    def update_result_json(self, round):
+        result = json.loads(self.result_json)
+
+        matches = self.matches.filter(round=round)
+        round_result = self.get_round_result(matches)
+        
+        result.insert(0,{
+            "round": round,
+            "matches": round_result
+        })
         self.result_json = json.dumps(result)
+        self.save()
+
+    def get_round_result(self, matches):
+        round_result = []
+        for match in matches:
+            player1_entry = Entry.objects.get(player=match.player1, tournament=self) if match.player1 else None
+            player2_entry = Entry.objects.get(player=match.player2, tournament=self) if match.player2 else None
+            winner_entry = Entry.objects.get(player=match.winner, tournament=self) if match.winner else None
+            round_result.append({
+                "player1": player1_entry.nickname if player1_entry else None,
+                "player2": player2_entry.nickname if player2_entry else None,
+                "score1": match.score1,
+                "score2": match.score2,
+                "avatar1": match.player1.avatar.url if match.player1.avatar else None,
+                "avatar2": match.player2.avatar.url if match.player2.avatar else None,
+                "winner": winner_entry.nickname if winner_entry else None
+            })
+        return round_result
+    
+    def finalize_result_json(self):
+        self.update_result_json(-3)
+        self.update_result_json(-1)
+        result = self.result_json
+
+        winner_entry = Entry.objects.get(player=self.winner, tournament=self) if self.winner else None
+        second_place_entry = Entry.objects.get(player=self.second_place, tournament=self) if self.second_place else None
+        third_place_entry = Entry.objects.get(player=self.third_place, tournament=self) if self.third_place else None
+
+        final_result = {
+            "matches": result,
+            "rankings": {
+                "winner": winner_entry.nickname if winner_entry else None,
+                "second": second_place_entry.nickname if second_place_entry else None,
+                "third": third_place_entry.nickname if third_place_entry else None,
+            }
+        }
+        self.result_json = final_result
         self.save()
 
     class Meta:
