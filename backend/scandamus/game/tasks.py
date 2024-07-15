@@ -111,7 +111,7 @@ def create_initial_round(tournament_id, entried_players_id_list):
     number_of_players = online_players.count()
 
     if number_of_players < 4: # 4人揃わない場合は中止
-        logger.info(f'Online player in this entry list {number_of_players}<= 1, so cancel tournament {tournament.name}')
+        logger.info(f'Online player in this entry list {number_of_players} <= 4, so cancel tournament {tournament.name}')
         tournament.status = 'canceled'
         tournament.save()
         notify_players(tournament.name, entried_players_id_list, 'canceled', False)
@@ -125,13 +125,18 @@ def report_match_result(match_id):
     match = Match.objects.get(id=match_id)
     tournament = match.tournament
     current_round = match.round
-    logger.info(f'report_match_result in roundN{current_round}')
+    logger.info(f'report_match_result in round:{current_round}')
 
     matched_in_round = tournament.matches.filter(round=current_round)
-    if all(m.status == 'after' for m in matched_in_round):
-        if current_round in [-1, -3]: # round -1:決勝戦, -3:3位決定戦
+    if current_round in [-1, -3]: # round -1:決勝戦, -3:3位決定戦
+        final_match = tournament.matches.get(round=-1)
+        third_place_match = tournament.matches.get(round=-3)
+        if final_match.status == 'after' and third_place_match.status == 'after':
             finalize_tournament(tournament)
-        else:
+    elif all(m.status == 'after' for m in matched_in_round):
+#        if current_round in [-1, -3]: # round -1:決勝戦, -3:3位決定戦
+#            finalize_tournament(tournament)
+#        else:
             create_next_round(tournament, current_round)
 
 def finalize_tournament(tournament):
@@ -143,13 +148,14 @@ def finalize_tournament(tournament):
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
     tournament.third_place = third_place_match.winner
     tournament.status = 'finished'
-    tournament.update_result_json()
     tournament.save()
+    tournament.finalize_result_json()
 
 def create_next_round(tournament, current_round):
     logger.info('create_next_round in')
     previous_round_matches = tournament.matches.filter(round=current_round)
     winners = [match.winner for match in previous_round_matches if match.winner]
+    tournament.update_result_json(current_round)
 
     if tournament.bye_player:
         winners.append(tournament.bye_player)
@@ -163,7 +169,6 @@ def create_next_round(tournament, current_round):
     create_matches(tournament, winners, current_round)
 
     tournament.current_round = current_round
-    tournament.update_result_json()
     tournament.save()
 
 def create_final_round(tournament, winners, previous_round_matches):
