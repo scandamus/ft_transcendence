@@ -4,7 +4,8 @@ import PageBase from './PageBase.js';
 
 import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
-import { isTouchDevice, listenButtonControl, resetControlSize } from "../modules/judgeTouchDevice.js";
+import { isTouchDevice, resetControlSize } from "../modules/judgeTouchDevice.js";
+import { buttonControlManager } from "../modules/ButtonControlManager.js";
 
 export default class GamePlay extends PageBase {
     static instance = null;
@@ -118,7 +119,7 @@ export default class GamePlay extends PageBase {
             if (isTouchDevice()) {
                 const elControl = canvas.closest('div').querySelector('.listButtonControl');
                 resetControlSize(canvas, elControl);
-                listenButtonControl(elControl, this);
+                buttonControlManager.listenButtonControl(elControl, this);
             }
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
