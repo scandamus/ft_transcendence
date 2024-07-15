@@ -69,16 +69,17 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames } = data;
 
     closeModal();
 
     console.log(`Loading ${game_name} content with JWT: `, jwt);
-    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}`);
+    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}, all_usernames: ${JSON.stringify(all_usernames)}`);
 
     const gameMatchId = match_id; 
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
+    sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
 
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);

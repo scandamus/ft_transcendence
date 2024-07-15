@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('all_usernames');
 });
 
 const unitChangeFontSize = (size, target, elHtml) => {
