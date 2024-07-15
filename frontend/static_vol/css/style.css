@@ -1423,16 +1423,25 @@ input.has-input:invalid {
 }
 
 .unitCapacity_numerator {
+  padding-right: 0.5em;
   font-size: 3.2rem;
+  text-align: center;
 }
 
 .unitCapacity_denominator {
+  position: relative;
+  padding-left: 20px;
   font-size: 2rem;
+  text-align: center;
+  translate: 0 0.5em;
 }
 
 .unitCapacity_denominator::before {
   content: "/";
-  margin: 0 0.3em 0 1em;
+  position: absolute;
+  top: -0.5em;
+  left: 0;
+  font-size: 3rem;
 }
 
 /* Tournament */
