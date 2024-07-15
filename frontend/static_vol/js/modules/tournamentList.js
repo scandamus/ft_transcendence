@@ -3,7 +3,7 @@
 import { labels } from "./labels.js";
 import { fetchTournaments } from "./tounamentApi.js";
 import { formatDateToLocal } from "./formatDateToLocal.js";
-import { resetListenUpcomingTournamentList, addListenFinishedTournamentDetail } from "./tournamentListListener.js";
+import { resetListenUpcomingTournamentList, addListenFinishedTournamentDetail, addListenLinkTournamentEntered } from "./tournamentListListener.js";
 
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
@@ -123,4 +123,40 @@ const updateFinishedTournamentList = async (pageInstance) => {
     }
 };
 
-export { updateUpcomingTournamentList, updateOngoingTournamentList, updateFinishedTournamentList };
+const getTournamentLog = async (pageInstance) => {
+    try {
+        const tournaments = await fetchTournaments('finished');
+        const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
+        listWrapper.innerHTML = '';
+        tournaments.forEach(tournament => {
+            if (tournament.nickname) {
+                const formatedStartDate = formatDateToLocal(tournament.start);
+                const rankHtml = tournament.nickname ? `
+                    <div class="unitTournament_body">
+                        <p class="unitTournament_rank">Rank 1</p>
+                    </div>`:'';
+                const tournamentElement = `
+                    <section class="unitTournament unitTournament-link">
+                        <a href="/tournament/detail:${tournament.id}" data-link>
+                            <header class="unitTournament_header">
+                                <h4 class="unitTournament_title">${tournament.name}</h4>
+                                <p class="unitTournament_start">${formatedStartDate}</p>
+                            </header>
+                            ${rankHtml}
+                        </a>
+                    </section>
+                `;
+                listWrapper.innerHTML += tournamentElement;
+            }
+        });
+        if (listWrapper.innerHTML === '') {
+            listWrapper.innerHTML = `<p>${labels.tournament.msgNoEntered}</p>`;
+        } else {
+            addListenLinkTournamentEntered(pageInstance);
+        }
+    } catch (error) {
+        console.error('Failed to entered tournaments list: ', error);
+    }
+};
+
+export { updateUpcomingTournamentList, updateOngoingTournamentList, updateFinishedTournamentList, getTournamentLog };

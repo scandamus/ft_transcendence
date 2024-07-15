@@ -58,6 +58,13 @@ const addListenLinkTournamentDetail = (pageInstance) => {
     });
 }
 
+const addListenLinkTournamentEntered = (pageInstance) => {
+    const LinkTournamentDetail = document.querySelectorAll('.blockDashboardLog_listTournament a[data-link]');
+    LinkTournamentDetail.forEach((linkPage) => {
+        pageInstance.addListListenInInstance(linkPage, linkSpa, 'click');
+    });
+}
+
 //resetListener
 const removeListenUpcomingTournamentList = (pageInstance) => {
     removeListenEntryTournament(pageInstance);
@@ -84,5 +91,6 @@ export {
     addListenerToList,
     addListenCancelEntryTournament,
     resetListenUpcomingTournamentList,
-    addListenFinishedTournamentDetail
+    addListenFinishedTournamentDetail,
+    addListenLinkTournamentEntered
 }
