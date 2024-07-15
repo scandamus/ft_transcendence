@@ -3,6 +3,9 @@
 export const labels_he = {
     langCode: 'he',
     langName: 'עברית',
+    common: {
+        switchLang: ''
+    },
     home: {
         title: 'Home',
         labelUsername: 'שם משתמש',

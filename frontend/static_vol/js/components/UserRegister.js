@@ -148,14 +148,14 @@ export default class SignUp extends PageBase {
                 await router(false);
             })
             .catch((error) => {
-                this.handleBackendValidationError(error, btnConfirm, elUsername, elPassword);
+                this.handleBackendValidationError(error.message, btnConfirm, elUsername, elPassword);
             });
     }
 
     handleBackendValidationError(error, btnConfirm, elUsername, elPassword) {
         const formRegister = document.querySelector('form');
         let tmpValueUsername,  tmpValuePassword;
-        const errorObject = JSON.parse(error.message);
+        const errorObject = JSON.parse(error);
         btnConfirm.setAttribute('disabled', '');
         Object.keys(errorObject).forEach((key) => {
             let elInput = (key === 'username') ? elUsername : elPassword;
@@ -190,12 +190,20 @@ export default class SignUp extends PageBase {
         const elUsername = document.getElementById('registerUsername');
         const tmpValueUsername = sessionStorage.getItem('username');
         const tmpValueIsConfirm = sessionStorage.getItem('isConfirm');
+        const isExistUsername = sessionStorage.getItem('isExist');
         if (tmpValueUsername) {
             elUsername.value = sessionStorage.getItem('username');
         }
         //confirmからのhistory.back();ならisConfirmを削除
         if (tmpValueIsConfirm) {
             sessionStorage.removeItem('isConfirm');
+        }
+        if (isExistUsername) {
+            const elPassword = document.getElementById('registerPassword');
+            const btnConfirm = document.getElementById('btnConfirmForm');
+            this.handleBackendValidationError(sessionStorage.getItem('errorMessage'), btnConfirm, elUsername, elPassword);
+            sessionStorage.removeItem('isExist');
+            sessionStorage.removeItem('errorMessage');
         }
     }
 
