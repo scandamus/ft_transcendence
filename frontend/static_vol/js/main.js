@@ -2,24 +2,20 @@
 
 import { getUserInfo, switchDisplayAccount } from './modules/auth.js';
 import { addLinkPageEvClick, router } from './modules/router.js';
-import { switchLanguage } from './modules/switchLanguage.js';
+import { setLangAttrSelected, setLang, saveLang, getLang } from './modules/switchLanguage.js';
+import { switchLabels } from "./modules/labels.js";
 import { getToken } from "./modules/token.js";
-import { SiteInfo } from "./modules/SiteInfo.js";
 
 //load
 document.addEventListener('DOMContentLoaded', async () => {
-    // 言語切り替え
-    switchLanguage();
+    //lang設定
+    const lang = getLang();
+    const elSelectLang = document.getElementById('languageSelect');
+    setLang(elSelectLang, lang);
 
-    const siteInfo = new SiteInfo();
+    //router
     try {
-        await getUserInfo().then(() => {})
-        await switchDisplayAccount();
-        if (siteInfo.getUsername()) {
-            await router(true);
-        } else {
-            await router(false);
-        }
+        await router(false);
     } catch (error) {
         console.error(error);
     }
@@ -30,10 +26,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     //ブラウザの履歴移動でrouter呼ぶようaddEventListener
     window.addEventListener('popstate', router);
+
+    //言語切り替えonChangeをlisten
+    elSelectLang.addEventListener('change', (ev) => {
+        const elSelectLang = ev.target;
+        const selectedLanguage = elSelectLang.value;
+        const currentLang = localStorage.getItem('configLang');
+        if (selectedLanguage !== currentLang) {
+            setLang(elSelectLang, selectedLanguage);
+            saveLang(selectedLanguage);
+            router(getToken('accessToken'));
+        }
+    });
 });
 
 //reload
 window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('all_usernames');
 });

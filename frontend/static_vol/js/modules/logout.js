@@ -7,6 +7,8 @@ import { webSocketManager } from './websocket.js';
 import { SiteInfo } from "./SiteInfo.js";
 import PageBase from "../components/PageBase.js";
 import { handleExitGame } from "./modal.js";
+import GamePlay from "../components/GamePlay.js";
+import GamePlayQuad from "../components/GamePlayQuad.js";
 //import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
@@ -51,8 +53,10 @@ const handleLogout = (ev) => {
             webSocketManager.closeWebSocket('pong');
             const siteInfo = new SiteInfo();
             siteInfo.reset();
-            switchDisplayAccount();//not return
-            handleExitGame(PageBase.instance);
+            switchDisplayAccount().then(() => {});//not return
+            if (GamePlay.instance || GamePlayQuad.instance) {
+                handleExitGame(PageBase.instance);
+            }
             router(false);//not return
         })
 }

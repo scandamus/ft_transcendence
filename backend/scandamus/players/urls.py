@@ -2,7 +2,7 @@ from django.urls import path
 # ↓ view.pyの全てのviewをimport
 # from . import views
 # ↓ view.pyから指定したviewをimport（推奨）
-from .views import LoginView, UserInfoView, UserLevelView, LogoutView, RegisterView, DeleteUserView, ValidateView, FriendListView, FriendRequestListView, AvatarUploadView, MatchLogView, RecommendedView
+from .views import LoginView, UserInfoView, UserLevelView, LogoutView, RegisterView, DeleteUserView, ValidateView, FriendListView, FriendRequestListView, AvatarUploadView, LangUpdateView, MatchLogView, RecommendedView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
@@ -23,6 +23,7 @@ urlpatterns = [
     path('friends/', FriendListView.as_view(), name='friend-list'),
     path('requests/', FriendRequestListView.as_view(), name='friend-request-list'),
     path('avatar/', AvatarUploadView.as_view(), name='avatar_upload'),
+    path('lang/', LangUpdateView.as_view(), name='lang_update'),
     path('matchlog/', MatchLogView.as_view(), name='log-match'),
     path('recommend/', RecommendedView.as_view(), name='recommend'),
 ]
