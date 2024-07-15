@@ -228,8 +228,8 @@ const handleExitGame = (instance) => {
     webSocketManager.sendWebSocketMessage(containerId, {
         'action': 'exit_game',
     });
-    webSocketManager.closeWebSocket(containerId);
-    instance.containerId = '';
+    // webSocketManager.closeWebSocket(containerId);
+    // instance.containerId = '';
 }
 
 const closeModalOnExitGame = (ev) => {

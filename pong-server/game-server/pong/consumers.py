@@ -144,13 +144,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.left_paddle.score = -1
             elif exited_player == 'player2':
                 self.right_paddle.score = -1
-            await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
-            await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_game_over_message',
-                'message': 'GameOver',
-            })
-            self.scheduled_task.cancel()
-            self.scheduled_task = None
+            self.game_continue = False
+            await self.handle_game_over()
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
@@ -197,19 +192,21 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # await asyncio.sleep(0.1)
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
-                if not self.game_continue:
-                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
-                    await self.channel_layer.group_send(self.room_group_name, {
-                        'type': 'send_game_over_message',
-                        'message': 'GameOver',
-                    })
-                    if self.scheduled_task is not None:
-                        self.scheduled_task.cancel()
-                        self.scheduled_task = None
+            await self.handle_game_over()
         except asyncio.CancelledError:
             # タスクがキャンセルされたと後に非同期処理を行った際のハンドリング
             # 今は特に書いていないのでpass
             pass
+
+    async def handle_game_over(self):
+        await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'send_game_over_message',
+            'message': 'GameOver',
+        })
+        if self.scheduled_task is not None:
+            self.scheduled_task.cancel()
+            self.scheduled_task = None
 
     async def send_game_over_message(self, event):
         message = event['message']
