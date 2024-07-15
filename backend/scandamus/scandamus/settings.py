@@ -37,7 +37,10 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 DEBUG = get_env_var('DEBUG')
 CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
 
-ALLOWED_HOSTS = ['backend', 'pong-server', 'frontend' ,'localhost', '127.0.0.1', '[::1]']
+# SERVER HOST
+SERVER_HOST = get_env_var('DOMAIN_NAME')
+ALLOWED_HOSTS = ['backend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
+#ALLOWED_HOSTS = []
 
 # Application definition
 
