@@ -7,7 +7,7 @@ import { resetListenUpcomingTournamentList, addListenFinishedTournamentDetail, a
 
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
-        const tournaments = await fetchTournaments('upcoming');
+        const tournaments = await fetchTournaments('upcoming', false);
         const listWrapper = document.querySelector('.blockTournamentList_upcoming');        
         if (tournaments.length === 0) {
             listWrapper.innerHTML = `<p>${labels.tournament.msgNoUpcoming}</p>`;
@@ -54,7 +54,7 @@ const updateUpcomingTournamentList = async (pageInstance) => {
 
 const updateOngoingTournamentList = async (pageInstance) => {
     try {
-        const tournaments = await fetchTournaments('ongoing');
+        const tournaments = await fetchTournaments('ongoing', false);
         const listWrapper = document.querySelector('.blockTournamentList_ongoing');        
         if (tournaments.length === 0) {
             listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
@@ -87,7 +87,7 @@ const updateOngoingTournamentList = async (pageInstance) => {
 
 const updateFinishedTournamentList = async (pageInstance) => {
     try {
-        const tournaments = await fetchTournaments('finished');
+        const tournaments = await fetchTournaments('finished', false);
         const listWrapper = document.querySelector('.blockTournamentList_finished');
         if (tournaments.length === 0) {
             listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
@@ -121,7 +121,7 @@ const updateFinishedTournamentList = async (pageInstance) => {
 
 const getTournamentLog = async (pageInstance) => {
     try {
-        const tournaments = await fetchTournaments('finished');
+        const tournaments = await fetchTournaments('finished', false);
         console.log(`${tournaments}`)
         const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         listWrapper.innerHTML = '';
