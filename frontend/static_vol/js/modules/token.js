@@ -19,7 +19,7 @@ const refreshAccessToken = async () => {
     // ネットワークエラー、サーバーエラー、ストレージエラーの例外に対応
     try {
         // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
-        const response = await fetch('https://localhost/token/refresh/', {
+        const response = await fetch('/token/refresh/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
