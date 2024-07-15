@@ -13,7 +13,7 @@ const resetControlSize = (elCanvas, elControl) => {
     if (window.innerWidth < 768) {
         elControl.style.height = `${canvasHeight - 20}px`;
     } else {
-        elControl.style.height = `${canvasHeight - 20}px`;
+        elControl.style.height = `${canvasHeight - 40}px`;
     }
 }
 
