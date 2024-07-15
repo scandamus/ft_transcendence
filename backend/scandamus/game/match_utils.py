@@ -4,7 +4,7 @@ import logging
 
 from django.contrib.auth.models import User
 from .models import Player
-from .models import Match
+from .models import Match, Entry
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from datetime import datetime, timedelta
@@ -52,7 +52,11 @@ async def send_tournament_match_jwt(match, game_name='pong'):
     
     player1 = await database_sync_to_async(lambda: match.player1)()
     player2 = await database_sync_to_async(lambda: match.player2)()
-    
+    player1_nickname = await get_nickname(tournament, player1)
+    player2_nickname = await get_nickname(tournament, player2)
+    usernames = [{'username': player1_nickname, 'avatar': player1.avatar.url if player2.avatar else None},
+                 {'username': player2_nickname, 'avatar': player2.avatar.url if player2.avatar else None}]
+        
     for player in [player1, player2]:
         player_name = 'player1' if player == player1 else 'player2'
         user = await database_sync_to_async(lambda: player.user)()
@@ -69,6 +73,7 @@ async def send_tournament_match_jwt(match, game_name='pong'):
                     'game_name': game_name,
                     'jwt': game_token,
                     'username': player.user.username,
+                    'all_usernames': usernames,
                     'match_id': match.id,
                     'player_name': player_name,
                     'tournament_name': tournament.name,
@@ -212,3 +217,12 @@ def update_player_status(player, status):
     logger.info(f'update_player_status {player.user.username}: {status}')
     player.status = status
     player.save()
+
+@database_sync_to_async
+def get_nickname(tournament, player):
+    try:
+        entry = Entry.objects.get(tournament=tournament, player=player)
+        return entry.nickname
+    except Exception as e:
+        logger.error(f'Error in get_nickname')
+        return None
