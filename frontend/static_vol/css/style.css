@@ -1137,6 +1137,7 @@ input.has-input:invalid {
 }
 
 .playBoardWrap-quad {
+  position: relative;
   display: flex;
   flex-direction: column;
   padding: 0 60px;
@@ -1160,13 +1161,16 @@ input.has-input:invalid {
   margin-bottom: 10px;
 }
 
+.playBoardWrap-quad .listPlayerActiveMatch-quad-first-half,
+.playBoardWrap-quad .listPlayerActiveMatch-quad-second-half {
+  height: 60px;
+}
+
 .playBoardWrap-quad .listPlayerActiveMatch-quad-first-half {
   order: 1;
 }
 
 .playBoardWrap-quad .listPlayerActiveMatch-quad-second-half {
-  display: flex;
-  flex-direction: column-reverse;
   order: 3;
 }
 
@@ -1208,10 +1212,17 @@ input.has-input:invalid {
   padding-right: 0.6em;
 }
 
+.listPlayerActiveMatch_item-player1 ,
+.listPlayerActiveMatch_item-player2 {
+  position: absolute;
+}
+
 .listPlayerActiveMatch_item-player1 {
+  top: 10px;
+  left: 50px;
   flex-direction: row-reverse;
   transform-origin: 100% 100%;
-  translate: calc(-100% - 10px) 60px;
+  translate: -100% 0;
   rotate: -90deg;
 }
 
@@ -1229,9 +1240,10 @@ input.has-input:invalid {
 }
 
 .listPlayerActiveMatch_item-player2 {
+  right: 50px;
+  bottom: 60px;
   flex-direction: row-reverse;
-  transform-origin: 100% 0;
-  translate: 60px -60px;
+  transform-origin: 100% 100%;
   rotate: 90deg;
 }
 
@@ -1302,7 +1314,7 @@ input.has-input:invalid {
 }
 
 .listButtonControl-quad.listButtonControl-player4 {
-  bottom: 70PX;
+  bottom: 70px;
 }
 
 .listButtonControl_btn button {
@@ -1370,7 +1382,7 @@ input.has-input:invalid {
   }
 
   .listButtonControl-quad.listButtonControl-player4 {
-    bottom: 80PX;
+    bottom: 80px;
   }
 
   .listButtonControl_btn button {
