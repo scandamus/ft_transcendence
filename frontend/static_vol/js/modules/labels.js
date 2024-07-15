@@ -25,6 +25,6 @@ export const getCurrentLanguageLabels = (lang) => {
 export const labels = {};
 
 export const switchLabels = (lang) => {
-    console.log('!switchLabels!', labels.langCode, '=>', languageLabels[lang].langCode, languageLabels);
+//    console.log('!switchLabels!', labels.langCode, '=>', languageLabels[lang].langCode, languageLabels);
     Object.assign(labels, getCurrentLanguageLabels(lang));
 };
