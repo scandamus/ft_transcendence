@@ -1280,6 +1280,12 @@ input.has-input:invalid {
   font-size: 2rem;
   color: var(--color-white);
   word-break: keep-all;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-align: center;
+  padding: 0;
 }
 
 .listButtonControl-updown {

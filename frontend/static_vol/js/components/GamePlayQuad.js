@@ -5,7 +5,8 @@ import { labels } from '../modules/labels.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
-import { isTouchDevice } from "../modules/judgeTouchDevice.js";
+import { isTouchDevice, resetControlSize } from "../modules/judgeTouchDevice.js";
+import { buttonControlManager } from "../modules/ButtonControlManager.js";
 
 export default class GamePlayQuad extends PageBase {
     static instance = null;
@@ -129,6 +130,11 @@ export default class GamePlayQuad extends PageBase {
             const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById('playBoard');
+            if (isTouchDevice()) {
+                const elControl = canvas.closest('div').querySelector('.listButtonControl');
+                resetControlSize(canvas, elControl);
+                buttonControlManager.listenButtonControl(elControl, this);
+            }
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext('2d');
