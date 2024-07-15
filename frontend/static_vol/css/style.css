@@ -137,8 +137,8 @@ hr {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   box-shadow: 0 3px 10px rgba(24, 28, 28, 0.6);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   z-index: 1;
 }
@@ -150,11 +150,12 @@ hr {
 }
 
 .mainHeader_nav {
-  padding-right: 20px;
+  flex: 1 1 auto;
+  padding: 0 20px;
 }
 
 .mainHeader_nav h2 {
-  font-size: 2rem;
+  display: none;
 }
 
 .headerNav-login {
@@ -163,12 +164,23 @@ hr {
   cursor: pointer;
 }
 
-.headerNav-login:hover h2{
-  animation: 0.2s ease-out linkHover1;
-}
-
 .headerNav-login .thumb {
   margin-right: 6px;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+@media screen and (min-width: 768px) {
+  .mainHeader_nav h2 {
+    display: block;
+    font-size: 2rem;
+  }
+
+  .headerNav-login:hover h2{
+    animation: 0.2s ease-out linkHover1;
+  }
 }
 
 .navGlobal {
