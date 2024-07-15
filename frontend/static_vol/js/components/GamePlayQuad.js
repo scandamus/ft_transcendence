@@ -200,6 +200,22 @@ export default class GamePlayQuad extends PageBase {
                 }
             }
 
+            // function showWinner(paddles) {
+            //     const scores = paddles.map(paddle => paddle.score);
+            //     const maxScore = Math.max(...scores);
+            //     const winningIndex = scores.indexOf(maxScore);
+            //     const winner = paddles[winningIndex];
+            //
+            //     ctx.fillStyle = 'red';
+            //     ctx.font = '48px Arial';
+            //     ctx.textAlign = 'center';
+            //
+            //     let xPosition = winner.x + (winner.horizontal / 2);
+            //     let yPosition = winner.y + (winner.vertical / 2);
+            //
+            //     ctx.fillText('WIN', xPosition, yPosition);
+            // }
+
             const updateGameObjects = async (data) => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // 背景色
@@ -222,18 +238,13 @@ export default class GamePlayQuad extends PageBase {
 
                 if (!data.game_status) {
                     console.log('Game Over');
-                    //alert('GAME OVER');
-                    // ここでゲームをリセットする処理を追加するか、ページをリロードする
-                    //document.location.reload();
-                    // TODO 勝敗を記録など
-                    pongSocket.send(JSON.stringify({
-                        action: 'end_game',
-                        match_id: gameMatchId,
-                    }));
-                    webSocketManager.closeWebSocket(this.containerId);
-                    this.containerId = '';
-                    window.history.pushState({}, null, '/dashboard');
-                    await router(true);
+                    // showWinner([data.right_paddle, data.left_paddle, data.upper_paddle, data.lower_paddle]);
+                    setTimeout(() => {
+                        webSocketManager.closeWebSocket(this.containerId);
+                        this.containerId = '';
+                        window.history.pushState({}, null, "/dashboard");
+                        router(true);
+                    }, 3000);
                 }
             }
 
