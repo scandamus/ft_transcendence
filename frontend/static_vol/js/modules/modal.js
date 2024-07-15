@@ -228,8 +228,11 @@ const handleExitGame = (instance) => {
     webSocketManager.sendWebSocketMessage(containerId, {
         'action': 'exit_game',
     });
-    // webSocketManager.closeWebSocket(containerId);
-    // instance.containerId = '';
+    if (PageBase.isInstance(instance, 'GamePlayQuad')) {
+        webSocketManager.closeWebSocket(containerId);
+        instance.containerId = '';
+        console.log("hogeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+    }
 }
 
 const closeModalOnExitGame = (ev) => {

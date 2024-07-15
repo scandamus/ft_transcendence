@@ -145,16 +145,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         })
 
     async def exit_game(self, event):
-        if self.scheduled_task is not None:
-            exited_player = event['player_name']
-            if exited_player == 'player1':
-                self.left_paddle.deactivate(-1)
-            elif exited_player == 'player2':
-                self.right_paddle.deactivate(-1)
-            elif exited_player == 'player3':
-                self.upper_paddle.deactivate(-1)
-            elif exited_player == 'player4':
-                self.lower_paddle.deactivate(-1)
+        exited_player = event['player_name']
+        if exited_player == 'player1':
+            self.left_paddle.deactivate(-1)
+        elif exited_player == 'player2':
+            self.right_paddle.deactivate(-1)
+        elif exited_player == 'player3':
+            self.upper_paddle.deactivate(-1)
+        elif exited_player == 'player4':
+            self.lower_paddle.deactivate(-1)
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
