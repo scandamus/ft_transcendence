@@ -134,16 +134,16 @@ const getTournamentLog = async (pageInstance) => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 let rankHtml = ``;
                 if (tournament.rank === 'winner') {
-                    rankHtml = `<p class="unitTournament_rank">${labels.tournament.labelWinner}</p>`;
+                    rankHtml = `<p class="unitTournament_rank unitTournament_rank-1">${labels.tournament.labelWinner}</p>`;
                 } else if (tournament.rank === 'second_place') {
-                    rankHtml = `<p class="unitTournament_rank">${labels.tournament.labelSecondPlace}</p>`;
+                    rankHtml = `<p class="unitTournament_rank unitTournament_rank-2">${labels.tournament.labelSecondPlace}</p>`;
                 } else if (tournament.rank === 'third_place') {
-                    rankHtml = `<p class="unitTournament_rank">${labels.tournament.labelThirdPlace}</p>`;
+                    rankHtml = `<p class="unitTournament_rank unitTournament_rank-3">${labels.tournament.labelThirdPlace}</p>`;
                 }
                 const nicknameHtml = `
                     <div class="unitTournament_body">
-                        <p class="unitTournament_nickname">as ${tournament.nickname}</p>
                         ${rankHtml}
+                        <p class="unitTournament_nickname">as ${tournament.nickname}</p>
                     </div>`;
                 const tournamentElement = `
                     <section class="unitTournamentResult unitTournament-link">
