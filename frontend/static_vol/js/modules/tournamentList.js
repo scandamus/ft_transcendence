@@ -10,8 +10,7 @@ const updateUpcomingTournamentList = async (pageInstance) => {
         const tournaments = await fetchTournaments('upcoming');
         const listWrapper = document.querySelector('.blockTournamentList_upcoming');        
         if (tournaments.length === 0) {
-            listWrapper.innerHTML = `<p>${'No upcoming tournament'}</p>`;
-//            listWrapper.innerHTML = `<p>${labels.tournament.msgNoUpcoming}</p>`;
+            listWrapper.innerHTML = `<p>${labels.tournament.msgNoUpcoming}</p>`;
         } else {
             listWrapper.innerHTML = '';
             tournaments.forEach(tournament => {
@@ -23,7 +22,6 @@ const updateUpcomingTournamentList = async (pageInstance) => {
                     buttonHtml = `<p class="blockForm_button"><button type="submit" class="unitUpcomingTournamentButton_cancel unitButtonDecline" data-name="${tournament.name}" data-id="${tournament.id}">${labels.tournament.labelCancelEntry}</button></p>`;                   
                 } else if (tournament.current_participants >= tournament.max_participants) {
                     buttonHtml = `<p class="blockForm_label">FULL</p>`;
-                //    buttonHtml = `<p class="blockForm_button"><button type="button" disabled>${labels.tournament.labelFull}</p>`;
                 } else if (tournament.nickname === '') {
                     buttonHtml = `<p class="blockForm_button"><button type="button" class="unitUpcomingTournamentButton_entry unitButton">${labels.tournament.labelEntry}</button></p>`;
                 } 
@@ -59,8 +57,7 @@ const updateOngoingTournamentList = async (pageInstance) => {
         const tournaments = await fetchTournaments('ongoing');
         const listWrapper = document.querySelector('.blockTournamentList_ongoing');        
         if (tournaments.length === 0) {
-            listWrapper.innerHTML = `<p>${'No ongoing tournament'}</p>`;
-//            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
+            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
         } else {
             listWrapper.innerHTML = '';
             tournaments.forEach(tournament => {
@@ -93,8 +90,7 @@ const updateFinishedTournamentList = async (pageInstance) => {
         const tournaments = await fetchTournaments('finished');
         const listWrapper = document.querySelector('.blockTournamentList_finished');
         if (tournaments.length === 0) {
-            listWrapper.innerHTML = `<p>${'No finished tournament'}</p>`;
-//            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
+            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
         } else {
             listWrapper.innerHTML = '';
             tournaments.forEach(tournament => {

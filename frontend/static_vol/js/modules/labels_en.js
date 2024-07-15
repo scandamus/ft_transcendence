@@ -114,6 +114,10 @@ export const labels_en = {
         labelWinner: '<strong>Winner</strong>',
         labelSecondPlace: 'Rank <strong>2</strong>',
         labelThirdPlace: 'Rank <strong>3</strong>',
+        msgNoUpcoming: 'No upcoming tournament',
+        msgNoOngoing: 'No ongoing tournament',
+        msgNoFinished: 'No finished tournament',
+        msgNoEntered: 'No entered tournament',
     },
     modal: {
         labelNickname: 'nickname',

@@ -114,6 +114,10 @@ export const labels_ar = {
         labelWinner: '<strong>1</strong>',
         labelSecondPlace: '<strong>2</strong>',
         labelThirdPlace: '<strong>3</strong>',
+        msgNoUpcoming: '',
+        msgNoOngoing: '',
+        msgNoFinished: '',
+        msgNoEntered: '',
     },
     modal: {
         labelNickname: 'اللقب',

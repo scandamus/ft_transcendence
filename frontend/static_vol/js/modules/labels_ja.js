@@ -114,6 +114,10 @@ export const labels_ja = {
         labelWinner: '<strong>優勝</strong>',
         labelSecondPlace: '<strong>2</strong>位',
         labelThirdPlace: '<strong>3</strong>位',
+        msgNoUpcoming: '開催予定のトーナメントはありません',
+        msgNoOngoing: '進行中のトーナメントはありません',
+        msgNoFinished: '終了したトーナメントはありません',
+        msgNoEntered: 'トーナメント記録はありません',
     },
     modal: {
         labelNickname: 'ニックネーム',
