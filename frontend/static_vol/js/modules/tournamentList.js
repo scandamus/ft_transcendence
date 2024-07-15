@@ -126,23 +126,33 @@ const updateFinishedTournamentList = async (pageInstance) => {
 const getTournamentLog = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('finished');
+        console.log(`${tournaments}`)
         const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         listWrapper.innerHTML = '';
         tournaments.forEach(tournament => {
             if (tournament.nickname) {
                 const formatedStartDate = formatDateToLocal(tournament.start);
-                const rankHtml = tournament.nickname ? `
+                let rankHtml = ``;
+                if (tournament.rank === 'winner') {
+                    rankHtml = `<p class="unitTournament_rank">${labels.tournament.labelWinner}</p>`;
+                } else if (tournament.rank === 'second_place') {
+                    rankHtml = `<p class="unitTournament_rank">${labels.tournament.labelSecondPlace}</p>`;
+                } else if (tournament.rank === 'third_place') {
+                    rankHtml = `<p class="unitTournament_rank">${labels.tournament.labelThirdPlace}</p>`;
+                }
+                const nicknameHtml = `
                     <div class="unitTournament_body">
-                        <p class="unitTournament_rank">Rank 1</p>
-                    </div>`:'';
+                        <p class="unitTournament_nickname">as ${tournament.nickname}</p>
+                        ${rankHtml}
+                    </div>`;
                 const tournamentElement = `
-                    <section class="unitTournament unitTournament-link">
+                    <section class="unitTournamentResult unitTournament-link">
                         <a href="/tournament/detail:${tournament.id}" data-link>
                             <header class="unitTournament_header">
                                 <h4 class="unitTournament_title">${tournament.name}</h4>
                                 <p class="unitTournament_start">${formatedStartDate}</p>
                             </header>
-                            ${rankHtml}
+                            ${nicknameHtml}
                         </a>
                     </section>
                 `;

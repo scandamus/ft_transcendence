@@ -59,6 +59,7 @@ class TournamentSerializer(serializers.ModelSerializer):
     )
     current_participants = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
+    rank = serializers.SerializerMethodField()
     matches = serializers.PrimaryKeyRelatedField(
         queryset=Match.objects.all(),
         many=True,
@@ -83,6 +84,20 @@ class TournamentSerializer(serializers.ModelSerializer):
             except Entry.DoesNotExist:
                 return ''
         return ''
+
+    def get_rank(self, obj):
+
+        request = self.context.get('request', None)
+        if request and request.user.is_authenticated:
+            player = request.user.player
+            if obj.winner == player:
+                return 'winner'
+            elif obj.second_place == player:
+                return 'second_place'
+            elif obj.third_place == player:
+                return 'third_place'
+        return None
+
 
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:

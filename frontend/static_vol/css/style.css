@@ -790,6 +790,7 @@ input.has-input:invalid {
 
 /* no data */
 .blockDashboardLog_listMatch > p:only-child,
+.blockDashboardLog_listTournament > p:only-child,
 .blockFriends_friends > p:only-child,
 .blockFriendRecommended_friends > p:only-child,
 .blockTournamentList_upcoming > p:only-child,
