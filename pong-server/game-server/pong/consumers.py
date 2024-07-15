@@ -173,11 +173,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
-                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'send_game_over_message',
                         'message': 'GameOver',
                     })
+                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
                     if self.scheduled_task is not None:
                         self.scheduled_task.cancel()
                         self.scheduled_task = None
