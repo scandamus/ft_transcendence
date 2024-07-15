@@ -13,12 +13,22 @@ const resetControlSize = (elCanvas, elControl) => {
     elControl.style.height = `${canvasHeight - 20}px`;
 }
 
+let activeIntervals = {};
+
 const handleButtonControl = (ev) => {
-    if (ev.type === 'click') {
-        const key = ev.currentTarget.dataset.key;
+    const key = ev.currentTarget.dataset.key;
+    if (ev.type === 'touchstart') {
         if (key) {
             simulateKeyEvent(key, true);
-            setTimeout(() => simulateKeyEvent(key, false), 100);
+            activeIntervals[key] = setInterval(() => {
+                simulateKeyEvent(key, true);
+            }, 100); // 繰り返し間隔は100msに設定
+        }
+    } else if (ev.type === 'touchend' || ev.type === 'touchcancel') {
+        if (key && activeIntervals[key]) {
+            clearInterval(activeIntervals[key]);
+            delete activeIntervals[key];
+            simulateKeyEvent(key, false);
         }
     }
 }
@@ -51,22 +61,30 @@ const listenButtonControl = (elControl, pageInstance) => {
 
     if (elControlTop) {
         elControlTop.dataset.key = 'ArrowUp';
-        pageInstance.addListListenInInstance(elControlTop, handleButtonControl.bind(this), 'click');
+        pageInstance.addListListenInInstance(elControlTop, handleButtonControl.bind(this), 'touchstart');
+        pageInstance.addListListenInInstance(elControlTop, handleButtonControl.bind(this), 'touchend');
+        pageInstance.addListListenInInstance(elControlTop, handleButtonControl.bind(this), 'touchcancel');
     }
 
     if (elControlBottom) {
         elControlBottom.dataset.key = 'ArrowDown';
-        pageInstance.addListListenInInstance(elControlBottom, handleButtonControl.bind(this), 'click');
+        pageInstance.addListListenInInstance(elControlBottom, handleButtonControl.bind(this), 'touchstart');
+        pageInstance.addListListenInInstance(elControlBottom, handleButtonControl.bind(this), 'touchend');
+        pageInstance.addListListenInInstance(elControlBottom, handleButtonControl.bind(this), 'touchcancel');
     }
 
     if (elControlLeft) {
         elControlLeft.dataset.key = 'ArrowLeft';
-        pageInstance.addListListenInInstance(elControlLeft, handleButtonControl.bind(this), 'click');
+        pageInstance.addListListenInInstance(elControlLeft, handleButtonControl.bind(this), 'touchstart');
+        pageInstance.addListListenInInstance(elControlLeft, handleButtonControl.bind(this), 'touchend');
+        pageInstance.addListListenInInstance(elControlLeft, handleButtonControl.bind(this), 'touchcancel');
     }
 
     if (elControlRight) {
         elControlRight.dataset.key = 'ArrowRight';
-        pageInstance.addListListenInInstance(elControlRight, handleButtonControl.bind(this), 'click');
+        pageInstance.addListListenInInstance(elControlRight, handleButtonControl.bind(this), 'touchstart');
+        pageInstance.addListListenInInstance(elControlRight, handleButtonControl.bind(this), 'touchend');
+        pageInstance.addListListenInInstance(elControlRight, handleButtonControl.bind(this), 'touchcancel');
     }
 }
 
