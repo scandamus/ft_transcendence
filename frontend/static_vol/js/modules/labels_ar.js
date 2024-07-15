@@ -3,6 +3,9 @@
 export const labels_ar = {
     langCode: 'ar',
     langName: 'العربية',
+    common: {
+        switchLang: ''
+    },
     home: {
         title: 'Home',
         labelUsername: 'اسم المستخدم',
