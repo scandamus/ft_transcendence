@@ -4,7 +4,7 @@ import logging
 
 from django.contrib.auth.models import User
 from .models import Player
-from .models import Match
+from .models import Match, Entry
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from datetime import datetime, timedelta
@@ -19,7 +19,9 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
     player1 = await get_player_by_username(from_username)
     player2 = consumer.player
     match = await create_match(player1, player2)
-    
+    usernames = [{'username': player1.user.username, 'avatar': player1.avatar.url if player2.avatar else None},
+                 {'username': player2.user.username, 'avatar': player2.avatar.url if player2.avatar else None}]
+
     for player in [player1, player2]:
         player_name = 'player1' if player == player1 else 'player2'
         game_token = await issue_jwt(player.user, player_name, player.id, match.id, game_name)
@@ -30,6 +32,7 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
                 'game_name': game_name,
                 'jwt': game_token,
                 'username': player.user.username,
+                'all_usernames': usernames,
                 'match_id': match.id,
                 'player_name': player_name
             }))
@@ -37,7 +40,6 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
             logger.error(f'Failed to send message to {player.user.username}: {e}')
 
         await update_player_status_and_match(player, match, 'frined_match')
-        
 
 async def send_tournament_match_jwt(match, game_name='pong'):
     logger.info('send_tournament_match_jwt in')
@@ -50,7 +52,11 @@ async def send_tournament_match_jwt(match, game_name='pong'):
     
     player1 = await database_sync_to_async(lambda: match.player1)()
     player2 = await database_sync_to_async(lambda: match.player2)()
-    
+    player1_nickname = await get_nickname(tournament, player1)
+    player2_nickname = await get_nickname(tournament, player2)
+    usernames = [{'username': player1_nickname, 'avatar': player1.avatar.url if player2.avatar else None},
+                 {'username': player2_nickname, 'avatar': player2.avatar.url if player2.avatar else None}]
+        
     for player in [player1, player2]:
         player_name = 'player1' if player == player1 else 'player2'
         user = await database_sync_to_async(lambda: player.user)()
@@ -67,6 +73,7 @@ async def send_tournament_match_jwt(match, game_name='pong'):
                     'game_name': game_name,
                     'jwt': game_token,
                     'username': player.user.username,
+                    'all_usernames': usernames,
                     'match_id': match.id,
                     'player_name': player_name,
                     'tournament_name': tournament.name,
@@ -79,6 +86,11 @@ async def send_tournament_match_jwt(match, game_name='pong'):
 
 async def send_lounge_match_jwt_to_all(consumer, players_list, game_name):
     match = await create_match_universal(players_list, game_name)
+    usernames = [
+        {'username': player_info['player'].user.username,
+         'avatar': player_info['player'].avatar.url if player_info['player'].avatar else None}
+        for player_info in players_list]
+
     for index, player_info in enumerate(players_list):
         player = player_info['player']
         user = await get_user_by_player(player)
@@ -92,6 +104,7 @@ async def send_lounge_match_jwt_to_all(consumer, players_list, game_name):
                 'game_name': game_name, 
                 'jwt': game_token,
                 'username': player.user.username,
+                'all_usernames': usernames,
                 'match_id': match.id,
                 'player_name': player_name            
             }))
@@ -204,3 +217,12 @@ def update_player_status(player, status):
     logger.info(f'update_player_status {player.user.username}: {status}')
     player.status = status
     player.save()
+
+@database_sync_to_async
+def get_nickname(tournament, player):
+    try:
+        entry = Entry.objects.get(tournament=tournament, player=player)
+        return entry.nickname
+    except Exception as e:
+        logger.error(f'Error in get_nickname')
+        return None

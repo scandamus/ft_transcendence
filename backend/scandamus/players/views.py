@@ -17,7 +17,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, JSONParser
 import random
 
 # from django.http import JsonResponse
@@ -164,6 +164,7 @@ class UserInfoView(APIView):
             'is_authenticated': user.is_authenticated,
             'username': user.username,
             'avatar': player.avatar.url if player.avatar else '',
+            'lang': player.lang,
         }
         return Response(data)
 
@@ -231,7 +232,26 @@ class AvatarUploadView(APIView):
             player.save()
             return Response({"newAvatar": player.avatar.url})
         else:
-            return Response({"error": "No avatar file provided"}, status=400)
+            return Response({"error": "No avatar file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+class LangUpdateView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [JSONParser]
+
+    def put(self, request, format=None):
+        user = request.user
+        try:
+            player = Player.objects.get(user=user)
+        except Player.DoesNotExist:
+            return Response({"Player doesn't exist for user: {user.username}"}, status=status.HTTP_404_NOT_FOUND)
+        new_lang = request.data.get("lang")
+        if new_lang and new_lang in dict(player._meta.get_field('lang').choices):
+            player.lang = new_lang
+            player.save()
+            return Response({'message': 'Language updated successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid language choice'}, status=status.HTTP_400_BAD_REQUEST)
 
 class MatchLogView(APIView):
     permission_classes = [permissions.IsAuthenticated]

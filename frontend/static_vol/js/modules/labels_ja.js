@@ -3,6 +3,9 @@
 export const labels_ja = {
     langCode: 'ja',
     langName: '日本語',
+    common: {
+        switchLang: '言語選択'
+    },
     home: {
         title: 'Home',
         labelUsername: 'ユーザー名',

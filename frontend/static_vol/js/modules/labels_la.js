@@ -3,6 +3,9 @@
 export const labels_la = {
     langCode: 'la',
     langName: 'Latina',
+    common: {
+        switchLang: ''
+    },
     home: {
         title: 'Domus',
         labelUsername: 'nomen usoris',
