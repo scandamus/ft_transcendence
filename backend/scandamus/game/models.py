@@ -123,7 +123,7 @@ class Tournament(models.Model):
     def finalize_result_json(self):
         self.update_result_json(-3)
         self.update_result_json(-1)
-        result = self.result_json
+        result = json.loads(self.result_json)
 
         winner_entry = Entry.objects.get(player=self.winner, tournament=self) if self.winner else None
         second_place_entry = Entry.objects.get(player=self.second_place, tournament=self) if self.second_place else None
