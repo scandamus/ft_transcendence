@@ -131,15 +131,15 @@ class Tournament(models.Model):
         second_place_entry = Entry.objects.get(player=self.second_place, tournament=self) if self.second_place else None
         third_place_entry = Entry.objects.get(player=self.third_place, tournament=self) if self.third_place else None
 
-        final_result = {
-            "matches": result,
+        rankings = {
             "rankings": {
                 "winner": winner_entry.nickname if winner_entry else None,
                 "second": second_place_entry.nickname if second_place_entry else None,
                 "third": third_place_entry.nickname if third_place_entry else None,
             }
         }
-        self.result_json = json.dumps(final_result)
+        result.append(rankings)
+        self.result_json = json.dumps(result)
         self.save()
 
     class Meta:

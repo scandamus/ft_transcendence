@@ -23,16 +23,19 @@ export default class TournamentDetail extends PageBase {
     async renderHtml() {
         const tournamentData = await fetchTournamentDetail(this.id, false);
         const result = (tournamentData && tournamentData.result) ? JSON.parse(tournamentData.result) : '';
-
-        console.log(`matches round: ${result[0].matches[0].round}`)
-        console.log(`matches round: ${result[0].matches[1].round}`)
-        console.log(`matches round: ${result[0].matches[2].round}`)
-
         this.title = tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        const RankingList = (result[0].rankings) ? await this.generateRankingList(result[0].rankings) : '';
-        const RoundList = (result[0].matches) ? await this.generateRoundList(result[0].matches) : '';
+        let RankingList = '';
+        let RoundList= '';
+        result.forEach(item => {
+            if (item.round !== undefined) {
+                RoundList = this.generateRoundList(item) + RoundList;
+            } else if (item.rankings !== undefined) {
+                RankingList = this.generateRankingList(item);
+            }
+        });
+
         let detailHtml = ``;
         detailHtml += `
             <div class="wrapTournament">
@@ -40,11 +43,10 @@ export default class TournamentDetail extends PageBase {
                 ${RankingList}
                 ${RoundList}
             </div>`;
-
-        return `${detailHtml}`;
+        return detailHtml;
     }
 
-    async generateRankingList(rankings) {
+    generateRankingList(rankings) {
         const avatar1 = rankings.winner_avatar ? rankings.winner_avatar : `/images/avatar_default.png`;
         const avatar2 = rankings.second_avatar ? rankings.second_avatar : `/images/avatar_default.png`;
         const avatar3 = rankings.third_avatar ? rankings.third_avatar : `/images/avatar_default.png`;
@@ -74,24 +76,25 @@ export default class TournamentDetail extends PageBase {
             </div>`;
     }
 
-    async generateRoundList(result) {
-        let resultHtml = ``;
-        for (const round of result) {
-            let labelRound = '';
-            if (round.matches.length === 1) {
-                labelRound = labels.tournament.labelRoundFinal;
-            } else if (round.round === 3) {
-                labelRound = labels.tournament.labelRound3;
-            } else if (round.round === 2) {
-                labelRound = labels.tournament.labelRound2;
-            } else if (round.round === 1) {
-                labelRound = labels.tournament.labelRound1;
-            }
-            resultHtml += `
-                <section class="blockTournamentRound">
-                    <h3 class="blockTournamentList_title unitTitle1">${labelRound}</h3>
-                    <div class="blockTournamentRound_listMatch listLineDivide">`;
-            for (const match of round.matches) {
+    generateRoundList(matches) {
+        let resultHtml = '';
+        let labelRound = '';
+        if (matches.round === -1) {
+            labelRound = labels.tournament.labelRoundFinal;
+        } else if (matches.round === -3) {
+            labelRound = '3位決定戦';
+        } else if (matches.round === 3) {
+            labelRound = labels.tournament.labelRound3;
+        } else if (matches.round === 2) {
+            labelRound = labels.tournament.labelRound2;
+        } else if (matches.round === 1) {
+            labelRound = labels.tournament.labelRound1;
+        }
+        resultHtml += `
+            <section class="blockTournamentRound">
+                <h3 class="blockTournamentList_title unitTitle1">${labelRound}</h3>
+                <div class="blockTournamentRound_listMatch listLineDivide">`;
+            for (const match of matches.matches) {
                 const avatar1 = match.avatar1 ? match.avatar1 : `/images/avatar_default.png`;
                 const avatar2 = match.avatar2 ? match.avatar2 : `/images/avatar_default.png`;
                 resultHtml += `
@@ -138,7 +141,6 @@ export default class TournamentDetail extends PageBase {
             resultHtml += `
                     </div>
                 </section>`;
-        }
         return resultHtml;
     }
 
