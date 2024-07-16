@@ -22,63 +22,59 @@ export default class TournamentDetail extends PageBase {
 
     async renderHtml() {
         const tournamentData = await fetchTournamentDetail(this.id, false);
-        const result = tournamentData.result ? JSON.parse(tournamentData.result) : '';
+        const result = (tournamentData && tournamentData.result) ? JSON.parse(tournamentData.result) : '';
+
+        console.log(`matches round: ${result[0].matches[0].round}`)
+        console.log(`matches round: ${result[0].matches[1].round}`)
+        console.log(`matches round: ${result[0].matches[2].round}`)
+
         this.title = tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        const RoundList = await this.generateRoundList(result, tournamentData.round);
+        const RankingList = (result[0].rankings) ? await this.generateRankingList(result[0].rankings) : '';
+        const RoundList = (result[0].matches) ? await this.generateRoundList(result[0].matches) : '';
         let detailHtml = ``;
         detailHtml += `
             <div class="wrapTournament">
-                <p class="blockTournamentStart">${formatDateToLocal(tournamentData.start)} START</p>`;
-        if (tournamentData.winner || tournamentData.second || tournamentData.third) {
-            detailHtml += `
-                <div class="blockTournamentRanking unitBox">`;
-        }
-        if (tournamentData.winner) {
-            const avatar = tournamentData.winner_avatar ? tournamentData.winner_avatar : `/images/avatar_default.png`;
-            detailHtml += `
-                <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-1"><span>${labels.tournament.labelWinner}</span></dt>
-                    <dd class="unitRanker_user">
-                        <img src="${avatar}" alt="" width="50" height="50">
-                        ${tournamentData.winner}
-                    </dd>
-                </dl>`;
-        }
-        if (tournamentData.second) {
-            const avatar = tournamentData.second_avatar ? tournamentData.second_avatar : `/images/avatar_default.png`;
-            detailHtml += `
-                <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-2"><span>${labels.tournament.labelSecondPlace}</span></dt>
-                    <dd class="unitRanker_user">
-                        <img src="${avatar}" alt="" width="50" height="50">
-                        ${tournamentData.second}
-                    </dd>
-                </dl>`;
-        }
-        if (tournamentData.third) {
-            const avatar = tournamentData.third_avatar ? tournamentData.third_avatar : `/images/avatar_default.png`;
-            detailHtml += `
-                <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-3"><span>${labels.tournament.labelThirdPlace}</span></dt>
-                    <dd class="unitRanker_user">
-                        <img src="${avatar}" alt="" width="50" height="50">
-                        ${tournamentData.third}
-                    </dd>
-                </dl>`;
-        }
-        if (tournamentData.winner || tournamentData.second || tournamentData.third) {
-            detailHtml += `
-                </div>`;
-        }
-        detailHtml += `${RoundList}
+                <p class="blockTournamentStart">${formatDateToLocal(tournamentData.start)} START</p>
+                ${RankingList}
+                ${RoundList}
             </div>`;
 
         return `${detailHtml}`;
     }
 
-    async generateRoundList(result, countRound) {
+    async generateRankingList(rankings) {
+        const avatar1 = rankings.winner_avatar ? rankings.winner_avatar : `/images/avatar_default.png`;
+        const avatar2 = rankings.second_avatar ? rankings.second_avatar : `/images/avatar_default.png`;
+        const avatar3 = rankings.third_avatar ? rankings.third_avatar : `/images/avatar_default.png`;
+        return `
+            <div class="blockTournamentRanking unitBox">
+                <dl class="unitRanker">
+                    <dt class="unitRanker_rank unitRanker_rank-1"><span>${labels.tournament.labelWinner}</span></dt>
+                    <dd class="unitRanker_user">
+                        <img src="${avatar1}" alt="" width="50" height="50">
+                        ${rankings.winner}
+                    </dd>
+                </dl>
+                <dl class="unitRanker">
+                    <dt class="unitRanker_rank unitRanker_rank-2"><span>${labels.tournament.labelSecondPlace}</span></dt>
+                    <dd class="unitRanker_user">
+                        <img src="${avatar2}" alt="" width="50" height="50">
+                        ${rankings.second}
+                    </dd>
+                </dl>
+                <dl class="unitRanker">
+                    <dt class="unitRanker_rank unitRanker_rank-3"><span>${labels.tournament.labelThirdPlace}</span></dt>
+                    <dd class="unitRanker_user">
+                        <img src="${avatar3}" alt="" width="50" height="50">
+                        ${rankings.third}
+                    </dd>
+                </dl>
+            </div>`;
+    }
+
+    async generateRoundList(result) {
         let resultHtml = ``;
         for (const round of result) {
             let labelRound = '';
