@@ -98,7 +98,7 @@ class Tournament(models.Model):
         matches = self.matches.filter(round=round)
         round_result = self.get_round_result(matches)
         
-        result.insert(0,{
+        result.append({
             "round": round,
             "matches": round_result
         })
