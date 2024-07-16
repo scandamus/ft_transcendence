@@ -177,7 +177,13 @@ export default class GamePlay extends PageBase {
                     }));
                     webSocketManager.closeWebSocket(this.containerId);
                     this.containerId = '';
-                    window.history.pushState({}, null, "/dashboard");
+                    const tournamentId = sessionStorage.getItem("tournament_id");
+                    if (tournamentId) {
+                        //window.history.pushState({}, null, `/tournament/detail:${tournament_id}`);
+                        window.history.pushState({}, null, "/tournament/detail_id");
+                    } else {
+                        window.history.pushState({}, null, "/dashboard");
+                    }
                     await router(true);
                 }
             }

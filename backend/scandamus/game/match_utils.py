@@ -77,7 +77,8 @@ async def send_tournament_match_jwt(match, game_name='pong'):
                     'match_id': match.id,
                     'player_name': player_name,
                     'tournament_name': tournament.name,
-                    'round': match.round 
+                    'round': match.round,
+                    'tournament_id': tournament.id,
                 }
             )
             await update_player_status_and_match(player, match, 'tournament_match')

@@ -75,7 +75,7 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name, all_usernames } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames, type, tournament_name, round, tournament_id } = data;
 
     closeModal();
 
@@ -86,6 +86,14 @@ const loadGameContent = async (data) => {
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
     sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
+
+    if (type === 'gameSessionTournament') {
+        sessionStorage.setItem('tournament_id', tournament_id);
+        //window.history.pushState({}, null, `/tournament/detail:${tournament_id}`);
+        window.history.pushState({}, null, `/tournament/detail_id`);
+        await router(true);
+        await new Promise(resolve => setTimeout(resolve, 30000));
+    }
 
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);
