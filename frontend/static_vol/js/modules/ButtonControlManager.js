@@ -3,16 +3,31 @@
 class ButtonControlManager {
     constructor() {
         this.activeIntervals = {};
+        this.timeLastTap = 0;
+        this.delayDoubleTap = 150;
     }
 
     handleButtonControl = (ev) => {
         const key = ev.currentTarget.dataset.key;
         if (ev.type === 'touchstart') {
+            const currentTime = new Date().getTime();
+            const tapGap = currentTime - this.timeLastTap;
+            console.log(`//touchstart`)
+
+            if (tapGap < this.delayDoubleTap && tapGap > 0) {
+                ev.preventDefault();
+                console.log(`//haya reset`)
+                return;
+            }
+
+            console.log(`//ptap`)
+            this.timeLastTap = currentTime;
+
             if (key) {
                 this.simulateKeyEvent(key, true);
                 this.activeIntervals[key] = setInterval(() => {
                     this.simulateKeyEvent(key, true);
-                }, 100); // 繰り返し間隔は100msに設定
+                }, 100);
             }
         } else if (ev.type === 'touchend' || ev.type === 'touchcancel') {
             if (key && this.activeIntervals[key]) {
