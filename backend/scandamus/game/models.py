@@ -137,7 +137,7 @@ class Tournament(models.Model):
                 "third": third_place_entry.nickname if third_place_entry else None,
             }
         }
-        self.result_json = final_result
+        self.result_json = json.dumps(final_result)
         self.save()
 
     class Meta:
