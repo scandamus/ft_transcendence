@@ -4,7 +4,7 @@ class ButtonControlManager {
     constructor() {
         this.activeIntervals = {};
         this.timeLastTap = 0;
-        this.delayDoubleTap = 150;
+        this.delayDoubleTap = 300;
     }
 
     handleButtonControl = (ev) => {
