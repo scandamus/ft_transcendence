@@ -65,6 +65,10 @@ const updateOngoingTournamentList = async (pageInstance) => {
             listWrapper.innerHTML = '';
             tournaments.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
+                let nicknameHtml = '';
+                if (tournament.nickname != '') {
+                    nicknameHtml = `<p class="unitTournament_nickname">as ${tournament.nickname}</p>`
+                }
                 const tournamentElement = `
                     <section class="unitTournament unitTournament-link">
                         <a href="/tournament/${tournament.id}" data-link>
@@ -73,7 +77,7 @@ const updateOngoingTournamentList = async (pageInstance) => {
                                 <p class="unitTournament_start">${formatedStartDate}</p>
                             </header>
                             <div class="unitTournament_body">
-                                <p class="unitTournament_nickname">as ${tournament.nickname}</p>
+                                ${nicknameHtml}
                             </div>
                         </a>
                     </section>

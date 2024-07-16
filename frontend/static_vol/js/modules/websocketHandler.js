@@ -7,7 +7,7 @@ import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
 import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
-import { updateUpcomingTournamentList } from "./tournamentList.js";
+import { updateOngoingTournamentList, updateUpcomingTournamentList } from "./tournamentList.js";
 import { enterTournamentRoomRequest } from "./tournament.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
 
@@ -284,6 +284,12 @@ const handleTournamentReceived = (data) => {
         addNotice('トーナメントへのエントリーがありません');
     } else if (data.action === 'invalidNickname') {
         handleReceiveWsTournamentValidationError(data);
+    } else if (data.action === 'invalidEntryRequest') {
+        addNotice('登録期限を過ぎたなど無効なリクエストです', true);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
     }
 }
 
@@ -292,6 +298,10 @@ const handleTournamentMatchReceived = (data) => {
 
     if (data.action === 'tournament_prepare') {
         addNotice(`トーナメント ${data.name} の開始５分前になりました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
     } else if (data.action === 'tournament_call') {
         addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
         enterTournamentRoomRequest(data.name);
@@ -301,7 +311,11 @@ const handleTournamentMatchReceived = (data) => {
         addNotice(`トーナメント ${data.name} の控室に移動します`);
         showModalTournamentRoom(data);
     } else if (data.action === 'canceled') {
-        addNotice(`トーナメント ${data.name} は催行人数に達しなかったためキャンセルされました`);
+        addNotice(`トーナメント ${data.name} は催行人数に達しなかったためキャンセルされました`, true);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
     }
     console.log(`${data.name} ${data.action}の通知です`);
 }
