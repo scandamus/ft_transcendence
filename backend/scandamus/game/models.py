@@ -116,6 +116,8 @@ class Tournament(models.Model):
                 "player2": player2_entry.nickname if player2_entry else None,
                 "score1": match.score1,
                 "score2": match.score2,
+                "avatar1": match.player1.avatar.url if match.player1.avatar else None,
+                "avatar2": match.player2.avatar.url if match.player2.avatar else None,
                 "winner": winner_entry.nickname if winner_entry else None
             })
         return round_result

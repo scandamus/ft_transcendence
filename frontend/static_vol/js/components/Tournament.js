@@ -7,7 +7,7 @@ import { createTournament } from '../modules/tournament.js';
 import { addNotice } from '../modules/notice.js';
 import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from '../modules/env.js';
 //import { fetchTournaments } from '../modules/tounamentApi.js';
-import { updateOngoingTournamentList, updateUpcomingTournamentList } from '../modules/tournamentList.js'
+import { updateOngoingTournamentList, updateUpcomingTournamentList, updateFinishedTournamentList } from '../modules/tournamentList.js'
 import { checkTournamentInputValid, checkFormReady } from "../modules/form.js";
 
 export default class Tournament extends PageBase {
@@ -84,27 +84,7 @@ export default class Tournament extends PageBase {
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleRecent}</h3>
-                    <div class="blockTournamentList_list listLineDivide">
-                        <section class="unitTournament unitTournament-link">
-                            <a href="/tournament/detail_id" data-link>
-                                <header class="unitTournament_header">
-                                    <h4 class="unitTournament_title">TournamentTitle1</h4>
-                                    <p class="unitTournament_start">2024/07/3 13:00</p>
-                                </header>
-                                <div class="unitTournament_body">
-                                    <p class="unitTournament_nickname">as 01234567890123456789012345678901</p>
-                                </div>
-                            </a>
-                        </section>
-                        <section class="unitTournament unitTournament-link">
-                            <a href="/tournament/detail_id" data-link>
-                                <header class="unitTournament_header">
-                                    <h4 class="unitTournament_title">TournamentTitle2</h4>
-                                    <p class="unitTournament_start">2024/07/5 21:00</p>
-                                </header>
-                            </a>
-                        </section>
-                    </div>
+                    <div class="blockTournamentList_finished listLineDivide"></div>
                 </section>
             </div>
         `;
@@ -114,6 +94,7 @@ export default class Tournament extends PageBase {
         try {
             updateUpcomingTournamentList(this).then(() => {});
             updateOngoingTournamentList(this).then(() => {});
+            updateFinishedTournamentList(this).then(() => {});
  //           updateFinishedTournamentList(this).then(() => {});
         } catch (error) {
             console.error('Failed to update lists: ', error);

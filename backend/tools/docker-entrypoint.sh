@@ -41,6 +41,7 @@ if [ "$superuser_exists" = "False" ]; then
     export PGPASSWORD=$DB_PASSWORD
     psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/user_dummy.sql
     psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/player_dummy.sql
+    psql -h db -p 5432 -U $POSTGRES_USER -d $DB_NAME -f /usr/local/bin/tournament_dummy.sql
     unset PGPASSWORD
 fi
 
