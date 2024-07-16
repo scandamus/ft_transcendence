@@ -32,7 +32,7 @@ export default class TournamentDetail extends PageBase {
             if (item.round !== undefined) {
                 RoundList = this.generateRoundList(item) + RoundList;
             } else if (item.rankings !== undefined) {
-                RankingList = this.generateRankingList(item);
+                RankingList = this.generateRankingList(item.rankings);
             }
         });
 
