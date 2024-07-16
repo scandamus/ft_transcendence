@@ -89,8 +89,7 @@ const loadGameContent = async (data) => {
 
     if (type === 'gameSessionTournament') {
         sessionStorage.setItem('tournament_id', tournament_id);
-        //window.history.pushState({}, null, `/tournament/detail:${tournament_id}`);
-        window.history.pushState({}, null, `/tournament/detail_id`);
+        window.history.pushState({}, null, `/tournament/detail:${tournament_id}`);
         await router(true);
         await new Promise(resolve => setTimeout(resolve, 30000));
     }
