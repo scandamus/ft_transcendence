@@ -1484,7 +1484,7 @@ input.has-input:invalid {
 }
 
 .blockTournamentRanking {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-content: center;
   flex-wrap: wrap;
@@ -1493,6 +1493,10 @@ input.has-input:invalid {
   max-width: 100%;
   margin: 0 auto 50px;
   padding: 30px;
+}
+
+.blockTournamentRanking.is-show {
+  display: flex;
 }
 
 .unitRanker {

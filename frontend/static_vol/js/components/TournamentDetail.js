@@ -17,37 +17,43 @@ export default class TournamentDetail extends PageBase {
         TournamentDetail.instance = this;
         //setTitleはrenderHtml()で取得後に行う
         this.id = params.id.split(':')[1];
+        this.tournamentData = ``;
         this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
+
+        //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.generateTournamentResult.bind(this));
     }
 
     async renderHtml() {
-        const tournamentData = await fetchTournamentDetail(this.id, false);
-        const result = (tournamentData && tournamentData.result) ? JSON.parse(tournamentData.result) : '';
-        this.title = tournamentData.name;
+        this.tournamentData = await fetchTournamentDetail(this.id, false);
+        this.title = this.tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        let rankingList = '';
-        let roundList= '';
-        result.forEach(item => {
-            if (item.round !== undefined) {
-                roundList = this.generateRoundList(item) + roundList;
-            } else if (item.rankings !== undefined) {
-                rankingList = this.generateRankingList(item.rankings);
-            }
-        });
 
-        let detailHtml = ``;
-        detailHtml += `
+        return `
             <div class="wrapTournament">
-                <p class="blockTournamentStart">${formatDateToLocal(tournamentData.start)} START</p>
+                <p class="blockTournamentStart">${formatDateToLocal(this.tournamentData.start)} START</p>
                 <section class="blockTournamentNextMatch unitBox">
                     <h3 class="blockTournamentNextMatch_title">next match</h3>
                     <div class="blockNextMatch"></div>
                 </section>
-                ${rankingList}
-                ${roundList}
+                <div class="blockTournamentRanking unitBox"></div>
+                <div class="wrapTournamentRound"></div>
             </div>`;
-        return detailHtml;
+    }
+
+    generateTournamentResult() {
+        const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
+        const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
+        const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
+        result.forEach(item => {
+            if (item.round !== undefined) {
+                wrapTournamentRound.insertAdjacentHTML('afterbegin', this.generateRoundList(item));
+            } else if (item.rankings !== undefined) {
+                blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
+                blockTournamentRanking.classList.add('is-show');
+            }
+        });
     }
 
     generateRankingList(rankings) {
@@ -55,29 +61,27 @@ export default class TournamentDetail extends PageBase {
         const avatar2 = rankings.second_avatar ? rankings.second_avatar : `/images/avatar_default.png`;
         const avatar3 = rankings.third_avatar ? rankings.third_avatar : `/images/avatar_default.png`;
         return `
-            <div class="blockTournamentRanking unitBox">
-                <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-1"><span>${labels.tournament.labelWinner}</span></dt>
-                    <dd class="unitRanker_user">
-                        <img src="${avatar1}" alt="" width="50" height="50">
-                        ${rankings.winner}
-                    </dd>
-                </dl>
-                <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-2"><span>${labels.tournament.labelSecondPlace}</span></dt>
-                    <dd class="unitRanker_user">
-                        <img src="${avatar2}" alt="" width="50" height="50">
-                        ${rankings.second}
-                    </dd>
-                </dl>
-                <dl class="unitRanker">
-                    <dt class="unitRanker_rank unitRanker_rank-3"><span>${labels.tournament.labelThirdPlace}</span></dt>
-                    <dd class="unitRanker_user">
-                        <img src="${avatar3}" alt="" width="50" height="50">
-                        ${rankings.third}
-                    </dd>
-                </dl>
-            </div>`;
+            <dl class="unitRanker">
+                <dt class="unitRanker_rank unitRanker_rank-1"><span>${labels.tournament.labelWinner}</span></dt>
+                <dd class="unitRanker_user">
+                    <img src="${avatar1}" alt="" width="50" height="50">
+                    ${rankings.winner}
+                </dd>
+            </dl>
+            <dl class="unitRanker">
+                <dt class="unitRanker_rank unitRanker_rank-2"><span>${labels.tournament.labelSecondPlace}</span></dt>
+                <dd class="unitRanker_user">
+                    <img src="${avatar2}" alt="" width="50" height="50">
+                    ${rankings.second}
+                </dd>
+            </dl>
+            <dl class="unitRanker">
+                <dt class="unitRanker_rank unitRanker_rank-3"><span>${labels.tournament.labelThirdPlace}</span></dt>
+                <dd class="unitRanker_user">
+                    <img src="${avatar3}" alt="" width="50" height="50">
+                    ${rankings.third}
+                </dd>
+            </dl>`;
     }
 
     generateRoundList(matches) {
@@ -145,7 +149,7 @@ export default class TournamentDetail extends PageBase {
             resultHtml += `
                     </div>
                 </section>`;
-        return resultHtml;
+            return resultHtml;
     }
 
     displayNextMatch(all_usernames) {
