@@ -12,7 +12,7 @@ from players.models import Player
 from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync
-from .match_utils import send_tournament_match_jwt
+from .match_utils import send_tournament_match_jwt, notify_bye_player
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,8 @@ def check_tournament_start_times():
 
     all_tournaments = Tournament.objects.all()
     for t in all_tournaments:
-        logger.info(f'Tournament: {t.name}, Start time: {t.start}, Status: {t.status}')
+        if t.status in ['upcoming', 'prepagin', 'ongoing']:
+            logger.info(f'Tournament: {t.name}, Start time: {t.start}, Status: {t.status}')
     
     tournaments = Tournament.objects.filter(start__lte=check_time, status='upcoming')
 
@@ -133,11 +134,41 @@ def report_match_result(match_id):
         third_place_match = tournament.matches.get(round=-3)
         if final_match.status == 'after' and third_place_match.status == 'after':
             finalize_tournament(tournament)
+    elif current_round in [-4, -5, -6]: # 3人決戦
+        handle_three_players_round(tournament, current_round)
     elif all(m.status == 'after' for m in matched_in_round):
-#        if current_round in [-1, -3]: # round -1:決勝戦, -3:3位決定戦
-#            finalize_tournament(tournament)
-#        else:
-            create_next_round(tournament, current_round)
+        create_next_round(tournament, current_round)
+
+# 最後にABCの3人が残った場合
+# 1戦目（round==-4）: A vs B
+# 2戦目（round==-5）: 1戦目の敗者 vs C　（敗者は3位）
+# 3戦目（round==-6）: 1戦目の勝者 vs 2戦目の勝者　（勝者は1位、敗者は2位）
+def handle_three_players_round(tournament, current_round):
+    logger.info('handle_three_players_round')
+    previous_round_match = tournament.matches.get(round=current_round)
+    if current_round == -4:
+        first_loser = previous_round_match.player1 if previous_round_match.winner == previous_round_match.player2 else previous_round_match.player2
+        create_match(tournament, first_loser, tournament.bye_player, -5)
+        tournament.bye_player = None
+        tournament.save()
+    elif current_round == -5:
+        first_match = tournament.matches.get(round=-4)
+        second_match = tournament.matches.get(round=-5)
+        tournament.third_place = second_match.player1 if second_match.winner == second_match.player2 else second_match.player2
+        tournament.save()
+        create_match(tournament, first_match.winner, second_match.winner, -6)
+    elif current_round == -6:
+        finalize_tounrnament_by_three_players(tournament)
+
+def finalize_tounrnament_by_three_players(tournament):
+    logger.info('finalize_tournament_by_three_players in')
+    final_match = tournament.matches.get(round=-6)
+
+    tournament.winner = final_match.winner
+    tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
+    tournament.status = 'finished'
+    tournament.save()
+    tournament.finalize_result_json(True)
 
 def finalize_tournament(tournament):
     logger.info('finalize_tournament in')
@@ -158,10 +189,19 @@ def create_next_round(tournament, current_round):
     tournament.update_result_json(current_round)
 
     if tournament.bye_player:
-        winners.append(tournament.bye_player)
+        winners.insert(0, tournament.bye_player)
+        tournament.bye_player == None
+        tournament.save()
     
-    if len(winners) == 2:
+    number_of_winners = len(winners)
+    if number_of_winners == 2:
         create_final_round(tournament, winners, previous_round_matches)
+        return
+    elif number_of_winners == 3:
+        create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
+        tournament.bye_player = winners[-1]
+        tournament.save()
+        notify_bye_player(tournament)#3人準決勝待ち TODO: 特別なメッセージ？
         return
     
     current_round += 1
@@ -226,6 +266,5 @@ def create_matches(tournament, players, round_number):
    #Match.objects.bulk_create(matches)
     tournament.matches.add(*matches)
     tournament.save()
-    
-
-
+    if tournament.bye_player:
+        notify_bye_player(tournament)

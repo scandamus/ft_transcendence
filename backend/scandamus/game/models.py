@@ -97,10 +97,12 @@ class Tournament(models.Model):
 
         matches = self.matches.filter(round=round)
         round_result = self.get_round_result(matches)
+        bye_player_entry = Entry.objects.get(player=self.bye_player, tournament=self) if self.bye_player else None
         
         result.append({
             "round": round,
-            "matches": round_result
+            "matches": round_result,
+            "bye_player": bye_player_entry.nickname if bye_player_entry else None
         })
         self.result_json = json.dumps(result)
         self.save()
@@ -120,9 +122,14 @@ class Tournament(models.Model):
             })
         return round_result
     
-    def finalize_result_json(self):
-        self.update_result_json(-3)
-        self.update_result_json(-1)
+    def finalize_result_json(self, is_three_players=False):
+        if is_three_players:
+            self.update_result_json(-4)
+            self.update_result_json(-5)
+            self.update_result_json(-6)
+        else:
+            self.update_result_json(-3)
+            self.update_result_json(-1)
         result = json.loads(self.result_json)
 
         winner_entry = Entry.objects.get(player=self.winner, tournament=self) if self.winner else None

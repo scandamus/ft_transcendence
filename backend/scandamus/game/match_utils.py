@@ -12,6 +12,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError, TokenBackendError
 from django.conf import settings
 from django.db import transaction
+from asgiref.sync import async_to_sync
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +113,22 @@ async def send_lounge_match_jwt_to_all(consumer, players_list, game_name):
             logger.error(f'Failed to send message to {player.user.username}: {e}')
         
         await update_player_status_and_match(player, match, 'lounge_match')
+
+def notify_bye_player(tournament):
+    logger.info(f'notify_bye_player in {tournament.name}')
+    player = tournament.bye_player
+    channel_layer = get_channel_layer()
+
+    try:
+        async_to_sync(channel_layer.group_send)(
+            f'friends_{player.id}',
+            {
+                'type': 'send_notification_bye_player',
+                'tournament_name': tournament.name
+            }
+        )
+    except Exception as e:
+        logger.error(f'Failed to send message to {player.user.username}: {e}')
 
 @database_sync_to_async
 def get_user_by_player(player):
