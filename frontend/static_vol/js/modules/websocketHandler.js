@@ -95,10 +95,8 @@ const loadGameContent = async (data) => {
             await router(true);
         }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
-            //console.log(`in TournamentDetail`)
+            await PageBase.instance.generateTournamentResult();
             PageBase.instance.displayNextMatch(all_usernames);
-        // } else {
-        //     console.log(`not in TournamentDetail`)
         }
         await new Promise(resolve => setTimeout(resolve, 5000));
     }
@@ -319,7 +317,7 @@ const handleTournamentMatchReceived = async (data) => {
             updateOngoingTournamentList(currentPage).then(() => {});
         }
     } else if (data.action === 'tournament_room') {
-        addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
+        //addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
         enterTournamentRoomRequest(data.name);
     } else if (data.action === 'tournament_match') {
         addNotice(`トーナメント ${data.name} を開始します`);
@@ -336,10 +334,14 @@ const handleTournamentMatchReceived = async (data) => {
             updateUpcomingTournamentList(currentPage).then(() => {});
             updateOngoingTournamentList(currentPage).then(() => {});
         }
+        window.history.pushState({}, null, '/dashboard');
+        await router(true);
     } else if (data.action === 'finished') {
         addNotice(`トーナメント ${data.name} は終了しました`);
         sessionStorage.removeItem('tournament_id');
-        console.log(`/////ここで結果表示`)
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            await PageBase.instance.generateTournamentResult();
+        }
     }
     console.log(`${data.name} ${data.action}の通知です`);
 }

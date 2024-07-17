@@ -18,6 +18,7 @@ export default class TournamentDetail extends PageBase {
         //setTitleはrenderHtml()で取得後に行う
         this.id = params.id.split(':')[1];
         this.tournamentData = ``;
+        this.renderedRounds = new Set();
         this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
 
         //afterRenderにmethod追加
@@ -42,13 +43,15 @@ export default class TournamentDetail extends PageBase {
             </div>`;
     }
 
-    generateTournamentResult() {
+    async generateTournamentResult() {
+        this.tournamentData = await fetchTournamentDetail(this.id, false);
         const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
         const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
         const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
         result.forEach(item => {
-            if (item.round !== undefined) {
+            if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
                 wrapTournamentRound.insertAdjacentHTML('afterbegin', this.generateRoundList(item));
+                this.renderedRounds.add(item.round);
             } else if (item.rankings !== undefined) {
                 blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
                 blockTournamentRanking.classList.add('is-show');
