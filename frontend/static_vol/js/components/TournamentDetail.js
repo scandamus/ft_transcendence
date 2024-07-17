@@ -26,13 +26,13 @@ export default class TournamentDetail extends PageBase {
         this.title = tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        let RankingList = '';
-        let RoundList= '';
+        let rankingList = '';
+        let roundList= '';
         result.forEach(item => {
             if (item.round !== undefined) {
-                RoundList = this.generateRoundList(item) + RoundList;
+                roundList = this.generateRoundList(item) + roundList;
             } else if (item.rankings !== undefined) {
-                RankingList = this.generateRankingList(item.rankings);
+                rankingList = this.generateRankingList(item.rankings);
             }
         });
 
@@ -40,8 +40,12 @@ export default class TournamentDetail extends PageBase {
         detailHtml += `
             <div class="wrapTournament">
                 <p class="blockTournamentStart">${formatDateToLocal(tournamentData.start)} START</p>
-                ${RankingList}
-                ${RoundList}
+                <section class="blockTournamentNextMatch unitBox">
+                    <h3 class="blockTournamentNextMatch_title">next match</h3>
+                    <div class="blockNextMatch"></div>
+                </section>
+                ${rankingList}
+                ${roundList}
             </div>`;
         return detailHtml;
     }
@@ -142,6 +146,22 @@ export default class TournamentDetail extends PageBase {
                     </div>
                 </section>`;
         return resultHtml;
+    }
+
+    displayNextMatch(all_usernames) {
+        const blockTournamentNextMatch = document.querySelector('.blockTournamentNextMatch');
+        const blockNextMatch = document.querySelector('.blockNextMatch');
+        blockNextMatch.innerHTML = `
+            <section class="blockNextMatch_player unitNextMatchPlayer">
+                <h4 class="unitNextMatchPlayer_title">${all_usernames[0].username}</h4>
+                <img src="${all_usernames[0].avatar || '/images/avatar_default.png'}" alt="" width="100" height="100" class="unitNextMatchPlayer_thumb">
+            </section>
+            <p class="blockNextMatch_vs">VS</p>
+            <section class="blockNextMatch_player unitNextMatchPlayer">
+                <h4 class="unitNextMatchPlayer_title">${all_usernames[1].username}</h4>
+                <img src="${all_usernames[1].avatar || '/images/avatar_default.png'}" alt="" width="100" height="100" class="unitNextMatchPlayer_thumb">
+            </section>`;
+        blockTournamentNextMatch.classList.add('is-show');
     }
 
     destroy() {

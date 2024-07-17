@@ -94,6 +94,12 @@ const loadGameContent = async (data) => {
             window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
             await router(true);
         }
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            //console.log(`in TournamentDetail`)
+            PageBase.instance.displayNextMatch(all_usernames);
+        // } else {
+        //     console.log(`not in TournamentDetail`)
+        }
         await new Promise(resolve => setTimeout(resolve, 5000));
     }
 

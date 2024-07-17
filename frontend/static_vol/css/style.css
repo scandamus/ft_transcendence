@@ -1430,6 +1430,59 @@ input.has-input:invalid {
   text-align: right;
 }
 
+.blockTournamentNextMatch {
+  display: none;
+  align-content: center;
+  box-sizing: border-box;
+  width: 640px;
+  max-width: 100%;
+  margin: 0 auto 50px;
+  padding: 30px;
+}
+
+.blockTournamentNextMatch.is-show {
+  display: block;
+}
+
+.blockTournamentNextMatch_title {
+  margin-bottom: 0.3em;
+  text-align: center;
+  font-size: 4.2rem;
+}
+
+.blockNextMatch {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.blockNextMatch_vs {
+  width: 60px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  letter-spacing: 0.1em;
+  font-size: 4rem;
+}
+
+.unitNextMatchPlayer {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  flex: 0 0 calc(50% - 30px);
+}
+
+.unitNextMatchPlayer_title {
+  padding-top: 0.4em;
+  font-size: 2.8rem;
+}
+
+.unitNextMatchPlayer_thumb {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
 .blockTournamentRanking {
   display: flex;
   flex-direction: column;
@@ -1454,7 +1507,7 @@ input.has-input:invalid {
   justify-content: space-between;
   align-items: center;
   width: 7.5em;
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
   /*text-shadow: 0.09em 0.05em var(--content-color1), -0.09em -0.05em var(--content-color2);*/
 }
 
@@ -1513,7 +1566,7 @@ input.has-input:invalid {
 /* blockTournamentDetail */
 .blockTournamentStart {
   margin-bottom: 30px;
-  font-size: 1.9rem;
+  font-size: 2.6rem;
   text-align: center;
 }
 

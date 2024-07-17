@@ -129,7 +129,6 @@ const updateFinishedTournamentList = async (pageInstance) => {
 const getTournamentLog = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('finished', false);
-        console.log(`${tournaments}`)
         const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         listWrapper.innerHTML = '';
         tournaments.forEach(tournament => {
