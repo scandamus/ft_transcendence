@@ -134,8 +134,11 @@ class Tournament(models.Model):
         rankings = {
             "rankings": {
                 "winner": winner_entry.nickname if winner_entry else None,
+                "winner_avatar": self.winner.avatar.url if self.winner.avatar else None,
                 "second": second_place_entry.nickname if second_place_entry else None,
+                "second_avatar": self.second_place.avatar.url if self.second_place.avatar else None,
                 "third": third_place_entry.nickname if third_place_entry else None,
+                "third_avatar": self.third_place.avatar.url if self.third_place.avatar else None,
             }
         }
         result.append(rankings)

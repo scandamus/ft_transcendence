@@ -24,6 +24,8 @@ class TournamentViewSet(ModelViewSet):
     def result(self, request, pk=None):
         tournament = self.get_object()
         return Response({
+            "name": tournament.name,
+            "start": tournament.start,
             "result": tournament.result_json
             },
             status=status.HTTP_200_OK
