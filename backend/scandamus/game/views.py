@@ -7,7 +7,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions, status
 from rest_framework.permissions import AllowAny
 from scandamus.authentication import InternalNetworkAuthentication
-from .tasks import report_match_result
+from .tournament_match import report_match_result
 from django.db.models import Q
 
 import logging
