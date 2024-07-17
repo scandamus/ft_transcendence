@@ -342,6 +342,8 @@ const handleTournamentMatchReceived = async (data) => {
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             await PageBase.instance.generateTournamentResult();
         }
+    } else if (data.action === 'notifyByePlayer') {
+        addNotice(`トーナメント ${data.name} の現在のマッチは不戦勝になりました。しばらくお待ち下さい`)
     }
     console.log(`${data.name} ${data.action}の通知です`);
 }

@@ -177,6 +177,17 @@ class LoungeSession(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f'Error in gameSessionTournament: {e}')
 
+    async def send_notification_bye_player(self, event):
+        logger.info('notify_by_player in')
+        try:
+            await self.send(text_data=json.dumps({
+                'type': 'tournamentMatch',
+                'action': 'notifyByePlayer',
+                'name': event['tournament_name']
+            }))
+        except Exception as e:
+            logger.error(f'Error in gameSessionTournament: {e}')
+
     async def send_notification(self, event):
         try:
             player_id = event['player_id']

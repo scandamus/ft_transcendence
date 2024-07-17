@@ -12,7 +12,7 @@ from players.models import Player
 from channels.layers import get_channel_layer
 from channels.db import database_sync_to_async
 from asgiref.sync import async_to_sync
-from .match_utils import send_tournament_match_jwt
+from .tournament_match import create_matches
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,8 @@ def check_tournament_start_times():
 
     all_tournaments = Tournament.objects.all()
     for t in all_tournaments:
-        logger.info(f'Tournament: {t.name}, Start time: {t.start}, Status: {t.status}')
+        if t.status in ['upcoming', 'prepagin', 'ongoing']:
+            logger.info(f'Tournament: {t.name}, Start time: {t.start}, Status: {t.status}')
     
     tournaments = Tournament.objects.filter(start__lte=check_time, status='upcoming')
 
@@ -120,114 +121,3 @@ def create_initial_round(tournament_id, entried_players_id_list):
     player_list = list(online_players)
     random.shuffle(player_list)
     create_matches(tournament, player_list, round_number=1)
-
-def report_match_result(match_id):
-    match = Match.objects.get(id=match_id)
-    tournament = match.tournament
-    current_round = match.round
-    logger.info(f'report_match_result in round:{current_round}')
-
-    matched_in_round = tournament.matches.filter(round=current_round)
-    if current_round in [-1, -3]: # round -1:決勝戦, -3:3位決定戦
-        final_match = tournament.matches.get(round=-1)
-        third_place_match = tournament.matches.get(round=-3)
-        if final_match.status == 'after' and third_place_match.status == 'after':
-            finalize_tournament(tournament)
-    elif all(m.status == 'after' for m in matched_in_round):
-#        if current_round in [-1, -3]: # round -1:決勝戦, -3:3位決定戦
-#            finalize_tournament(tournament)
-#        else:
-            create_next_round(tournament, current_round)
-
-def finalize_tournament(tournament):
-    logger.info('finalize_tournament in')
-    final_match = tournament.matches.get(round=-1)
-    third_place_match = tournament.matches.get(round=-3)
-    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
-
-    tournament.winner = final_match.winner
-    tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
-    tournament.third_place = third_place_match.winner
-    tournament.status = 'finished'
-    tournament.save()
-    tournament.finalize_result_json()
-    notify_players(tournament.name, entried_players_id_list, 'finished', False)
-
-def create_next_round(tournament, current_round):
-    logger.info('create_next_round in')
-    previous_round_matches = tournament.matches.filter(round=current_round)
-    winners = [match.winner for match in previous_round_matches if match.winner]
-    tournament.update_result_json(current_round)
-
-    if tournament.bye_player:
-        winners.append(tournament.bye_player)
-    
-    if len(winners) == 2:
-        create_final_round(tournament, winners, previous_round_matches)
-        return
-    
-    current_round += 1
-
-    create_matches(tournament, winners, current_round)
-
-    tournament.current_round = current_round
-    tournament.save()
-
-def create_final_round(tournament, winners, previous_round_matches):
-    logger.info('create_final_round in')
-    # 決勝戦
-    create_match(tournament, winners[0], winners[1], round=-1)
-
-    semifinal_losers = [
-        match.player1 if match.winner == match.player2 else match.player2 for match in previous_round_matches
-    ]
-    # 3位決定戦
-    create_match(tournament, semifinal_losers[0], semifinal_losers[1], round=-3)
-
-def create_match(tournament, player1, player2, round, game_name='pong'):
-    match = Match.objects.create(
-        tournament=tournament,
-        player1=player1,
-        player2=player2,
-        round=round,
-        game_name=game_name,
-        status='before'
-    )
-    match.save()
-    tournament.matches.add(match)
-    tournament.save()
-    async_to_sync(send_tournament_match_jwt)(match)
-
-def create_matches(tournament, players, round_number):
-    number_of_players = len(players)
-    logger.info(f'create_matches in : number_of_players:{number_of_players}')
-    matches = []
-
-    for i in range(0, len(players) - 1, 2):
-        player1 = players[i]
-        player2 = players[i + 1]
-        match = Match(
-            tournament=tournament,
-            round=round_number,
-            player1=player1,
-            player2=player2,
-            status='before'
-        )
-        match.save()
-        matches.append(match)
-        async_to_sync(send_tournament_match_jwt)(match)
-
-    if len(players) % 2 == 1:
-        tournament.bye_player = players[-1] # 最後の要素のPlayer
-    else:
-        tournament.bye_player = None
-
-    logger.info(f'Type of matches: {type(matches)}')  # 型を確認
-    number_of_matches = len(matches)
-    logger.info(f'size of macthes: {number_of_matches}')
-   #Match.objects.bulk_create(matches)
-    tournament.matches.add(*matches)
-    tournament.save()
-    
-
-
