@@ -64,11 +64,11 @@ async def handle_enter_tournament_room(consumer, token, data):
     await send_to_client(consumer, message)
     logger.info(f'Sent {tournament_name} room permission to {user.username}')
 
-# ongoingのトーナメントである場合にEntryを返す
+# preparingのトーナメントである場合にEntryを返す(控室enter check)
 @database_sync_to_async
 def get_entry(player, tournament_name):
     try:
-        tournament = Tournament.objects.get(name=tournament_name, status='ongoing')
+        tournament = Tournament.objects.get(name=tournament_name, status='preparing')
     except Tournament.DoesNotExist:
         return None
     try:

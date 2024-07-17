@@ -88,9 +88,12 @@ const loadGameContent = async (data) => {
     sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
 
     if (type === 'gameSessionTournament') {
-        sessionStorage.setItem('tournament_id', tournament_id);
-        window.history.pushState({}, null, `/tournament/detail:${tournament_id}`);
-        await router(true);
+        const tournamentId = sessionStorage.getItem("tournament_id");
+        //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
+        if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {
+            window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
+            await router(true);
+        }
         await new Promise(resolve => setTimeout(resolve, 5000));
     }
 
@@ -300,7 +303,7 @@ const handleTournamentReceived = (data) => {
     }
 }
 
-const handleTournamentMatchReceived = (data) => {
+const handleTournamentMatchReceived = async (data) => {
     const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
 
     if (data.action === 'tournament_prepare') {
@@ -309,20 +312,28 @@ const handleTournamentMatchReceived = (data) => {
             updateUpcomingTournamentList(currentPage).then(() => {});
             updateOngoingTournamentList(currentPage).then(() => {});
         }
-    } else if (data.action === 'tournament_call') {
+    } else if (data.action === 'tournament_room') {
         addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
         enterTournamentRoomRequest(data.name);
     } else if (data.action === 'tournament_match') {
         addNotice(`トーナメント ${data.name} を開始します`);
     } else if (data.action === 'enterRoom') {
+        sessionStorage.setItem('tournament_id', data.id);
         addNotice(`トーナメント ${data.name} の控室に移動します`);
-        showModalTournamentRoom(data);
+        if (window.location.pathname !== `/tournament/detail:${data.id}`) {
+            window.history.pushState({}, null, `/tournament/detail:${data.id}`);
+            await router(true);
+        }
     } else if (data.action === 'canceled') {
         addNotice(`トーナメント ${data.name} は催行人数に達しなかったためキャンセルされました`, true);
         if (currentPage) {
             updateUpcomingTournamentList(currentPage).then(() => {});
             updateOngoingTournamentList(currentPage).then(() => {});
         }
+    } else if (data.action === 'finished') {
+        addNotice(`トーナメント ${data.name} は終了しました`);
+        sessionStorage.removeItem('tournament_id');
+        console.log(`/////ここで結果表示`)
     }
     console.log(`${data.name} ${data.action}の通知です`);
 }

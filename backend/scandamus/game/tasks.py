@@ -54,7 +54,7 @@ def check_tournament_start_times():
         notify_players.delay(tournament_name, entried_players_id_list, 'tournament_prepare', True)
 
         # 2分前になると控室集合の通知
-        #notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_call', True), countdown=(tournament.start - now - timedelta(minutes=2)).total_seconds())
+        notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_room', True), countdown=(tournament.start - now - timedelta(minutes=2)).total_seconds())
         
         # 開始時刻の通知
         # notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_match', True), countdown=(tournament.start - now).total_seconds())
@@ -143,6 +143,7 @@ def finalize_tournament(tournament):
     logger.info('finalize_tournament in')
     final_match = tournament.matches.get(round=-1)
     third_place_match = tournament.matches.get(round=-3)
+    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
 
     tournament.winner = final_match.winner
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
@@ -150,6 +151,7 @@ def finalize_tournament(tournament):
     tournament.status = 'finished'
     tournament.save()
     tournament.finalize_result_json()
+    notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
 def create_next_round(tournament, current_round):
     logger.info('create_next_round in')
