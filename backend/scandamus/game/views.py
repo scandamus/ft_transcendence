@@ -78,16 +78,20 @@ class MatchViewSet(ModelViewSet):
 
     def update_player_status_after_match(self, match):
         num_matches = match.tournament.matches.filter(round=match.round).count()
-        if num_matches == 2: # 準決勝
+        if num_matches == 2 and match.tournament.bye_player is None: # 準決勝
             self.set_all_players_status(match, 'tournament_room')
         elif match.round > 0:
-            loser = match.player1 if match.winner == match.player1 else match.player2
+            loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
             loser.save()
             match.winner.status = 'tournament_room'
             match.winner.save()
-        elif match.round in [-1, -3]: # 決勝or3位決定戦
+        elif match.round in [-1, -3, -6]: # 決勝or3位決定戦
             self.reset_all_players_status(match)
+        elif match.round == -5: # 3人順決勝の2戦目
+            loser = match.player2 if match.winner == match.player1 else match.player1
+            loser.status = 'waiting'
+            loser.save()
 
     def set_all_players_status(self, match, status):
         players = [match.player1, match.player2, match.player3, match.player4]
