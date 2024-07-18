@@ -267,7 +267,7 @@ hr {
 }
 
 .unitButton-large {
-  font-size: 2.9rem;;
+  font-size: 2.9rem;
 }
 
 .unitButton-small {
@@ -599,7 +599,7 @@ input[type="password"],
 input[type="datetime-local"],
 select {
   padding: 0.2em 0.5em;
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
   background-color: var(--color-black-alpha);
   border: 1px solid var(--color-white);
   color: var(--color-white);
@@ -652,7 +652,7 @@ input.has-input:invalid {
 }
 
 .blockForm_list li {
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
 }
 
 .blockForm_list li:not(:last-child) {
@@ -666,7 +666,7 @@ input.has-input:invalid {
 
 .unitFormInput_label {
   margin-bottom: 0.3em;
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
 }
 
 .unitFormInput_input input {
@@ -887,7 +887,7 @@ input.has-input:invalid {
 }
 
 .unitFriend_name {
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
   word-break: break-all;
 }
 
@@ -978,7 +978,7 @@ input.has-input:invalid {
 }
 
 .blockPlayerDetail_stats .unitWinCount {
-  font-size: 2.3rem;;
+  font-size: 2.3rem;
   line-height: 1.4;
 }
 
@@ -1071,7 +1071,7 @@ input.has-input:invalid {
   margin: 100px 0;
   padding: 0.5em;
   text-align: center;
-  font-size: 2.9rem;;
+  font-size: 2.9rem;
 }
 
 @media screen and (min-width: 768px) {
@@ -1303,7 +1303,7 @@ input.has-input:invalid {
   position: absolute;
   right: 0;
   margin-left: 1em;
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
   translate: -0.3em 0;
   transition: translate 0.1s ease;
 }
@@ -1373,7 +1373,7 @@ input.has-input:invalid {
 }
 
 .unitTournament_capacity strong {
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
 }
 
 .unitTournament_form .blockForm_button {
@@ -1430,7 +1430,8 @@ input.has-input:invalid {
   text-align: right;
 }
 
-.blockTournamentNextMatch {
+.blockTournamentNextMatch,
+.blockTournamentWaiting {
   display: none;
   align-content: center;
   box-sizing: border-box;
@@ -1440,20 +1441,63 @@ input.has-input:invalid {
   padding: 30px;
 }
 
-.blockTournamentNextMatch.is-show {
+.blockTournamentNextMatch.is-show,
+.blockTournamentWaiting.is-show {
   display: block;
 }
 
-.blockTournamentNextMatch_title {
+.blockTournamentWaiting.is-show {
+  animation: 3s linear infinite noisyFrame;
+  background: var(--color-burn2);
+}
+
+@keyframes noisyFrame {
+  0% {
+    box-shadow: -1px -1px var(--content-color1), 1px 1px var(--content-color2);
+  }
+  5% {
+    box-shadow: 3px 2px var(--content-color1), -3px -2px var(--content-color2);
+  }
+  10% {
+    box-shadow: -2px -3px var(--content-color1), 2px 3px var(--content-color2);
+  }
+  15% {
+    box-shadow: -1px -1px var(--content-color1), 1px 1px var(--content-color2);
+  }
+}
+
+.blockTournamentNextMatch_title,
+.blockTournamentWaiting_title {
   margin-bottom: 0.3em;
   text-align: center;
-  font-size: 4.2rem;
+  font-size: 3.6rem;
+}
+
+.blockTournamentWaiting_title {
+  animation: 3s linear infinite blinkText 1.5s;
+}
+
+@keyframes blinkText {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .blockNextMatch {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.blockTournamentWaiting_message {
+  font-size: 1.8rem;
+  text-align: center;
 }
 
 .blockNextMatch_vs {
@@ -1526,7 +1570,7 @@ input.has-input:invalid {
   font-optical-sizing: auto;
   font-weight: 500;
   font-style: normal;
-  font-size: 2.9rem;;
+  font-size: 2.9rem;
   translate: 0 -6px;
 }
 
@@ -1591,7 +1635,7 @@ input.has-input:invalid {
   line-height: 50px;
   text-align: center;
   letter-spacing: 0.1em;
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
 }
 
 .unitMatchPlayer,
@@ -1618,7 +1662,7 @@ input.has-input:invalid {
 .unitMatchPlayer_header {
   position: relative;
   flex: 0 0 calc(100% - 110px);
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
   word-break: break-all;
 }
 
@@ -1795,7 +1839,7 @@ input.has-input:invalid {
 
 .blockByePlayer_title {
   margin-right: 1em;
-  font-size: 2.2rem;;
+  font-size: 2.2rem;
 }
 
 .blockByePlayer_title::after {

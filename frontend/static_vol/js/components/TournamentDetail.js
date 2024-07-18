@@ -34,6 +34,12 @@ export default class TournamentDetail extends PageBase {
         return `
             <div class="wrapTournament">
                 <p class="blockTournamentStart">${formatDateToLocal(this.tournamentData.start)} START</p>
+                <section class="blockTournamentWaiting unitBox is-show">
+                    <h3 class="blockTournamentWaiting_title">Game Over</h3>
+                    <div class="blockTournamentWaiting_message">
+                        <p>決勝戦が進行中です。結果をお待ちください。</p>
+                    </div>
+                </section>
                 <section class="blockTournamentNextMatch unitBox">
                     <h3 class="blockTournamentNextMatch_title">next match</h3>
                     <div class="blockNextMatch"></div>
