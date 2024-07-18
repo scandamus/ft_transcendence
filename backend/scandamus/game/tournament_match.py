@@ -10,12 +10,10 @@ from django.db import transaction
 from .match_utils import authenticate_token, get_player_by_user
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
-from .tasks import notify_players
-
 
 #import random
 
-#from celery import shared_task
+from celery import shared_task
 #from django.utils import timezone
 #from datetime import timedelta
 
@@ -25,6 +23,7 @@ from .match_utils import send_tournament_match_jwt, notify_bye_player
 
 
 logger = logging.getLogger(__name__)
+
 
 async def handle_enter_tournament_room(consumer, token, data):
     from .consumers import LoungeSession
@@ -141,16 +140,20 @@ def handle_three_players_round(tournament, current_round):
         finalize_tounrnament_by_three_players(tournament)
 
 def finalize_tounrnament_by_three_players(tournament):
+    from .tasks import notify_players
     logger.info('finalize_tournament_by_three_players in')
     final_match = tournament.matches.filter(round=-6).order_by('-id').first()
+    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
 
     tournament.winner = final_match.winner
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
     tournament.status = 'finished'
     tournament.save()
     tournament.finalize_result_json(True)
+    notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
 def finalize_tournament(tournament):
+    from .tasks import notify_players
     logger.info('finalize_tournament in')
     final_match = tournament.matches.filter(round=-1).order_by('-id').first()
     third_place_match = tournament.matches.filter(round=-3).order_by('-id').first()
