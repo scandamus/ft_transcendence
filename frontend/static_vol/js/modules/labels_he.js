@@ -129,6 +129,8 @@ export const labels_he = {
         msgWaitStart: '<p></p>',
         labelWaitRound: '',
         msgWaitRound: '<p></p>',
+        labelWaitSemiFinal: '',
+        msgWaitSemiFinal: '<p></p>',
     },
     modal: {
         labelNickname: 'כינוי',

@@ -1479,22 +1479,6 @@ input.has-input:invalid {
   font-size: 3.6rem;
 }
 
-.blockTournamentWaiting_title {
-  animation: 3s linear infinite blinkText 1.5s;
-}
-
-@keyframes blinkText {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .blockNextMatch {
   display: flex;
   justify-content: space-between;

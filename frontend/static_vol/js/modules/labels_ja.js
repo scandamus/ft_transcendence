@@ -129,6 +129,8 @@ export const labels_ja = {
         msgWaitStart: '<p>もうすぐトーナメントが開始されます</p>',
         labelWaitRound: 'ラウンド終了待ち',
         msgWaitRound: '<p>ラウンド終了までお待ちください</p>',
+        labelWaitSemiFinal: '準決勝対戦待ち',
+        msgWaitSemiFinal: '<p>対戦開始までお待ちください</p>',
     },
     modal: {
         labelNickname: 'ニックネーム',

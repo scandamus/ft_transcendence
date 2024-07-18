@@ -172,15 +172,16 @@ def create_next_round(tournament, current_round):
     logger.info('create_next_round in')
     previous_round_matches = tournament.matches.filter(round=current_round)
     winners = [match.winner for match in previous_round_matches if match.winner]
-    losers = [match.player for match in previous_round_matches if match.player and match.player not in winners]
+    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
     tournament.update_result_json(current_round)
-
-    notify_players(tournament.name, losers, 'roundEnd', False)
 
     if tournament.bye_player:
         winners.insert(0, tournament.bye_player)
         tournament.bye_player == None
         tournament.save()
+
+    losers = [player_id for player_id in entried_players_id_list if player_id not in [player.id for player in winners]]
+    notify_players(tournament.name, losers, 'roundEnd', False)
     
     number_of_winners = len(winners)
     if number_of_winners == 2:
@@ -190,7 +191,7 @@ def create_next_round(tournament, current_round):
         create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
         tournament.bye_player = winners[-1]
         tournament.save()
-        notify_bye_player(tournament)#3人準決勝待ち TODO: 特別なメッセージ？
+        notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#3人準決勝待ち
         return
     
     current_round += 1

@@ -349,6 +349,11 @@ const handleTournamentMatchReceived = async (data) => {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitBye, labels.tournament.msgWaitBye);
             await PageBase.instance.generateTournamentResult();
         }
+    } else if (data.action === 'notifyWaitSemiFinal') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitSemiFinal, labels.tournament.msgWaitSemiFinal);
+            await PageBase.instance.generateTournamentResult();
+        }
     } else if (data.action === 'roundEnd') {
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitLose, labels.tournament.msgWaitLose);

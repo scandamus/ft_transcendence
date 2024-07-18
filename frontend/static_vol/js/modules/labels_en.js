@@ -111,7 +111,7 @@ export const labels_en = {
         labelRound2: 'Second Round',
         labelRound3: 'Third Round',
         labelRoundThirdPlaceRound: 'Third Place Round',
-        labelRoundSemiFinal: 'Semifinal Round',
+        labelRoundSemiFinal: 'Semi-final Round',
         labelRoundFinal: 'Final Round',
         labelByePlayer: 'Bye',
         labelWinner: '<strong>Winner</strong>',
@@ -129,6 +129,8 @@ export const labels_en = {
         msgWaitStart: '<p>The tournament will start soon</p>',
         labelWaitRound: 'Waiting for Round End',
         msgWaitRound: '<p>Please wait for the round to end</p>',
+        labelWaitSemiFinal: 'Waiting for Semi-final Match',
+        msgWaitSemiFinal: '<p>Please wait for the semi-final match to start</p>',
     },
     modal: {
         labelNickname: 'nickname',
