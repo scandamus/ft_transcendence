@@ -40,9 +40,15 @@ class TournamentListView(generics.ListAPIView):
         status = self.kwargs.get('status')
         if status:
             if status == 'ongoing': # frontendでは'preparing'も含める
-                return Tournament.objects.filter(Q(status=status) | Q(status='preparing')).order_by('start')
-            return Tournament.objects.filter(status=status).order_by('start')
-        return Tournament.objects.all().order_by('start')
+                queryset = Tournament.objects.filter(Q(status=status) | Q(status='preparing')).order_by('start')
+            elif status == 'finished': # finishedは降順
+                queryset = Tournament.objects.filter(status=status).order_by('-start')
+            else:
+                queryset = Tournament.objects.filter(status=status).order_by('start')
+        else:
+            queryset = Tournament.objects.all().order_by('start')
+        # 新しいもの10件表示
+        return queryset[:10]
 
 # コンテナ内部からのみのルーティングとなるため認証なし
 class MatchViewSet(ModelViewSet):
