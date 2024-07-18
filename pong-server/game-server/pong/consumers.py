@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
+    PADDLE_SPEED = 7
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
