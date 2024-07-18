@@ -131,14 +131,14 @@ def handle_three_players_round(tournament, current_round):
         create_match(tournament, first_loser, tournament.bye_player, -5)
         tournament.bye_player = None
         tournament.save()
-        notify_players(tournament.name, [previous_round_match.winner.id], 'notifyWaitSemiFinal', False)#1戦目勝者は準決勝待ち
+        notify_players(tournament.name, [previous_round_match.winner.id], 'notifyWaitFinal', False)#1戦目勝者は決勝待ち
     elif current_round == -5:
         first_match = tournament.matches.filter(round=-4).order_by('-id').first()
         second_match = tournament.matches.filter(round=-5).order_by('-id').first()
         tournament.third_place = second_match.player1 if second_match.winner == second_match.player2 else second_match.player2
         tournament.save()
         create_match(tournament, first_match.winner, second_match.winner, -6)
-        notify_players(tournament.name, [tournament.third_place.id], 'notifyWaitFinal', False)#3位には決勝戦進行中表示
+        notify_players(tournament.name, [tournament.third_place.id], 'notifyFinalOnGoing', False)#3位には決勝戦進行中表示
     elif current_round == -6:
         finalize_tounrnament_by_three_players(tournament)
 
@@ -194,7 +194,7 @@ def create_next_round(tournament, current_round):
         create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
         tournament.bye_player = winners[-1]
         tournament.save()
-        notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#3人準決勝待ち
+        notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#準決勝2戦目待ち
         return
     
     current_round += 1

@@ -96,7 +96,7 @@ const loadGameContent = async (data) => {
         }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             await PageBase.instance.generateTournamentResult();
-            PageBase.instance.displayNextMatch(all_usernames);
+            PageBase.instance.displayNextMatch(all_usernames, round);
         }
         await new Promise(resolve => setTimeout(resolve, 5000));
     }
@@ -358,7 +358,10 @@ const handleTournamentMatchReceived = async (data) => {
     } else if (data.action === 'notifyWaitFinal') {
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitFinal, labels.tournament.msgWaitFinal);
-            await PageBase.instance.generateTournamentResult();
+        }
+    } else if (data.action === 'notifyFinalOnGoing') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelFinalOnGoing, labels.tournament.msgFinalOnGoing);
         }
     } else if (data.action === 'roundEnd') {
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {

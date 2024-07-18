@@ -107,6 +107,7 @@ export const labels_ar = {
         descTournamentTitle: [''],
         descTournamentStart: [''],
         descNickname: [''],
+        labelNextMatch: '',
         labelRound1: '',
         labelRound2: '',
         labelRound3: '',
@@ -133,6 +134,8 @@ export const labels_ar = {
         msgWaitSemiFinal: '<p></p>',
         labelWaitFinal: '',
         msgWaitFinal: '<p></p>',
+        labelFinalOnGoing: '',
+        msgFinalOnGoing: '<p></p>',
     },
     modal: {
         labelNickname: 'اللقب',

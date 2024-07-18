@@ -20,9 +20,11 @@ export default class TournamentDetail extends PageBase {
         this.tournamentData = ``;
         this.renderedRounds = new Set();
         this.elWaiting = null;
+        this.elNextMatchWrap = null;
         this.elNextMatch = null;
-        this.elWaitingTitle = '';
-        this.elWaitingContent = '';
+        this.elNextMatchTitle = null;
+        this.elWaitingTitle = null;
+        this.elWaitingContent = null;
         this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
 
         //afterRenderにmethod追加
@@ -46,7 +48,7 @@ export default class TournamentDetail extends PageBase {
                     </div>
                 </section>
                 <section class="blockTournamentNextMatch unitBox">
-                    <h3 class="blockTournamentNextMatch_title">next match</h3>
+                    <h3 class="blockTournamentNextMatch_title"></h3>
                     <div class="blockNextMatch"></div>
                 </section>
                 <div class="blockTournamentRanking unitBox"></div>
@@ -56,7 +58,9 @@ export default class TournamentDetail extends PageBase {
 
     getDomElements() {
         this.elWaiting = document.querySelector('.blockTournamentWaiting');
-        this.elNextMatch = document.querySelector('.blockTournamentNextMatch');
+        this.elNextMatchWrap = document.querySelector('.blockTournamentNextMatch');
+        this.elNextMatch = this.elNextMatchWrap.querySelector('.blockNextMatch');
+        this.elNextMatchTitle = this.elNextMatchWrap.querySelector('.blockTournamentNextMatch_title');
         this.elWaitingTitle = this.elWaiting.querySelector('.blockTournamentWaiting_title');
         this.elWaitingContent = this.elWaiting.querySelector('.blockTournamentWaiting_message');
         if (sessionStorage.getItem('tournament_status') === 'waiting_start') {
@@ -183,7 +187,7 @@ export default class TournamentDetail extends PageBase {
         }
         resultHtml += `
             <section class="blockTournamentRound">
-                <h3 class="blockTournamentList_title unitTitle1">${labelRound}</h3>
+                <h3 class="blockTournamentRound_title unitTitle1">${labelRound}</h3>
                 <div class="blockTournamentRound_listMatch${listSemifinal} listLineDivide">`;
             for (const match of matches.matches) {
                 resultHtml += this.generateMatch(match);
@@ -204,8 +208,9 @@ export default class TournamentDetail extends PageBase {
         return resultHtml;
     }
 
-    displayNextMatch(all_usernames) {
+    displayNextMatch(all_usernames, round) {
         this.hideWaiting();
+        let labelRound = '';
         this.elNextMatch.innerHTML = `
             <section class="blockNextMatch_player unitNextMatchPlayer">
                 <h4 class="unitNextMatchPlayer_title">${all_usernames[0].username}</h4>
@@ -216,7 +221,21 @@ export default class TournamentDetail extends PageBase {
                 <h4 class="unitNextMatchPlayer_title">${all_usernames[1].username}</h4>
                 <img src="${all_usernames[1].avatar || '/images/avatar_default.png'}" alt="" width="100" height="100" class="unitNextMatchPlayer_thumb">
             </section>`;
-        this.elNextMatch.classList.add('is-show');
+        if (round === -1 || round === -6) {
+            labelRound = labels.tournament.labelRoundFinal;
+        } else if (round === -4 || round === -5) {
+            labelRound = labels.tournament.labelRoundSemiFinal;
+        } else if (round === -3) {
+            labelRound = labels.tournament.labelRoundThirdPlaceRound
+        } else if (round === 3) {
+            labelRound = labels.tournament.labelRound3;
+        } else if (round === 2) {
+            labelRound = labels.tournament.labelRound2;
+        } else if (round === 1) {
+            labelRound = labels.tournament.labelRound1;
+        }
+        this.elNextMatchTitle.innerHTML = `<small>${labels.tournament.labelNextMatch}</small><strong>${labelRound}</strong>`;
+        this.elNextMatchWrap.classList.add('is-show');
     }
 
     displayWaiting(title, contents) {

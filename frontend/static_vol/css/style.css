@@ -1444,10 +1444,7 @@ input.has-input:invalid {
   align-content: center;
 }
 
-.blockTournamentNextMatch.is-show {
-  display: flex;
-}
-
+.blockTournamentNextMatch.is-show,
 .blockTournamentWaiting.is-show {
   display: block;
 }
@@ -1476,7 +1473,22 @@ input.has-input:invalid {
 .blockTournamentWaiting_title {
   margin-bottom: 0.3em;
   text-align: center;
-  font-size: 3.6rem;
+  font-size: 3.2rem;
+}
+
+.blockTournamentNextMatch_title small,
+.blockTournamentNextMatch_title strong{
+  display: inline-block;
+}
+
+.blockTournamentNextMatch_title small {
+  margin-right: 0.5em;
+  font-size: 2rem;
+}
+
+.blockTournamentNextMatch_title small::after  {
+  content: ":";
+  margin-left: 0.2em;
 }
 
 .blockNextMatch {
