@@ -168,10 +168,14 @@ def finalize_tournament(tournament):
     notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
 def create_next_round(tournament, current_round):
+    from .tasks import notify_players
     logger.info('create_next_round in')
     previous_round_matches = tournament.matches.filter(round=current_round)
     winners = [match.winner for match in previous_round_matches if match.winner]
+    losers = [match.player for match in previous_round_matches if match.player and match.player not in winners]
     tournament.update_result_json(current_round)
+
+    notify_players(tournament.name, losers, 'roundEnd', False)
 
     if tournament.bye_player:
         winners.insert(0, tournament.bye_player)

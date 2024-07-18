@@ -1433,7 +1433,6 @@ input.has-input:invalid {
 .blockTournamentNextMatch,
 .blockTournamentWaiting {
   display: none;
-  align-content: center;
   box-sizing: border-box;
   width: 640px;
   max-width: 100%;
@@ -1441,7 +1440,14 @@ input.has-input:invalid {
   padding: 30px;
 }
 
-.blockTournamentNextMatch.is-show,
+.blockTournamentNextMatch {
+  align-content: center;
+}
+
+.blockTournamentNextMatch.is-show {
+  display: flex;
+}
+
 .blockTournamentWaiting.is-show {
   display: block;
 }

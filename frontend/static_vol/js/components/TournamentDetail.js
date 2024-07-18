@@ -19,9 +19,14 @@ export default class TournamentDetail extends PageBase {
         this.id = params.id.split(':')[1];
         this.tournamentData = ``;
         this.renderedRounds = new Set();
+        this.elWaiting = null;
+        this.elNextMatch = null;
+        this.elWaitingTitle = '';
+        this.elWaitingContent = '';
         this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
 
         //afterRenderにmethod追加
+        this.addAfterRenderHandler(this.getDomElements.bind(this));
         this.addAfterRenderHandler(this.generateTournamentResult.bind(this));
     }
 
@@ -34,10 +39,10 @@ export default class TournamentDetail extends PageBase {
         return `
             <div class="wrapTournament">
                 <p class="blockTournamentStart">${formatDateToLocal(this.tournamentData.start)} START</p>
-                <section class="blockTournamentWaiting unitBox is-show">
-                    <h3 class="blockTournamentWaiting_title">Game Over</h3>
+                <section class="blockTournamentWaiting unitBox">
+                    <h3 class="blockTournamentWaiting_title"></h3>
                     <div class="blockTournamentWaiting_message">
-                        <p>決勝戦が進行中です。結果をお待ちください。</p>
+                        <p></p>
                     </div>
                 </section>
                 <section class="blockTournamentNextMatch unitBox">
@@ -47,6 +52,18 @@ export default class TournamentDetail extends PageBase {
                 <div class="blockTournamentRanking unitBox"></div>
                 <div class="wrapTournamentRound"></div>
             </div>`;
+    }
+
+    getDomElements() {
+        this.elWaiting = document.querySelector('.blockTournamentWaiting');
+        this.elNextMatch = document.querySelector('.blockTournamentNextMatch');
+        this.elWaitingTitle = this.elWaiting.querySelector('.blockTournamentWaiting_title');
+        this.elWaitingContent = this.elWaiting.querySelector('.blockTournamentWaiting_message');
+        if (sessionStorage.getItem('tournament_status') === 'waiting_start') {
+            this.displayWaiting(labels.tournament.labelWaitStart, labels.tournament.msgWaitStart);
+        } else if (sessionStorage.getItem('tournament_status') === 'waiting_round') {
+            this.displayWaiting(labels.tournament.labelWaitRound, labels.tournament.msgWaitRound);
+        }
     }
 
     async generateTournamentResult() {
@@ -144,7 +161,6 @@ export default class TournamentDetail extends PageBase {
     }
 
     generateRoundList(matches) {
-        console.log(`matches.round ${matches.round}`)
         let resultHtml = '';
         let labelRound = '';
         const listSemifinal = matches.round === -4 ? ' listSemifinal' : '';
@@ -189,9 +205,8 @@ export default class TournamentDetail extends PageBase {
     }
 
     displayNextMatch(all_usernames) {
-        const blockTournamentNextMatch = document.querySelector('.blockTournamentNextMatch');
-        const blockNextMatch = document.querySelector('.blockNextMatch');
-        blockNextMatch.innerHTML = `
+        this.hideWaiting();
+        this.elNextMatch.innerHTML = `
             <section class="blockNextMatch_player unitNextMatchPlayer">
                 <h4 class="unitNextMatchPlayer_title">${all_usernames[0].username}</h4>
                 <img src="${all_usernames[0].avatar || '/images/avatar_default.png'}" alt="" width="100" height="100" class="unitNextMatchPlayer_thumb">
@@ -201,7 +216,24 @@ export default class TournamentDetail extends PageBase {
                 <h4 class="unitNextMatchPlayer_title">${all_usernames[1].username}</h4>
                 <img src="${all_usernames[1].avatar || '/images/avatar_default.png'}" alt="" width="100" height="100" class="unitNextMatchPlayer_thumb">
             </section>`;
-        blockTournamentNextMatch.classList.add('is-show');
+        this.elNextMatch.classList.add('is-show');
+    }
+
+    displayWaiting(title, contents) {
+        this.elWaitingTitle.textContent = title;
+        this.elWaitingContent.innerHTML = contents;
+        if (!this.elWaiting.classList.contains('is-show')) {
+            this.elWaiting.classList.add('is-show');
+        }
+    }
+
+    hideWaiting() {
+        if (this.elWaiting.classList.contains('is-show')) {
+            this.elWaitingTitle.textContent = '';
+            this.elWaitingContent.innerHTML = '';
+            this.elWaiting.classList.remove('is-show');
+        }
+        sessionStorage.removeItem('tournament_status');
     }
 
     destroy() {

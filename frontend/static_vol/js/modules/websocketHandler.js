@@ -323,6 +323,7 @@ const handleTournamentMatchReceived = async (data) => {
         addNotice(`トーナメント ${data.name} を開始します`);
     } else if (data.action === 'enterRoom') {
         sessionStorage.setItem('tournament_id', data.id);
+        sessionStorage.setItem('tournament_status', 'waiting_start');
         addNotice(`トーナメント ${data.name} の控室に移動します`);
         if (window.location.pathname !== `/tournament/detail:${data.id}`) {
             window.history.pushState({}, null, `/tournament/detail:${data.id}`);
@@ -340,10 +341,19 @@ const handleTournamentMatchReceived = async (data) => {
         addNotice(`トーナメント ${data.name} は終了しました`);
         sessionStorage.removeItem('tournament_id');
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.hideWaiting();
             await PageBase.instance.generateTournamentResult();
         }
     } else if (data.action === 'notifyByePlayer') {
-        addNotice(`トーナメント ${data.name} の現在のマッチは不戦勝になりました。しばらくお待ち下さい`)
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitBye, labels.tournament.msgWaitBye);
+            await PageBase.instance.generateTournamentResult();
+        }
+    } else if (data.action === 'roundEnd') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitLose, labels.tournament.msgWaitLose);
+            await PageBase.instance.generateTournamentResult();
+        }
     }
     console.log(`${data.name} ${data.action}の通知です`);
 }

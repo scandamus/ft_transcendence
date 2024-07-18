@@ -180,6 +180,7 @@ export default class GamePlay extends PageBase {
                     this.containerId = '';
                     const tournamentId = sessionStorage.getItem("tournament_id");
                     if (tournamentId) {
+                        sessionStorage.setItem('tournament_status', 'waiting_round');
                         window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
                     } else {
                         window.history.pushState({}, null, "/dashboard");
