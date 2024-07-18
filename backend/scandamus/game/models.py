@@ -102,7 +102,8 @@ class Tournament(models.Model):
         result.append({
             "round": round,
             "matches": round_result,
-            "bye_player": bye_player_entry.nickname if bye_player_entry else None
+            "bye_player": bye_player_entry.nickname if bye_player_entry else None,
+            "bye_player_id": bye_player_entry.player.id
         })
         self.result_json = json.dumps(result)
         self.save()
@@ -118,8 +119,8 @@ class Tournament(models.Model):
                 "player2": player2_entry.nickname if player2_entry else None,
                 "score1": match.score1,
                 "score2": match.score2,
-                "avatar1": match.player1.avatar.url if match.player1.avatar else None,
-                "avatar2": match.player2.avatar.url if match.player2.avatar else None,
+                "player1_id": match.player1.id,
+                "player2_id": match.player2.id,
                 "winner": winner_entry.nickname if winner_entry else None
             })
         return round_result
@@ -141,11 +142,11 @@ class Tournament(models.Model):
         rankings = {
             "rankings": {
                 "winner": winner_entry.nickname if winner_entry else None,
-                "winner_avatar": self.winner.avatar.url if self.winner.avatar else None,
+                "winner_id": self.winner.id,
                 "second": second_place_entry.nickname if second_place_entry else None,
-                "second_avatar": self.second_place.avatar.url if self.second_place.avatar else None,
+                "second_id": self.second_place.id,
                 "third": third_place_entry.nickname if third_place_entry else None,
-                "third_avatar": self.third_place.avatar.url if self.third_place.avatar else None,
+                "third_id": self.third_place.id
             }
         }
         result.append(rankings)

@@ -25,6 +25,7 @@ export default class TournamentDetail extends PageBase {
         this.elNextMatchTitle = null;
         this.elWaitingTitle = null;
         this.elWaitingContent = null;
+        this.avatarMap = null;
         this.breadcrumbLinks.push({ href: '/tournament', text: 'tournament' });
 
         //afterRenderにmethod追加
@@ -37,6 +38,7 @@ export default class TournamentDetail extends PageBase {
         this.title = this.tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+        this.avatarMap = this.tournamentData.player_avatar_map;
 
         return `
             <div class="wrapTournament">
@@ -90,9 +92,9 @@ export default class TournamentDetail extends PageBase {
     }
 
     generateRankingList(rankings) {
-        const avatar1 = rankings.winner_avatar ? rankings.winner_avatar : `/images/avatar_default.png`;
-        const avatar2 = rankings.second_avatar ? rankings.second_avatar : `/images/avatar_default.png`;
-        const avatar3 = rankings.third_avatar ? rankings.third_avatar : `/images/avatar_default.png`;
+        const avatar1 = this.avatarMap[rankings.winner_id] ? this.avatarMap[rankings.winner_id] : `/images/avatar_default.png`;
+        const avatar2 = this.avatarMap[rankings.second_id] ? this.avatarMap[rankings.second_id] : `/images/avatar_default.png`;
+        const avatar3 = this.avatarMap[rankings.third_id] ? this.avatarMap[rankings.third_id] : `/images/avatar_default.png`;
         return `
             <dl class="unitRanker">
                 <dt class="unitRanker_rank unitRanker_rank-1"><span>${labels.tournament.labelWinner}</span></dt>
@@ -119,8 +121,8 @@ export default class TournamentDetail extends PageBase {
 
     generateMatch(match) {
         let matchHtml = '';
-        const avatar1 = match.avatar1 ? match.avatar1 : `/images/avatar_default.png`;
-        const avatar2 = match.avatar2 ? match.avatar2 : `/images/avatar_default.png`;
+        const avatar1 = this.avatarMap[match.player1_id] ? this.avatarMap[match.player1_id] : `/images/avatar_default.png`;
+        const avatar2 = this.avatarMap[match.player2_id] ? this.avatarMap[match.player2_id] : `/images/avatar_default.png`;
         matchHtml += `
                 <div class="blockMatch">
                     <section class="blockMatch_player unitMatchPlayer">
@@ -193,11 +195,12 @@ export default class TournamentDetail extends PageBase {
                 resultHtml += this.generateMatch(match);
             }
             if (matches.bye_player) {
+                const avatarBye = this.avatarMap[matches.bye_player_id] ? this.avatarMap[match.bye_player_id] : `/images/avatar_default.png`;
                 resultHtml += `
                     <section class="blockByePlayer">
                         <h4 class="blockByePlayer_title">${labels.tournament.labelByePlayer}</h4>
                         <p class="blockByePlayer_player">
-                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                            <img src="${avatarBye}" alt="" width="50" height="50">
                             <span>${matches.bye_player}</span>
                         </p>
                     </section>`;
