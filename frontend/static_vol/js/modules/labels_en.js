@@ -131,6 +131,8 @@ export const labels_en = {
         msgWaitRound: '<p>Please wait for the round to end</p>',
         labelWaitSemiFinal: 'Waiting for Semi-final Match',
         msgWaitSemiFinal: '<p>Please wait for the semi-final match to start</p>',
+        labelWaitFinal: 'labelWaitFinal',
+        msgWaitFinal: '<p>msgWaitFinal</p>',
     },
     modal: {
         labelNickname: 'nickname',

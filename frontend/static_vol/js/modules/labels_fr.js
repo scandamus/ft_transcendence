@@ -131,6 +131,8 @@ export const labels_fr = {
         msgWaitRound: '<p></p>',
         labelWaitSemiFinal: '',
         msgWaitSemiFinal: '<p></p>',
+        labelWaitFinal: '',
+        msgWaitFinal: '<p></p>',
     },
     modal: {
         labelNickname: 'pseudo',

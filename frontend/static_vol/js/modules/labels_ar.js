@@ -131,6 +131,8 @@ export const labels_ar = {
         msgWaitRound: '<p></p>',
         labelWaitSemiFinal: '',
         msgWaitSemiFinal: '<p></p>',
+        labelWaitFinal: '',
+        msgWaitFinal: '<p></p>',
     },
     modal: {
         labelNickname: 'اللقب',

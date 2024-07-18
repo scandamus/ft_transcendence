@@ -123,6 +123,7 @@ def report_match_result(match_id):
 # 2戦目（round==-5）: 1戦目の敗者 vs C　（敗者は3位）
 # 3戦目（round==-6）: 1戦目の勝者 vs 2戦目の勝者　（勝者は1位、敗者は2位）
 def handle_three_players_round(tournament, current_round):
+    from .tasks import notify_players
     logger.info('handle_three_players_round')
     previous_round_match = tournament.matches.filter(round=current_round).order_by('-id').first()
     if current_round == -4:
@@ -130,12 +131,14 @@ def handle_three_players_round(tournament, current_round):
         create_match(tournament, first_loser, tournament.bye_player, -5)
         tournament.bye_player = None
         tournament.save()
+        notify_players(tournament.name, [previous_round_match.winner.id], 'notifyWaitSemiFinal', False)#1戦目勝者は準決勝待ち
     elif current_round == -5:
         first_match = tournament.matches.filter(round=-4).order_by('-id').first()
         second_match = tournament.matches.filter(round=-5).order_by('-id').first()
         tournament.third_place = second_match.player1 if second_match.winner == second_match.player2 else second_match.player2
         tournament.save()
         create_match(tournament, first_match.winner, second_match.winner, -6)
+        notify_players(tournament.name, [tournament.third_place.id], 'notifyWaitFinal', False)#3位には決勝戦進行中表示
     elif current_round == -6:
         finalize_tounrnament_by_three_players(tournament)
 

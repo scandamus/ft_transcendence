@@ -344,6 +344,7 @@ const handleTournamentMatchReceived = async (data) => {
             PageBase.instance.hideWaiting();
             await PageBase.instance.generateTournamentResult();
         }
+        sessionStorage.removeItem('tournament_status');
     } else if (data.action === 'notifyByePlayer') {
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitBye, labels.tournament.msgWaitBye);
@@ -352,6 +353,11 @@ const handleTournamentMatchReceived = async (data) => {
     } else if (data.action === 'notifyWaitSemiFinal') {
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitSemiFinal, labels.tournament.msgWaitSemiFinal);
+            await PageBase.instance.generateTournamentResult();
+        }
+    } else if (data.action === 'notifyWaitFinal') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitFinal, labels.tournament.msgWaitFinal);
             await PageBase.instance.generateTournamentResult();
         }
     } else if (data.action === 'roundEnd') {
