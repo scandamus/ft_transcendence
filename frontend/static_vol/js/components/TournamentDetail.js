@@ -50,7 +50,10 @@ export default class TournamentDetail extends PageBase {
         const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
         result.forEach(item => {
             if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
-                wrapTournamentRound.insertAdjacentHTML('afterbegin', this.generateRoundList(item));
+                const roundList = this.generateRoundList(item);
+                if (roundList) {
+                    wrapTournamentRound.insertAdjacentHTML('afterbegin', roundList);
+                }
                 this.renderedRounds.add(item.round);
             } else if (item.rankings !== undefined) {
                 blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
@@ -87,13 +90,68 @@ export default class TournamentDetail extends PageBase {
             </dl>`;
     }
 
+    generateMatch(match) {
+        let matchHtml = '';
+        const avatar1 = match.avatar1 ? match.avatar1 : `/images/avatar_default.png`;
+        const avatar2 = match.avatar2 ? match.avatar2 : `/images/avatar_default.png`;
+        matchHtml += `
+                <div class="blockMatch">
+                    <section class="blockMatch_player unitMatchPlayer">
+                        <header class="unitMatchPlayer_header">
+                            <img src="${avatar1}" alt="" width="50" height="50">
+                            <h4 class="unitMatchPlayer_title">${match.player1}</h4>
+                        </header>`;
+        if (match.score1) {
+            matchHtml += `
+                        <p class="unitMatchPlayer_score">${match.score1}</p>`;
+        } else {
+            matchHtml += `
+                        <p class="unitMatchPlayer_score">?</p>`;
+        }
+        if (match.winner === match.player1) {
+            matchHtml += `
+                        <p class="unitMatchPlayer_result">win</p>`;
+        }
+        matchHtml += `
+                    </section>
+                    <p class="blockMatch_vs">VS</p>
+                    <section class="blockMatch_player unitMatchPlayer">
+                        <header class="unitMatchPlayer_header">
+                            <img src="${avatar2}" alt="" width="50" height="50">
+                            <h4 class="unitMatchPlayer_title">${match.player2}</h4>
+                        </header>`;
+        if (match.score2) {
+            matchHtml += `
+                        <p class="unitMatchPlayer_score">${match.score2}</p>`;
+        } else {
+            matchHtml += `
+                        <p class="unitMatchPlayer_score">?</p>`;
+        }
+        if (match.winner === match.player2) {
+            matchHtml += `
+                        <p class="unitMatchPlayer_result">win</p>`;
+        }
+        matchHtml += `
+                    </section>
+                </div>`;
+        return matchHtml;
+    }
+
     generateRoundList(matches) {
+        console.log(`matches.round ${matches.round}`)
         let resultHtml = '';
         let labelRound = '';
-        if (matches.round === -1) {
+        const listSemifinal = matches.round === -4 ? ' listSemifinal' : '';
+        if (matches.round === -1 || matches.round === -6) {
             labelRound = labels.tournament.labelRoundFinal;
+        } else if (matches.round === -4) {
+            labelRound = labels.tournament.labelRoundSemiFinal;
+        } else if (matches.round === -5) {
+            const elListSemifinal = document.querySelector('.listSemifinal');
+            elListSemifinal.insertAdjacentHTML('afterbegin', this.generateMatch(matches.matches[0]));
+            return;
         } else if (matches.round === -3) {
-            labelRound = '3位決定戦';
+            labelRound = labels.tournament.labelRoundThirdPlaceRound
         } else if (matches.round === 3) {
             labelRound = labels.tournament.labelRound3;
         } else if (matches.round === 2) {
@@ -104,55 +162,24 @@ export default class TournamentDetail extends PageBase {
         resultHtml += `
             <section class="blockTournamentRound">
                 <h3 class="blockTournamentList_title unitTitle1">${labelRound}</h3>
-                <div class="blockTournamentRound_listMatch listLineDivide">`;
+                <div class="blockTournamentRound_listMatch${listSemifinal} listLineDivide">`;
             for (const match of matches.matches) {
-                const avatar1 = match.avatar1 ? match.avatar1 : `/images/avatar_default.png`;
-                const avatar2 = match.avatar2 ? match.avatar2 : `/images/avatar_default.png`;
+                resultHtml += this.generateMatch(match);
+            }
+            if (matches.bye_player) {
                 resultHtml += `
-                        <div class="blockMatch">
-                            <section class="blockMatch_player unitMatchPlayer">
-                                <header class="unitMatchPlayer_header">
-                                    <img src="${avatar1}" alt="" width="50" height="50">
-                                    <h4 class="unitMatchPlayer_title">${match.player1}</h4>
-                                </header>`;
-                if (match.score1) {
-                    resultHtml += `
-                                <p class="unitMatchPlayer_score">${match.score1}</p>`;
-                } else {
-                    resultHtml += `
-                                <p class="unitMatchPlayer_score">?</p>`;
-                }
-                if (match.winner === match.player1) {
-                    resultHtml += `
-                                <p class="unitMatchPlayer_result">win</p>`;
-                }
-                resultHtml += `
-                            </section>
-                            <p class="blockMatch_vs">VS</p>
-                            <section class="blockMatch_player unitMatchPlayer">
-                                <header class="unitMatchPlayer_header">
-                                    <img src="${avatar2}" alt="" width="50" height="50">
-                                    <h4 class="unitMatchPlayer_title">${match.player2}</h4>
-                                </header>`;
-                if (match.score2) {
-                    resultHtml += `
-                                <p class="unitMatchPlayer_score">${match.score2}</p>`;
-                } else {
-                    resultHtml += `
-                                <p class="unitMatchPlayer_score">?</p>`;
-                }
-                if (match.winner === match.player2) {
-                    resultHtml += `
-                                <p class="unitMatchPlayer_result">win</p>`;
-                }
-                resultHtml += `
-                            </section>
-                        </div>`;
+                    <section class="blockByePlayer">
+                        <h4 class="blockByePlayer_title">${labels.tournament.labelByePlayer}</h4>
+                        <p class="blockByePlayer_player">
+                            <img src="//ui-avatars.com/api/?name=aa&background=3cbbc9&color=ffffff" alt="" width="50" height="50">
+                            <span>${matches.bye_player}</span>
+                        </p>
+                    </section>`;
             }
             resultHtml += `
                     </div>
                 </section>`;
-            return resultHtml;
+        return resultHtml;
     }
 
     displayNextMatch(all_usernames) {

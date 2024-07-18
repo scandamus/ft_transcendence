@@ -1786,20 +1786,28 @@ input.has-input:invalid {
   }
 }
 
-.blockSeededPlayer {
+.blockByePlayer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 
-.blockSeededPlayer_title {
-  padding: 1em 0 0.8em;
+.blockByePlayer_title {
+  margin-right: 1em;
   font-size: 2.2rem;;
 }
 
-.blockSeededPlayer_player {
-  font-size: 2rem;
-  margin-right: 30px;
+.blockByePlayer_title::after {
+  content: ":";
+  margin-left: 0.3em;
 }
 
-.blockSeededPlayer_player img {
+.blockByePlayer_player {
+  font-size: 2rem;
+}
+
+.blockByePlayer_player img {
   vertical-align: middle;
   margin-right: 8px;
 }
