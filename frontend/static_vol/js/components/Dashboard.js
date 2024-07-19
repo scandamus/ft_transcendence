@@ -5,6 +5,7 @@ import { SiteInfo } from "../modules/SiteInfo.js";
 import { labels } from '../modules/labels.js';
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { getMatchLog } from '../modules/gameList.js';
+import { getTournamentLog } from '../modules/tournamentList.js';
 import {
     removeListenMatchRequest,
     removeListenAcceptFriendRequest,
@@ -77,30 +78,7 @@ export default class Dashboard extends PageBase {
                     </section>
                     <section class="blockDashboardLog">
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.tournament.labelTournamentLog}</h3>
-                        <div class="blockDashboardLog_listTournament listLineDivide">
-                            <section class="unitTournamentResult unitTournament-link">
-                                <a href="/tournament/detail_id" data-link aria-label="TournamentTitle1 2024/07/3 13:00 Rank 1">
-                                    <header class="unitTournament_header">
-                                        <h4 class="unitTournament_title">TournamentTitle1</h4>
-                                        <p class="unitTournament_start">2024/07/3 13:00</p>
-                                    </header>
-                                    <div class="unitTournament_body">
-                                        <p class="unitTournament_rank">Rank 1</p>
-                                    </div>
-                                </a>
-                            </section>
-                            <section class="unitTournamentResult unitTournament-link">
-                                <a href="/tournament/detail_id" data-link aria-label="TournamentTitle2 2024/07/5 21:00 Rank 10">
-                                    <header class="unitTournament_header">
-                                        <h4 class="unitTournament_title">TournamentTitle2</h4>
-                                        <p class="unitTournament_start">2024/07/5 21:00</p>
-                                    </header>
-                                    <div class="unitTournament_body">
-                                        <p class="unitTournament_rank">Rank 10</p>
-                                    </div>
-                                </a>
-                            </section>
-                        </div>
+                        <div class="blockDashboardLog_listTournament listLineDivide"></div>
                     </section>
                     <section class="blockDashboardLog">
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
@@ -116,6 +94,7 @@ export default class Dashboard extends PageBase {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
             getMatchLog().then(() => {});
+            getTournamentLog(this).then(() => {});
             fetchLevel().then((data) => {
                 this.displayMatchStats(data);
             });

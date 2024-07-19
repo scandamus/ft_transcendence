@@ -33,7 +33,7 @@ export default class PageList extends PageBase {
                 <li><a href="/game/play" data-link>game(play)</a></li>
                 <li><a href="/game/match" data-link>game(match)</a></li>
                 <li><a href="/tournament" data-link>tournament</a></li>
-                <li><a href="/tournament/detail_id" data-link>tournament_detail</a></li>
+                <li><a href="/tournament/detail:1" data-link>tournament_detail</a></li>
             </ul>
             <ul>
                 <li><button type="submit" class="unitFriendButton_receiveReqMatch unitButton" data-name="username" data-avatar="//ui-avatars.com/api/?name=username&background=3cbbc9&color=ffffff">${labels.friends.labelReceiveMatch}</button></li>

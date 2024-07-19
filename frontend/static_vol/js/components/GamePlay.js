@@ -30,6 +30,7 @@ export default class GamePlay extends PageBase {
 
     async renderHtml() {
         const listPlayer = JSON.parse(sessionStorage.getItem('all_usernames'));
+        sessionStorage.removeItem('all_usernames');
         return `
            <div class="playBoardWrap playBoardWrap-dual">
                 <ul class="listPlayerActiveMatch listPlayerActiveMatch-dual">
@@ -177,7 +178,13 @@ export default class GamePlay extends PageBase {
                     }));
                     webSocketManager.closeWebSocket(this.containerId);
                     this.containerId = '';
-                    window.history.pushState({}, null, "/dashboard");
+                    const tournamentId = sessionStorage.getItem("tournament_id");
+                    if (tournamentId) {
+                        sessionStorage.setItem('tournament_status', 'waiting_round');
+                        window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
+                    } else {
+                        window.history.pushState({}, null, "/dashboard");
+                    }
                     await router(true);
                 }
             }
@@ -207,7 +214,7 @@ export default class GamePlay extends PageBase {
     destroy() {
         document.removeEventListener("keydown", this.keyDownHandler, false);
         document.removeEventListener("keyup", this.keyUpHandler, false);
-        sessionStorage.removeItem('all_usernames');
+        // sessionStorage.removeItem('all_usernames');
         GamePlay.instance = null;
         super.destroy();
     }

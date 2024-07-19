@@ -7,7 +7,8 @@ import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
 import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
-import { updateUpcomingTournamentList } from "./tournamentList.js";
+import { updateOngoingTournamentList, updateUpcomingTournamentList } from "./tournamentList.js";
+import { enterTournamentRoomRequest } from "./tournament.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
 
 export const pongHandler = (event, containerId) => {
@@ -23,6 +24,9 @@ export const pongHandler = (event, containerId) => {
             // Playersクラスにステータスが要りそう（オンライン、オフライン、ゲーム中、ゲーム中ならばmatch_idも）
         }
         if (data.type === 'gameSession') {
+            loadGameContent(data);
+        }
+        else if (data.type === 'gameSessionTournament') {
             loadGameContent(data);
         }
         else if (data.type === 'friendMatchRequest') {
@@ -42,6 +46,9 @@ export const pongHandler = (event, containerId) => {
         }
         else if (data.type === 'tournament') {
             handleTournamentReceived(data);
+        }
+        else if (data.type === 'tournamentMatch') {
+            handleTournamentMatchReceived(data);
         }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
@@ -65,11 +72,10 @@ const pongGameHandler = (event, containerId) => {
         console.error(data.error);
         refreshAccessToken();
     }
-    console.log(`Message from ${containerId}: `, data);
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name, all_usernames } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames, type, tournament_name, round, tournament_id } = data;
 
     closeModal();
 
@@ -80,6 +86,20 @@ const loadGameContent = async (data) => {
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
     sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
+
+    if (type === 'gameSessionTournament') {
+        const tournamentId = sessionStorage.getItem("tournament_id");
+        //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
+        if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {
+            window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
+            await router(true);
+        }
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            await PageBase.instance.generateTournamentResult();
+            PageBase.instance.displayNextMatch(all_usernames, round);
+        }
+        await new Promise(resolve => setTimeout(resolve, 5000));
+    }
 
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);
@@ -194,6 +214,8 @@ const handleFriendMatchRequestReceived = (data) => {
             addNotice(labels.matchRequest['playerNotWaitingStatus'], true);
         } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
+        } else if (data.error === 'tournament') {
+            addNotice('トーナメント中にマッチリクエストできません', true);
         } else {
             console.error(`Error: ${data.message}`);
         }
@@ -205,7 +227,11 @@ const handleLoungeMatchReceived = (data) => {
         updateModalAvailablePlayers(data.availablePlayers);
     } else if (data.action === 'error') {
         closeModal();
-        alert(`Error: ${data.message}`);
+        if (data.error === 'tournament') {
+            addNotice('トーナメント中にマッチリクエストできません', true);
+        } else {
+            alert(`Error: ${data.message}`);
+        }
     }
 }
 
@@ -272,5 +298,76 @@ const handleTournamentReceived = (data) => {
         addNotice('トーナメントへのエントリーがありません');
     } else if (data.action === 'invalidNickname') {
         handleReceiveWsTournamentValidationError(data);
+    } else if (data.action === 'invalidEntryRequest') {
+        addNotice('登録期限を過ぎたなど無効なリクエストです', true);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
     }
+}
+
+const handleTournamentMatchReceived = async (data) => {
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
+
+    if (data.action === 'tournament_prepare') {
+        addNotice(`トーナメント ${data.name} の開始５分前になりました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'tournament_room') {
+        //addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
+        enterTournamentRoomRequest(data.name);
+    } else if (data.action === 'tournament_match') {
+        addNotice(`トーナメント ${data.name} を開始します`);
+    } else if (data.action === 'enterRoom') {
+        sessionStorage.setItem('tournament_id', data.id);
+        sessionStorage.setItem('tournament_status', 'waiting_start');
+        addNotice(`トーナメント ${data.name} の控室に移動します`);
+        if (window.location.pathname !== `/tournament/detail:${data.id}`) {
+            window.history.pushState({}, null, `/tournament/detail:${data.id}`);
+            await router(true);
+        }
+    } else if (data.action === 'canceled') {
+        addNotice(`トーナメント ${data.name} は催行人数に達しなかったためキャンセルされました`, true);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
+        window.history.pushState({}, null, '/dashboard');
+        await router(true);
+    } else if (data.action === 'finished') {
+        addNotice(`トーナメント ${data.name} は終了しました`);
+        sessionStorage.removeItem('tournament_id');
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.hideWaiting();
+            await PageBase.instance.generateTournamentResult();
+        }
+        sessionStorage.removeItem('tournament_status');
+    } else if (data.action === 'notifyByePlayer') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitBye, labels.tournament.msgWaitBye);
+            await PageBase.instance.generateTournamentResult();
+        }
+    } else if (data.action === 'notifyWaitSemiFinal') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitSemiFinal, labels.tournament.msgWaitSemiFinal);
+            await PageBase.instance.generateTournamentResult();
+        }
+    } else if (data.action === 'notifyWaitFinal') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitFinal, labels.tournament.msgWaitFinal);
+        }
+    } else if (data.action === 'notifyFinalOnGoing') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelFinalOnGoing, labels.tournament.msgFinalOnGoing);
+        }
+    } else if (data.action === 'roundEnd') {
+        if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
+            PageBase.instance.displayWaiting(labels.tournament.labelWaitLose, labels.tournament.msgWaitLose);
+            await PageBase.instance.generateTournamentResult();
+        }
+    }
+    console.log(`${data.name} ${data.action}の通知です`);
 }

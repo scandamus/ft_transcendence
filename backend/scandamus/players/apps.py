@@ -8,7 +8,6 @@ class PlayersConfig(AppConfig):
     def ready(self):
         post_migrate.connect(reset_online_status, sender=self)
 
-
 def reset_online_status(sender, **kwargs):
     from .models import Player
     import logging
