@@ -461,7 +461,7 @@ const addNotice = (msg, iserror) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames } = data;
 
     //closeModal();
 
@@ -471,6 +471,7 @@ const loadGameContent = async (data) => {
     const gameMatchId = match_id;
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
+    sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
 
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);
@@ -639,6 +640,7 @@ const join_lounge_game = async (gameName) => {
 
 const initGame = async (containerId) => {
     try {
+        const all_usernames = JSON.parse(sessionStorage.getItem('all_usernames'));
         const pongSocket = await webSocketManager.openWebSocket(containerId);
 
         const sendKeyEvent = (key, is_pressed) => {
@@ -652,15 +654,15 @@ const initGame = async (containerId) => {
 
         const enable_getch = async function() {
             let old_ch = null;
-            const readline = require("readline");
+            const readline = require('readline');
             readline.emitKeypressEvents(process.stdin);
             process.stdin.setRawMode(true);
 
             await new Promise(resolve => {
-                process.stdin.on("keypress", function self(key, ch) {
-                    if (ch.name == "escape") {
+                process.stdin.on('keypress', function self(key, ch) {
+                    if (ch.name == 'escape' || key == 'Q') {
                         console.log('removeListener');
-                        process.stdin.removeListener("keypress", self);
+                        process.stdin.removeListener('keypress', self);
                         return resolve();
                     }
                     if (old_ch) {
@@ -688,11 +690,17 @@ const initGame = async (containerId) => {
 
         const updateGameObjects = (data) => {
             clear_screen();
-            mvprint((data.left_paddle.y / 16), (data.left_paddle.x / 8), '|');
-            mvprint((data.left_paddle.y / 16) + 1, (data.left_paddle.x / 8), '|');
-            mvprint((data.right_paddle.y / 16), (data.right_paddle.x / 8), '|');
-            mvprint((data.right_paddle.y / 16) + 1, (data.right_paddle.x / 8), '|');
-            mvprint((data.ball.y / 16), (data.ball.x / 8), (data.ball.y % 16 < 8) ? 'º' : 'o');
+            mvprint(1, 0, '-'.repeat(80));
+            mvprint(27, 0, '-'.repeat(80));
+            mvprint(2 + (data.left_paddle.y / 16), (data.left_paddle.x / 8), '|');
+            mvprint(3 + (data.left_paddle.y / 16), (data.left_paddle.x / 8), '|');
+            mvprint(2 + (data.right_paddle.y / 16), (data.right_paddle.x / 8), '|');
+            mvprint(3 + (data.right_paddle.y / 16), (data.right_paddle.x / 8), '|');
+            mvprint(1 + (data.ball.y / 16), (data.ball.x / 8), (data.ball.y % 16 < 8) ? 'º' : 'o');
+            mvprint(0, 1, all_usernames[0].username);
+            mvprint(0, 38, data.left_paddle.score);
+            mvprint(0, 42, data.right_paddle.score);
+            mvprint(0, 80 - all_usernames[1].username.length, all_usernames[1].username);
 
             if (!data.game_status) {
                 console.log('game over');
@@ -732,7 +740,7 @@ const main = () => {
         console.log('please set $USERNAME and $PASSWORD environment variables');
         process.exit(0);
     }
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     fetch('https://' + HOST + '/api/players/login/', {
         'method': 'POST',
         'headers': {
