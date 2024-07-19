@@ -42,13 +42,13 @@ export default class Friends extends PageBase {
                 <div class="blockUsers_column">
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
-                        <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <div class="blockFriends_friends listFriends listLineDivide" aria-live="polite"></div>
                     </section>
                 </div>
                 <div class="blockUsers_column">
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
-                        <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
+                        <div class="blockFriendRequest_friends listFriends listLineDivide" aria-live="polite"></div>
                     </section>
                     <section class="blockSearchFriend">
                         <h3 class="blockSearchFriend_title unitTitle1">${labels.friends.labelSearch}</h3>
@@ -60,7 +60,7 @@ export default class Friends extends PageBase {
                     </section>
                     <section class="blockFriendRecommended">
                         <h3 class="blockFriendRecommended_title unitTitle1">${labels.friends.labelRecommended}</h3>
-                        <div class="blockFriendRecommended_friends listFriends listLineDivide"></div>
+                        <div class="blockFriendRecommended_friends listFriends listLineDivide" aria-live="polite"></div>
                     </section>
                 </div>
             </div>

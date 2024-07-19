@@ -77,15 +77,15 @@ export default class Tournament extends PageBase {
                 <p class="btnUpdateTournamentLists"><button type="button" id="btnUpdateTournamentLists_button" class="unitButton unitButton-small">${labels.tournament.labelUpdateLists}</button></p>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleUpcoming}</h3>
-                    <div class="blockTournamentList_upcoming listLineDivide"></div>
+                    <div class="blockTournamentList_upcoming listLineDivide" aria-live="polite"></div>
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleInPlay}</h3>
-                    <div class="blockTournamentList_ongoing listLineDivide"></div>
+                    <div class="blockTournamentList_ongoing listLineDivide" aria-live="polite"></div>
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleRecent}</h3>
-                    <div class="blockTournamentList_finished listLineDivide"></div>
+                    <div class="blockTournamentList_finished listLineDivide" aria-live="polite"></div>
                 </section>
             </div>
         `;
