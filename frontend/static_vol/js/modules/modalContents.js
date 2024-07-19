@@ -64,8 +64,8 @@ const entryTournament = (args) => `
             <dl class="blockForm_el">
                 <dt>${args.labelNickname}</dt>
                 <dd>
-                    <input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="20" required aria-required="true" />
-                    <ul class="listError"></ul>
+                    <input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="20" aria-describedby="errorInputNickName" required aria-required="true" />
+                    <ul id="errorInputNickName" class="listError"></ul>
                     <ul class="listAnnotation">${args.desc}</ul>
                 </dd>
             </dl>

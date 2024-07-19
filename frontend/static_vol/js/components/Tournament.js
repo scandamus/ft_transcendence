@@ -52,8 +52,8 @@ export default class Tournament extends PageBase {
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-title">
                         <dt>${labels.tournament.labelTournamentTitle}</dt>
                         <dd>
-                            <input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="50" required aria-required="true" />
-                            <ul class="listError"></ul>
+                            <input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="50" aria-describedby="errorInputTournamentTitle" required aria-required="true" />
+                            <ul id="errorInputTournamentTitle" class="listError"></ul>
                             <ul class="listAnnotation">${listDescTournamentTitle}</ul>
                         </dd>
                     </dl>
@@ -66,8 +66,9 @@ export default class Tournament extends PageBase {
                               name="startTime"
                               value="2024-07-01T21:00"
                               min="2024-07-01T21:00"
-                              max="2024-08-01T21:00" />
-                            <ul class="listError"></ul>
+                              max="2024-08-01T21:00"
+                              aria-describedby="errorInputTournamentStart" />
+                            <ul id="errorInputTournamentStart" class="listError"></ul>
                             <ul class="listAnnotation">${listDescTournamentStart}</ul>
                         </dd>
                     </dl>
