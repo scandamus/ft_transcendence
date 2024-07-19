@@ -103,7 +103,7 @@ class Tournament(models.Model):
             "round": round,
             "matches": round_result,
             "bye_player": bye_player_entry.nickname if bye_player_entry else None,
-            "bye_player_id": bye_player_entry.player.id
+            "bye_player_id": bye_player_entry.player.id if bye_player_entry else None,
         })
         self.result_json = json.dumps(result)
         self.save()

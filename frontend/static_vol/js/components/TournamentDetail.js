@@ -195,7 +195,7 @@ export default class TournamentDetail extends PageBase {
                 resultHtml += this.generateMatch(match);
             }
             if (matches.bye_player) {
-                const avatarBye = this.avatarMap[matches.bye_player_id] ? this.avatarMap[match.bye_player_id] : `/images/avatar_default.png`;
+                const avatarBye = this.avatarMap[matches.bye_player_id] ? this.avatarMap[matches.bye_player_id] : `/images/avatar_default.png`;
                 resultHtml += `
                     <section class="blockByePlayer">
                         <h4 class="blockByePlayer_title">${labels.tournament.labelByePlayer}</h4>
