@@ -55,7 +55,7 @@ async def send_tournament_match_jwt(match, game_name='pong'):
     player2 = await database_sync_to_async(lambda: match.player2)()
     player1_nickname = await get_nickname(tournament, player1)
     player2_nickname = await get_nickname(tournament, player2)
-    usernames = [{'username': player1_nickname, 'avatar': player1.avatar.url if player2.avatar else None},
+    usernames = [{'username': player1_nickname, 'avatar': player1.avatar.url if player1.avatar else None},
                  {'username': player2_nickname, 'avatar': player2.avatar.url if player2.avatar else None}]
         
     for player in [player1, player2]:
