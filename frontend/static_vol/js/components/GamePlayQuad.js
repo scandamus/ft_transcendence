@@ -7,20 +7,18 @@ import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
 
 export default class GamePlayQuad extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (GamePlayQuad.instance) {
+            return GamePlayQuad.instance;
+        }
         super(params);
         GamePlayQuad.instance = this;
         this.title = 'GamePlayQuad';
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        this.player1 = 'player1';
-        this.player2 = 'player2';
-        this.player3 = 'player3';
-        this.player4 = 'player4';
-        this.avatar1 = '/images/avatar_default.png';
-        this.avatar2 = '/images/avatar_default.png';
-        this.avatar3 = '/images/avatar_default.png';
-        this.avatar4 = '/images/avatar_default.png';
+        this.containerId = '';
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
         // sound
@@ -32,15 +30,16 @@ export default class GamePlayQuad extends PageBase {
     }
 
     async renderHtml() {
+        const listPlayer = JSON.parse(sessionStorage.getItem('all_usernames'));
         return `
            <div class='playBoardWrap playBoardWrap-quad'>
                 <ul class='listPlayerActiveMatch listPlayerActiveMatch-quad-first-half'>
-                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player1"><img src="${this.avatar1}" alt="" width="50" height="50"><span>${this.player1}</span></li>
-                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player3"><img src="${this.avatar3}" alt="" width="50" height="50"><span>${this.player3}</span></li>
+                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player1"><img src="${listPlayer[0].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[0].username}</span></li>
+                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player3"><img src="${listPlayer[2].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[2].username}</span></li>
                 </ul>
                 <ul class='listPlayerActiveMatch listPlayerActiveMatch-quad-second-half'>
-                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player2"><img src="${this.avatar2}" alt="" width="50" height="50"><span>${this.player2}</span></li>
-                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player4"><img src="${this.avatar4}" alt="" width="50" height="50"><span>${this.player4}</span></li>
+                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player2"><img src="${listPlayer[1].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[1].username}</span></li>
+                    <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player4"><img src="${listPlayer[3].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[3].username}</span></li>
                 </ul>
                 <canvas id='playBoard' width='650' height='650'></canvas>
             </div>
@@ -79,13 +78,38 @@ export default class GamePlayQuad extends PageBase {
         source.start(0);
     }
 
+    sendKeyEvent = (key, is_pressed) => {
+        let data = {
+            action: 'key_event',
+            key: key,
+            is_pressed: is_pressed,
+        };
+        webSocketManager.sendWebSocketMessage(this.containerId, data);
+    }
+
+    keyDownHandler = (e) => {
+        // send event to django websocket
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
+            || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
+            this.sendKeyEvent(e.key, true);
+        }
+    }
+
+    keyUpHandler = (e) => {
+        // send event to django websocket
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
+            || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
+            this.sendKeyEvent(e.key, false);
+        }
+    }
+
     async initGame() {
         try {
             const gameMatchId = this.params['id'].substr(1);
             console.log('============ ', gameMatchId, ' ============');
-            const containerId = `pong4/${gameMatchId}`;
-            console.log(`URL = ${containerId}`);
-            const pongSocket = await webSocketManager.openWebSocket(containerId);
+            this.containerId = `pong4/${gameMatchId}`;
+            console.log(`URL = ${this.containerId}`);
+            const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById('playBoard');
             // 2dの描画コンテキストにアクセスできるように
@@ -206,43 +230,17 @@ export default class GamePlayQuad extends PageBase {
                         action: 'end_game',
                         match_id: gameMatchId,
                     }));
-                    document.removeEventListener('keydown', keyDownHandler, false);
-                    document.removeEventListener('keyup', keyUpHandler, false);
-                    webSocketManager.closeWebSocket(containerId);
+                    webSocketManager.closeWebSocket(this.containerId);
+                    this.containerId = '';
                     window.history.pushState({}, null, '/dashboard');
                     await router(true);
                 }
             }
 
             // 押されたとき
-            document.addEventListener('keydown', keyDownHandler, false);
+            document.addEventListener('keydown', this.keyDownHandler, false);
             // 離れたとき
-            document.addEventListener('keyup', keyUpHandler, false);
-
-            function keyDownHandler(e) {
-                // send event to django websocket
-                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
-                    || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
-                    sendKeyEvent(e.key, true);
-                }
-            }
-
-            function keyUpHandler(e) {
-                // send event to django websocket
-                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'w' || e.key === 's'
-                    || e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'd') {
-                    sendKeyEvent(e.key, false);
-                }
-            }
-
-            function sendKeyEvent(key, is_pressed) {
-                let data = {
-                    action: 'key_event',
-                    key: key,
-                    is_pressed: is_pressed,
-                };
-                webSocketManager.sendWebSocketMessage(containerId, data);
-            }
+            document.addEventListener('keyup', this.keyUpHandler, false);
 
             pongSocket.onmessage = (e) => {
                 try {
@@ -262,6 +260,10 @@ export default class GamePlayQuad extends PageBase {
     }
 
     destroy() {
+        document.removeEventListener('keydown', this.keyDownHandler, false);
+        document.removeEventListener('keyup', this.keyUpHandler, false);
+        sessionStorage.removeItem('all_usernames');
+        GamePlayQuad.instance = null;
         super.destroy();
     }
 }

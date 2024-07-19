@@ -14,11 +14,16 @@ import {
     from '../modules/friendListener.js';
 import { addListenerToList, removeListenerAndClearList } from "../modules/listenerCommon.js";
 import { getToken } from "../modules/token.js";
-import { switchDisplayAccount } from "../modules/auth.js";
+import { switchDisplayAccount, fetchLevel } from "../modules/auth.js";
 import { addNotice } from "../modules/notice.js";
 
 export default class Dashboard extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (Dashboard.instance) {
+            return Dashboard.instance;
+        }
         super(params);
         Dashboard.instance = this;
         this.siteInfo = new SiteInfo();
@@ -40,8 +45,6 @@ export default class Dashboard extends PageBase {
     }
 
     async renderHtml() {
-        const win = 70, loss = 20;
-        const textWinLoss = (labels.match.fmtWinLoss).replace('$win', win).replace('$loss', loss);
         return `
             <div class="blockPlayerDetail">
                 <div class="blockPlayerDetail_profile">
@@ -49,14 +52,14 @@ export default class Dashboard extends PageBase {
                         <div class="blockAvatar_avatar thumb">
                             <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
                         </div>
-                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">Change Avatar</button></p>
+                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">${labels.dashboard.labelChangeAvatar}</button></p>
                         <input type="file" id="inputAvatarFile" accept=".jpg, .jpeg, .png" class="formPartsHide">
                         <ul class="blockAvatar_listButton listButton">
-                            <li><button type="button" id="btnAvatarCancel" class="unitButton">cancel</button></li>
-                            <li><button type="submit" id="btnAvatarUpload" class="unitButton">Upload</button></li>
+                            <li><button type="button" id="btnAvatarCancel" class="unitButton">${labels.dashboard.labelCancel}</button></li>
+                            <li><button type="submit" id="btnAvatarUpload" class="unitButton">${labels.dashboard.labelUpload}</button></li>
                         </ul>
                     </form>
-                    <p class="blockPlayerDetail_score unitBox">RANK: ${42} <br>${textWinLoss}</p>
+                    <div class="blockPlayerDetail_stats unitBox"></div>
                     <ul class="unitListBtn unitListBtn-w100">
                         <li><a href="/lounge" class="unitButton" data-link>${labels.lounge.title}</a></li>
                         <li><a href="/tournament" class="unitButton" data-link>${labels.tournament.title}</a></li>
@@ -70,7 +73,7 @@ export default class Dashboard extends PageBase {
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
                         <div class="blockFriends_friends listFriends listLineDivide"></div>
-                        <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>View all friends</a></p>
+                        <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>${labels.dashboard.labelViewAllFriends}</a></p>
                     </section>
                     <section class="blockDashboardLog">
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.tournament.labelTournamentLog}</h3>
@@ -113,9 +116,24 @@ export default class Dashboard extends PageBase {
             updateFriendsList(this).then(() => {});
             updateFriendRequestList(this).then(() => {});
             getMatchLog().then(() => {});
+            fetchLevel().then((data) => {
+                this.displayMatchStats(data);
+            });
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
+        }
+    }
+
+    displayMatchStats(data) {
+        const statsWrap = document.querySelector('.blockPlayerDetail_stats');
+        if (data) {
+            const textWin = (labels.match.fmtWin).replace('$win', data.win_count);
+            const textLoss = (labels.match.fmtLoss).replace('$loss', data.loss_count);
+            statsWrap.innerHTML = `
+                <p class="unitLevel">LEVEL: ${data.level}</p>
+                <p class="unitWinCount"><span>${textWin}</span><span>${textLoss}</span></p>
+            `;
         }
     }
 
@@ -151,7 +169,7 @@ export default class Dashboard extends PageBase {
                     imgAvatar.src = ev.target.result;
                     imgAvatar.onerror = () => {
                         isImg = 0;
-                        addNotice('不正なファイルです', true);
+                        addNotice(labels.dashboard.msgInvalidFile, true);
                         imgAvatar.src = this.siteInfo.getAvatar();
                         inputFile.value = '';
                     }
@@ -166,7 +184,7 @@ export default class Dashboard extends PageBase {
                 };
                 fileReader.readAsDataURL(file);
             } else {
-                addNotice('不正なファイル形式です(jpg, pngが設定できます)', true);
+                addNotice(labels.dashboard.msgInvalidFileFormat, true);
                 inputFile.value = '';
             }
         }
@@ -215,11 +233,11 @@ export default class Dashboard extends PageBase {
                 this.siteInfo.setAvatar(data.newAvatar);
                 this.cancelAvatar();
                 await switchDisplayAccount();
-                addNotice('アバターを変更しました', false);
+                addNotice(labels.dashboard.msgAvatarSwitched, false);
             })
             .catch((error) => {
                 console.error('Error upload avatar', error);
-                addNotice('不正なファイルです', true);
+                addNotice(labels.dashboard.msgInvalidFile, true);
                 this.cancelAvatar();
             });
     }
@@ -251,6 +269,7 @@ export default class Dashboard extends PageBase {
         //rmUploadAvatarList
         this.removeListenUploadAvatar();
 
+        Dashboard.instance = null;
         super.destroy();
     }
 }

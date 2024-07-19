@@ -16,14 +16,8 @@ export const languageLabels = {
     'ar': labels_ar,
 };
 
-export const getCurrentLanguageLabels = (lang) => {
-    const label = languageLabels[lang || localStorage.getItem('configLang')] || labels_en;
-    return label;
-}
-
-//export const labels = labels_ja;
-export const labels = getCurrentLanguageLabels('');
+export const labels = {};
 
 export const switchLabels = (lang) => {
-    Object.assign(labels, getCurrentLanguageLabels(lang));
+    Object.assign(labels, languageLabels[lang]);
 };

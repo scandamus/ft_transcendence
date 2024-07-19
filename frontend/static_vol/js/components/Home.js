@@ -7,10 +7,16 @@ import { webSocketManager } from '../modules/websocket.js';
 import { pongHandler } from '../modules/WebsocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { addErrorMessage } from '../modules/form.js';
+import { setLang, saveLang } from '../modules/switchLanguage.js';
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class LogIn extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (LogIn.instance) {
+            return LogIn.instance;
+        }
         super(params);
         LogIn.instance = this;
         this.setTitle(this.title);
@@ -116,6 +122,16 @@ export default class LogIn extends PageBase {
             })
             .then((data) => {
                 if (data) {
+                    const langStorage = localStorage.getItem('configLang');
+                    const elSelectLang = document.getElementById('languageSelect');
+                    //localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
+                    if (langStorage && (data.lang !== langStorage)) {
+                        setLang(elSelectLang, langStorage);
+                        saveLang(langStorage);
+                    } else {
+                        setLang(elSelectLang, data.lang);
+                        saveLang(data.lang);
+                    }
                     switchDisplayAccount()
                         .then(() => {
                             router(true).then(() => {});
@@ -136,6 +152,7 @@ export default class LogIn extends PageBase {
     }
 
     destroy() {
+        LogIn.instance = null;
         super.destroy();
     }
 }

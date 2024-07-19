@@ -2,11 +2,16 @@
 
 import PageBase from './PageBase.js';
 import { router } from '../modules/router.js';
-import { addErrorMessageCustom, checkInputValid } from '../modules/form.js';
+import { addErrorMessageCustom, checkInputValid, checkFormReady } from '../modules/form.js';
 import { labels } from '../modules/labels.js';
 
 export default class SignUp extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (SignUp.instance) {
+            return SignUp.instance;
+        }
         super(params);
         SignUp.instance = this;
         this.title = 'SIGN UP';
@@ -76,21 +81,9 @@ export default class SignUp extends PageBase {
         this.addListListenInInstance(elPasswordConfirm, boundHandleInput, 'blur');
     }
 
-    checkFormReady() {
-        const formRegister = document.querySelector('form');
-        const btnConfirm = document.getElementById('btnConfirmForm');
-        if (formRegister.checkValidity()) {
-            if (btnConfirm.hasAttribute('disabled')) {
-                btnConfirm.removeAttribute('disabled');
-            }
-            return true;
-        } else if (!btnConfirm.hasAttribute('disabled')) {
-            btnConfirm.setAttribute('disabled', '');
-            return false;
-        }
-    }
-
     handleInput(ev) {
+        const elForm = ev.target.closest('form');
+        const btnConfirm = document.getElementById('btnConfirmForm');
         const elInput = ev.target;
         const elPassword = document.getElementById('registerPassword');
         const elPasswordConfirm = document.getElementById('registerPasswordConfirm');
@@ -115,15 +108,16 @@ export default class SignUp extends PageBase {
         //formの各input validate
         checkInputValid(elInput);
         //ボタンenabled切り替え(ok=>ngもありうる)
-        this.checkFormReady();
+        checkFormReady(elForm, btnConfirm);
     }
 
     handleConfirm(ev) {
         ev.preventDefault();
+        const elForm = ev.target.closest('form');
         const elUsername = document.getElementById('registerUsername');
         const elPassword = document.getElementById('registerPassword');
         const btnConfirm = document.getElementById('btnConfirmForm');
-        if (!this.checkFormReady()) {
+        if (!checkFormReady(elForm, btnConfirm)) {
             return ;
         }
 
@@ -154,13 +148,14 @@ export default class SignUp extends PageBase {
                 await router(false);
             })
             .catch((error) => {
-                this.handleBackendValidationError(error, btnConfirm, elUsername, elPassword);
+                this.handleBackendValidationError(error.message, btnConfirm, elUsername, elPassword);
             });
     }
 
     handleBackendValidationError(error, btnConfirm, elUsername, elPassword) {
+        const formRegister = document.querySelector('form');
         let tmpValueUsername,  tmpValuePassword;
-        const errorObject = JSON.parse(error.message);
+        const errorObject = JSON.parse(error);
         btnConfirm.setAttribute('disabled', '');
         Object.keys(errorObject).forEach((key) => {
             let elInput = (key === 'username') ? elUsername : elPassword;
@@ -185,7 +180,7 @@ export default class SignUp extends PageBase {
                         li.remove();
                     });
                     elInput.setCustomValidity('');
-                    this.checkFormReady();
+                    checkFormReady(formRegister, btnConfirm);
                 }
             });
         });
@@ -195,6 +190,7 @@ export default class SignUp extends PageBase {
         const elUsername = document.getElementById('registerUsername');
         const tmpValueUsername = sessionStorage.getItem('username');
         const tmpValueIsConfirm = sessionStorage.getItem('isConfirm');
+        const isExistUsername = sessionStorage.getItem('isExist');
         if (tmpValueUsername) {
             elUsername.value = sessionStorage.getItem('username');
         }
@@ -202,9 +198,17 @@ export default class SignUp extends PageBase {
         if (tmpValueIsConfirm) {
             sessionStorage.removeItem('isConfirm');
         }
+        if (isExistUsername) {
+            const elPassword = document.getElementById('registerPassword');
+            const btnConfirm = document.getElementById('btnConfirmForm');
+            this.handleBackendValidationError(sessionStorage.getItem('errorMessage'), btnConfirm, elUsername, elPassword);
+            sessionStorage.removeItem('isExist');
+            sessionStorage.removeItem('errorMessage');
+        }
     }
 
     destroy() {
+        SignUp.instance = null;
         super.destroy();
     }
 }

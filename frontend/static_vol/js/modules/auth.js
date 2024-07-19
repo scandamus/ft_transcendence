@@ -50,6 +50,36 @@ const getUserInfo = async () => {
         })
 }
 
+const fetchLevel = async (isRefresh) => {
+    const accessToken = getToken('accessToken');
+    if (accessToken === null) {
+        return Promise.resolve(null);
+    }
+    try {
+        const response = await fetch('/api/players/level/', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        if (!response.ok) { //response.status=>403
+            if (!isRefresh) {
+                if (!await refreshAccessToken()) {
+                    throw new Error('fail refresh token');
+                }
+                return await fetchLevel(true);
+            } else {
+                throw new Error('refreshed accessToken is invalid.');
+            }
+            throw new Error(`Failed to fetch rank: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('fetchLevel API response: ', data);
+        return data;
+    } catch (error) {
+        console.error('Error fetch rank: ', error);
+    }
+}
+
 const showMenu = () => {
     const classIsShow = 'is-show';
     const navGlobal = document.getElementById('navGlobal');
@@ -74,8 +104,10 @@ const switchDisplayAccount = async () => {
     const siteInfo = new SiteInfo();
     const username = siteInfo.getUsername();
     const avatar = siteInfo.getAvatar();
+    const headerAccount = document.getElementById('headerAccount');
+    const logoLink = document.querySelector('.mainHeader a');
     if (username) {
-        document.getElementById('headerAccount').innerHTML = `
+        headerAccount.innerHTML = `
             <header id="btnNavHeader" class="headerNav headerNav-login">
                 <h2>${username}</h2>
                 <p class="thumb"><img src="${avatar}" alt="" width="30" height="30"></p>
@@ -90,6 +122,7 @@ const switchDisplayAccount = async () => {
                 </ul>
             </nav>
         `;
+        logoLink.href = '/dashboard';
         //addEvent
         const btnLogout = document.getElementById('btnLogoutForm');
         btnLogout.addEventListener('click', handleLogout);
@@ -108,7 +141,8 @@ const switchDisplayAccount = async () => {
         }
         //Account表示reset
         document.getElementById('headerAccount').innerHTML = '';
+        logoLink.href = '/';
     }
 }
 
-export { getUserInfo, switchDisplayAccount };
+export { getUserInfo, fetchLevel, switchDisplayAccount };

@@ -16,7 +16,7 @@ import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
 
-import { closeModalOnCancel, closeModal } from './modal.js';
+import { closeModalOnCancel, closeModal, showModalExitGame } from './modal.js';
 
 //todo: どれにも符合しない場合1つ目と見なされているので調整
 const routes = {
@@ -85,7 +85,7 @@ const replaceView = async (matchRoute) => {
             if (matchRoute.route.path === routes.gamePlay.path) {
                 closeModal();
             } else {
-            closeModalOnCancel();
+                closeModalOnCancel();
             }
         }
         //view更新
@@ -97,6 +97,11 @@ const replaceView = async (matchRoute) => {
 const router = async (accessToken) => {
     if (accessToken instanceof PopStateEvent) {
         accessToken = getToken('accessToken');
+    }
+    //game進行中のexit
+    if ((GamePlay.instance && GamePlay.instance.containerId) || (GamePlayQuad.instance && GamePlayQuad.instance.containerId)) {
+        showModalExitGame();
+        return ;
     }
 
     console.log('router in');
