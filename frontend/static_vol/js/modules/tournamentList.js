@@ -8,13 +8,16 @@ import { resetListenUpcomingTournamentList } from "./tournamentListListener.js";
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('upcoming');
+        if (!tournaments) {
+            return [];
+        }
         const listWrapper = document.querySelector('.blockTournamentList_upcoming');        
-        if (tournaments.length === 0) {
+        if (tournaments.list.length === 0) {
             listWrapper.innerHTML = `<p>${'No upcoming tournament'}</p>`;
 //            listWrapper.innerHTML = `<p>${labels.tournament.msgNoUpcoming}</p>`;
         } else {
             listWrapper.innerHTML = '';
-            tournaments.forEach(tournament => {
+            tournaments.list.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 let nicknameHtml = '';
                 let buttonHtml = '';
@@ -47,10 +50,12 @@ const updateUpcomingTournamentList = async (pageInstance) => {
                 `;
                 listWrapper.innerHTML += tournamentElement;
             });
-            resetListenUpcomingTournamentList(pageInstance)
+            resetListenUpcomingTournamentList(pageInstance);
+            return tournaments.start_dates;
         }
     } catch (error) {
         console.error('Failed to update upcoming tournaments list: ', error);
+        return [];
     }
 };
 
@@ -58,12 +63,12 @@ const updateOngoingTournamentList = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('ongoing');
         const listWrapper = document.querySelector('.blockTournamentList_ongoing');        
-        if (tournaments.length === 0) {
+        if (tournaments.list.length === 0) {
             listWrapper.innerHTML = `<p>${'No ongoing tournament'}</p>`;
 //            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
         } else {
             listWrapper.innerHTML = '';
-            tournaments.forEach(tournament => {
+            tournaments.list.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 const tournamentElement = `
                     <section class="unitTournament unitTournament-link">

@@ -25,6 +25,7 @@ export default class Tournament extends PageBase {
 
         this.labelEntry = 'Entry';
         this.labelCancelEntry = 'Cancel';
+        this.start_dates = [];
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenCreateTournament.bind(this));
@@ -132,7 +133,9 @@ export default class Tournament extends PageBase {
 
     updateLists() {
         try {
-            updateUpcomingTournamentList(this).then(() => {});
+            updateUpcomingTournamentList(this).then((start_dates) => {
+                this.start_dates = start_dates;
+            });
             updateOngoingTournamentList(this).then(() => {});
  //           updateFinishedTournamentList(this).then(() => {});
         } catch (error) {
