@@ -42,13 +42,11 @@ async def handle_create_tournament(consumer, data):
                 'start': tournament.start.isoformat(),
                 'period': tournament.start.isoformat(),
             }))
-        else:
+        else: #トーナメント名重複
             await consumer.send(text_data=json.dumps({
                 'type': 'tournament',
-                'action': 'alreadyExists',
-                'name': tournament.name,
-                'start': tournament.start.isoformat(),
-                'period': tournament.start.isoformat(),
+                'action': 'invalidTournamentTitle',
+                'message': {'name': ['tournamentNameAlreadyExists']}
             }))
     else:
         logger.error(f"invalid tournament name: {serializer.errors}")

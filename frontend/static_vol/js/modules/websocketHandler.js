@@ -239,8 +239,9 @@ const handleTournamentReceived = (data) => {
         console.log(`${message}`);
         addNotice(message, false);
     } else if (data.action === 'alreadyExists') {
-        const message = `同名のトーナメントがすでに存在しています`;
-        addNotice(message, true);
+        // const message = `同名のトーナメントがすでに存在しています`;
+        // addNotice(message, true);
+        handleReceiveWsTournamentValidationError(data);
     } else if (data.action === 'invalidTournamentTitle') {
         handleReceiveWsTournamentValidationError(data);
     } else if (data.action === 'entryDone') {
