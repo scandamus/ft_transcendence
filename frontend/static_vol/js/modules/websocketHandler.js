@@ -6,7 +6,9 @@ import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
-import { updateModalAvailablePlayers } from "./modal.js";
+import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
+import { updateUpcomingTournamentList } from "./tournamentList.js";
+import { handleReceiveWsTournamentValidationError } from './form.js';
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -67,16 +69,17 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames } = data;
 
     closeModal();
 
     console.log(`Loading ${game_name} content with JWT: `, jwt);
-    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}`);
+    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}, all_usernames: ${JSON.stringify(all_usernames)}`);
 
     const gameMatchId = match_id; 
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
+    sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
 
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);
@@ -221,16 +224,53 @@ const handleFriendStatusReceived = (data) => {
 }
 
 const handleTournamentReceived = (data) => {
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
+
     if (data.action === 'created') {
         const startUTC = new Date(data.start);
         const startLocal = startUTC.toLocaleString();
         console.log(`UTC Time: ${startUTC.toISOString()}`);
         console.log(`Local Time: ${startLocal}`);
+        if (currentPage) {
+            PageBase.instance.resetFormCreateTournament();
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
         const message = `${data.name} - ${startLocal} が作成されました`;
         console.log(`${message}`);
         addNotice(message, false);
     } else if (data.action === 'alreadyExists') {
         const message = `同名のトーナメントがすでに存在しています`;
         addNotice(message, true);
+    } else if (data.action === 'invalidTournamentTitle') {
+        handleReceiveWsTournamentValidationError(data);
+    } else if (data.action === 'entryDone') {
+        closeModalOnEntryDone();
+        addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'duplicateNickname') {
+        addNotice(`すでに同名のニックネームが使われています`, true);
+    } else if (data.action === 'alreadyEnterd') {
+        closeModalOnEntryDone();
+        addNotice(`すでにエントリー済みのトーナメントです`, true);
+    } else if (data.action === 'capacityFull') {
+        closeModalOnEntryDone();
+        addNotice(`満員のためトーナメントにエントリー出来ませんでした`, true);
+    } else if (data.action === 'invalidTournament') {
+        closeModalOnEntryDone();
+        addNotice('無効なトーナメントへのリクエストです', true);
+    } else if (data.action === 'invalidPlayer') {
+        closeModalOnEntryDone();
+        addNotice('トーナメントにエントリー出来ませんでした', true);
+    } else if (data.action === 'removeEntryDone') {
+        addNotice(`トーナメント【${data.name}】への参加をキャンセルしました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'invalidCancelRequest') {
+        addNotice('トーナメントへのエントリーがありません');
+    } else if (data.action === 'invalidNickname') {
+        handleReceiveWsTournamentValidationError(data);
     }
 }

@@ -3,6 +3,9 @@
 export const labels_ar = {
     langCode: 'ar',
     langName: 'العربية',
+    common: {
+        switchLang: ''
+    },
     home: {
         title: 'Home',
         labelUsername: 'اسم المستخدم',
@@ -34,6 +37,7 @@ export const labels_ar = {
         tooShort: 'قصير جداً',
         passwordIsNotSame: 'الرجاء إدخال كلمة المرور نفسها',
         isExists: 'اسم المستخدم هذا قيد الاستخدام',
+        outOfRange: '',
         loginError1: 'يُرجى التحقق من اسم المستخدم وكلمة المرور',
         loginError2: 'تعذر تسجيل الدخول',
     },
@@ -84,7 +88,8 @@ export const labels_ar = {
         labelMatchLog: 'سجل المباريات',
         labelWins: 'فوز',
         labelLosses: 'خسارة',
-        fmtWinLoss: '$win فوز <br>$loss خسارة',
+        fmtWin: '$win فوز',
+        fmtLoss: '$loss خسارة',
         msgNoMatch: 'لا توجد مباريات',
     },
     tournament: {
@@ -98,6 +103,10 @@ export const labels_ar = {
         labelTitleInPlay: 'بطولة قيد التنفيذ',
         labelTitleRecent: 'البطولات المكتملة',
         labelTournamentLog: 'سجلات البطولة',
+        labelUpdateLists: '',
+        descTournamentTitle: [''],
+        descTournamentStart: [''],
+        descNickname: [''],
     },
     modal: {
         labelNickname: 'اللقب',

@@ -3,6 +3,9 @@
 export const labels_ja = {
     langCode: 'ja',
     langName: '日本語',
+    common: {
+        switchLang: '言語選択'
+    },
     home: {
         title: 'Home',
         labelUsername: 'ユーザー名',
@@ -34,6 +37,7 @@ export const labels_ja = {
         tooShort: '短すぎます',
         passwordIsNotSame: '同じパスワードを入力してください',
         isExists: 'このユーザー名は使われています',
+        outOfRange: 'その日時は指定できません',
         loginError1: 'ログインに失敗しました。ユーザー名とパスワードを確認してください',
         loginError2: 'ログインできません',
     },
@@ -84,7 +88,8 @@ export const labels_ja = {
         labelMatchLog: '対戦記録',
         labelWins: '勝',
         labelLosses: '敗',
-        fmtWinLoss: '$win勝 $loss敗',
+        fmtWin: '$win勝',
+        fmtLoss: '$loss敗',
         msgNoMatch: '対戦結果がありません',
     },
     tournament: {
@@ -98,6 +103,10 @@ export const labels_ja = {
         labelTitleInPlay: '試合中のトーナメント',
         labelTitleRecent: '終了したトーナメント',
         labelTournamentLog: 'トーナメント記録',
+        labelUpdateLists: 'リストを再読み込み',
+        descTournamentTitle: ['[使用可能] 半角英小文字,半角数字,ひらがな,カタカナ,漢字,記号(@_#$%&!.+*~)', '3〜50文字'],
+        descTournamentStart: ['[指定可能範囲] 1時間後〜1ヶ月後'],
+        descNickname: ['[使用可能] 半角英小文字,半角数字,ひらがな,カタカナ,漢字,記号(@_#$%&!.+*~)', '3〜20文字'],
     },
     modal: {
         labelNickname: 'ニックネーム',

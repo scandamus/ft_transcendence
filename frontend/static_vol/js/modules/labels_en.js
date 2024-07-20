@@ -3,6 +3,9 @@
 export const labels_en = {
     langCode: 'en',
     langName: 'English',
+    common: {
+        switchLang: 'Switch Language'
+    },
     home: {
         title: 'Home',
         labelUsername: 'username',
@@ -34,6 +37,7 @@ export const labels_en = {
         tooShort: 'Too few characters.',
         passwordIsNotSame: 'The passwords do not match.',
         isExists: 'This username is already taken.',
+        outOfRange: 'That date and time cannot be specified',
         loginError1: 'Login failed. Please check your username and password.',
         loginError2: 'Something went wrong. Unable to log in.',
     },
@@ -84,7 +88,8 @@ export const labels_en = {
         labelMatchLog: 'match log',
         labelWins: 'wins',
         labelLosses: 'losses',
-        fmtWinLoss: '$win wins, $loss losses',
+        fmtWin: '$win wins,',
+        fmtLoss: '$loss losses',
         msgNoMatch: 'no match log',
     },
     tournament: {
@@ -98,6 +103,10 @@ export const labels_en = {
         labelTitleInPlay: 'ongoing tournaments',
         labelTitleRecent: 'finished tournaments',
         labelTournamentLog: 'tournament log',
+        labelUpdateLists: 'Update Lists',
+        descTournamentTitle: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 50 characters long'],
+        descTournamentStart: ['[Allowable Range] From 1 hour later to 1 month later.'],
+        descNickname: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 20 characters long'],
     },
     modal: {
         labelNickname: 'nickname',

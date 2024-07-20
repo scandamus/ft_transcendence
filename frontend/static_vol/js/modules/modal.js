@@ -5,12 +5,16 @@ import { join_lounge_game, exit_lounge_match_room } from "./lounge_match.js";
 import { getToken, initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
+import { entryUpcomingTournament } from "./tournament.js";
+
 import { router } from "./router.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
 import { webSocketManager } from "./websocket.js";
 import { SiteInfo } from "./SiteInfo.js";
 import PageBase from "../components/PageBase.js";
+import { addListenerToList, removeListenerAndClearList } from './listenerCommon.js';
+
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -108,6 +112,8 @@ const closeModalOnCancel = () => {
             } else if (matchType === 'loungeMatch') {
                 console.log('cancel lounge match');
                 exit_lounge_match_room(modal.getAttribute('data-modal-game_name'));
+            } else if (matchType === 'entryTournament') {
+                console.log('cancel entry tournament');
             }
         })
         .then(() => {
@@ -318,7 +324,6 @@ const showModalWaitForOpponent = (ev) => {
         game_name: gameName,
     };
     const elHtml = getModalHtml('waitForOpponent', args);
-
     join_lounge_game(gameName)
         .then(r => {
             showModal(elHtml);
@@ -335,6 +340,10 @@ const showModalEntryTournament = (ev) => {
         //formから取得するデータが無い
         return;
     }
+    let listDesc = '';
+    for (let i = 0; i < labels.tournament.descNickname.length; i++) {
+        listDesc += `<li>${labels.tournament.descNickname[i]}</li>`;
+    }
     const args = {
         titleModal: labels.modal.titleEntryTournament,
         labelNickname: labels.modal.labelNickname,
@@ -343,13 +352,41 @@ const showModalEntryTournament = (ev) => {
         labelTournamentId: data['idTitle'],
         labelTournamentTitle: data['title'],
         labelTournamentStart: data['start'],
+        desc: listDesc
     }
-    //args.labelTournamentTitle = data['title'];
     const elHtml = getModalHtml('entryTournament', args);
-    join_game()
-        .then(r => {
-            showModal(elHtml);
+    showModal(elHtml);
+
+    const formEntry = document.getElementById('formEntryTournament');
+    const elNickname = document.getElementById('inputNickname');
+
+    const boundHandleInput = PageBase.instance.handleInput.bind(PageBase.instance);
+    addListenerToList(
+        PageBase.instance.listListenElEntryTournament,
+        elNickname,
+        boundHandleInput,
+        'blur'
+    );
+
+    if (formEntry) {
+        formEntry.addEventListener('submit', async (ev) => {
+            ev.preventDefault();
+            const nickname = elNickname.value;
+            try {
+                data.nickname = nickname;
+                await entryUpcomingTournament(data);
+                //closeModal();はdata.action === 'entryDone'で呼ぶ
+                console.log(`Tournament ID: ${data['idTitle']}, Nickname: ${nickname}`);
+            } catch (error) {
+                console.error('Entry failed:', error);
+            }
         });
+    }
+}
+
+const closeModalOnEntryDone = () => {
+    removeListenerAndClearList(PageBase.instance.listListenElEntryTournament);
+    closeModal();
 }
 
 const updateModalAvailablePlayers = (availablePlayers) => {
@@ -362,6 +399,7 @@ const updateModalAvailablePlayers = (availablePlayers) => {
     }
 }
 
+
 const showModalExitGame = () => {
     const args = {
         titleModal: labels.modal.titleExitGame,
@@ -372,5 +410,4 @@ const showModalExitGame = () => {
     showModal(elHtml);
 }
 
-export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, handleExitGame, showModalExitGame, closeModalOnReturnToGame };
-
+export { showModal, closeModalOnCancel, showModalSendMatchRequest, showModalReceiveMatchRequest, showModalWaitForOpponent, showModalEntryTournament, closeModal, updateModalAvailablePlayers, handleExitGame, showModalExitGame, closeModalOnReturnToGame, closeModalOnEntryDone };

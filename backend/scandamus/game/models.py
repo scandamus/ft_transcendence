@@ -16,13 +16,34 @@ class Tournament(models.Model):
     period = models.DateTimeField(
         verbose_name="エントリー締切"
     )
+    max_participants = models.IntegerField(
+        verbose_name='最大人数',
+        default=16
+    )
+
+    # 毎回カウントする方式にするのでコメントアウトしておく
+    # 処理が重すぎる場合はイキに（その場合はEntryする際にatomicで変更する処理が必要）
+    # current_participants = models.IntegerField(
+    #     verdose_name='参加人数',
+    #     default=0
+    # )
+
+    status = models.CharField(
+        max_length=10,
+        choices=[
+            ('upcoming', '開始前'),
+            ('ongoing', '進行中'),
+            ('finished', '終了')
+        ],
+        default='upcoming',
+        verbose_name='状態',
+    )
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = 'トーナメント'
-
 
 class Match(models.Model):
     tournament = models.ForeignKey(
