@@ -58,15 +58,56 @@ export default class TournamentDetail extends PageBase {
             </div>`;
     }
 
-    getDomElements() {
+    getElWaiting() {
         if (!this.elWaiting) {
             this.elWaiting = document.querySelector('.blockTournamentWaiting');
         }
-        this.elNextMatchWrap = document.querySelector('.blockTournamentNextMatch');
-        this.elNextMatch = this.elNextMatchWrap.querySelector('.blockNextMatch');
-        this.elNextMatchTitle = this.elNextMatchWrap.querySelector('.blockTournamentNextMatch_title');
-        this.elWaitingTitle = this.elWaiting.querySelector('.blockTournamentWaiting_title');
-        this.elWaitingContent = this.elWaiting.querySelector('.blockTournamentWaiting_message');
+        return this.elWaiting;
+    }
+
+    getElNextMatchWrap() {
+        if (!this.elNextMatchWrap) {
+            this.elNextMatchWrap = document.querySelector('.blockTournamentNextMatch');
+        }
+        return this.elNextMatchWrap;
+    }
+
+    getElNextMatch() {
+        if (!this.elNextMatch) {
+            this.elNextMatch = this.elNextMatchWrap.querySelector('.blockNextMatch');
+        }
+        return this.elNextMatch;
+    }
+
+    getElNextMatchTitle() {
+        if (!this.elNextMatchTitle) {
+            this.elNextMatchTitle = this.elNextMatchWrap.querySelector('.blockTournamentNextMatch_title');
+        }
+        return this.elNextMatchTitle;
+    }
+
+    getElWaitingTitle() {
+        if (!this.elWaitingTitle) {
+            this.elWaitingTitle = this.elWaiting.querySelector('.blockTournamentWaiting_title');
+        }
+        return this.elWaitingTitle;
+    }
+
+    getElWaitingContent() {
+        if (!this.elWaitingContent) {
+            this.elWaitingContent = this.elWaiting.querySelector('.blockTournamentWaiting_message');
+        }
+        return this.elWaitingContent;
+    }
+
+    getDomElements() {
+        this.getElWaiting();
+        this.getElNextMatchWrap();
+        this.getElNextMatch();
+        this.getElNextMatchTitle();
+        this.getElWaitingTitle();
+        this.getElWaitingContent();
+
         if (sessionStorage.getItem('tournament_status') === 'waiting_start') {
             this.displayWaiting(labels.tournament.labelWaitStart, labels.tournament.msgWaitStart);
         } else if (sessionStorage.getItem('tournament_status') === 'waiting_round') {
@@ -216,7 +257,7 @@ export default class TournamentDetail extends PageBase {
     displayNextMatch(all_usernames, round) {
         this.hideWaiting();
         let labelRound = '';
-        this.elNextMatch.innerHTML = `
+        this.getElNextMatch().innerHTML = `
             <section class="blockNextMatch_player unitNextMatchPlayer">
                 <h4 class="unitNextMatchPlayer_title">${all_usernames[0].username}</h4>
                 <img src="${all_usernames[0].avatar || '/images/avatar_default.png'}" alt="" width="100" height="100" class="unitNextMatchPlayer_thumb">
@@ -239,25 +280,24 @@ export default class TournamentDetail extends PageBase {
         } else if (round === 1) {
             labelRound = labels.tournament.labelRound1;
         }
-        this.elNextMatchTitle.innerHTML = `<small>${labels.tournament.labelNextMatch}</small><strong>${labelRound}</strong>`;
-        this.elNextMatchWrap.classList.add('is-show');
+        this.getElNextMatchTitle().innerHTML = `<small>${labels.tournament.labelNextMatch}</small><strong>${labelRound}</strong>`;
+        this.getElNextMatchWrap().classList.add('is-show');
     }
 
     displayWaiting(title, contents) {
-        this.elWaitingTitle.textContent = title;
-        this.elWaitingContent.innerHTML = contents;
+        this.getElWaiting();
+        this.getElWaitingTitle().textContent = title;
+        this.getElWaitingContent().innerHTML = contents;
         if (!this.elWaiting.classList.contains('is-show')) {
             this.elWaiting.classList.add('is-show');
         }
     }
 
     hideWaiting() {
-        if (!this.elWaiting) {
-            this.elWaiting = document.querySelector('.blockTournamentWaiting');
-        }
-        if (this.elWaiting && this.elWaiting.classList.contains('is-show')) {
-            this.elWaitingTitle.textContent = '';
-            this.elWaitingContent.innerHTML = '';
+        this.getElWaiting();
+        if (this.elWaiting.classList.contains('is-show')) {
+            this.getElWaitingTitle().textContent = '';
+            this.getElWaitingContent().innerHTML = '';
             this.elWaiting.classList.remove('is-show');
         }
         sessionStorage.removeItem('tournament_status');
