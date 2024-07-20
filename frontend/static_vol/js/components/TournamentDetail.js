@@ -59,7 +59,9 @@ export default class TournamentDetail extends PageBase {
     }
 
     getDomElements() {
-        this.elWaiting = document.querySelector('.blockTournamentWaiting');
+        if (!this.elWaiting) {
+            this.elWaiting = document.querySelector('.blockTournamentWaiting');
+        }
         this.elNextMatchWrap = document.querySelector('.blockTournamentNextMatch');
         this.elNextMatch = this.elNextMatchWrap.querySelector('.blockNextMatch');
         this.elNextMatchTitle = this.elNextMatchWrap.querySelector('.blockTournamentNextMatch_title');
@@ -250,7 +252,10 @@ export default class TournamentDetail extends PageBase {
     }
 
     hideWaiting() {
-        if (this.elWaiting.classList.contains('is-show')) {
+        if (!this.elWaiting) {
+            this.elWaiting = document.querySelector('.blockTournamentWaiting');
+        }
+        if (this.elWaiting && this.elWaiting.classList.contains('is-show')) {
             this.elWaitingTitle.textContent = '';
             this.elWaitingContent.innerHTML = '';
             this.elWaiting.classList.remove('is-show');
