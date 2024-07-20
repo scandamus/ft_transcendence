@@ -25,7 +25,7 @@ class CustomTournamentnameValidator:
 
 # CharacterTypes
 tournamentnameCharacterTypesValidator = RegexValidator(
-    r'^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\w@_#$%&!.+*~]+$',
+    r'^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3005\w@_#$%&!.+*~]+$',
     'invalidTournamentnameCharacterTypesBackend',
     'invalid_tournamentname'
 )
