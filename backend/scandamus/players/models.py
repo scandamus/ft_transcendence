@@ -64,7 +64,9 @@ class Player(models.Model):
             ('en', '英語'),
             ('ja', '日本語'),
             ('fr', 'フランス語'),
-            ('emoji', '絵文字')
+            ('la', 'ラテン語'),
+            ('he', 'ヘブライ語'),
+            ('ar', 'アラビア語'),
         ],
         default='en',
         verbose_name="言語設定"
@@ -78,6 +80,8 @@ class Player(models.Model):
         ('friend_match', 'フレンドマッチ中'),
         ('lounge_match', 'ラウンジマッチ中'),
         ('tournament_match', 'トーナメントマッチ中'),
+        ('tournament_room', 'トーナメント控室'),
+        ('tournament_prepare', 'トーナメント準備中'),
         ('tournament', 'トーナメント中'),
         ('friend_waiting', 'フレンドマッチ待機中'),
         ('lounge_waiting', 'ラウンジマッチ待機中'),
@@ -88,6 +92,12 @@ class Player(models.Model):
         choices=STATUS_CHOICES,
         default='waiting',
         verbose_name="ステータス"
+    )
+    online = models.BooleanField(
+        default=False,
+        null=True,
+        blank=True,
+        verbose_name="オンラインステータス"
     )
     current_match = models.ForeignKey(
         'game.Match',

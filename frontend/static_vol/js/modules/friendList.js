@@ -31,7 +31,7 @@ const updateFriendsList = async (pageInstance) => {
                 const friend = friends[i];
                 const avatar = friend.avatar ? friend.avatar : '/images/avatar_default.png';
                 //todo: friendsの状況に応じて online/ offline / busy で切り替える
-                const onlineStatus = 'online';
+                const onlineStatus = friend.online ? 'online' : 'offline'; //'online';
                 const disableMatchButton = onlineStatus === 'online' ? '' : 'disabled';
                 let friendElement = `
                     <section class="unitFriend unitFriend-${onlineStatus}">

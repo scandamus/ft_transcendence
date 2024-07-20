@@ -20,6 +20,7 @@ from .api_access import get_match_from_api, patch_match_to_api
 
 logger = logging.getLogger(__name__)
 
+
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
@@ -40,6 +41,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.upper_paddle = None
         # player4
         self.lower_paddle = None
+        self.active_paddle_count = 4
         self.ball = None
         self.game_continue = False
         self.up_pressed = False
@@ -63,17 +65,25 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
-        if self.scheduled_task:
-            self.scheduled_task.cancel()
         if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
             logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
             self.players_ids[self.match_id].remove(self.players_id)
             if not self.players_ids[self.match_id]:
                 logger.info(f'del: {self.players_ids}[{self.match_id}]')
                 del self.players_ids[self.match_id]
+            else:
+                new_next_master = sorted(self.players_ids[self.match_id])[0]
+                await self.channel_layer.group_send(self.room_group_name, {
+                    'type': 'start_game',
+                    'master_id': new_next_master,
+                    'state': 'ongoing',
+                })
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
+        if self.scheduled_task is not None:
+            self.scheduled_task.cancel()
+            self.scheduled_task = None
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
@@ -111,8 +121,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                     self.players_ids[self.match_id] = set()
                 self.players_ids[self.match_id].add(self.players_id)
                 if len(self.players_ids[self.match_id]) == 4:  # 4人に決め打ち
+                    initial_master = sorted(self.players_ids[self.match_id])[0]
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'start.game',
+                        'master_id': initial_master,
+                        'state': 'start',
                     })
                 # TODO: 4人揃わない場合のタイムアウト処理
             else:
@@ -160,7 +173,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.left_pressed = is_pressed
         horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
 
-        if self.player_name == 'player1':
+        if self.scheduled_task is not None:
             if sent_player_name == 'player1':
                 self.left_paddle.speed = vertical_speed
             elif sent_player_name == 'player2':
@@ -174,8 +187,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.game_continue = True
         try:
             while self.game_continue:
-                #                await asyncio.sleep(0.05)  # 50ミリ秒待機
-                # await asyncio.sleep(0.1)  # 60Hz
+                # await asyncio.sleep(0.1)
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
@@ -185,25 +197,64 @@ class PongConsumer(AsyncWebsocketConsumer):
                         'type': 'send_game_over_message',
                         'message': 'GameOver',
                     })
+                    if self.scheduled_task is not None:
+                        self.scheduled_task.cancel()
+                        self.scheduled_task = None
         except asyncio.CancelledError:
-            # タスクがキャンセルされたときのエラーハンドリング
+            # タスクがキャンセルされたと後に非同期処理を行った際のハンドリング
             # 今は特に書いていないのでpass
             pass
 
     async def send_game_over_message(self, event):
         message = event['message']
         timestamp = dt.utcnow().isoformat()
-        if self.player_name != 'player1':
+        if self.scheduled_task is None:
             self.game_continue = False
         await self.send_game_data(game_status=False, message=message, timestamp=timestamp, sound_type='game_over')
+
+    async def count_active_paddle(self):
+        active_count = sum([
+            self.left_paddle.is_active,
+            self.right_paddle.is_active,
+            self.upper_paddle.is_active,
+            self.lower_paddle.is_active,
+        ])
+        return active_count
+
+    async def remove_wall(self):
+        if not self.left_paddle.is_active:
+            # 左上縦 左下縦
+            await self.remove_wall_by_position_and_orientation('vertical', 'LEFT')
+        elif not self.right_paddle.is_active:
+            # 右上縦 右下縦
+            await self.remove_wall_by_position_and_orientation('vertical', 'RIGHT')
+        elif not self.upper_paddle.is_active:
+            # 左上横 右上横
+            await self.remove_wall_by_position_and_orientation('horizontal', 'UPPER')
+        elif not self.lower_paddle.is_active:
+            # 左下横 右下横
+            await self.remove_wall_by_position_and_orientation('horizontal', 'LOWER')
+
+    async def remove_wall_by_position_and_orientation(self, orientation, position):
+        walls_to_remove = [wall for wall in self.walls if wall.orientation == orientation and wall.position == position]
+        if walls_to_remove:
+            for wall in walls_to_remove:
+                self.walls.remove(wall)
+            logger.info("Wall removed")
+        else:
+            logger.info("No wall removed")
 
     async def update_ball_and_send_data(self):
         self.right_paddle.move_for_multiple()
         self.left_paddle.move_for_multiple()
         self.upper_paddle.move_for_multiple()
         self.lower_paddle.move_for_multiple()
-        game_continue, sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
-                                                    self.lower_paddle, self.walls)
+        sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
+                                                 self.lower_paddle, self.walls)
+        active_count = await self.count_active_paddle()
+        if self.active_paddle_count != active_count:
+            await self.remove_wall()
+            self.active_paddle_count = active_count
         ball_tmp = {
             'x': self.ball.x,
             'y': self.ball.y,
@@ -251,13 +302,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             'lower_paddle': lower_paddle_tmp,
             'sound_type': sound_type,
         })
+        game_continue = active_count > 1
         return game_continue
 
     async def ball_message(self, data):
         message = data['message']
         timestamp = data['timestamp']
         sound_type = data['sound_type']
-        if self.player_name != 'player1':
+        if self.scheduled_task is None:
             await self.init_game_state_into_self(data)
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp, sound_type=sound_type)
 
@@ -448,8 +500,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
-        # ここで初期化しないとNoneTypeになってしまう
-        await self.reset_game_data()
-        if self.player_name == 'player1':
+        master_id = event['master_id']
+        state = event['state']
+        if state == 'start':
+            # ここで初期化しないとNoneTypeになってしまう
+            await self.reset_game_data()
             await self.init_walls()
+        if self.players_id == master_id:
+            logger.info(f"New master appointed: [{self.players_id}]{self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())

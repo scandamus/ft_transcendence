@@ -5,7 +5,12 @@ import { router, routes } from '../modules/router.js';
 import { labels } from '../modules/labels.js';
 
 export default class SignUpConfirm extends PageBase {
+    static instance = null;
+
     constructor(params) {
+        if (SignUpConfirm.instance) {
+            return SignUpConfirm.instance;
+        }
         super(params);
         SignUpConfirm.instance = this;
         this.title = 'SIGN UP';
@@ -83,9 +88,10 @@ export default class SignUpConfirm extends PageBase {
             },
             body: JSON.stringify(data)
         })
-            .then(response => {
+            .then(async response => {
                 if (!response.ok) {
-                    throw new Error('register failed with status: ' + response.status);
+                    const responseBody = await response.text();
+                    throw new Error(responseBody);
                 }
                 return response.json();
             })
@@ -94,12 +100,20 @@ export default class SignUpConfirm extends PageBase {
                 history.pushState(null, null, '/register/complete');
                 await router(false);
             })
-            .catch(error => {
-                console.error('register failed:', error);
+            .catch( async (error) => {
+                const errorObject = JSON.parse(error.message);
+                if (errorObject.username && errorObject.username.includes('isExists')) {
+                    sessionStorage.setItem('isExist', 'true');
+                    sessionStorage.setItem('errorMessage', error.message);
+                    this.handleBack();
+                } else {
+                    console.error('register failed:', error);
+                }
             });
     }
 
     destroy() {
+        SignUpConfirm.instance = null;
         super.destroy();
     }
 }

@@ -6,7 +6,10 @@ import { updateFriendsList, updateFriendRequestList } from './friendList.js';
 import PageBase from "../components/PageBase.js";
 import { router } from "./router.js";
 import { labels } from './labels.js'; // TODO use labels but wait for merge
-import { updateModalAvailablePlayers } from "./modal.js";
+import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
+import { updateOngoingTournamentList, updateUpcomingTournamentList } from "./tournamentList.js";
+import { enterTournamentRoomRequest } from "./tournament.js";
+import { handleReceiveWsTournamentValidationError } from './form.js';
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -23,6 +26,9 @@ export const pongHandler = (event, containerId) => {
         if (data.type === 'gameSession') {
             loadGameContent(data);
         }
+        else if (data.type === 'gameSessionTournament') {
+            loadGameContent(data);
+        }
         else if (data.type === 'friendMatchRequest') {
             handleFriendMatchRequestReceived(data);
         }
@@ -35,8 +41,14 @@ export const pongHandler = (event, containerId) => {
         else if (data.type === 'lounge') {
             handleLoungeMatchReceived(data);
         }
+        else if (data.type === 'friendStatus') {
+            handleFriendStatusReceived(data);
+        }
         else if (data.type === 'tournament') {
             handleTournamentReceived(data);
+        }
+        else if (data.type === 'tournamentMatch') {
+            handleTournamentMatchReceived(data);
         }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
@@ -60,20 +72,20 @@ const pongGameHandler = (event, containerId) => {
         console.error(data.error);
         refreshAccessToken();
     }
-    console.log(`Message from ${containerId}: `, data);
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames } = data;
 
     closeModal();
 
     console.log(`Loading ${game_name} content with JWT: `, jwt);
-    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}`);
+    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}, all_usernames: ${JSON.stringify(all_usernames)}`);
 
     const gameMatchId = match_id; 
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
+    sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
 
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);
@@ -185,9 +197,11 @@ const handleFriendMatchRequestReceived = (data) => {
     } else if (data.action === 'error') {
         closeModal();
         if (data.error === 'playerNotWaitingStatus') {
-            addNotice('対戦相手がビジーです', true);
+            addNotice(labels.matchRequest['playerNotWaitingStatus'], true);
         } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
+        } else if (data.error === 'tournament') {
+            addNotice('トーナメント中にマッチリクエストできません', true);
         } else {
             console.error(`Error: ${data.message}`);
         }
@@ -199,21 +213,111 @@ const handleLoungeMatchReceived = (data) => {
         updateModalAvailablePlayers(data.availablePlayers);
     } else if (data.action === 'error') {
         closeModal();
-        alert(`エラー:${data.message}`);
+        if (data.error === 'tournament') {
+            addNotice('トーナメント中にマッチリクエストできません', true);
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    }
+}
+
+const handleFriendStatusReceived = (data) => {
+    const currentPage = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+                                ? PageBase.instance : null;
+
+    if (data.action === 'change') {
+        const online_status_msg = data.online === 'online' ? 'ログイン' : 'ログアウト';
+        console.log(`friendStatus change: ${data.username} to ${online_status_msg}`);
+        addNotice(`${data.username}が${online_status_msg}しました`, false);
+        if (currentPage) {
+            updateFriendsList(currentPage).then(() => {});
+        }
     }
 }
 
 const handleTournamentReceived = (data) => {
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
+
     if (data.action === 'created') {
         const startUTC = new Date(data.start);
         const startLocal = startUTC.toLocaleString();
         console.log(`UTC Time: ${startUTC.toISOString()}`);
         console.log(`Local Time: ${startLocal}`);
+        if (currentPage) {
+            PageBase.instance.resetFormCreateTournament();
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
         const message = `${data.name} - ${startLocal} が作成されました`;
         console.log(`${message}`);
         addNotice(message, false);
     } else if (data.action === 'alreadyExists') {
         const message = `同名のトーナメントがすでに存在しています`;
         addNotice(message, true);
+    } else if (data.action === 'invalidTournamentTitle') {
+        handleReceiveWsTournamentValidationError(data);
+    } else if (data.action === 'entryDone') {
+        closeModalOnEntryDone();
+        addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'duplicateNickname') {
+        addNotice(`すでに同名のニックネームが使われています`, true);
+    } else if (data.action === 'alreadyEnterd') {
+        closeModalOnEntryDone();
+        addNotice(`すでにエントリー済みのトーナメントです`, true);
+    } else if (data.action === 'capacityFull') {
+        closeModalOnEntryDone();
+        addNotice(`満員のためトーナメントにエントリー出来ませんでした`, true);
+    } else if (data.action === 'invalidTournament') {
+        closeModalOnEntryDone();
+        addNotice('無効なトーナメントへのリクエストです', true);
+    } else if (data.action === 'invalidPlayer') {
+        closeModalOnEntryDone();
+        addNotice('トーナメントにエントリー出来ませんでした', true);
+    } else if (data.action === 'removeEntryDone') {
+        addNotice(`トーナメント【${data.name}】への参加をキャンセルしました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'invalidCancelRequest') {
+        addNotice('トーナメントへのエントリーがありません');
+    } else if (data.action === 'invalidNickname') {
+        handleReceiveWsTournamentValidationError(data);
+    } else if (data.action === 'invalidEntryRequest') {
+        addNotice('登録期限を過ぎたなど無効なリクエストです', true);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
     }
+}
+
+const handleTournamentMatchReceived = (data) => {
+    const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
+
+    if (data.action === 'tournament_prepare') {
+        addNotice(`トーナメント ${data.name} の開始５分前になりました`);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'tournament_call') {
+        addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
+        enterTournamentRoomRequest(data.name);
+    } else if (data.action === 'tournament_match') {
+        addNotice(`トーナメント ${data.name} を開始します`);
+    } else if (data.action === 'enterRoom') {
+        addNotice(`トーナメント ${data.name} の控室に移動します`);
+        showModalTournamentRoom(data);
+    } else if (data.action === 'canceled') {
+        addNotice(`トーナメント ${data.name} は催行人数に達しなかったためキャンセルされました`, true);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateOngoingTournamentList(currentPage).then(() => {});
+        }
+    } else if (data.action === 'notifyByePlayer') {
+        addNotice(`トーナメント ${data.name} の現在のマッチは不戦勝になりました。しばらくお待ち下さい`)
+    }
+    console.log(`${data.name} ${data.action}の通知です`);
 }
