@@ -234,7 +234,7 @@ const handleTournamentReceived = (data) => {
         if (currentPage) {
             PageBase.instance.resetFormCreateTournament();
             updateUpcomingTournamentList(currentPage).then((start_dates) => {
-                this.start_dates = start_dates;
+                currentPage.start_dates = start_dates;
             });
         }
         const message = `${data.name} - ${startLocal} が作成されました`;
@@ -251,7 +251,7 @@ const handleTournamentReceived = (data) => {
         addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
         if (currentPage) {
             updateUpcomingTournamentList(currentPage).then((start_dates) => {
-                this.start_dates = start_dates;
+                currentPage.start_dates = start_dates;
             });
         }
     } else if (data.action === 'duplicateNickname') {
@@ -272,7 +272,7 @@ const handleTournamentReceived = (data) => {
         addNotice(`トーナメント【${data.name}】への参加をキャンセルしました`);
         if (currentPage) {
             updateUpcomingTournamentList(currentPage).then((start_dates) => {
-                this.start_dates = start_dates;
+                currentPage.start_dates = start_dates;
             });
         }
     } else if (data.action === 'invalidCancelRequest') {
