@@ -16,6 +16,7 @@ const getErrorMessage = (key) => {
         //for customError(checkValidityで判定できないもの、backendのvalidateで受け取るもの)
         'passwordIsNotSame': labels.formErrorMessages.passwordIsNotSame,
         'isExists': labels.formErrorMessages.isExists,
+        'startTimeInvalid': labels.formErrorMessages.startTimeInvalid,
         'intervalError': labels.formErrorMessages.intervalError,
         'tournamentNameAlreadyExists': labels.formErrorMessages.tournamentNameAlreadyExists,
         //以下はfront validate弾けているはずができずにbackend validateでエラーになるパターン

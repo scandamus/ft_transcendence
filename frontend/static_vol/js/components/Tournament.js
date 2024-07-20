@@ -65,9 +65,9 @@ export default class Tournament extends PageBase {
                               type="datetime-local"
                               id="startTime"
                               name="startTime"
-                              value="2024-07-01T21:00"
-                              min="2024-07-01T21:00"
-                              max="2024-08-01T21:00" />
+                              value=""
+                              min=""
+                              max="" />
                             <ul class="listError"></ul>
                             <ul class="listAnnotation">${listDescTournamentStart}</ul>
                         </dd>
@@ -167,15 +167,6 @@ export default class Tournament extends PageBase {
         const tournamentTitle = document.getElementById('inputTournamentTitle').value;
         const startTimeInput = document.getElementById('startTime').value;
         const startTime = new Date(startTimeInput);
-        const now = new Date();
-        now.setMinutes(now.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
-        const minUTC = new Date(now.toISOString());
-        const startUTC = new Date(startTime.toISOString());
-        console.log(`startUTC: ${startUTC}, minUTC: ${minUTC}`);
-        if (startUTC < minUTC) {
-             addNotice(`トーナメントの開始時刻は${CREATE_TOURNAMENT_TIMELIMIT_MIN}分後以降に設定してください`, true);
-             return;
-        }
         createTournament(tournamentTitle, startTime);
     }
 
@@ -231,6 +222,7 @@ export default class Tournament extends PageBase {
         elTournamentTitle.value = '';
         //reset data
         let dateTime = new Date();
+        const currentTimeFormatted = this.formatToDatetimeLocal(dateTime);
         dateTime.setMinutes(dateTime.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
         if (dateTime.getMinutes() !== 0) {
             dateTime.setHours(dateTime.getHours() + 1);
@@ -241,7 +233,7 @@ export default class Tournament extends PageBase {
         const minTimeFormatted = this.formatToDatetimeLocal(dateTime);
         dateTime.setMonth(dateTime.getMonth() + 1);
         const maxTimeFormatted = this.formatToDatetimeLocal(dateTime);
-        elStartTime.min = minTimeFormatted;
+        elStartTime.min = currentTimeFormatted;
         elStartTime.max = maxTimeFormatted;
         elStartTime.value = minTimeFormatted;
     }
@@ -255,6 +247,37 @@ export default class Tournament extends PageBase {
         const classHasInput = 'has-input';
         if (!elInput.classList.contains(classHasInput)) {
             elInput.classList.add(classHasInput);
+        }
+        //customError
+        if (elInput.id === 'startTime') {
+            //check start time
+            const startTimeInput = elInput.value;
+            const startTime = new Date(startTimeInput);
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
+            const minUTC = new Date(now.toISOString());
+            const startUTC = new Date(startTime.toISOString());
+            if (startUTC < minUTC) {
+                 elInput.setCustomValidity('startTimeInvalid');
+            } else {
+                elInput.setCustomValidity('');
+            }
+
+            let isIntervalInvalid = false;
+            for (const existingStart of this.start_dates) {
+                const existingStartTime = new Date(existingStart);
+                const diffInMinutes = Math.abs((startUTC - existingStartTime) / 60000);
+
+                if (diffInMinutes < 360) {
+                    isIntervalInvalid = true;
+                    break;
+                }
+            }
+            if (isIntervalInvalid) {
+                 elInput.setCustomValidity('intervalError');
+            } else {
+                elInput.setCustomValidity('');
+            }
         }
         //formの各input validate
         checkTournamentInputValid(elInput);
