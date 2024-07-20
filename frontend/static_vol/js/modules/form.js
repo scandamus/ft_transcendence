@@ -33,6 +33,7 @@ const getErrorMessage = (key) => {
         'invalidNicknameLenBackend': 'Nickname is invalid.(len - backend)',
         'invalidNicknameCharacterTypesBackend': 'Nickname is invalid.(character types - backend)',
         'invalidNicknameBlank': 'Nickname is required.(required - backend)',
+        'startTimeInvalidBackend': `${labels.formErrorMessages.startTimeInvalid} (startTimeInvalid - backend)`,
         //for LogIn
         'loginError1': labels.formErrorMessages.loginError1,
         'loginError2': labels.formErrorMessages.loginError2,
@@ -198,6 +199,7 @@ const handleReceiveWsTournamentValidationError = (error) => {
     const btnEntryTournament = document.getElementById('btnEntryTournament');
     const elInputName = document.getElementById('inputTournamentTitle');
     const elInputNickname = document.getElementById('inputNickname');
+    const elInputStart = document.getElementById('startTime');
 
     const errorObject = error.message;
 
@@ -207,6 +209,9 @@ const handleReceiveWsTournamentValidationError = (error) => {
             btn = btnEntryTournament;
         } else if (key === 'name') {
             elInput = elInputName;
+            btn = btnCreateTournament;
+        } else if (key === 'start') {
+            elInput = elInputStart;
             btn = btnCreateTournament;
         } else {
             return;

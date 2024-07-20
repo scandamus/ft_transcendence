@@ -49,7 +49,7 @@ async def handle_create_tournament(consumer, data):
                 'message': {'name': ['tournamentNameAlreadyExists']}
             }))
     else:
-        logger.error(f"invalid tournament name: {serializer.errors}")
+        logger.error(f"invalid tournament data: {serializer.errors}")
         await consumer.send(text_data=json.dumps({
             'type': 'tournament',
             'action': 'invalidTournamentTitle',
@@ -72,8 +72,11 @@ def create_tournament(data):
         start = datetime.fromisoformat(start)    
         start_utc = start
         logger.info(f'start: {start}, start(utc): {start_utc}, min_start(utc): {min_start}')
-        if start_utc < min_start:
-            raise ValueError(f'Start date must be at least {min_offset} minutes in the future')
+        # existing_tournaments =Tournament.objects.all()
+        # for tournament in existing_tournaments:
+        #     tournament_start = tournament.start
+        #     if abs((start_utc - tournament_start).total_seconds()) < 6 * 3600:
+        #         raise ValueError(f'interval error')
 
         tournament, created = Tournament.objects.get_or_create(
             name=data['name'],
@@ -85,7 +88,7 @@ def create_tournament(data):
         logger.info(f'Tournament with title "{data["name"]}" already exists')
         tournament = Tournament.objects.get(name=data['name'])
         return tournament, False
-    except ValueError as e: # 時刻がCREATE_TOURNAMENT_TIMELIMIT_MIN分より前だった場合
+    except ValueError as e:
         logger.error(f'Validation error: {e}')
         return None, None
     except Exception as e:
