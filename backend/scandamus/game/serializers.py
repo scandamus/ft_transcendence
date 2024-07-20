@@ -111,15 +111,12 @@ class MatchSerializer(serializers.ModelSerializer):
                 player.save()
 
     def calc_players_level(self, match):
-        players = [match.player1, match.player2, match.player3, match.player4]
-        scores = [match.score1, match.score2, match.score3, match.score4]
-        max_score_index = scores.index(max(scores))
-        winning_player = players[max_score_index]
+        winning_player = match.winner
 
-        # todo: Tournamentを考慮する場合の処理
-        win_count_decimal = Decimal(winning_player.win_count)
+        # Tournament含め全てのmatchで勝つとlevel += 0.2
+        level_decimal = Decimal(winning_player.level)
         multiplier = Decimal('0.2')
-        winning_player.level = (win_count_decimal * multiplier).quantize(Decimal('0.0'), rounding=ROUND_DOWN)
+        winning_player.level = (level_decimal + multiplier).quantize(Decimal('0.0'), rounding=ROUND_DOWN)
         winning_player.save()
 
 
