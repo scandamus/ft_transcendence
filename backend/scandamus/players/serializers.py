@@ -134,33 +134,20 @@ class MatchLogSerializer(serializers.ModelSerializer):
         return None
 
     def get_is_win(self, obj):
-        my_score = self.get_my_score(obj)
-        scores = [
-            obj.score1,
-            obj.score2,
-            obj.score3 if obj.player3 else None,
-            obj.score4 if obj.player4 else None
-        ]
-        highest_score = max(score for score in scores if score is not None)
-        highest_scorers = [score for score in scores if score == highest_score]
-        return len(highest_scorers) == 1 and highest_scorers[0] == my_score
+        user = self.context['request'].user
+        return obj.winner == user
 
     def get_players(self, obj):
         players_info = [
-            {'username': obj.player1.user.username, 'avatar': obj.player1.avatar.url if obj.player1.avatar else None, 'score': obj.score1, 'is_win': False},
-            {'username': obj.player2.user.username, 'avatar': obj.player2.avatar.url if obj.player2.avatar else None, 'score': obj.score2, 'is_win': False}
+            {'username': obj.player1.user.username, 'avatar': obj.player1.avatar.url if obj.player1.avatar else None, 'score': obj.score1, 'is_win': obj.winner == obj.player1},
+            {'username': obj.player2.user.username, 'avatar': obj.player2.avatar.url if obj.player2.avatar else None, 'score': obj.score2, 'is_win': obj.winner == obj.player2}
         ]
         if obj.player3:
             players_info.append(
-                {'username': obj.player3.user.username, 'avatar': obj.player3.avatar.url if obj.player3.avatar else None, 'score': obj.score3, 'is_win': False})
+                {'username': obj.player3.user.username, 'avatar': obj.player3.avatar.url if obj.player3.avatar else None, 'score': obj.score3, 'is_win': obj.winner == obj.player3})
         if obj.player4:
             players_info.append(
-                {'username': obj.player4.user.username, 'avatar': obj.player4.avatar.url if obj.player4.avatar else None, 'score': obj.score4, 'is_win': False})
-
-        highest_score = max(player['score'] for player in players_info)
-        highest_scorers = [player for player in players_info if player['score'] == highest_score]
-        if len(highest_scorers) == 1:
-            highest_scorers[0]['is_win'] = True
+                {'username': obj.player4.user.username, 'avatar': obj.player4.avatar.url if obj.player4.avatar else None, 'score': obj.score4, 'is_win': obj.winner == obj.player4})
 
         # ログインユーザー以外の全プレイヤー情報を取得
         user = self.context['request'].user
