@@ -38,6 +38,8 @@ export const labels_fr = {
         passwordIsNotSame: 'Veuillez saisir le même mot de passe',
         isExists: 'Ce nom d’utilisateur est utilisé',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'Veuillez vérifier le nom d’utilisateur et le mot de passe',
         loginError2: 'quelque chose s’est mal passé',
     },
@@ -105,7 +107,7 @@ export const labels_fr = {
         labelTournamentLog: 'Journal du tournoi',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
     },
     modal: {

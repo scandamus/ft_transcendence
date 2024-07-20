@@ -38,6 +38,8 @@ export const labels_ar = {
         passwordIsNotSame: 'الرجاء إدخال كلمة المرور نفسها',
         isExists: 'اسم المستخدم هذا قيد الاستخدام',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'يُرجى التحقق من اسم المستخدم وكلمة المرور',
         loginError2: 'تعذر تسجيل الدخول',
     },
@@ -105,7 +107,7 @@ export const labels_ar = {
         labelTournamentLog: 'سجلات البطولة',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
     },
     modal: {

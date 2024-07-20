@@ -38,6 +38,8 @@ export const labels_ja = {
         passwordIsNotSame: '同じパスワードを入力してください',
         isExists: 'このユーザー名は使われています',
         outOfRange: 'その日時は指定できません',
+        intervalError: '他のトーナメントと6時間以上間隔を空けてください',
+        tournamentNameAlreadyExists: '同名のトーナメントがすでに存在しています',
         loginError1: 'ログインに失敗しました。ユーザー名とパスワードを確認してください',
         loginError2: 'ログインできません',
     },
@@ -105,7 +107,7 @@ export const labels_ja = {
         labelTournamentLog: 'トーナメント記録',
         labelUpdateLists: 'リストを再読み込み',
         descTournamentTitle: ['[使用可能] 半角英小文字,半角数字,ひらがな,カタカナ,漢字,記号(@_#$%&!.+*~)', '3〜50文字'],
-        descTournamentStart: ['[指定可能範囲] 1時間後〜1ヶ月後'],
+        descTournamentStart: ['[指定可能範囲] 1時間後〜1ヶ月後', '[他トーナメントとの間隔] 6時間以上'],
         descNickname: ['[使用可能] 半角英小文字,半角数字,ひらがな,カタカナ,漢字,記号(@_#$%&!.+*~)', '3〜20文字'],
     },
     modal: {

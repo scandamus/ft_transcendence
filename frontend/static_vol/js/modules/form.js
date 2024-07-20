@@ -13,9 +13,11 @@ const getErrorMessage = (key) => {
         'tooShort': labels.formErrorMessages.tooShort,
         'rangeOverflow': labels.formErrorMessages.outOfRange,
         'rangeUnderflow': labels.formErrorMessages.outOfRange,
-        //for customError
+        //for customError(checkValidityで判定できないもの、backendのvalidateで受け取るもの)
         'passwordIsNotSame': labels.formErrorMessages.passwordIsNotSame,
         'isExists': labels.formErrorMessages.isExists,
+        'intervalError': labels.formErrorMessages.intervalError,
+        'tournamentNameAlreadyExists': labels.formErrorMessages.tournamentNameAlreadyExists,
         //以下はfront validate弾けているはずができずにbackend validateでエラーになるパターン
         'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
         'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
