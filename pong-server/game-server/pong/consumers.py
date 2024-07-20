@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
+    PADDLE_SPEED = 7
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -152,18 +153,25 @@ class PongConsumer(AsyncWebsocketConsumer):
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
         sent_player_name = data.get('player_name')
+        
+        self.update_paddle_speed('left' if sent_player_name == 'player1' else 'right', key, is_pressed)
+    
+    def update_paddle_speed(self, side, key, is_pressed):
+        up_pressed_attr = f'{side}_up_pressed'
+        down_pressed_attr = f'{side}_down_pressed'
+        paddle_attr = f'{side}_paddle'
 
         if key in ['ArrowUp', 'w']:
-            self.up_pressed = is_pressed
-        elif key in ['s', 'ArrowDown']:
-            self.down_pressed = is_pressed
-        speed = -7 * self.up_pressed + 7 * self.down_pressed
+            setattr(self, up_pressed_attr, is_pressed)
+        elif key in ['ArrowDown', 's']:
+            setattr(self, down_pressed_attr, is_pressed)
 
+        up_pressed = getattr(self, up_pressed_attr, False)
+        down_pressed = getattr(self, down_pressed_attr, False)
+        speed = self.PADDLE_SPEED * (down_pressed - up_pressed)
+        
         if self.scheduled_task is not None:
-            if sent_player_name == 'player1':
-                self.left_paddle.speed = speed
-            elif sent_player_name == 'player2':
-                self.right_paddle.speed = speed
+            setattr(getattr(self, paddle_attr), 'speed', speed)
 
     async def schedule_ball_update(self):
         self.game_continue = True
