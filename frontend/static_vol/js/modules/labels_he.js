@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_he = {
     langCode: 'he',
     langName: 'עברית',
@@ -70,6 +72,7 @@ export const labels_he = {
         labelReceivedRequest: 'בקשות חברות שקיבלת',
         labelRecommended: 'מומלץ עבורך',
         msgNoRecommended: 'אין מומלץ עבורך',
+        msgFriendsFull: `${FRIENDS_MAX} $numFriends<br>`
     },
     lounge: {
         title: 'Lounge',

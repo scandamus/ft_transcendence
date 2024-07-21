@@ -53,6 +53,7 @@ const updateFriendsList = async (pageInstance) => {
             }
             resetListenFriendList(pageInstance);
         }
+        return friends.length;
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }

@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_la = {
     langCode: 'la',
     langName: 'Latina',
@@ -70,6 +72,7 @@ export const labels_la = {
         labelReceivedRequest: 'tibi amici esse volunt',
         labelRecommended: 'usores commendati tibi',
         msgNoRecommended: 'nullus iam commendatus',
+        msgFriendsFull: `${FRIENDS_MAX} $numFriends<br>`
     },
     lounge: {
         title: 'Sessorium',

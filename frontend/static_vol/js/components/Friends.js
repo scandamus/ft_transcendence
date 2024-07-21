@@ -4,6 +4,7 @@ import PageBase from './PageBase.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
+import { FRIENDS_MAX } from '../modules/env.js';
 import { labels } from '../modules/labels.js';
 
 import { checkSearchFriendInputValid } from "../modules/form.js";
@@ -22,6 +23,7 @@ export default class Friends extends PageBase {
         super(params);
         Friends.instance = this;
         this.title = labels.friends.title;
+        this.numFriends = 0;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
 
@@ -57,6 +59,7 @@ export default class Friends extends PageBase {
                             <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${labels.friends.labelSendRequest}</button></p>
                             <ul class="listError"></ul>
                         </form>
+                        <p class="blockFriendsFull"></p>
                     </section>
                     <section class="blockFriendRecommended">
                         <h3 class="blockFriendRecommended_title unitTitle1">${labels.friends.labelRecommended}</h3>
@@ -69,11 +72,16 @@ export default class Friends extends PageBase {
 
     updateLists() {
         try {
-            updateFriendsList(this).then(() => {});
+            updateFriendsList(this)
+                .then((len) => {
+                    this.numFriends = len;
+                    if (this.numFriends < FRIENDS_MAX) {
+                        updateRecommend(this).then(() => {});
+                    } else {
+                        this.switchDisplayFriendsFull();
+                    }
+                });
             updateFriendRequestList(this).then(() => {});
-            updateRecommend(this).then(() => {});
-            //recommendedのaddListener
-            addListenSendFriendRequest(this);
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
@@ -84,6 +92,20 @@ export default class Friends extends PageBase {
         const btnSearchFriend = document.getElementById('btnSearchFriend');
         const boundHandleSearchFriend = this.handleSearchFriend.bind(this);
         this.addListListenInInstance(btnSearchFriend, boundHandleSearchFriend, 'click');
+    }
+
+    switchDisplayFriendsFull() {
+        //要素の表示制御のためselector付与
+        const blockUsers = document.querySelector('.blockUsers');
+        blockUsers.classList.add('is-full');
+        //友達追加できない旨メッセージ表示
+        const blockFriendsFull = document.querySelector('.blockFriendsFull');
+        blockFriendsFull.innerHTML = (labels.friends.msgFriendsFull).replace('$numFriends', this.numFriends);
+        //友達検索invalid
+        const elInputFriendName = document.getElementById('inputFriendsName');
+        const btnSearchFriend = document.getElementById('btnSearchFriend');
+        elInputFriendName.setAttribute('disabled', '');
+        btnSearchFriend.setAttribute('disabled', '');
     }
 
     async handleSearchFriend(ev) {

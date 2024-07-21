@@ -618,6 +618,13 @@ input.has-input:invalid {
   background-color: var(--color-error1-alpha);
 }
 
+input[type="text"]:disabled {
+  border: 1px solid var(--color-white);
+  box-shadow: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .blockForm {
 }
 
@@ -999,6 +1006,14 @@ input.has-input:invalid {
 
 }
 
+.blockUsers.is-full {
+
+}
+
+.blockUsers.is-full .blockFriendRecommended {
+  display: none;
+}
+
 .blockUsers_column {
 
 }
@@ -1052,6 +1067,20 @@ input.has-input:invalid {
 
 .blockSearchFriend_form .listError {
   flex: 0 0 100%;
+}
+
+.blockFriendsFull {
+  display: none;
+  margin-top: 10px;
+  padding: 0.8em 1em 0.8em 2em;
+  background: var(--color-error2-alpha);
+  background: var(--color-error1-alpha);
+  font-size: 1.8rem;
+  border: 1px solid var(--color-error1);
+}
+
+.is-full .blockFriendsFull {
+  display: block;
 }
 
 /*UserRegister*/

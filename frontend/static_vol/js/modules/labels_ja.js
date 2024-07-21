@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_ja = {
     langCode: 'ja',
     langName: '日本語',
@@ -70,6 +72,7 @@ export const labels_ja = {
         labelReceivedRequest: '受け取った友達申請',
         labelRecommended: 'あなたへのおすすめ',
         msgNoRecommended: 'おすすめユーザーはいません',
+        msgFriendsFull: `友達になれるのは最大${FRIENDS_MAX}人までです。（現在の友達$numFriends人）<br>他のPlayerと友達になりたい場合、友達解除をして枠を空けてください。`,
     },
     lounge: {
         title: 'Lounge',

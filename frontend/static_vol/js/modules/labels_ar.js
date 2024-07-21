@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_ar = {
     langCode: 'ar',
     langName: 'العربية',
@@ -70,6 +72,7 @@ export const labels_ar = {
         labelReceivedRequest: 'طلبات الصداقة المستلمة',
         labelRecommended: 'توصيات لك',
         msgNoRecommended: 'لا توجد توصية',
+        msgFriendsFull: `${FRIENDS_MAX} $numFriends<br>`
     },
     lounge: {
         title: 'Lounge',
