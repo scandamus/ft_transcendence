@@ -209,3 +209,13 @@ class LoungeSession(AsyncWebsocketConsumer):
                 await update_player_status(player, 'waiting')
         except Exception as e:
             logger.error(f'Error in send_notification: {e}')
+
+    async def disconnect_by_new_login(self, event):
+        logger.info('Disconnect by new login')
+        try:
+            await self.send(text_data=json.dumps({
+                'type': 'disconnectByNewLogin'
+            }))
+        except Exception as e:
+            logger.error(f'Error in send disconnect by new login')
+        await self.close()

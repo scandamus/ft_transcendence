@@ -1,10 +1,13 @@
 import logging
+import random
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Q
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
@@ -18,7 +21,6 @@ from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, JSONParser
-import random
 
 # from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
@@ -103,9 +105,13 @@ class LoginView(APIView):
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            user = serializer.user
             access = serializer.validated_data.get("access", None)
             refresh = serializer.validated_data.get("refresh", None)
             if access and refresh:
+                player = Player.objects.get(user=user)
+                self.notify_new_login(player.id)
+                
                 return Response({
                     'access_token': access,
                     'refresh_token': refresh
@@ -114,6 +120,14 @@ class LoginView(APIView):
                 return Response({'error': 'Invalid token data'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+    def notify_new_login(self, player_id):
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'friends_{player_id}',
+            {
+                'type': 'disconnect_by_new_login',
+            }
+        )
 
 class LogoutView(APIView):
     authentication_classes = [JWTAuthentication]

@@ -10,6 +10,7 @@ import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
 import { updateOngoingTournamentList, updateUpcomingTournamentList } from "./tournamentList.js";
 import { enterTournamentRoomRequest } from "./tournament.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
+import { handleLogout } from "./logout.js";
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -49,6 +50,9 @@ export const pongHandler = (event, containerId) => {
         }
         else if (data.type === 'tournamentMatch') {
             handleTournamentMatchReceived(data);
+        }
+        else if (data.type === 'disconnectByNewLogin') {
+            handleDisconnetByNewLogin();
         }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
@@ -370,4 +374,10 @@ const handleTournamentMatchReceived = async (data) => {
         }
     }
     console.log(`${data.name} ${data.action}の通知です`);
+}
+
+const handleDisconnetByNewLogin = () => {
+    addNotice('サーバーに新しいログインがあったため切断されました', true);
+    console.log('Disconnect by new login');
+    handleLogout(new Event('logout'));
 }
