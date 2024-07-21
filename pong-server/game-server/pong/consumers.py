@@ -68,12 +68,13 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if self.scheduled_task is not None:
                     self.scheduled_task.cancel()
                     self.scheduled_task = None
-                    new_next_master = sorted(self.players_ids[self.match_id])[0]
-                    await self.channel_layer.group_send(self.room_group_name, {
-                        'type': 'start_game',
-                        'master_id': new_next_master,
-                        'state': 'ongoing',
-                    })
+                    if self.game_continue:
+                        new_next_master = sorted(self.players_ids[self.match_id])[0]
+                        await self.channel_layer.group_send(self.room_group_name, {
+                            'type': 'start_game',
+                            'master_id': new_next_master,
+                            'state': 'ongoing',
+                        })
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
@@ -358,5 +359,5 @@ class PongConsumer(AsyncWebsocketConsumer):
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
         if self.players_id == master_id:
-            logger.info(f"New master appointed: {self.player_name}")
+            logger.error(f"New master appointed: {self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
