@@ -174,30 +174,30 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.update_paddle_speed(side, key, is_pressed)
 
     def update_paddle_speed(self, side, key, is_pressed):
-        up_pressed_attr = f'{side}_up_pressed'
-        down_pressed_attr = f'{side}_down_pressed'
         paddle_attr = f'{side}_paddle'
 
         if key in ['ArrowUp', 'w']:
+            up_pressed_attr = f'{side}_up_pressed'
             setattr(self, up_pressed_attr, is_pressed)
         elif key in ['s', 'ArrowDown']:
+            down_pressed_attr = f'{side}_down_pressed'
             setattr(self, down_pressed_attr, is_pressed)
-        # vertical_speed = -7 * self.up_pressed + 7 * self.down_pressed
-
-        if key in ['ArrowRight', 'd']:
-            setattr(self, up_pressed_attr, is_pressed)
+        elif key in ['ArrowRight', 'd']:
+            right_pressed_attr = f'{side}_right_pressed'
+            setattr(self, right_pressed_attr, is_pressed)
         elif key in ['a', 'ArrowLeft']:
-            setattr(self, down_pressed_attr, is_pressed)
-        # horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
-
-        up_pressed = getattr(self, up_pressed_attr, False)
-        down_pressed = getattr(self, down_pressed_attr, False)
+            left_pressed_attr = f'{side}_left_pressed'
+            setattr(self, left_pressed_attr, is_pressed)
 
         if self.scheduled_task is not None:
             if side == 'left' or side == 'right':
+                up_pressed = getattr(self, f'{side}_up_pressed', False)
+                down_pressed = getattr(self, f'{side}_down_pressed', False)
                 speed = self.PADDLE_SPEED * (down_pressed - up_pressed)
             else:
-                speed = self.PADDLE_SPEED * (up_pressed - down_pressed)
+                left_pressed = getattr(self, f'{side}_left_pressed', False)
+                right_pressed = getattr(self, f'{side}_right_pressed', False)
+                speed = self.PADDLE_SPEED * (right_pressed - left_pressed)
             setattr(getattr(self, paddle_attr), 'speed', speed)
 
     async def schedule_ball_update(self):
