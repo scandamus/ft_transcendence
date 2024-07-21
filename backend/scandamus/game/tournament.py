@@ -116,7 +116,7 @@ async def handle_entry_tournament(consumer, data):
     if serializer.is_valid():
         tournament, nickname = await get_tournament_and_nickname(consumer, data)
         if tournament is None:
-            await send_entry_error(consumer, 'invalidTournament')
+            await send_entry_error(consumer, 'invalidEntryRequest')
             return
 
         entry = await get_entry(tournament, player)
@@ -199,7 +199,7 @@ def get_tournament_and_nickname(consumer, data):
             return None, None
         
         tournament = Tournament.objects.get(id=id)
-        if tournament or tournament.status is not 'upcoming': # 本来upcomingではないリクエストは来ない
+        if tournament and tournament.status == 'upcoming': # 本来upcomingではないリクエストは来ない
             logger.info(f'{tournament} found in database')
             return tournament, nickname
         logger.error(f'{name} is not found')
