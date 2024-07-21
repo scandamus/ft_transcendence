@@ -192,7 +192,8 @@ export default class TournamentDetail extends PageBase {
                             <img src="${avatar2}" alt="" width="50" height="50">
                             <h4 class="unitMatchPlayer_title">${match.player2}</h4>
                         </header>`;
-        if (match.score2) {
+        if (match.score2 !== undefined && match.score2 !== null) {
+
             matchHtml += `
                         <p class="unitMatchPlayer_score">${match.score2}</p>`;
         } else {
