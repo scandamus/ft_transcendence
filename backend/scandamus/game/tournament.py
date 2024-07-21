@@ -46,11 +46,11 @@ async def handle_create_tournament(consumer, data):
     if custom_errors:
         await consumer.send(text_data=json.dumps({
             'type': 'tournament',
-            'action': 'invalidTournamentTitle',
+            'action': 'invalidTournamentStart',
             'message': custom_errors
         }))
-        return
-    if await serializer.is_valid():
+        # return
+    if serializer.is_valid():
         tournament, created = await create_tournament(data)
         if tournament is None:
             return  # 無効なjsonを送ってきた場合はセキュリティの観点から無視
@@ -68,7 +68,7 @@ async def handle_create_tournament(consumer, data):
                 'action': 'invalidTournamentTitle',
                 'message': {'name': ['tournamentNameAlreadyExists']}
             }))
-    else:
+    else: #charTypeなどフロントで弾けているはずのエラー
         logger.error(f"invalid tournament data: {serializer.errors}")
         await consumer.send(text_data=json.dumps({
             'type': 'tournament',

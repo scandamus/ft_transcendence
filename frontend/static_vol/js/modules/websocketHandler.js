@@ -266,11 +266,7 @@ const handleTournamentReceived = (data) => {
         const message = `${data.name} - ${startLocal} が作成されました`;
         console.log(`${message}`);
         addNotice(message, false);
-    } else if (data.action === 'alreadyExists') {
-        // const message = `同名のトーナメントがすでに存在しています`;
-        // addNotice(message, true);
-        handleReceiveWsTournamentValidationError(data);
-    } else if (data.action === 'invalidTournamentTitle') {
+    } else if (data.action === 'invalidTournamentTitle' || data.action === 'invalidTournamentStart') {
         handleReceiveWsTournamentValidationError(data);
     } else if (data.action === 'entryDone') {
         closeModalOnEntryDone();
