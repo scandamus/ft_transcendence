@@ -34,6 +34,7 @@ const getErrorMessage = (key) => {
         'invalidNicknameCharacterTypesBackend': 'Nickname is invalid.(character types - backend)',
         'invalidNicknameBlank': 'Nickname is required.(required - backend)',
         'startTimeInvalidBackend': `${labels.formErrorMessages.startTimeInvalid} (startTimeInvalid - backend)`,
+        'intervalErrorBackend': `${labels.formErrorMessages.intervalError} (startTimeInvalid - backend)`,
         //for LogIn
         'loginError1': labels.formErrorMessages.loginError1,
         'loginError2': labels.formErrorMessages.loginError2,

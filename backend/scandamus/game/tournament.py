@@ -5,9 +5,10 @@ import logging
 from django.contrib.auth.models import User
 from .models import Player
 from .models import Tournament, Entry
-from .serializers import TournamentSerializer, EntrySerializer
+from .serializers import TournamentSerializer, EntrySerializer, async_validate_start_time
 from django.conf import settings
 from django.db import transaction, IntegrityError
+from rest_framework import serializers
 from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
 from django.utils.timezone import make_aware, now as django_now
@@ -30,7 +31,26 @@ async def handle_create_tournament(consumer, data):
     if not player:
         logger.error(f"No player found for user: {user.username}")
     serializer = TournamentSerializer(data = data)
-    if serializer.is_valid():
+    start_time = data.get('start')
+    if isinstance(start_time, str):
+        start_time = datetime.fromisoformat(start_time)
+    custom_errors = {}
+    try:
+        await async_validate_start_time(start_time)
+    except serializers.ValidationError as e:
+        if 'start' in custom_errors:
+            custom_errors['start'].extend(e.detail)
+        else:
+            custom_errors['start'] = e.detail
+
+    if custom_errors:
+        await consumer.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': 'invalidTournamentTitle',
+            'message': custom_errors
+        }))
+        return
+    if await serializer.is_valid():
         tournament, created = await create_tournament(data)
         if tournament is None:
             return  # 無効なjsonを送ってきた場合はセキュリティの観点から無視
@@ -72,11 +92,6 @@ def create_tournament(data):
         start = datetime.fromisoformat(start)    
         start_utc = start
         logger.info(f'start: {start}, start(utc): {start_utc}, min_start(utc): {min_start}')
-        # existing_tournaments =Tournament.objects.all()
-        # for tournament in existing_tournaments:
-        #     tournament_start = tournament.start
-        #     if abs((start_utc - tournament_start).total_seconds()) < 6 * 3600:
-        #         raise ValueError(f'interval error')
 
         tournament, created = Tournament.objects.get_or_create(
             name=data['name'],
