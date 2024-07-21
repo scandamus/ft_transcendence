@@ -240,7 +240,8 @@ def update_player_status(player, status):
 def get_nickname(tournament, player):
     try:
         entry = Entry.objects.get(tournament=tournament, player=player)
+        logger.info(f'Nickname for player {player.id}: {entry.nickname}')
         return entry.nickname
     except Exception as e:
-        logger.error(f'Error in get_nickname')
+        logger.error(f'Error in get_nickname for player {player.id} in tournament {tournament.id}: {e}')
         return None

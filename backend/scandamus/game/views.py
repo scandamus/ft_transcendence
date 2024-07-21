@@ -70,6 +70,7 @@ class MatchViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+        logger.info(f"Fetched Match instance: {instance.id}, data: {instance}")
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -77,14 +78,10 @@ class MatchViewSet(ModelViewSet):
         instance.save()
 
         if instance.tournament and instance.round:
-#            score1 = instance.score1
-#            score2 = instance.score2
-#            status = instance.status
-
             if instance.tournament.status == 'ongoing':
                 self.update_player_status_after_match(instance)
-#                self.set_all_players_status(instance, 'tournament_room')
                 if self.is_all_matches_finished(instance.tournament, instance.round):
+                    logger.info(f"All matches finished for tournament: {instance.tournament.id}, round: {instance.round}")
                     report_match_result(instance.id)
         elif instance.status == 'after': # トーナメントマッチ以外はリセット
             self.reset_all_players_status(instance)
