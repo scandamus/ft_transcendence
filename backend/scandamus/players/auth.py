@@ -47,8 +47,7 @@ async def handle_auth(consumer, token):
                 if player.status == 'tournament_prepare' or player.status == 'tournament_room':
                     try:
                         tournament = await database_sync_to_async(Tournament.objects.get)(status='prepare')                
-                        if tournament.status == 'preparing' and await is_entry_available(player, tournament):
-                            
+                        if tournament.status == 'preparing' and await is_entry_available(player, tournament):                        
                             await consumer.send(text_data=json.dumps({
                                 'type': 'tournamentMatch',
                                 'action': player_status,
