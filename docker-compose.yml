@@ -43,6 +43,7 @@ services:
       - EMAIL=${EMAIL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - FRIENDS_MAX=${FRIENDS_MAX}
     container_name: frontend
     depends_on:
       - backend
