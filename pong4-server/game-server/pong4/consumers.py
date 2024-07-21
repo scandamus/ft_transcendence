@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
+    PADDLE_SPEED = 7
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -161,27 +162,43 @@ class PongConsumer(AsyncWebsocketConsumer):
         is_pressed = data.get('is_pressed', False)
         sent_player_name = data.get('player_name')
 
+        side = None
+        if sent_player_name == 'player1':
+            side = 'left'
+        elif sent_player_name == 'player2':
+            side = 'right'
+        elif sent_player_name == 'player3':
+            side = 'upper'
+        elif sent_player_name == 'player4':
+            side = 'lower'
+        self.update_paddle_speed(side, key, is_pressed)
+
+    def update_paddle_speed(self, side, key, is_pressed):
+        up_pressed_attr = f'{side}_up_pressed'
+        down_pressed_attr = f'{side}_down_pressed'
+        paddle_attr = f'{side}_paddle'
+
         if key in ['ArrowUp', 'w']:
-            self.up_pressed = is_pressed
+            setattr(self, up_pressed_attr, is_pressed)
         elif key in ['s', 'ArrowDown']:
-            self.down_pressed = is_pressed
-        vertical_speed = -7 * self.up_pressed + 7 * self.down_pressed
+            setattr(self, down_pressed_attr, is_pressed)
+        # vertical_speed = -7 * self.up_pressed + 7 * self.down_pressed
 
         if key in ['ArrowRight', 'd']:
-            self.right_pressed = is_pressed
+            setattr(self, up_pressed_attr, is_pressed)
         elif key in ['a', 'ArrowLeft']:
-            self.left_pressed = is_pressed
-        horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
+            setattr(self, down_pressed_attr, is_pressed)
+        # horizontal_speed = 7 * self.right_pressed + -7 * self.left_pressed
+
+        up_pressed = getattr(self, up_pressed_attr, False)
+        down_pressed = getattr(self, down_pressed_attr, False)
 
         if self.scheduled_task is not None:
-            if sent_player_name == 'player1':
-                self.left_paddle.speed = vertical_speed
-            elif sent_player_name == 'player2':
-                self.right_paddle.speed = vertical_speed
-            elif sent_player_name == 'player3':
-                self.upper_paddle.speed = horizontal_speed
-            elif sent_player_name == 'player4':
-                self.lower_paddle.speed = horizontal_speed
+            if side == 'left' or side == 'right':
+                speed = self.PADDLE_SPEED * (down_pressed - up_pressed)
+            else:
+                speed = self.PADDLE_SPEED * (up_pressed - down_pressed)
+            setattr(getattr(self, paddle_attr), 'speed', speed)
 
     async def schedule_ball_update(self):
         self.game_continue = True
