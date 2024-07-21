@@ -94,11 +94,12 @@ export default class Tournament extends PageBase {
     updateLists() {
         try {
             updateUpcomingTournamentList(this).then((start_dates) => {
-                this.start_dates = start_dates;
+                if (start_dates) {
+                    this.start_dates = start_dates;
+                }
             });
             updateOngoingTournamentList(this).then(() => {});
             updateFinishedTournamentList(this).then(() => {});
- //           updateFinishedTournamentList(this).then(() => {});
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;

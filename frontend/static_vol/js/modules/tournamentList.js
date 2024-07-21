@@ -102,11 +102,11 @@ const updateFinishedTournamentList = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('finished', false);
         const listWrapper = document.querySelector('.blockTournamentList_finished');
-        if (tournaments.length === 0) {
-            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
+        if (tournaments.list.length === 0) {
+            listWrapper.innerHTML = `<p>${labels.tournament.msgNoFinished}</p>`;
         } else {
             listWrapper.innerHTML = '';
-            tournaments.forEach(tournament => {
+            tournaments.list.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 const nicknameHtml = tournament.nickname ? `
                     <div class="unitTournament_body">
@@ -137,7 +137,7 @@ const getTournamentLog = async (pageInstance) => {
         const tournaments = await fetchTournaments('finished', false);
         const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         listWrapper.innerHTML = '';
-        tournaments.forEach(tournament => {
+        tournaments.list.forEach(tournament => {
             if (tournament.nickname) {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 let rankHtml = ``;
