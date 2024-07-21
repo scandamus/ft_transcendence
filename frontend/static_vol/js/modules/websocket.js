@@ -1,9 +1,15 @@
 import { getValidToken, initToken } from "./token.js";
+import { handleLogout } from "./logout.js";
+import { addNotice } from "./notice.js";
 
 class WebSocketManager {
     constructor() {
         this.sockets = {};
         this.messageHandlers = {};
+        this.reconnectInterval = 1000; // 再接続の試行間隔
+        this.maxReconnectAttempts = 10; // 再接続の最大試行回数
+        this.reconnectAttempts = {}; // 再接続の試行カウンタ
+        this.isWebSocketClosed = {}; // true:意図的にクローズされている
     }
     
     async openWebSocket(containerId, messageHandler) {
@@ -47,6 +53,8 @@ class WebSocketManager {
                 } else {
                     resolve(socket);
                 }
+                this.reconnectAttempts[containerId] = 0;
+                this.isWebSocketClosed[containerId] = false;
             };
 
             socket.onmessage = (event) => {
@@ -55,6 +63,16 @@ class WebSocketManager {
 
             socket.onclose = (event) => {
                 console.log(`WebSocket for ${containerId} is onclose.`);
+                if (!this.isWebSocketClosed[containerId] && this.reconnectAttempts[containerId] < this.maxReconnectAttempts) {
+                    setTimeout(() => {
+                        console.log(`Try to reconnect WebScoket for ${containerId}`);
+                        this.reconnectAttempts[containerId]++;
+                        this.openWebSocket(containerId, this.messageHandlers[containerId]);
+                    }, this.reconnectInterval);
+                } else if (!this.isWebSocketClosed[containerId]) {
+                    addNotice('サーバーとの接続が切れました', true);
+                    handleLogout(new Event('logout'));
+                }
                 this.handleClose(containerId);
             };
 
@@ -88,6 +106,7 @@ class WebSocketManager {
     closeWebSocket(containerId) {
         const socket = this.sockets[containerId];
         if (socket) {
+            this.isWebSocketClosed[containerId] = true;
             socket.close();
             delete this.sockets[containerId];
             delete this.messageHandlers[containerId];
