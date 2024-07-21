@@ -132,38 +132,6 @@ export default class Tournament extends PageBase {
         createTournament(tournamentTitle, startTime);
     }
 
-    // listenCancelTournament() {
-    //     const btnCancelTournament = document.querySelectorAll('.unitTournament_form .unitButtonDecline');
-    //     const boundHandleCancelTournament = this.handleCancelTournament.bind(this);
-    //     btnCancelTournament.forEach((btn) => {
-    //         const form = btn.closest('form');
-    //         const tournamentName = form.querySelector('input[name="title"]').value;
-    //         this.addListListenInInstance(btn, boundHandleCancelTournament, 'click');
-    //         console.log(`[Add listner] cancel tournament to ${tournamentName}`);
-    //     });
-    // }
-
-    // handleCancelTournament(ev) {
-    //     ev.preventDefault();
-    //     const form = ev.target.closest('form');
-    //     const tournamentId = form.querySelector('input[name="idTitle"]').value;
-    //     const tournamentName = form.querySelector('input[name="title"]').value;
-    
-    //     console.log(`Canceling entry for tournament: ${tournamentName} (ID: ${tournamentId})`);
-    //     cancelTournamentEntry(tournamentId, tournamentName);
-    // }
-
-    // listenEntryTournament() {
-    //     const btnEntryTournament = document.querySelectorAll('.unitTournament_form .unitButton');
-    //     const boundShowModalEntryTournament = showModalEntryTournament.bind(this);
-    //     btnEntryTournament.forEach((btn) => {
-    //         const form = btn.closest('form');
-    //         const tournamentName = form.querySelector('input[name="title"]').value;
-    //         this.addListListenInInstance(btn, boundShowModalEntryTournament, 'click');//todo: rm 確認
-    //         console.log(`[Add listener] entry tournament to ${tournamentName}`);
-    //     });
-    // }
-
     formatToDatetimeLocal(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -220,28 +188,27 @@ export default class Tournament extends PageBase {
             const minUTC = new Date(now.toISOString());
             const startUTC = new Date(startTime.toISOString());
             if (startUTC < minUTC) {
-                 elInput.setCustomValidity('startTimeInvalid');
+                elInput.setCustomValidity( 'startTimeInvalid');
             } else {
-                elInput.setCustomValidity('');
+                elInput.setCustomValidity( '');
             }
 
-            let isIntervalInvalid = false;
-            for (const existingStart of this.start_dates) {
-                const existingStartTime = new Date(existingStart);
-                const diffInMinutes = Math.abs((startUTC - existingStartTime) / 60000);
+            if (elInput.validity.valid) {
+                let isIntervalInvalid = false;
+                for (const existingStart of this.start_dates) {
+                    const existingStartTime = new Date(existingStart);
+                    const diffInMinutes = Math.abs((startUTC - existingStartTime) / 60000);
 
-                if (diffInMinutes < 360) {
-                    isIntervalInvalid = true;
-                    break;
+                    if (diffInMinutes < 360) {
+                        isIntervalInvalid = true;
+                        break;
+                    }
+                }
+                if (isIntervalInvalid) {
+                    elInput.setCustomValidity( 'intervalError');
                 }
             }
-            if (isIntervalInvalid) {
-                 elInput.setCustomValidity('intervalError');
-            } else {
-                elInput.setCustomValidity('');
-            }
         }
-        //formの各input validate
         checkTournamentInputValid(elInput);
         //ボタンenabled切り替え(ok=>ngもありうる)
         const btn = (elForm.classList.contains('formEntryTournament')) ? btnEntryTournament : btnCreateTournament;

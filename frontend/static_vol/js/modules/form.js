@@ -165,6 +165,18 @@ const checkTournamentInputValid = (elInput) => {
             const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
             const targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === errorKey);
             if (validityState[errorType]) {
+                if (errorKey === 'startTimeInvalid') {
+                    const targetLiIntervalError = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === 'intervalError');
+                    if (targetLiIntervalError) {
+                        targetLiIntervalError.remove();
+                    }
+                }
+                if (errorKey === 'intervalError') {
+                    const targetLiStartTimeInvalid = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === 'startTimeInvalid');
+                    if (targetLiStartTimeInvalid) {
+                        targetLiStartTimeInvalid.remove();
+                    }
+                }
                 if (!targetLi) {
                     addErrorMessageCustom(errWrapper, errorKey);
                 }
@@ -224,10 +236,11 @@ const handleReceiveWsTournamentValidationError = (error) => {
             elInput.setCustomValidity(value);
             addErrorMessageCustom(errWrapper, value);
         });
-        // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
+        // blur時のチェック用に入力開始時の値をbackup
         elInput.addEventListener('focus', () => {
             tmpValue = elInput.value;
         });
+        // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
         elInput.addEventListener('blur', () => {
             if (tmpValue !== elInput.value) {
                 const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
