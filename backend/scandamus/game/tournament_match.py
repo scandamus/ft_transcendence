@@ -173,19 +173,15 @@ def finalize_tournament(tournament):
 def create_next_round(tournament, current_round):
     from .tasks import notify_players
     logger.info('create_next_round in')
-
-    #with transaction.atomic():
-
     previous_round_matches = tournament.matches.filter(round=current_round)
     winners = [match.winner for match in previous_round_matches if match.winner]
     entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
-    
     tournament.update_result_json(current_round)
 
     if tournament.bye_player:
-            winners.insert(0, tournament.bye_player)
-            tournament.bye_player == None
-            tournament.save()
+        winners.insert(0, tournament.bye_player)
+        tournament.bye_player == None
+        tournament.save()
 
     losers = [player_id for player_id in entried_players_id_list if player_id not in [player.id for player in winners]]
     notify_players(tournament.name, losers, 'roundEnd', False)
@@ -195,11 +191,11 @@ def create_next_round(tournament, current_round):
         create_final_round(tournament, winners, previous_round_matches)
         return
     elif number_of_winners == 3:
-            create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
-            tournament.bye_player = winners[-1]
-            tournament.save()
-            notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#準決勝2戦目待ち
-            return
+        create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
+        tournament.bye_player = winners[-1]
+        tournament.save()
+        notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#準決勝2戦目待ち
+        return
     
     current_round += 1
 
@@ -209,16 +205,15 @@ def create_next_round(tournament, current_round):
     tournament.save()
 
 def create_final_round(tournament, winners, previous_round_matches):
-        logger.info('create_final_round in')
+    logger.info('create_final_round in')
+    # 決勝戦
+    create_match(tournament, winners[0], winners[1], round=-1)
 
-        # 決勝戦
-        create_match(tournament, winners[0], winners[1], round=-1)
-
-        semifinal_losers = [
-            match.player1 if match.winner == match.player2 else match.player2 for match in previous_round_matches
-        ]
-        # 3位決定戦
-        create_match(tournament, semifinal_losers[0], semifinal_losers[1], round=-3)
+    semifinal_losers = [
+        match.player1 if match.winner == match.player2 else match.player2 for match in previous_round_matches
+    ]
+    # 3位決定戦
+    create_match(tournament, semifinal_losers[0], semifinal_losers[1], round=-3)
 
 def create_match(tournament, player1, player2, round, game_name='pong'):
     with transaction.atomic():
