@@ -60,7 +60,6 @@ def get_existing_tournaments():
     return Tournament.objects.all()
 
 async def async_validate_start_time(start_time):
-    logger.info(f"///async_validate_start_time")
     errors = []
 
     now = datetime.now(timezone.utc)

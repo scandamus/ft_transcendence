@@ -34,7 +34,7 @@ const getErrorMessage = (key) => {
         'invalidNicknameCharacterTypesBackend': 'Nickname is invalid.(character types - backend)',
         'invalidNicknameBlank': 'Nickname is required.(required - backend)',
         'startTimeInvalidBackend': `${labels.formErrorMessages.startTimeInvalid} (startTimeInvalid - backend)`,
-        'intervalErrorBackend': `${labels.formErrorMessages.intervalError} (startTimeInvalid - backend)`,
+        'intervalErrorBackend': `${labels.formErrorMessages.intervalError}`,
         //for LogIn
         'loginError1': labels.formErrorMessages.loginError1,
         'loginError2': labels.formErrorMessages.loginError2,
@@ -170,11 +170,14 @@ const checkTournamentInputValid = (elInput) => {
                     if (targetLiIntervalError) {
                         targetLiIntervalError.remove();
                     }
-                }
-                if (errorKey === 'intervalError') {
+                } else if (errorKey === 'intervalError') {
                     const targetLiStartTimeInvalid = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === 'startTimeInvalid');
                     if (targetLiStartTimeInvalid) {
                         targetLiStartTimeInvalid.remove();
+                    }
+                    const targetLiIntervalErrorBackend = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === 'intervalErrorBackend');
+                    if (targetLiIntervalErrorBackend) {
+                        targetLiIntervalErrorBackend.remove();
                     }
                 }
                 if (!targetLi) {
@@ -236,21 +239,23 @@ const handleReceiveWsTournamentValidationError = (error) => {
             elInput.setCustomValidity(value);
             addErrorMessageCustom(errWrapper, value);
         });
-        // blur時のチェック用に入力開始時の値をbackup
-        elInput.addEventListener('focus', () => {
-            tmpValue = elInput.value;
-        });
-        // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
-        elInput.addEventListener('blur', () => {
-            if (tmpValue !== elInput.value) {
-                const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
-                listLiCustomError.forEach((li) => {
-                    li.remove();
-                });
-                elInput.setCustomValidity('');
-                checkFormReady(btn.closest('form'), btn);
-            }
-        });
+        if (key !== 'start') {
+            // blur時のチェック用に入力開始時の値をbackup
+            elInput.addEventListener('focus', () => {
+                tmpValue = elInput.value;
+            });
+            // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
+            elInput.addEventListener('blur', () => {
+                if (tmpValue !== elInput.value) {
+                    const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
+                    listLiCustomError.forEach((li) => {
+                        li.remove();
+                    });
+                    elInput.setCustomValidity('');
+                    checkFormReady(btn.closest('form'), btn);
+                }
+            });
+        }
     });
 }
 

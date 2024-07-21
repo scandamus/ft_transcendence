@@ -2,6 +2,7 @@ import json
 import jwt
 import logging
 
+from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from .models import Player
 from .models import Tournament, Entry
@@ -49,7 +50,18 @@ async def handle_create_tournament(consumer, data):
             'action': 'invalidTournamentStart',
             'message': custom_errors
         }))
-        # return
+
+    name = data.get('name')
+    existing_tournament = await sync_to_async(lambda: Tournament.objects.filter(name=name).first())()
+    if existing_tournament:
+        await consumer.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': 'invalidTournamentTitle',
+            'message': {'name': ['tournamentNameAlreadyExists']}
+        }))
+    if custom_errors or existing_tournament:
+        return
+
     if serializer.is_valid():
         tournament, created = await create_tournament(data)
         if tournament is None:
@@ -62,7 +74,7 @@ async def handle_create_tournament(consumer, data):
                 'start': tournament.start.isoformat(),
                 'period': tournament.start.isoformat(),
             }))
-        else: #トーナメント名重複
+        else:
             await consumer.send(text_data=json.dumps({
                 'type': 'tournament',
                 'action': 'invalidTournamentTitle',

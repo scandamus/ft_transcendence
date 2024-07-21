@@ -268,6 +268,11 @@ const handleTournamentReceived = (data) => {
         addNotice(message, false);
     } else if (data.action === 'invalidTournamentTitle' || data.action === 'invalidTournamentStart') {
         handleReceiveWsTournamentValidationError(data);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
+        }
     } else if (data.action === 'entryDone') {
         closeModalOnEntryDone();
         addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
