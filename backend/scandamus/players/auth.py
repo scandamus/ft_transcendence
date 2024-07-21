@@ -50,7 +50,7 @@ async def handle_auth(consumer, token):
                         if tournament.status == 'preparing' and await is_entry_available(player, tournament):                        
                             await consumer.send(text_data=json.dumps({
                                 'type': 'tournamentMatch',
-                                'action': player_status,
+                                'action': player.status,
                                 'name': tournament.name
                             }))
                         else: # すでにエントリーしていたトーナメントが開始後だった場合
