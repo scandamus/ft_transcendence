@@ -133,6 +133,8 @@ export const labels_en = {
         acceptRequestSuccess: '$name is now your friend',
         declineRequestSuccess: 'friend request from $name has been deleted',
         removeSuccess: '$name is no longer your friend',
+        mutualReq: '$name has already sent you a friend request',
+        alreadyReq: 'You have already sent a friend request to $name',
         received: '$name has sent you a friend request',
         accepted: '$name has accepted your friend request',
         removed: '$name is no longer your friend',

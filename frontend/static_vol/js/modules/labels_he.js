@@ -133,6 +133,8 @@ export const labels_he = {
         acceptRequestSuccess: 'אתם עכשיו חברים עם $name',
         declineRequestSuccess: 'מחקת את בקשת החברות של $name',
         removeSuccess: 'מחקת את החבר $name',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: '$name שלח לך בקשת חברות',
         accepted: '$name קיבל את בקשת החברות שלך',
         removed: 'אתם כבר לא חברים עם $name',

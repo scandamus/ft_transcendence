@@ -126,6 +126,27 @@ def are_already_friends(user1, user2):
         logger.error(f'Error in are_already_friends: {str(e)}')
         raise
 
+@database_sync_to_async
+def are_already_requested(user1, user2):
+    try:
+        logger.info(f'Checking if {user1} and {user2} are already requested.')
+        result = FriendRequest.objects.filter(from_user=user1, to_user=user2).exists()
+        logger.info(f'already requested check result: {result}')
+        return result
+    except Exception as e:
+        logger.error(f'Error in are_already_requested: {str(e)}')
+        raise
+
+@database_sync_to_async
+def are_mutual_request(user1, user2):
+    try:
+        logger.info(f'Checking if {user1} and {user2} are mutual request.')
+        result = FriendRequest.objects.filter(from_user=user2, to_user=user1).exists()
+        logger.info(f'mutual check result: {result}')
+        return result
+    except Exception as e:
+        logger.error(f'Error in are_mutual_request: {str(e)}')
+        raise
 
 async def send_friend_request(consumer, player):
         to_user = player
@@ -269,6 +290,25 @@ async def send_friend_request_by_username(consumer, username):
                     'error': 'alreadyFriends',
             }))
             return
+
+        if await are_mutual_request(from_player, to_player):
+            await consumer.send(text_data=json.dumps({
+                    'type': 'ack',
+                    'username': username,
+                    'action': 'error',
+                    'error': 'mutualReq',
+            }))
+            return
+
+        if await are_already_requested(from_player, to_player):
+            await consumer.send(text_data=json.dumps({
+                    'type': 'ack',
+                    'username': username,
+                    'action': 'error',
+                    'error': 'alreadyReq',
+            }))
+            return
+
         await send_friend_request(consumer, to_player)
     except User.DoesNotExist:
         await consumer.send(text_data=json.dumps({
