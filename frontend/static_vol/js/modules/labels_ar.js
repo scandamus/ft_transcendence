@@ -141,6 +141,7 @@ export const labels_ar = {
         removed: 'لم تعد صديقاً ل $name ',
         missedRequestAccept: '',
         acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'ستبدأ المباراة',

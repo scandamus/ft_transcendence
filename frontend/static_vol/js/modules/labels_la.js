@@ -141,6 +141,7 @@ export const labels_la = {
         removed: '$name non vult amici esse',
         missedRequestAccept: '',
         acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'ludum praesens est',

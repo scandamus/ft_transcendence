@@ -141,6 +141,7 @@ export const labels_fr = {
         removed: 'Vous n’êtes plus ami avec $name',
         missedRequestAccept: '',
         acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'Le match va commencer',

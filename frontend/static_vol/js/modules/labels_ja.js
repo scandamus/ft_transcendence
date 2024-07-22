@@ -141,6 +141,7 @@ export const labels_ja = {
         removed: '$name さんと友達じゃなくなりました',
         missedRequestAccept: '$name さんが友達申請を承認しようとしましたが、あなたの友達が上限に達しています。友達解除をして枠を空けてください。',
         acceptRequestFailedFull: '$name さんの友達が上限に達しているため今は友達になれませんでした。',
+        acceptRequestFailedFull2: 'あなたの友達が上限に達しているため友達になれませんでした。友達解除をして枠を空けてください。',
     },
     matchRequest: {
         accepted: '対戦が始まります',

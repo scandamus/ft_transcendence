@@ -177,6 +177,8 @@ async def accept_friend_request(consumer, request_id):
              }))
         to_user_username = await get_user_request_to_username(friend_request)
         to_user_id = await get_to_id_by_request(friend_request)
+        from_user = await get_user_by_id(to_user_id)
+        to_player = await get_player_from_user(from_user)
         scope_user_username = await get_username_by_player(consumer.player)
         # from_user_username = await get_user_request_from_username(friend_request)
         logger.info(f'scope_user_username={scope_user_username}')
@@ -185,25 +187,41 @@ async def accept_friend_request(consumer, request_id):
             from_user = await get_user_by_id(from_user_id)
             from_user_username = await get_user_request_from_username(friend_request)
             from_player = await get_player_from_user(from_user)
-            friends_count = await sync_to_async(from_player.friends.count)()
+            friends_count_from = await sync_to_async(from_player.friends.count)()
+            friends_count_to = await sync_to_async(to_player.friends.count)()
 
-            if friends_count >= int(settings.FRIENDS_MAX):
+            # fromが上限
+            if friends_count_from >= int(settings.FRIENDS_MAX):
                 if from_user_username in consumer.players:
+                    # toが承認したがfromが上限(from)
                     await consumer.players[from_user_username].send(text_data=json.dumps(
                          {
-                            'type': 'friendRequest',
-                            'from_username': to_user_username,
+                            'type': 'ack',
+                            'to_username': to_user_username,
                             'action': 'maxFriendsReached',
                          }
                     ))
                 else:
                     logger.warning(f'User {from_user_username} not found in consumer.players')
 
+                # toが承認したがfromが上限(to)
                 await consumer.send(text_data=json.dumps(
                     {
-                        'type': 'ack',
+                        'type': 'friendRequest',
                         'from_username': from_user_username,
                         'action': 'acceptRequestFailedFull',
+                    }
+                ))
+                return
+
+            # toが上限
+            if friends_count_to >= int(settings.FRIENDS_MAX):
+                # toが承認しようとしたがtoが上限(to 通常はフロントで弾く)
+                await consumer.send(text_data=json.dumps(
+                    {
+                        'type': 'friendRequest',
+                        'to_username': to_user_username,
+                        'action': 'acceptRequestFailedFull2',
                     }
                 ))
                 return
@@ -217,7 +235,7 @@ async def accept_friend_request(consumer, request_id):
                 await consumer.players[from_user_username].send(text_data=json.dumps(
                      {
                         'type': 'friendRequest',
-                        'from_username': to_user_username,
+                        'to_username': to_user_username,
                         'action': 'accepted',
                      }
                 ))

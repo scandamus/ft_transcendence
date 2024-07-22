@@ -141,6 +141,7 @@ export const labels_he = {
         removed: 'אתם כבר לא חברים עם $name',
         missedRequestAccept: '',
         acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'המשחק יתחיל',

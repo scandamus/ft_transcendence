@@ -138,9 +138,6 @@ const handleFriendRequestAck = (data) => {
                     toggleFriendsDisplay(currentPage);
                 });
         }
-    } else if (data.action === 'acceptRequestFailedFull') {
-        console.log('Accept friend request is failed(full)');
-        addNotice(labels.friendRequest['acceptRequestFailedFull'].replace('$name', data.username), false);
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
         addNotice(labels.friendRequest['declineRequestSuccess'].replace('$name', data.username), false);
@@ -156,6 +153,8 @@ const handleFriendRequestAck = (data) => {
                     toggleFriendsDisplay(currentPage);
                 });
         }
+    } else if (data.action === 'maxFriendsReached') {
+        addNotice(labels.friendRequest['missedRequestAccept'].replace('$name', data.to_username), true);
     }
 }
 
@@ -170,7 +169,7 @@ const handleFriendRequestReceived = (data) => {
             updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'accepted') {
-        addNotice(labels.friendRequest['accepted'].replace('$name', data.from_username), false);
+        addNotice(labels.friendRequest['accepted'].replace('$name', data.to_username), false);
         if (currentPage) {
             updateFriendsList(currentPage)
                 .then(() => {
@@ -187,8 +186,12 @@ const handleFriendRequestReceived = (data) => {
         //             toggleFriendsDisplay(currentPage);
         //         });
         // }
-    } else if (data.action === 'maxFriendsReached') {
-        addNotice(labels.friendRequest['missedRequestAccept'].replace('$name', data.from_username), false);
+    } else if (data.action === 'acceptRequestFailedFull') {
+        //承認したけど相手が上限
+        addNotice(labels.friendRequest['acceptRequestFailedFull'].replace('$name', data.from_username), true);
+    } else if (data.action === 'acceptRequestFailedFull2') {
+        //承認したけど自分が上限(通常はフロントで弾く)
+        addNotice(labels.friendRequest['acceptRequestFailedFull2'], true);
     }
 }
 

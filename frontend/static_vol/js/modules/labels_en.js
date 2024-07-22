@@ -141,6 +141,7 @@ export const labels_en = {
         removed: '$name is no longer your friend',
         missedRequestAccept: '$name tried to accept your friend request, but your friends list has reached its limit. Please remove some friends to make space.',
         acceptRequestFailedFull: 'You couldn\'t become friends with $name because your friend list is full at the moment.',
+        acceptRequestFailedFull2: 'You couldn\'t become friends because your friend limit has been reached. Please remove some friends to free up space.',
     },
     matchRequest: {
         accepted: 'game is starting',
