@@ -9,6 +9,7 @@ import { labels } from './labels.js'; // TODO use labels but wait for merge
 import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
 import { updateUpcomingTournamentList } from "./tournamentList.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
+import { toggleFriendsDisplay } from "./friendsFull.js";
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -132,7 +133,10 @@ const handleFriendRequestAck = (data) => {
         console.log('Accept friend request is successfully done');
         addNotice(labels.friendRequest['acceptRequestSuccess'].replace('$name', data.from_username), false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
@@ -144,7 +148,10 @@ const handleFriendRequestAck = (data) => {
         console.log('Remove Successfully done');
         addNotice(labels.friendRequest['removeSuccess'].replace('$name', data.username), false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     }
 }
@@ -162,14 +169,21 @@ const handleFriendRequestReceived = (data) => {
     } else if (data.action === 'accepted') {
         addNotice(labels.friendRequest['accepted'].replace('$name', data.from_username), false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     } else if (data.action === 'removed') {
         //rmられは通知されない
         console.log(labels.friendRequest['removed'].replace('$name', data.from_username));
-        if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
-        }
+        //friendリストもリアルタイムでは更新しない
+        // if (currentPage) {
+        //     updateFriendsList(currentPage)
+        //         .then(() => {
+        //             toggleFriendsDisplay(currentPage);
+        //         });
+        // }
     }
 }
 
@@ -217,7 +231,10 @@ const handleFriendStatusReceived = (data) => {
         console.log(`friendStatus change: ${data.username} to ${online_status_msg}`);
         addNotice(`${data.username}が${online_status_msg}しました`, false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     }
 }

@@ -7,20 +7,15 @@ import { FRIENDS_MAX } from "./env.js";
 
 
 const toggleFriendsDisplay = (pageInstance) => {
-    console.log(`toggleFriendsDisplay1 ${pageInstance.isFriendsFull}`)
     if (pageInstance.numFriends < FRIENDS_MAX) {//枠に空きがある
-        console.log(`toggleFriendsDisplay2`)
         if (pageInstance.isFriendsFull) {//元がisFriendsFullなら減って枠が空いた
-            console.log(`toggleFriendsDisplay3`)
             pageInstance.isFriendsFull = false;
         }
         displayFriendsAvailable(pageInstance);
     } else if(!pageInstance.isFriendsFull && pageInstance.numFriends >= FRIENDS_MAX) {//増えて上限に達した
-        console.log(`toggleFriendsDisplay4`)
         pageInstance.isFriendsFull = true;
         displayFriendsFull(pageInstance);
     }
-        console.log(`toggleFriendsDisplay ${pageInstance.isFriendsFull}`)
 }
 const displayFriendsFull = (pageInstance) => {
     console.log(`///displayFriendsFull in`)
@@ -44,9 +39,7 @@ const displayFriendsFull = (pageInstance) => {
     blockFriendsFull.classList.add('is-show');
 
     //updateFriendRequest
-    updateFriendRequestList(pageInstance).then(() => {
-        disableAccept();
-    });
+    updateFriendRequestList(pageInstance).then(() => {});
 }
 
 const displayFriendsAvailable = (pageInstance) => {
