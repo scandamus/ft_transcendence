@@ -139,6 +139,8 @@ export const labels_en = {
         received: '$name has sent you a friend request',
         accepted: '$name has accepted your friend request',
         removed: '$name is no longer your friend',
+        missedRequestAccept: '$name tried to accept your friend request, but your friends list has reached its limit. Please remove some friends to make space.',
+        acceptRequestFailedFull: 'You couldn\'t become friends with $name because your friend list is full at the moment.',
     },
     matchRequest: {
         accepted: 'game is starting',

@@ -138,6 +138,9 @@ const handleFriendRequestAck = (data) => {
                     toggleFriendsDisplay(currentPage);
                 });
         }
+    } else if (data.action === 'acceptRequestFailedFull') {
+        console.log('Accept friend request is failed(full)');
+        addNotice(labels.friendRequest['acceptRequestFailedFull'].replace('$name', data.username), false);
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
         addNotice(labels.friendRequest['declineRequestSuccess'].replace('$name', data.username), false);
@@ -184,6 +187,8 @@ const handleFriendRequestReceived = (data) => {
         //             toggleFriendsDisplay(currentPage);
         //         });
         // }
+    } else if (data.action === 'maxFriendsReached') {
+        addNotice(labels.friendRequest['missedRequestAccept'].replace('$name', data.from_username), false);
     }
 }
 

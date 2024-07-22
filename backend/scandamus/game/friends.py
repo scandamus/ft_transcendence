@@ -1,9 +1,13 @@
 import json
 import logging
+
+from django.conf import settings
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from players.models import FriendRequest, Player
 from django.contrib.auth.models import User
 from channels.db import database_sync_to_async
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +50,14 @@ def get_player_from_user(user):
 def get_user_by_username(username):
     logger.info(f'get_user_by_username: username= {username}')
     return User.objects.get(username=username, is_superuser=False)
+
+@database_sync_to_async
+def get_user_by_id(user_id):
+    try:
+        return User.objects.get(id=user_id)
+    except ObjectDoesNotExist:
+        logger.info(f"User with ID {user_id} does not exist.")
+        return None
 
 @database_sync_to_async
 def create_friend_request(from_user, to_user):
@@ -166,20 +178,52 @@ async def accept_friend_request(consumer, request_id):
         to_user_username = await get_user_request_to_username(friend_request)
         to_user_id = await get_to_id_by_request(friend_request)
         scope_user_username = await get_username_by_player(consumer.player)
+        # from_user_username = await get_user_request_from_username(friend_request)
         logger.info(f'scope_user_username={scope_user_username}')
         if to_user_username == scope_user_username:
+            from_user_id = await get_from_id_by_request(friend_request)
+            from_user = await get_user_by_id(from_user_id)
+            from_user_username = await get_user_request_from_username(friend_request)
+            from_player = await get_player_from_user(from_user)
+            friends_count = await sync_to_async(from_player.friends.count)()
+
+            if friends_count >= int(settings.FRIENDS_MAX):
+                if from_user_username in consumer.players:
+                    await consumer.players[from_user_username].send(text_data=json.dumps(
+                         {
+                            'type': 'friendRequest',
+                            'from_username': to_user_username,
+                            'action': 'maxFriendsReached',
+                         }
+                    ))
+                else:
+                    logger.warning(f'User {from_user_username} not found in consumer.players')
+
+                await consumer.send(text_data=json.dumps(
+                    {
+                        'type': 'ack',
+                        'from_username': from_user_username,
+                        'action': 'acceptRequestFailedFull',
+                    }
+                ))
+                return
+
             await approve_frined_request_db(friend_request)
             from_user_username = await get_user_request_from_username(friend_request)
             if from_user_username:
                  logger.info(f'accept_friend_request {from_user_username} to {to_user_username}')
             from_user_id = await get_from_id_by_request(friend_request)
-            await consumer.players[from_user_username].send(text_data=json.dumps(
-                 {
-                    'type': 'friendRequest',
-                    'from_username': to_user_username,
-                    'action': 'accepted',                      
-                 }
-            ))
+            if from_user_username in consumer.players:
+                await consumer.players[from_user_username].send(text_data=json.dumps(
+                     {
+                        'type': 'friendRequest',
+                        'from_username': to_user_username,
+                        'action': 'accepted',
+                     }
+                ))
+            else:
+                logger.warning(f'User {from_user_username} not found in consumer.players')
+
             await consumer.send(text_data=json.dumps(
                 {
                     'type': 'ack',

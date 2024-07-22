@@ -139,6 +139,8 @@ export const labels_he = {
         received: '$name שלח לך בקשת חברות',
         accepted: '$name קיבל את בקשת החברות שלך',
         removed: 'אתם כבר לא חברים עם $name',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
     },
     matchRequest: {
         accepted: 'המשחק יתחיל',

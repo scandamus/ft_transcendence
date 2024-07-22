@@ -139,6 +139,8 @@ export const labels_fr = {
         received: 'Vous avez reçu une demande d’amitié de la part de $name ',
         accepted: '$name a accepté votre demande d’amitié',
         removed: 'Vous n’êtes plus ami avec $name',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
     },
     matchRequest: {
         accepted: 'Le match va commencer',
