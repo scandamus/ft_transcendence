@@ -6,7 +6,7 @@ import { labels } from '../modules/labels.js';
 import { FRIENDS_MAX } from "../modules/env.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { getMatchLog } from '../modules/gameList.js';
-import { switchDisplayFriendsFull } from '../modules/friendsFull.js';
+import { toggleFriendsDisplay, displayFriendsFull, displayFriendsAvailable } from '../modules/friendsFull.js';
 import {
     removeListenMatchRequest,
     removeListenAcceptFriendRequest,
@@ -33,6 +33,7 @@ export default class Dashboard extends PageBase {
         this.clearBreadcrumb();
         this.avatar = this.siteInfo.getAvatar();
         this.numFriends = 0;
+        this.isFriendsFull = false;
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.updateLists.bind(this));
@@ -120,13 +121,9 @@ export default class Dashboard extends PageBase {
     updateLists() {
         try {
             updateFriendsList(this)
-                .then((len) => {
-                    this.numFriends = len;
-                    if (this.numFriends >= FRIENDS_MAX) {
-                        switchDisplayFriendsFull(this);
-                    }
+                .then(() => {
+                    toggleFriendsDisplay(this);
                 });
-            updateFriendRequestList(this).then(() => {});
             getMatchLog().then(() => {});
             fetchLevel().then((data) => {
                 this.displayMatchStats(data);

@@ -132,7 +132,6 @@ const handleFriendRequestAck = (data) => {
         console.log('Accept friend request is successfully done');
         addNotice(labels.friendRequest['acceptRequestSuccess'].replace('$name', data.from_username), false);
         if (currentPage) {
-            updateFriendRequestList(currentPage).then(() => {});
             updateFriendsList(currentPage).then(() => {});
         }
     } else if (data.action === 'declineRequestSuccess') {

@@ -8,8 +8,8 @@ import { FRIENDS_MAX } from '../modules/env.js';
 import { labels } from '../modules/labels.js';
 
 import { checkSearchFriendInputValid } from "../modules/form.js";
-import { updateFriendsList, updateFriendRequestList, updateRecommend } from '../modules/friendList.js';
-import { switchDisplayFriendsFull } from '../modules/friendsFull.js';
+import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
+import { toggleFriendsDisplay, displayFriendsFull, displayFriendsAvailable } from '../modules/friendsFull.js';
 
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
     from '../modules/friendListener.js';
@@ -25,6 +25,7 @@ export default class Friends extends PageBase {
         Friends.instance = this;
         this.title = labels.friends.title;
         this.numFriends = 0;
+        this.isFriendsFull = false;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
 
@@ -74,15 +75,9 @@ export default class Friends extends PageBase {
     updateLists() {
         try {
             updateFriendsList(this)
-                .then((len) => {
-                    this.numFriends = len;
-                    if (this.numFriends >= FRIENDS_MAX) {
-                        switchDisplayFriendsFull(this);
-                    } else {
-                        updateRecommend(this).then(() => {});
-                    }
+                .then(() => {
+                    toggleFriendsDisplay(this);
                 });
-            updateFriendRequestList(this).then(() => {});
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;

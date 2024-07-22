@@ -54,7 +54,8 @@ const updateFriendsList = async (pageInstance) => {
             }
             resetListenFriendList(pageInstance);
         }
-        return friends.length;
+        pageInstance.numFriends = friends.length;
+        console.log(`/////numFriends: ${pageInstance.numFriends}`)
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }
@@ -92,7 +93,6 @@ const updateFriendRequestList = async (pageInstance) => {
                 listRequestWrapper.innerHTML += requestElement;
             });
             resetListenFriendRequestList(pageInstance);
-            disableAccept();
         }
     } catch (error) {
         console.error('Failed to update friend requests: ', error);
