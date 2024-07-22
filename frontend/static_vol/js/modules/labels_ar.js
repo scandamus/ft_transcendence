@@ -72,7 +72,7 @@ export const labels_ar = {
         labelReceivedRequest: 'طلبات الصداقة المستلمة',
         labelRecommended: 'توصيات لك',
         msgNoRecommended: 'لا توجد توصية',
-        msgFriendsFull: `${FRIENDS_MAX} $numFriends<br>`
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',

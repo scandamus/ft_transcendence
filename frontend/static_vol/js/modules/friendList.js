@@ -4,6 +4,7 @@ import { fetchFriendRequests, fetchFriends, fetchRecommend } from "./friendsApi.
 import { addListenSendFriendRequest, resetListenFriendList, resetListenFriendRequestList } from "./friendListener.js";
 import { labels } from "./labels.js";
 import PageBase from "../components/PageBase.js";
+import { disableAccept } from './friendsFull.js';
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -91,6 +92,7 @@ const updateFriendRequestList = async (pageInstance) => {
                 listRequestWrapper.innerHTML += requestElement;
             });
             resetListenFriendRequestList(pageInstance);
+            disableAccept();
         }
     } catch (error) {
         console.error('Failed to update friend requests: ', error);

@@ -72,7 +72,7 @@ export const labels_en = {
         labelReceivedRequest: 'friend requests',
         labelRecommended: 'recommended',
         msgNoRecommended: 'no recommended player',
-        msgFriendsFull: `You can have a maximum of ${FRIENDS_MAX} friends. (You currently have $numFriends friends.)<br>If you want to add another player as a friend, please remove an existing friend to free up space.`,
+        msgFriendsFull: `You have reached the maximum limit of ${FRIENDS_MAX} friends.<br>If you want to add another player as a friend, please remove an existing friend to free up space.`,
     },
     lounge: {
         title: 'Lounge',

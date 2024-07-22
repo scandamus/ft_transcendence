@@ -1006,11 +1006,7 @@ input[type="text"]:disabled {
 
 }
 
-.blockUsers.is-full {
-
-}
-
-.blockUsers.is-full .blockFriendRecommended {
+.blockFriendRecommended.is-hide {
   display: none;
 }
 
@@ -1071,15 +1067,23 @@ input[type="text"]:disabled {
 
 .blockFriendsFull {
   display: none;
-  margin-top: 10px;
-  padding: 0.8em 1em 0.8em 2em;
+  margin-bottom: 50px;
+  padding: 1em 1.2em;
   background: var(--color-error2-alpha);
   background: var(--color-error1-alpha);
   font-size: 1.8rem;
   border: 1px solid var(--color-error1);
 }
 
-.is-full .blockFriendsFull {
+.blockFriendsFull p + p {
+  margin-top: 0.8em;
+}
+
+.blockFriendRequest_friends + .blockFriendsFull {
+  margin-top: 25px;
+}
+
+.blockFriendsFull.is-show {
   display: block;
 }
 

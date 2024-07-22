@@ -72,7 +72,7 @@ export const labels_la = {
         labelReceivedRequest: 'tibi amici esse volunt',
         labelRecommended: 'usores commendati tibi',
         msgNoRecommended: 'nullus iam commendatus',
-        msgFriendsFull: `${FRIENDS_MAX} $numFriends<br>`
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Sessorium',

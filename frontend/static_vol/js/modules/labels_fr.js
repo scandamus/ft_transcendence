@@ -72,7 +72,7 @@ export const labels_fr = {
         labelReceivedRequest: 'Demandes d’amis reçues',
         labelRecommended: 'Recommandations pour vous',
         msgNoRecommended: 'aucune recommandation',
-        msgFriendsFull: `${FRIENDS_MAX} $numFriends<br>`
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',

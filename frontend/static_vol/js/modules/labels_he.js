@@ -72,7 +72,7 @@ export const labels_he = {
         labelReceivedRequest: 'בקשות חברות שקיבלת',
         labelRecommended: 'מומלץ עבורך',
         msgNoRecommended: 'אין מומלץ עבורך',
-        msgFriendsFull: `${FRIENDS_MAX} $numFriends<br>`
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',

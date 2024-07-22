@@ -3,8 +3,10 @@
 import PageBase from './PageBase.js';
 import { SiteInfo } from "../modules/SiteInfo.js";
 import { labels } from '../modules/labels.js';
+import { FRIENDS_MAX } from "../modules/env.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { getMatchLog } from '../modules/gameList.js';
+import { switchDisplayFriendsFull } from '../modules/friendsFull.js';
 import {
     removeListenMatchRequest,
     removeListenAcceptFriendRequest,
@@ -30,6 +32,7 @@ export default class Dashboard extends PageBase {
         this.setTitle(`${labels.dashboard.title}: ${this.siteInfo.getUsername()}`);
         this.clearBreadcrumb();
         this.avatar = this.siteInfo.getAvatar();
+        this.numFriends = 0;
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.updateLists.bind(this));
@@ -69,6 +72,9 @@ export default class Dashboard extends PageBase {
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
                         <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
+                        <div class="blockFriendsFull">
+                            <p class="unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>Friends</a></p>
+                        </div>
                     </section>
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
@@ -113,7 +119,13 @@ export default class Dashboard extends PageBase {
 
     updateLists() {
         try {
-            updateFriendsList(this).then(() => {});
+            updateFriendsList(this)
+                .then((len) => {
+                    this.numFriends = len;
+                    if (this.numFriends >= FRIENDS_MAX) {
+                        switchDisplayFriendsFull(this);
+                    }
+                });
             updateFriendRequestList(this).then(() => {});
             getMatchLog().then(() => {});
             fetchLevel().then((data) => {

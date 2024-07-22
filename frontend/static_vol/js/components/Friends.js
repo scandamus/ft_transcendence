@@ -9,6 +9,7 @@ import { labels } from '../modules/labels.js';
 
 import { checkSearchFriendInputValid } from "../modules/form.js";
 import { updateFriendsList, updateFriendRequestList, updateRecommend } from '../modules/friendList.js';
+import { switchDisplayFriendsFull } from '../modules/friendsFull.js';
 
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
     from '../modules/friendListener.js';
@@ -48,6 +49,7 @@ export default class Friends extends PageBase {
                     </section>
                 </div>
                 <div class="blockUsers_column">
+                    <p class="blockFriendsFull"></p>
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
                         <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
@@ -59,7 +61,6 @@ export default class Friends extends PageBase {
                             <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${labels.friends.labelSendRequest}</button></p>
                             <ul class="listError"></ul>
                         </form>
-                        <p class="blockFriendsFull"></p>
                     </section>
                     <section class="blockFriendRecommended">
                         <h3 class="blockFriendRecommended_title unitTitle1">${labels.friends.labelRecommended}</h3>
@@ -75,10 +76,10 @@ export default class Friends extends PageBase {
             updateFriendsList(this)
                 .then((len) => {
                     this.numFriends = len;
-                    if (this.numFriends < FRIENDS_MAX) {
-                        updateRecommend(this).then(() => {});
+                    if (this.numFriends >= FRIENDS_MAX) {
+                        switchDisplayFriendsFull(this);
                     } else {
-                        this.switchDisplayFriendsFull();
+                        updateRecommend(this).then(() => {});
                     }
                 });
             updateFriendRequestList(this).then(() => {});
@@ -94,19 +95,7 @@ export default class Friends extends PageBase {
         this.addListListenInInstance(btnSearchFriend, boundHandleSearchFriend, 'click');
     }
 
-    switchDisplayFriendsFull() {
-        //要素の表示制御のためselector付与
-        const blockUsers = document.querySelector('.blockUsers');
-        blockUsers.classList.add('is-full');
-        //友達追加できない旨メッセージ表示
-        const blockFriendsFull = document.querySelector('.blockFriendsFull');
-        blockFriendsFull.innerHTML = (labels.friends.msgFriendsFull).replace('$numFriends', this.numFriends);
-        //友達検索invalid
-        const elInputFriendName = document.getElementById('inputFriendsName');
-        const btnSearchFriend = document.getElementById('btnSearchFriend');
-        elInputFriendName.setAttribute('disabled', '');
-        btnSearchFriend.setAttribute('disabled', '');
-    }
+
 
     async handleSearchFriend(ev) {
         ev.preventDefault();
