@@ -40,7 +40,7 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
         except Exception as e:
             logger.error(f'Failed to send message to {player.user.username}: {e}')
 
-        await update_player_status_and_match(player, match, 'frined_match')
+        await update_player_status_and_match(player, match, 'friend_match')
 
 async def send_tournament_match_jwt(match, game_name='pong'):
     logger.info('send_tournament_match_jwt in')
