@@ -142,10 +142,10 @@ class LoungeSession(AsyncWebsocketConsumer):
             if player:
                 if player.status in ['friend_waiting', 'lounge_waiting']:
                     player.status = 'waiting'
-                    await database_sync_to_async(player.save)()
+                    await database_sync_to_async(player.save)(update_fields=['status'])
                     logger.info(f'{self.user.username} status set to waiting')
                 player.online = False
-                await database_sync_to_async(player.save)()
+                await database_sync_to_async(player.save)(update_fields=['online'])
                 await send_status_to_friends(player, 'offline')
   
             # remove pending_requests
@@ -218,4 +218,3 @@ class LoungeSession(AsyncWebsocketConsumer):
             }))
         except Exception as e:
             logger.error(f'Error in send disconnect by new login')
-        await self.close()
