@@ -77,7 +77,6 @@ const updateOngoingTournamentList = async (pageInstance) => {
                             ${nicknameHtml}
                         </span>
                     </section>
-                    <p><a href="/tournament/detail:${tournament.id}" data-link style="font-size:2rem;color:#b6fa1d;text-shadow: none;">&gt; preview</a></p>
                 `;
                 listWrapper.innerHTML += tournamentElement;
             });
