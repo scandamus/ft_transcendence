@@ -83,7 +83,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         action = text_data_json.get('action')
 
-        if action == 'authenticate':
+        if action == 'key_event':
+            await self.handle_game_message(text_data)
+        elif action == 'authenticate':
+            await self.handle_authenticate(text_data_json)
+        elif action == 'authenticateReconnect':
+            await self.handle_authenticate(text_data_json, True)
+
+    async def handle_authenticate(self, text_data_json, is_reconnect=False):
+            logger.error('handle_authenticate in')
             jwt = text_data_json.get('jwt')
             players_id, player_name, username, jwt_match_id = await self.authenticate_jwt(jwt)
             self.player_name = player_name
@@ -114,6 +122,18 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if self.match_id not in self.players_ids:
                     self.players_ids[self.match_id] = set()
                 self.players_ids[self.match_id].add(self.players_id)
+                if is_reconnect == True:
+                    number_of_player = len(self.players_ids[self.match_id])
+                    logger.error(f'number_of_player = {number_of_player}')
+                    if number_of_player == 1: # 再接続したplayerを含んで1人のみ
+                        logger.error('Error no one in this match now')
+                    elif number_of_player == 2: # 正常に再接続した場合
+                        logger.info('Rejoin to this match')
+                        await self.reset_game_data()
+                    else:
+                        logger.error('Error too many players in this match')
+                    return
+                # 再接続ではないゲームスタート時
                 if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
                     initial_master = sorted(self.players_ids[self.match_id])[0]
                     await self.channel_layer.group_send(self.room_group_name, {
@@ -124,10 +144,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # TODO: 2人揃わない場合のタイムアウト処理
             else:
                 logger.error('Match data not found or user is not for this match')
-                await self.close(code=1000)
-                return
-        elif action == 'key_event':
-            await self.handle_game_message(text_data)
+                await self.close(code=1000)   
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
