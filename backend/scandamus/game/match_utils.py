@@ -115,6 +115,41 @@ async def send_lounge_match_jwt_to_all(consumer, players_list, game_name):
         
         await update_player_status_and_match(player, match, 'lounge_match')
 
+def send_reconnect_match_jwt(consumer, player, match):
+    logger.info(f'{player.user.username} send_reconnect_match_jwt in')
+    game_name = match.game_name
+    match_id = match.id
+    player_id = player.id
+    tournament_name = match.tournament.name if match.tournament is not None else None
+    tournament_id = match.tournament.id if match.tournament else None
+    round = match.round
+    players = [match.player1, match.player2, match.player3 if match.player3 else None, match.player4 if match.player4 else None]
+    usernames = [
+        {'username': each_player.user.username,
+         'avatar': each_player.avatar.url if each_player.avatar else None}
+        for each_player in players if each_player is not None]
+    
+    user = player.user
+    player_name = 'player1' if player == match.player1 else 'player2' if player == match.player2 else 'player3' if player == match.player3 else 'player4' if player == match.player4 else None
+    game_token = async_to_sync(issue_jwt)(user, player_name, player_id, match_id, game_name)
+    try:
+        async_to_sync(consumer.send)(text_data=json.dumps({
+            'type': 'gameSessionReconnect',
+            'tournament': 'true' if match.tournament is not None else 'false',   
+            'game_name': game_name, 
+            'jwt': game_token,
+            'username': player.user.username,
+            'all_usernames': usernames,
+            'match_id': match.id,
+            'player_name': player_name,
+            'tournament_name': tournament_name,
+            'round': round,
+            'tournament_id': tournament_id               
+        }))
+        logger.info(f'gameSessionReconnect is sent to {player.user.username}')
+    except Exception as e:
+        logger.error(f'Failed to send message to {player.user.username}: {e}')
+
 def notify_bye_player(tournament):
     logger.info(f'notify_bye_player in {tournament.name}')
     player = tournament.bye_player
