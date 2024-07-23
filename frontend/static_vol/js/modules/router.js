@@ -84,8 +84,6 @@ const replaceView = async (matchRoute) => {
 }
 
 const router = async (accessToken) => {
-    const currentPath = window.location.pathname;
-    console.log(`currentPath: ${currentPath}`);
     if (accessToken instanceof PopStateEvent) {
         accessToken = getToken('accessToken');
     }
