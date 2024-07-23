@@ -66,7 +66,7 @@ async def async_validate_start_time(start_time):
     if start_time <= now + timedelta(minutes=int(settings.CREATE_TOURNAMENT_TIMELIMIT_MIN)):
         errors.append('startTimeInvalidBackend')
 
-    existing_tournaments = await database_sync_to_async(list)(Tournament.objects.all())
+    existing_tournaments = await database_sync_to_async(list)(Tournament.objects.filter(status='upcoming'))
     for tournament in existing_tournaments:
         tournament_start = tournament.start
         if abs((start_time - tournament_start).total_seconds()) < 6 * 3600:
