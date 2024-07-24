@@ -78,6 +78,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
+        # taskが終わるまで待つ
+        if hasattr(self, 'pending_tasks') and self.pending_tasks:
+            await asyncio.gather(*self.pending_tasks)
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
@@ -193,6 +196,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def schedule_ball_update(self):
         self.game_continue = True
+
+        # すぐにゲームが終わるように10点にセット
+        # self.left_paddle.score = 10
+        # self.right_paddle.score = 10
+
         try:
             while self.game_continue:
                 # await asyncio.sleep(0.1)
@@ -203,7 +211,11 @@ class PongConsumer(AsyncWebsocketConsumer):
                         'type': 'send_game_over_message',
                         'message': 'GameOver',
                     })
-                    await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+                    
+                    asyncio.create_task(self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after'))
+                    # 問題を発生させるには上をコメントアウトして下の#を取る
+                    # await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+                    
                     if self.scheduled_task is not None:
                         self.scheduled_task.cancel()
                         self.scheduled_task = None
@@ -360,14 +372,15 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f'Error: is_user_in_match {str(e)}')
             return False
 
-    @database_sync_to_async
-    def update_match_status(self, match_id, score1, score2, game_state):
+    async def update_match_status(self, match_id, score1, score2, game_state):
         send_data = {
             'score1': score1,
             'score2': score2,
             'status': game_state,
         }
-        patch_match_to_api(match_id, send_data)
+        # 問題を発生させるには下の#を取る
+        # await asyncio.sleep(5)
+        await database_sync_to_async(patch_match_to_api)(match_id, send_data)
 
     async def start_game(self, event):
         master_id = event['master_id']
