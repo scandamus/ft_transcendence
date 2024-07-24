@@ -2,6 +2,8 @@
 
 //sessionStorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
+import { SiteInfo } from "./SiteInfo.js";
+
 const getToken = (nameToken) => {
     const token = sessionStorage.getItem(nameToken);
     if (token === null) {
@@ -14,35 +16,47 @@ const getToken = (nameToken) => {
 }
 
 const refreshAccessToken = async () => {
+    const siteInfo = new SiteInfo();
+    if (siteInfo.isTokenRefreshing) {
+        return siteInfo.promiseTokenRefresh;
+    }
     const refreshToken = getToken('refreshToken');
     console.log(`refreshToken: ${refreshToken}`);
     // ネットワークエラー、サーバーエラー、ストレージエラーの例外に対応
-    try {
-        // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
-        const response = await fetch('https://localhost/token/refresh/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'refresh': refreshToken
-            })
-        });
-        if (response.ok) {
-            const refreshData = await response.json();
-            console.log(`refreshData: `, refreshData);
-            sessionStorage.setItem('accessToken', refreshData.access);
-            sessionStorage.setItem('refreshToken', refreshData.refresh);
-            console.log(`Successfully token refreshed: ${refreshData.access}`);
-            return refreshData.access;
+    siteInfo.isTokenRefreshing = true;
+    siteInfo.promiseTokenRefresh = (async () => {
+        try {
+            // SimpleJWTのリフレッシュトークン発行はbodyにrefreshを渡す仕様
+            const response = await fetch('/token/refresh/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'refresh': refreshToken
+                })
+            });
+            if (response.ok) {
+                const refreshData = await response.json();
+                console.log(`refreshData: `, refreshData);
+                sessionStorage.setItem('accessToken', refreshData.access);
+                sessionStorage.setItem('refreshToken', refreshData.refresh);
+                console.log(`Successfully token refreshed: ${refreshData.access}`);
+                return refreshData.access;
+            }
+            // TODO: logout処理に飛ばす
+            console.error('Failed to refresh token, server responded with: ', response.status);
+            return null;
+        } catch (error) {
+            console.error('Error occured while refreshing token: ', error);
+            return null;
+        } finally {
+            siteInfo.isTokenRefreshing = false;
+            siteInfo.promiseTokenRefresh = null;
         }
-        // TODO: logout処理に飛ばす
-        console.error('Failed to refresh token, server responded with: ', response.status);
-        return null;
-    } catch (error) {
-        console.error('Error occured while refreshing token: ', error);
-        return null;
-    }
+    })();
+
+    return siteInfo.promiseTokenRefresh;
 }
 
 const isTokenExpired = (token) => {
