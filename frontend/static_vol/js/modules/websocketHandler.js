@@ -90,11 +90,11 @@ const loadGameContent = async (data) => {
     if (type === 'gameSessionTournament') {
         // enterRoomできていなかった場合はtournamentIdがnullになるのでここでセットする
         let tournamentId = sessionStorage.getItem('tournament_id');
-        if (!tournamentId) {
+        if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined') {
             sessionStorage.setItem('tournament_id', tournament_id);
             tournamentId = sessionStorage.getItem('tournament_id');
 
-            if (!tournamentId) {
+            if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined') {
                 console.log(`can not start tournament: ${username}`);
                 //todo: エラー処理（トーナメント開始できない）
                 return;

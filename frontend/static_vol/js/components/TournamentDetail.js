@@ -16,6 +16,7 @@ export default class TournamentDetail extends PageBase {
         super(params);
         TournamentDetail.instance = this;
         //setTitleはrenderHtml()で取得後に行う
+        //トーナメントログを見る場合もあるのでstorageではなくparamから取得
         this.id = params.id.split(':')[1];
         this.tournamentData = ``;
         this.renderedRounds = new Set();
