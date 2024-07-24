@@ -31,7 +31,7 @@ const routes = {
     gamePlay: {path: '/game/pong/play:id', view: GamePlay, isProtected: true},
     gamePlayMulti: {path: '/game/pong4/play:id', view: GamePlayQuad, isProtected: true},
     tournament: {path: '/tournament', view: Tournament, isProtected: true},
-    TournamentDetail: {path: '/tournament/detail_id', view: TournamentDetail, isProtected: true},
+    TournamentDetail: {path: '/tournament/detail:id', view: TournamentDetail, isProtected: true},
 };
 
 //認証の必要なページ
@@ -139,7 +139,6 @@ const router = async (accessToken) => {
             result: routes.dashboard.path
         };
     }
-
 
     const oldView = PageBase.instance;
     if (oldView) {

@@ -37,7 +37,10 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 DEBUG = get_env_var('DEBUG')
 CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
 
-ALLOWED_HOSTS = ['backend', 'pong-server', 'frontend' ,'localhost', '127.0.0.1', '[::1]']
+# SERVER HOST
+SERVER_HOST = get_env_var('DOMAIN_NAME')
+ALLOWED_HOSTS = ['backend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
+#ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -55,7 +58,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'channels',
     'players.apps.PlayersConfig',
-    'game.apps.GameConfig',
+    #'game.apps.GameConfig',
+    'game',
+    'django_celery_beat',
+    'django_celery_results',
     # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。
     # 'players',
     # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
@@ -275,3 +281,4 @@ CHANNEL_LAYERS = {
     },
 }
 
+CELERY_IMPORTS = ['game.tasks']
