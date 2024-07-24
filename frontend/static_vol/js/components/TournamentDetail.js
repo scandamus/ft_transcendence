@@ -35,6 +35,9 @@ export default class TournamentDetail extends PageBase {
 
     async renderHtml() {
         this.tournamentData = await fetchTournamentDetail(this.id, false);
+        if (!this.tournamentData) {
+            return null;
+        }
         this.title = this.tournamentData.name;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);

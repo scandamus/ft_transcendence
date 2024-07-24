@@ -4,7 +4,8 @@ export const labels_he = {
     langCode: 'he',
     langName: 'עברית',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Home',
