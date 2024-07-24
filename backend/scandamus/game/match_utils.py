@@ -166,6 +166,32 @@ def notify_bye_player(tournament):
     except Exception as e:
         logger.error(f'Failed to send message to {player.user.username}: {e}')
 
+async def check_player_status(consumer, user, player, match_type):
+    is_in_tournament = player.status in ['tournament_match', 'tournament_room', 'tournament_prepare', 'tournament']
+    is_in_match = player.status in ['friend_match', 'lounge_match', 'tournament_match']
+    is_match_waiting = player.status in ['friend_waiting', 'lounge_waiting']
+    if is_in_tournament or is_in_match or is_match_waiting:
+        if is_in_tournament:
+            logger.error(f'{user.username} cant not request new game in a tournament')
+            error_type = 'inTournament'
+        if is_in_match:
+            logger.error(f'{user.username} can not request new game as playing a match')
+            error_type = 'inMatch'
+        if is_match_waiting:
+            logger.error(f'{user.username} can not request new game as requesting friend match')
+            error_type = 'matchWaiting'            
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': match_type,
+                'action': 'error',
+                'error': error_type
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
+        return False
+    else:
+        return True
+
 @database_sync_to_async
 def get_user_by_player(player):
     return player.user
