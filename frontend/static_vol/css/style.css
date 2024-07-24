@@ -10,6 +10,7 @@
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
+  --content-color3: #c82cbb;
   --color-burn1: rgba(105,134,30, 0.3);
   --color-burn2: rgba(105,134,30, 0.12);
   --color-burn3: rgba(25, 30, 12, 0.8);
@@ -1773,7 +1774,7 @@ input.has-input:invalid {
 }
 
 .unitMatchPlayer_result {
-  background-color: var(--content-color2);
+  background-color: var(--content-color3);
   width: 55px;
   height: 1.5em;
   line-height: 1.5;
