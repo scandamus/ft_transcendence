@@ -45,20 +45,22 @@ const handleLogout = (ev) => {
             console.error('Logout failed:', error);
         })
         .finally(() => {
-            //todo: catchからここに入る場合は強制ログアウト。画面にエラー表示を出すか？
-            //token rm
-            sessionStorage.removeItem('accessToken');
-            sessionStorage.removeItem('refreshToken');
-            webSocketManager.closeWebSocket('lounge');
-            webSocketManager.closeWebSocket('pong');
-            const siteInfo = new SiteInfo();
-            siteInfo.reset();
-            switchDisplayAccount().then(() => {});//not return
-            if (GamePlay.instance || GamePlayQuad.instance) {
-                handleExitGame(PageBase.instance);
-            }
-            router(false);//not return
+            processLogout();
         })
 }
 
-export { handleLogout };
+const processLogout = () => {
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('refreshToken');
+    webSocketManager.closeWebSocket('lounge');
+    webSocketManager.closeWebSocket('pong');
+    const siteInfo = new SiteInfo();
+    siteInfo.reset();
+    switchDisplayAccount().then(() => {});//not return
+    if (GamePlay.instance || GamePlayQuad.instance) {
+        handleExitGame(PageBase.instance);
+    }
+    router(false).then(() => {});
+}
+
+export { handleLogout, processLogout };

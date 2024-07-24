@@ -3,6 +3,9 @@
 //sessionStorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
 import { SiteInfo } from "./SiteInfo.js";
+import { processLogout } from "./logout.js";
+import { addNotice } from "./notice.js";
+import { labels } from "./labels.js";
 
 const getToken = (nameToken) => {
     const token = sessionStorage.getItem(nameToken);
@@ -44,7 +47,9 @@ const refreshAccessToken = async () => {
                 console.log(`Successfully token refreshed: ${refreshData.access}`);
                 return refreshData.access;
             }
-            // TODO: logout処理に飛ばす
+            //refreshToken expired.強制ログアウト
+            addNotice(labels.common.logoutTokenExpired, true);
+            processLogout();
             console.error('Failed to refresh token, server responded with: ', response.status);
             return null;
         } catch (error) {

@@ -4,7 +4,8 @@ export const labels_ja = {
     langCode: 'ja',
     langName: '日本語',
     common: {
-        switchLang: '言語選択'
+        switchLang: '言語選択',
+        logoutTokenExpired: 'セッション期限が切れました。再ログインしてください。'
     },
     home: {
         title: 'Home',

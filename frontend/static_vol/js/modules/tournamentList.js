@@ -7,9 +7,12 @@ import { resetListenUpcomingTournamentList } from "./tournamentListListener.js";
 
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
-        const tournaments = await fetchTournaments('upcoming');
+        const tournaments = await fetchTournaments('upcoming', false);
         const listWrapper = document.querySelector('.blockTournamentList_upcoming');        
-        if (tournaments.length === 0) {
+        if (!tournaments) {
+            throw new Error(`Failed to get upcoming Tournament list`);
+        }
+        else if (tournaments && tournaments.length === 0) {
             listWrapper.innerHTML = `<p>${'No upcoming tournament'}</p>`;
 //            listWrapper.innerHTML = `<p>${labels.tournament.msgNoUpcoming}</p>`;
         } else {
@@ -56,9 +59,12 @@ const updateUpcomingTournamentList = async (pageInstance) => {
 
 const updateOngoingTournamentList = async (pageInstance) => {
     try {
-        const tournaments = await fetchTournaments('ongoing');
+        const tournaments = await fetchTournaments('ongoing', false);
         const listWrapper = document.querySelector('.blockTournamentList_ongoing');        
-        if (tournaments.length === 0) {
+        if (!tournaments) {
+            throw new Error(`Failed to get Ongoing Tournament list`);
+        }
+        else if (tournaments && tournaments.length === 0) {
             listWrapper.innerHTML = `<p>${'No ongoing tournament'}</p>`;
 //            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
         } else {
