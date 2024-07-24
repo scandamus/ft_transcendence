@@ -93,11 +93,12 @@ const loadGameContent = async (data) => {
         if (!tournamentId) {
             sessionStorage.setItem('tournament_id', tournament_id);
             tournamentId = sessionStorage.getItem('tournament_id');
-        }
-        if (tournamentId) {
-            console.log(`can not start tournament: ${username}`);
-            //todo: エラー処理（トーナメント開始できない）
-            return;
+
+            if (!tournamentId) {
+                console.log(`can not start tournament: ${username}`);
+                //todo: エラー処理（トーナメント開始できない）
+                return;
+            }
         }
         //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
         if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {

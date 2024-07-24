@@ -120,18 +120,20 @@ export default class TournamentDetail extends PageBase {
         const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
         const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
         const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
-        result.forEach(item => {
-            if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
-                const roundList = this.generateRoundList(item);
-                if (roundList) {
-                    wrapTournamentRound.insertAdjacentHTML('afterbegin', roundList);
+        if (result) {
+            result.forEach(item => {
+                if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
+                    const roundList = this.generateRoundList(item);
+                    if (roundList) {
+                        wrapTournamentRound.insertAdjacentHTML('afterbegin', roundList);
+                    }
+                    this.renderedRounds.add(item.round);
+                } else if (item.rankings !== undefined) {
+                    blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
+                    blockTournamentRanking.classList.add('is-show');
                 }
-                this.renderedRounds.add(item.round);
-            } else if (item.rankings !== undefined) {
-                blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
-                blockTournamentRanking.classList.add('is-show');
-            }
-        });
+            });
+        }
     }
 
     generateRankingList(rankings) {
