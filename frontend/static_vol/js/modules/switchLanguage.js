@@ -1,7 +1,7 @@
 'use strict';
 
 import { labels, switchLabels } from './labels.js';
-import { getToken } from './token.js';
+import { getToken, refreshAccessToken } from './token.js';
 import { languageLabels } from './labels.js';
 
 const setLangAttrSelected = (elSelectLang, lang) => {
@@ -38,7 +38,7 @@ const saveLang = (lang) => {
     if (localStorage.getItem('configLang') !== lang) {
         localStorage.setItem('configLang', lang);
     }
-    updateDbLang(lang);
+    updateDbLang(lang, false).then(() => {});
 }
 
 const getLang = () => {
@@ -53,7 +53,8 @@ const getLang = () => {
 
 };
 
-const updateDbLang = (lang) => {
+const updateDbLang = async (lang, isRefresh) => {
+    console.log(`updateDbLang: ${lang}`)
     const accessToken = getToken('accessToken');
     if (accessToken === null) {
         return Promise.resolve(null);
@@ -69,7 +70,15 @@ const updateDbLang = (lang) => {
     })
         .then( async (response) => {
             if (!response.ok) {
-                throw new Error(response.status);
+                if (!isRefresh) {
+                    if (!await refreshAccessToken()) {
+                        throw new Error('fail refresh token');
+                    }
+                    return await updateDbLang(lang, true);
+                } else {
+                    throw new Error('refreshed accessToken is invalid.');
+                }
+                throw new Error(`Failed to update language: ${response.status}`);
              }
             return response.json();
         })
