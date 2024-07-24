@@ -4,7 +4,8 @@ export const labels_he = {
     langCode: 'he',
     langName: 'עברית',
     common: {
-        switchLang: ''
+        switchLang: '',
+        btnEnable: ''
     },
     home: {
         title: 'Log In',
@@ -41,7 +42,6 @@ export const labels_he = {
         loginError1: 'בדק את שמך וסיסמתך',
         loginError2: 'משהו השתבש',
     },
-
     dashboard: {
         title: 'Dashboard',
         labelChangeAvatar: 'לשנות את האווטאר',

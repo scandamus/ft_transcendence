@@ -4,7 +4,8 @@ export const labels_ja = {
     langCode: 'ja',
     langName: '日本語',
     common: {
-        switchLang: '言語選択'
+        switchLang: '言語選択',
+        btnEnable: '有効な値が入力されるとボタンが押せるようになります'
     },
     home: {
         title: 'Log In',

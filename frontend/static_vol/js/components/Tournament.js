@@ -73,6 +73,7 @@ export default class Tournament extends PageBase {
                         </dd>
                     </dl>
                     <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton" disabled>${labels.tournament.labelCreateTournament}</button></p>
+                    <p class="ParaAnnotation">${labels.common.btnEnable}</p>
                 </form>
                 <p class="btnUpdateTournamentLists"><button type="button" id="btnUpdateTournamentLists_button" class="unitButton unitButton-small">${labels.tournament.labelUpdateLists}</button></p>
                 <section class="blockTournamentList">

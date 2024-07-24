@@ -4,7 +4,8 @@ export const labels_en = {
     langCode: 'en',
     langName: 'English',
     common: {
-        switchLang: 'Switch Language'
+        switchLang: 'Switch Language',
+        btnEnable: 'The button becomes clickable when valid values are entered.'
     },
     home: {
         title: 'Log In',
@@ -41,7 +42,6 @@ export const labels_en = {
         loginError1: 'Login failed. Please check your username and password.',
         loginError2: 'Something went wrong. Unable to log in.',
     },
-
     dashboard: {
         title: 'Dashboard',
         labelChangeAvatar: 'change avatar',

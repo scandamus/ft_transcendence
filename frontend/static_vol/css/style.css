@@ -818,19 +818,25 @@ input.has-input:invalid {
   margin-bottom: 0.5em;
 }
 
-/* listAnnotation */
+/* listAnnotation, ParaAnnotation */
 .listAnnotation {
   list-style: none;
   margin-top: 10px;
 }
 
-.listAnnotation li {
-  font-size: 1.4rem;
-  margin-right: 0.5em;
+.ParaAnnotation {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
 }
 
-.listAnnotation li {
-  text-shadow: none;
+.listAnnotation li,
+.ParaAnnotation {
+  font-size: 1.4rem;
+  margin-right: 0.5em;
+  text-shadow:
+          0.6px 0.6px var(--content-color1),
+          -0.6px -0.6px var(--content-color2);
   color: var(--color-white-alpha3);
 }
 

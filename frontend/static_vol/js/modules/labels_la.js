@@ -4,7 +4,8 @@ export const labels_la = {
     langCode: 'la',
     langName: 'Latina',
     common: {
-        switchLang: ''
+        switchLang: '',
+        btnEnable: ''
     },
     home: {
         title: 'Domus',
@@ -41,7 +42,6 @@ export const labels_la = {
         loginError1: 'verifica iterum nomen et tesseram',
         loginError2: 'nunc non potest nomen dare',
     },
-
     dashboard: {
         title: 'Tabula',
         labelChangeAvatar: 'iconem mutare',

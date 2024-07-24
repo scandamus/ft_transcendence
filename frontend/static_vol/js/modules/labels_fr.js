@@ -4,7 +4,8 @@ export const labels_fr = {
     langCode: 'fr',
     langName: 'français',
     common: {
-        switchLang: ''
+        switchLang: '',
+        btnEnable: ''
     },
     home: {
         title: 'Accueil',
@@ -41,7 +42,6 @@ export const labels_fr = {
         loginError1: 'Veuillez vérifier le nom d’utilisateur et le mot de passe',
         loginError2: 'quelque chose s’est mal passé',
     },
-
     dashboard: {
         title: 'Tableau de bord',
         labelChangeAvatar: 'Changer l’avatar',

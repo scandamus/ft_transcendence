@@ -4,7 +4,8 @@ export const labels_ar = {
     langCode: 'ar',
     langName: 'العربية',
     common: {
-        switchLang: ''
+        switchLang: '',
+        btnEnable: ''
     },
     home: {
         title: 'Log In',
@@ -41,7 +42,6 @@ export const labels_ar = {
         loginError1: 'يُرجى التحقق من اسم المستخدم وكلمة المرور',
         loginError2: 'تعذر تسجيل الدخول',
     },
-
     dashboard: {
         title: 'Dashboard',
         labelChangeAvatar: 'تغيير الصورة الرمزية',

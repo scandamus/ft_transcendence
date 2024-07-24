@@ -61,6 +61,7 @@ export default class SignUp extends PageBase {
                     </dd>
                 </dl>
                 <button type="submit" id="btnConfirmForm" class="formUserRegister_button unitButton" disabled>${labels.register.labelButtonConfirm}</button>
+                <p class="ParaAnnotation">${labels.common.btnEnable}</p>
             </form>
         `;
     }

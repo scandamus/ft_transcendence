@@ -1,3 +1,6 @@
+'use strict';
+import { labels } from './labels.js';
+
 const sendMatchRequest = (args) => `
     <section class="blockModal" data-modal-game_name="${args.game_name}" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}" data-modal-match_type="${args.matchType}">
         <h2 class="blockModal_title">${args.titleModal}</h2>
@@ -71,9 +74,10 @@ const entryTournament = (args) => `
             </dl>
             <input type="hidden" name="idTitle" value="${args.labelTournamentId}">
             <ul class="unitListBtn unitListBtn-horizontal-center">
-                <li><button type="submit" id="btnEntryTournament" class="unitButton">${args.labelEntry}</button></li>
+                <li><button type="submit" id="btnEntryTournament" class="unitButton" disabled>${args.labelEntry}</button></li>
                 <li><button type="button" class="blockBtnCancel_button unitButtonDecline unitButton-small">${args.labelCancel}</button></li>
             </ul>
+            <p class="ParaAnnotation">${labels.common.btnEnable}</p>
         </form>
     </section>
 `;
