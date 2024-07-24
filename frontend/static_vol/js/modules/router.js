@@ -41,7 +41,7 @@ const protectedRoutes = [/\/(?:user|game|tournament)\/?.*$/];
 const pathToRegex = (path) => new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '/?$');
 
 //todo: :idのような形式の場合
-const getParams = (matchRoute) => {
+const getParams = async (matchRoute) => {
     if (!matchRoute || !matchRoute.route || !matchRoute.route.path || !matchRoute.result) {
         return {};
     }
@@ -76,7 +76,8 @@ const addLinkPageEvClick = (linkPages) => {
 }
 
 const replaceView = async (matchRoute) => {
-    const view = new matchRoute.route.view(getParams(matchRoute));
+    const params = await getParams(matchRoute);
+    const view = new matchRoute.route.view(params);
     if (view) {
         //モーダルが開いていたら閉じる
         //todo: openModal後のフローに組み込む方がよさそう
