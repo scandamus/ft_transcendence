@@ -63,18 +63,17 @@ class WebSocketManager {
 
             socket.onclose = (event) => {
                 console.log(`WebSocket for ${containerId} is onclose.`);
-                const handler = this.messageHandlers[containerId];
-                this.handleClose(containerId);
                 if (!this.isWebSocketClosed[containerId] && this.reconnectAttempts[containerId] < this.maxReconnectAttempts) {
                     setTimeout(() => {
                         console.log(`Try to reconnect WebScoket for ${containerId}`);
                         this.reconnectAttempts[containerId]++;
-                        this.openWebSocket(containerId, handler);
+                        this.openWebSocket(containerId, this.messageHandlers[containerId]);
                     }, this.reconnectInterval);
                 } else if (!this.isWebSocketClosed[containerId]) {
                     addNotice('サーバーとの接続が切れました', true);
                     handleLogout(new Event('logout'));
                 }
+                this.handleClose(containerId);
             };
 
             socket.onerror = (error) => {
@@ -100,12 +99,8 @@ class WebSocketManager {
 
     handleClose(containerId) {
         console.log(`WebSocket for ${containerId} is closing now.`);
-        if (this.sockets[containerId]) {
-            delete this.sockets[containerId];
-        }
-        if (this.messageHandlers[containerId]) {
-            delete this.messageHandlers[containerId];
-        }
+        delete this.sockets[containerId];
+        delete this.messageHandlers[containerId];
     }
 
     closeWebSocket(containerId) {
@@ -142,6 +137,7 @@ class WebSocketManager {
         console.log(`sendAccessToken to ${containerId}`);
         try {
             const accessToken = await initToken();
+//            await webSocketManager.openWebSocket(containerId, this.messageHandlers[containerId]);
             console.log('sendAccessToken: initToken() finish');
             const message = {
                 type: 'authWebSocket',
