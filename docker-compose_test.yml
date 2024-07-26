@@ -22,6 +22,7 @@ services:
       - DJANGO_SU_PASSWORD=${DJANGO_SU_PASSWORD}
       - DJANGO_PLAYER1_PASSWORD=${DJANGO_PLAYER1_PASSWORD}
       - POSTGRES_USER=${DB_USER}
+      - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
     restart: always
     networks:
       - backend-network
@@ -41,6 +42,7 @@ services:
       - COMMON_NAME=${DOMAIN_NAME}
       - EMAIL=${EMAIL}
       - DOMAIN_NAME=${DOMAIN_NAME}
+      - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
     container_name: frontend
     depends_on:
       - backend
