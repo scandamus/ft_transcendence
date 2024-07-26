@@ -205,6 +205,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.scheduled_task is not None:
             self.scheduled_task.cancel()
             self.scheduled_task = None
+        if self.game_timer_task is not None:
+            self.game_timer_task.cancel()
+            self.game_timer_task = None
 
     async def send_game_over_message(self, event):
         message = event['message']
