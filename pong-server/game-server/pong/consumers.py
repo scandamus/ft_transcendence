@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 # 非同期通信を実現したいのでAsyncWebsocketConsumerクラスを継承
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
+    PADDLE_SPEED = 7
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -64,18 +65,18 @@ class PongConsumer(AsyncWebsocketConsumer):
                 logger.info(f'del: {self.players_ids}[{self.match_id}]')
                 del self.players_ids[self.match_id]
             else:
-                new_next_master = sorted(self.players_ids[self.match_id])[0]
-                await self.channel_layer.group_send(self.room_group_name, {
-                    'type': 'start_game',
-                    'master_id': new_next_master,
-                    'state': 'ongoing',
-                })
+                if self.scheduled_task is not None:
+                    self.scheduled_task.cancel()
+                    self.scheduled_task = None
+                    new_next_master = sorted(self.players_ids[self.match_id])[0]
+                    await self.channel_layer.group_send(self.room_group_name, {
+                        'type': 'start_game',
+                        'master_id': new_next_master,
+                        'state': 'ongoing',
+                    })
         await self.channel_layer.group_discard(
             self.room_group_name, self.channel_name
         )
-        if self.scheduled_task is not None:
-            self.scheduled_task.cancel()
-            self.scheduled_task = None
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
@@ -152,18 +153,25 @@ class PongConsumer(AsyncWebsocketConsumer):
         key = data.get('key')
         is_pressed = data.get('is_pressed', False)
         sent_player_name = data.get('player_name')
+        
+        self.update_paddle_speed('left' if sent_player_name == 'player1' else 'right', key, is_pressed)
+    
+    def update_paddle_speed(self, side, key, is_pressed):
+        up_pressed_attr = f'{side}_up_pressed'
+        down_pressed_attr = f'{side}_down_pressed'
+        paddle_attr = f'{side}_paddle'
 
         if key in ['ArrowUp', 'w']:
-            self.up_pressed = is_pressed
-        elif key in ['s', 'ArrowDown']:
-            self.down_pressed = is_pressed
-        speed = -7 * self.up_pressed + 7 * self.down_pressed
+            setattr(self, up_pressed_attr, is_pressed)
+        elif key in ['ArrowDown', 's']:
+            setattr(self, down_pressed_attr, is_pressed)
 
+        up_pressed = getattr(self, up_pressed_attr, False)
+        down_pressed = getattr(self, down_pressed_attr, False)
+        speed = self.PADDLE_SPEED * (down_pressed - up_pressed)
+        
         if self.scheduled_task is not None:
-            if sent_player_name == 'player1':
-                self.left_paddle.speed = speed
-            elif sent_player_name == 'player2':
-                self.right_paddle.speed = speed
+            setattr(getattr(self, paddle_attr), 'speed', speed)
 
     async def schedule_ball_update(self):
         self.game_continue = True
