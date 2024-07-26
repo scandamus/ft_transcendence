@@ -242,6 +242,7 @@ class Match(models.Model):
         on_delete=models.SET_NULL
     )
     last_updated = models.DateTimeField(
+        null=True, blank=True,
         auto_now=True
     )
     def __str__(self):
