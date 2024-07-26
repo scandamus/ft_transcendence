@@ -183,7 +183,7 @@ export default class GamePlay extends PageBase {
                 drawPaddle(data.left_paddle);
 
                 if (!data.game_status) {
-                    console.log("Game Over");
+                    console.log(data.message);
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
