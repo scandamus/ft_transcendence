@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+
 export const labels_la = {
     langCode: 'la',
     langName: 'Latina',
@@ -38,6 +40,8 @@ export const labels_la = {
         passwordIsNotSame: 'non eadem tessera',
         isExists: 'nomen usoris alium selige',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'verifica iterum nomen et tesseram',
         loginError2: 'nunc non potest nomen dare',
     },
@@ -105,7 +109,7 @@ export const labels_la = {
         labelTournamentLog: 'index certaminium',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
         labelNextMatch: '',
         labelRound1: '',
