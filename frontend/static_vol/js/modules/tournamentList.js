@@ -9,15 +9,18 @@ import { linkSpa } from "./router.js";
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('upcoming', false);
+        if (!tournaments) {
+            return [];
+        }
         const listWrapper = document.querySelector('.blockTournamentList_upcoming');
         if (!tournaments) {
             throw new Error(`Failed to get upcoming Tournament list`);
         }
-        else if (tournaments && tournaments.length === 0) {
+        else if (tournaments && tournaments.list.length === 0) {
             listWrapper.innerHTML = `<p>${labels.tournament.msgNoUpcoming}</p>`;
         } else {
             listWrapper.innerHTML = '';
-            tournaments.forEach(tournament => {
+            tournaments.list.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 let nicknameHtml = '';
                 let buttonHtml = '';
@@ -49,10 +52,12 @@ const updateUpcomingTournamentList = async (pageInstance) => {
                 `;
                 listWrapper.innerHTML += tournamentElement;
             });
-            resetListenUpcomingTournamentList(pageInstance)
+            resetListenUpcomingTournamentList(pageInstance);
+            return tournaments.start_dates;
         }
     } catch (error) {
         console.error('Failed to update upcoming tournaments list: ', error);
+        return [];
     }
 };
 
@@ -63,11 +68,11 @@ const updateOngoingTournamentList = async (pageInstance) => {
         if (!tournaments) {
             throw new Error(`Failed to get Ongoing Tournament list`);
         }
-        else if (tournaments && tournaments.length === 0) {
+        else if (tournaments && tournaments.list.length === 0) {
             listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
         } else {
             listWrapper.innerHTML = '';
-            tournaments.forEach(tournament => {
+            tournaments.list.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 const nicknameHtml = tournament.nickname ? `
                     <div class="unitTournament_body">
@@ -102,11 +107,11 @@ const updateFinishedTournamentList = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('finished', false);
         const listWrapper = document.querySelector('.blockTournamentList_finished');
-        if (tournaments.length === 0) {
-            listWrapper.innerHTML = `<p>${labels.tournament.msgNoOngoing}</p>`;
+        if (tournaments.list.length === 0) {
+            listWrapper.innerHTML = `<p>${labels.tournament.msgNoFinished}</p>`;
         } else {
             listWrapper.innerHTML = '';
-            tournaments.forEach(tournament => {
+            tournaments.list.forEach(tournament => {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 const nicknameHtml = tournament.nickname ? `
                     <div class="unitTournament_body">
@@ -137,7 +142,7 @@ const getTournamentLog = async (pageInstance) => {
         const tournaments = await fetchTournaments('finished', false);
         const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         listWrapper.innerHTML = '';
-        tournaments.forEach(tournament => {
+        tournaments.list.forEach(tournament => {
             if (tournament.nickname) {
                 const formatedStartDate = formatDateToLocal(tournament.start);
                 let rankHtml = ``;

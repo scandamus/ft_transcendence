@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+
 export const labels_he = {
     langCode: 'he',
     langName: 'עברית',
@@ -39,6 +41,8 @@ export const labels_he = {
         passwordIsNotSame: 'אנא הזן את אותה סיסמה',
         isExists: 'שם המשתמש כבר בשימוש',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'בדק את שמך וסיסמתך',
         loginError2: 'משהו השתבש',
     },
@@ -106,7 +110,7 @@ export const labels_he = {
         labelTournamentLog: 'שיאי טורניר',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
         labelNextMatch: '',
         labelRound1: '',

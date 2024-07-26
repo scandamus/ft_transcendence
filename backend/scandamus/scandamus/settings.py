@@ -39,11 +39,9 @@ CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
 
 # SERVER HOST
 SERVER_HOST = get_env_var('DOMAIN_NAME')
-ALLOWED_HOSTS = ['backend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
-#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['backend', 'frontend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
-
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
@@ -232,12 +230,15 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Log level
+LOG_LEVEL = os.getenv('BACKEND_LOG_LEVEL', 'DEBUG')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'class': 'logging.StreamHandler',
         },
     },
@@ -248,7 +249,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
         'django.db.backends': {
@@ -258,12 +259,12 @@ LOGGING = {
         },
         'scandamus' : {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
         'django.channels': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
     },

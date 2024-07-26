@@ -11,6 +11,7 @@ services:
     depends_on:
       - redis
     environment:
+      - BACKEND_LOG_LEVEL=${BACKEND_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -78,6 +79,7 @@ services:
     build: pong-server
     container_name: pong-server
     environment:
+      - PONG_LOG_LEVEL=${PONG_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -101,6 +103,7 @@ services:
     build: pong4-server
     container_name: pong4-server
     environment:
+      - PONG4_LOG_LEVEL=${PONG4_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -140,6 +143,7 @@ services:
       - backend
       - redis
     environment:
+      - BACKEND_LOG_LEVEL=${BACKEND_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -177,6 +181,7 @@ services:
       - backend
       - redis
     environment:
+      - BACKEND_LOG_LEVEL=${BACKEND_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}

@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+
 export const labels_en = {
     langCode: 'en',
     langName: 'English',
@@ -39,6 +41,9 @@ export const labels_en = {
         passwordIsNotSame: 'The passwords do not match.',
         isExists: 'This username is already taken.',
         outOfRange: 'That date and time cannot be specified',
+        startTimeInvalid: `Please set the tournament start time to be at least ${CREATE_TOURNAMENT_TIMELIMIT_MIN} minutes from now.`,
+        intervalError: 'An interval of at least 6 hours is required between tournaments.',
+        tournamentNameAlreadyExists: 'Tournament name already exists.',
         loginError1: 'Login failed. Please check your username and password.',
         loginError2: 'Something went wrong. Unable to log in.',
     },
@@ -106,7 +111,7 @@ export const labels_en = {
         labelTournamentLog: 'tournament log',
         labelUpdateLists: 'Update Lists',
         descTournamentTitle: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 50 characters long'],
-        descTournamentStart: ['[Allowable Range] From 1 hour later to 1 month later.'],
+        descTournamentStart: [`[Allowable Range] From ${CREATE_TOURNAMENT_TIMELIMIT_MIN} minutes later to 1 month later.`, '[between tournaments] At least 6 hours'],
         descNickname: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 20 characters long'],
         labelNextMatch: 'Next Match',
         labelRound1: 'First Round',
