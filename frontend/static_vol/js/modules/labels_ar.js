@@ -1,5 +1,7 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+
 export const labels_ar = {
     langCode: 'ar',
     langName: 'العربية',
@@ -38,6 +40,8 @@ export const labels_ar = {
         passwordIsNotSame: 'الرجاء إدخال كلمة المرور نفسها',
         isExists: 'اسم المستخدم هذا قيد الاستخدام',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'يُرجى التحقق من اسم المستخدم وكلمة المرور',
         loginError2: 'تعذر تسجيل الدخول',
     },
@@ -105,7 +109,7 @@ export const labels_ar = {
         labelTournamentLog: 'سجلات البطولة',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
         labelNextMatch: '',
         labelRound1: '',

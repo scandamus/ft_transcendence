@@ -260,21 +260,27 @@ const handleTournamentReceived = (data) => {
         console.log(`Local Time: ${startLocal}`);
         if (currentPage) {
             PageBase.instance.resetFormCreateTournament();
-            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
         }
         const message = `${data.name} - ${startLocal} が作成されました`;
         console.log(`${message}`);
         addNotice(message, false);
-    } else if (data.action === 'alreadyExists') {
-        const message = `同名のトーナメントがすでに存在しています`;
-        addNotice(message, true);
-    } else if (data.action === 'invalidTournamentTitle') {
+    } else if (data.action === 'invalidTournamentTitle' || data.action === 'invalidTournamentStart') {
         handleReceiveWsTournamentValidationError(data);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
+        }
     } else if (data.action === 'entryDone') {
         closeModalOnEntryDone();
         addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
         if (currentPage) {
-            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
         }
     } else if (data.action === 'duplicateNickname') {
         addNotice(`すでに同名のニックネームが使われています`, true);
@@ -293,7 +299,9 @@ const handleTournamentReceived = (data) => {
     } else if (data.action === 'removeEntryDone') {
         addNotice(`トーナメント【${data.name}】への参加をキャンセルしました`);
         if (currentPage) {
-            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
         }
     } else if (data.action === 'invalidCancelRequest') {
         addNotice('トーナメントへのエントリーがありません');

@@ -1,8 +1,13 @@
+import logging
 from rest_framework import serializers
 from django.core.validators import RegexValidator
 from .models import Tournament, Match, Entry
 from players.models import Player
+from django.conf import settings
+from datetime import datetime, timedelta, timezone
+from channels.db import database_sync_to_async
 
+logger = logging.getLogger(__name__)
 
 # validate_tournamentname
 # 最小文字数: 3文字 / 最大文字数: 50文字 / 使用可能: 半角英小文字,半角数字,ひらがな,カタカナ,漢字、記号(@_#$%&!.+*~)
@@ -50,12 +55,37 @@ nicknameCharacterTypesValidator = RegexValidator(
     'invalidNicknameCharacterTypesBackend',
     'invalid_nickname'
 )
+@database_sync_to_async
+def get_existing_tournaments():
+    return Tournament.objects.all()
+
+async def async_validate_start_time(start_time):
+    errors = []
+
+    now = datetime.now(timezone.utc)
+    if start_time <= now + timedelta(minutes=int(settings.CREATE_TOURNAMENT_TIMELIMIT_MIN)):
+        errors.append('startTimeInvalidBackend')
+
+    existing_tournaments = await database_sync_to_async(list)(Tournament.objects.filter(status='upcoming'))
+    for tournament in existing_tournaments:
+        tournament_start = tournament.start
+        if abs((start_time - tournament_start).total_seconds()) < 6 * 3600:
+            errors.append('intervalErrorBackend')
+            break
+
+    if errors:
+        raise serializers.ValidationError(errors)
+    return None
+
 
 class TournamentSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         validators=[CustomTournamentnameValidator(), tournamentnameCharacterTypesValidator],
         required=True,
         error_messages={'blank': 'invalidTournamentnameBlank'}
+    )
+    start = serializers.DateTimeField(
+        # validators=[async_validate_start_time]
     )
     current_participants = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
