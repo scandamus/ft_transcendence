@@ -102,7 +102,8 @@ class Tournament(models.Model):
         result.append({
             "round": round,
             "matches": round_result,
-            "bye_player": bye_player_entry.nickname if bye_player_entry else None
+            "bye_player": bye_player_entry.nickname if bye_player_entry else None,
+            "bye_player_id": bye_player_entry.player.id if bye_player_entry else None,
         })
         self.result_json = json.dumps(result)
         self.save()
@@ -118,6 +119,8 @@ class Tournament(models.Model):
                 "player2": player2_entry.nickname if player2_entry else None,
                 "score1": match.score1,
                 "score2": match.score2,
+                "player1_id": match.player1.id,
+                "player2_id": match.player2.id,
                 "winner": winner_entry.nickname if winner_entry else None
             })
         return round_result
@@ -136,15 +139,18 @@ class Tournament(models.Model):
         second_place_entry = Entry.objects.get(player=self.second_place, tournament=self) if self.second_place else None
         third_place_entry = Entry.objects.get(player=self.third_place, tournament=self) if self.third_place else None
 
-        final_result = {
-            "matches": result,
+        rankings = {
             "rankings": {
                 "winner": winner_entry.nickname if winner_entry else None,
+                "winner_id": self.winner.id,
                 "second": second_place_entry.nickname if second_place_entry else None,
+                "second_id": self.second_place.id,
                 "third": third_place_entry.nickname if third_place_entry else None,
+                "third_id": self.third_place.id
             }
         }
-        self.result_json = json.dumps(final_result)
+        result.append(rankings)
+        self.result_json = json.dumps(result)
         self.save()
 
     class Meta:

@@ -55,7 +55,7 @@ def check_tournament_start_times():
         notify_players.delay(tournament_name, entried_players_id_list, 'tournament_prepare', True)
 
         # 2分前になると控室集合の通知
-        #notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_call', True), countdown=(tournament.start - now - timedelta(minutes=2)).total_seconds())
+        notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_room', True), countdown=(tournament.start - now - timedelta(minutes=2)).total_seconds())
         
         # 開始時刻の通知
         # notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_match', True), countdown=(tournament.start - now).total_seconds())
