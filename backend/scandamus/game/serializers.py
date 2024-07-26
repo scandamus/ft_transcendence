@@ -59,6 +59,12 @@ class TournamentSerializer(serializers.ModelSerializer):
     )
     current_participants = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
+    matches = serializers.PrimaryKeyRelatedField(
+        queryset=Match.objects.all(),
+        many=True,
+        required=False,
+        default=list
+    )
 
     class Meta:
         model = Tournament

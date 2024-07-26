@@ -88,6 +88,7 @@ export const labels_la = {
         labelMatchLog: 'index ludorum',
         labelWins: 'victoria',
         labelLosses: 'clades',
+        fmtWinLoss: '$win victoriae - $loss clades',
         fmtWin: '$win victoriae',
         fmtLoss: '$loss clades',
         msgNoMatch: 'nullum iam ludum',

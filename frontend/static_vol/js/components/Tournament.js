@@ -80,27 +80,7 @@ export default class Tournament extends PageBase {
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleInPlay}</h3>
-                    <div class="blockTournamentList_ongoing listLineDivide">
-                        <section class="unitTournament unitTournament-link">
-                            <a href="/tournament/detail_id" data-link>
-                                <header class="unitTournament_header">
-                                    <h4 class="unitTournament_title">TournamentTitle1</h4>
-                                    <p class="unitTournament_start">2024/07/3 13:00</p>
-                                </header>
-                                <div class="unitTournament_body">
-                                    <p class="unitTournament_nickname">as nickname6</p>
-                                </div>
-                            </a>
-                        </section>
-                        <section class="unitTournament unitTournament-link">
-                            <a href="/tournament/detail_id" data-link>
-                                <header class="unitTournament_header">
-                                    <h4 class="unitTournament_title">TournamentTitle2</h4>
-                                    <p class="unitTournament_start">2024/07/5 21:00</p>
-                                </header>
-                            </a>
-                        </section>
-                    </div>
+                    <div class="blockTournamentList_ongoing listLineDivide"></div>
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleRecent}</h3>

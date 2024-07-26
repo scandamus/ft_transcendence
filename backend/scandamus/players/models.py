@@ -80,6 +80,8 @@ class Player(models.Model):
         ('friend_match', 'フレンドマッチ中'),
         ('lounge_match', 'ラウンジマッチ中'),
         ('tournament_match', 'トーナメントマッチ中'),
+        ('tournament_room', 'トーナメント控室'),
+        ('tournament_prepare', 'トーナメント準備中'),
         ('tournament', 'トーナメント中'),
         ('friend_waiting', 'フレンドマッチ待機中'),
         ('lounge_waiting', 'ラウンジマッチ待機中'),
