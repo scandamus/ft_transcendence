@@ -49,6 +49,10 @@ const handleLogout = (ev) => {
             //token rm
             sessionStorage.removeItem('accessToken');
             sessionStorage.removeItem('refreshToken');
+            sessionStorage.removeItem('all_usernames');
+            sessionStorage.removeItem('player_name');
+            sessionStorage.removeItem('tournament_id');
+            sessionStorage.removeItem('tournament_status');
             webSocketManager.closeWebSocket('lounge');
             webSocketManager.closeWebSocket('pong');
             const siteInfo = new SiteInfo();
