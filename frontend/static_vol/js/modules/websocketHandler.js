@@ -86,6 +86,7 @@ const loadGameContent = async (data) => {
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
     sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
+    sessionStorage.setItem('player_name', player_name);
 
     if (type === 'gameSessionTournament') {
         const tournamentId = sessionStorage.getItem("tournament_id");
