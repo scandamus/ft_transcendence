@@ -154,9 +154,9 @@ class MatchViewSet(ModelViewSet):
 
     def calc_players_level(self, winner):
         # Tournament含め全てのmatchで勝つとlevel += 0.2
-        level_decimal = Decimal(winner.level)
-        multiplier = Decimal('0.2')
-        winner.level = (level_decimal + multiplier).quantize(Decimal('0.0'), rounding=ROUND_DOWN)
+        level_decimal_tenfold = Decimal(winner.level) * Decimal(10)
+        updated_level_decimal_tenfold = level_decimal_tenfold + Decimal(2)
+        winner.level = (updated_level_decimal_tenfold / Decimal(10)).quantize(Decimal('0.0'))
 
 class EntryViewSet(ModelViewSet):
     queryset = Entry.objects.all()
