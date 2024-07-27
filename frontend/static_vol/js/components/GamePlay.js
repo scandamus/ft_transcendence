@@ -129,7 +129,7 @@ export default class GamePlay extends PageBase {
             await this.loadSounds();
 
             function drawBackground() {
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = '#00000066';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
