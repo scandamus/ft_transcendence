@@ -134,6 +134,10 @@ class MatchViewSet(ModelViewSet):
             if player:
                 player.status = status
                 player.current_match = None
+                if match.tournament is None:
+                    player.play_count += 1
+                    if match.winner == player:
+                        player.win_count += 1
                 player.save()
 
     def reset_all_players_status(self, match):
