@@ -43,6 +43,10 @@ export default class LogIn extends PageBase {
                 <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>
             </form>
             <hr />
+            <div class="blockLogin42">
+                <p><button type="button" id="btnLogin42" class="unitButton unitButton-large">42LOGIN</button></p>
+            </div>
+            <hr />
             <dl class="blockSignUp">
                 <dt class="blockSignUp_txt">${labels.home.textSignUp}</dt>
                 <dd class="blockSignUp_link"><a href="/register" class="unitButton" data-link>${labels.home.labelLinkSignUp}</a></dd>
@@ -72,6 +76,10 @@ export default class LogIn extends PageBase {
         const btnLogin = document.getElementById('btnLoginForm');
         const boundHandleLogin = this.handleLogin.bind(this);
         this.addListListenInInstance(btnLogin, boundHandleLogin, 'click');
+
+        const btnLogin42 = document.getElementById('btnLogin42');
+        const boundHandleLogin42 = this.handleLogin42.bind(this);
+        this.addListListenInInstance(btnLogin42, boundHandleLogin42, 'click');
     }
 
     handleLogin(ev) {
@@ -148,6 +156,26 @@ export default class LogIn extends PageBase {
             this.loginErrorType = error;
             const errWrapper = document.querySelector('.listError');
             addErrorMessage(errWrapper, error);
+        }
+    }
+
+    async handleLogin42(ev) {
+        ev.preventDefault();
+        try {
+            const response = await fetch('/api/oauth42/authorize42');
+            const data = await response.json();
+
+            const width = 600;
+            const height = 700;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            window.open(
+                data.authorize_url,
+                '42AuthWindow',
+                `width=${width},height=${height},top=${top},left=${left},toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no`
+            );
+        } catch (error) {
+            console.error('Failed to get authorize URL:', error);
         }
     }
 
