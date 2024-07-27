@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from scandamus.authentication import InternalNetworkAuthentication
 from .tournament_match import report_match_result
 from django.db.models import Q
+from decimal import Decimal, ROUND_DOWN
 
 import logging
 
@@ -134,10 +135,12 @@ class MatchViewSet(ModelViewSet):
             if player:
                 player.status = status
                 player.current_match = None
+                if match.winner == player:
+                    self.calc_players_level(player)
+                    if match.tournament is None:
+                        player.win_count += 1
                 if match.tournament is None:
                     player.play_count += 1
-                    if match.winner == player:
-                        player.win_count += 1
                 player.save()
 
     def reset_all_players_status(self, match):
@@ -148,6 +151,12 @@ class MatchViewSet(ModelViewSet):
         number_of_finished_matches = len(matches)
         logger.info(f'number of matches_finished for round:{current_round} = {number_of_finished_matches}')
         return all(match.status == 'after' for match in matches)
+
+    def calc_players_level(self, winner):
+        # Tournament含め全てのmatchで勝つとlevel += 0.2
+        level_decimal = Decimal(winner.level)
+        multiplier = Decimal('0.2')
+        winner.level = (level_decimal + multiplier).quantize(Decimal('0.0'), rounding=ROUND_DOWN)
 
 class EntryViewSet(ModelViewSet):
     queryset = Entry.objects.all()

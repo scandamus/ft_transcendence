@@ -2,11 +2,9 @@ import logging
 from rest_framework import serializers
 from django.core.validators import RegexValidator
 from .models import Tournament, Match, Entry
-from players.models import Player
 from django.conf import settings
 from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
-from decimal import Decimal, ROUND_DOWN
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +126,6 @@ class MatchSerializer(serializers.ModelSerializer):
 
         if old_status != 'after' and new_status == 'after':
             self.set_players_to_waiting(instance)
-            self.calc_players_level(instance)
 
         instance.save()
         return instance
@@ -140,15 +137,6 @@ class MatchSerializer(serializers.ModelSerializer):
                 player.status = 'waiting'
                 player.current_match = None
                 player.save()
-
-    def calc_players_level(self, match):
-        winning_player = match.winner
-
-        # Tournament含め全てのmatchで勝つとlevel += 0.2
-        level_decimal = Decimal(winning_player.level)
-        multiplier = Decimal('0.2')
-        winning_player.level = (level_decimal + multiplier).quantize(Decimal('0.0'), rounding=ROUND_DOWN)
-        winning_player.save()
 
 
 class EntrySerializer(serializers.ModelSerializer):
