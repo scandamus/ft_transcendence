@@ -63,7 +63,7 @@ def check_tournament_start_times():
 
 @shared_task
 def notify_players(tournament_name, entried_players_id_list, status, is_update_player_status):
-    logger.info(f'{tournament_name} status: {status}')
+    logger.info(f'notify_players {tournament_name} status: {status}')
 
     for player_id in entried_players_id_list:
         try:
