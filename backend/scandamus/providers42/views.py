@@ -34,7 +34,7 @@ def get_authorize42_url(request):
 
     authorize_url = (
         f"{settings.URL_AUTHORIZE_42}?client_id={settings.UID_42}"
-        f"&redirect_uri={urllib.parse.quote('https://localhost')}"
+        f"&redirect_uri={urllib.parse.quote(settings.URL_AUTH_REDIRECT_42)}"
         f"&response_type={response_type}"
         f"&scope={scope}"
         f"&state={state}"

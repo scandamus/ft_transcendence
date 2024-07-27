@@ -40,6 +40,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+window.addEventListener('message', (ev) => {
+    if (ev.origin === window.location.origin) {
+        const data = ev.data;
+        if (data.code) {
+            console.log(`///Authorization code: ${data.code} state: ${data.state}`);
+        }
+    }
+});
+
 //reload
 window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('accessToken');

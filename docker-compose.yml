@@ -32,6 +32,7 @@ services:
       - URL_AUTHORIZE_42=${URL_AUTHORIZE_42}
       - URL_ACCESS_TOKEN_42=${URL_ACCESS_TOKEN_42}
       - URL_PROFILE_42=${URL_PROFILE_42}
+      - URL_AUTH_REDIRECT_42=${URL_AUTH_REDIRECT_42}
     restart: always
     networks:
       - backend-network
