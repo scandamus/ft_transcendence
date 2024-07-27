@@ -11,10 +11,9 @@ from .match_utils import authenticate_token, get_player_by_user
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 
-
 #import random
 
-#from celery import shared_task
+from celery import shared_task
 #from django.utils import timezone
 #from datetime import timedelta
 
@@ -24,6 +23,7 @@ from .match_utils import send_tournament_match_jwt, notify_bye_player
 
 
 logger = logging.getLogger(__name__)
+
 
 async def handle_enter_tournament_room(consumer, token, data):
     from .consumers import LoungeSession
@@ -75,11 +75,11 @@ async def handle_enter_tournament_room(consumer, token, data):
     await send_to_client(consumer, message)
     logger.info(f'Sent {tournament_name} room permission to {user.username}')
 
-# ongoingのトーナメントである場合にEntryを返す
+# preparingのトーナメントである場合にEntryを返す(控室enter check)
 @database_sync_to_async
 def get_entry(player, tournament_name):
     try:
-        tournament = Tournament.objects.get(name=tournament_name, status='ongoing')
+        tournament = Tournament.objects.get(name=tournament_name, status='preparing')
     except Tournament.DoesNotExist:
         return None
     try:
@@ -123,6 +123,7 @@ def report_match_result(match_id):
 # 2戦目（round==-5）: 1戦目の敗者 vs C　（敗者は3位）
 # 3戦目（round==-6）: 1戦目の勝者 vs 2戦目の勝者　（勝者は1位、敗者は2位）
 def handle_three_players_round(tournament, current_round):
+    from .tasks import notify_players
     logger.info('handle_three_players_round')
     previous_round_match = tournament.matches.filter(round=current_round).order_by('-id').first()
     if current_round == -4:
@@ -130,29 +131,36 @@ def handle_three_players_round(tournament, current_round):
         create_match(tournament, first_loser, tournament.bye_player, -5)
         tournament.bye_player = None
         tournament.save()
+        notify_players(tournament.name, [previous_round_match.winner.id], 'notifyWaitFinal', False)#1戦目勝者は決勝待ち
     elif current_round == -5:
         first_match = tournament.matches.filter(round=-4).order_by('-id').first()
         second_match = tournament.matches.filter(round=-5).order_by('-id').first()
         tournament.third_place = second_match.player1 if second_match.winner == second_match.player2 else second_match.player2
         tournament.save()
         create_match(tournament, first_match.winner, second_match.winner, -6)
+        notify_players(tournament.name, [tournament.third_place.id], 'notifyFinalOnGoing', False)#3位には決勝戦進行中表示
     elif current_round == -6:
         finalize_tounrnament_by_three_players(tournament)
 
 def finalize_tounrnament_by_three_players(tournament):
+    from .tasks import notify_players
     logger.info('finalize_tournament_by_three_players in')
     final_match = tournament.matches.filter(round=-6).order_by('-id').first()
+    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
 
     tournament.winner = final_match.winner
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
     tournament.status = 'finished'
     tournament.save()
     tournament.finalize_result_json(True)
+    notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
 def finalize_tournament(tournament):
+    from .tasks import notify_players
     logger.info('finalize_tournament in')
     final_match = tournament.matches.filter(round=-1).order_by('-id').first()
     third_place_match = tournament.matches.filter(round=-3).order_by('-id').first()
+    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
 
     tournament.winner = final_match.winner
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
@@ -160,17 +168,23 @@ def finalize_tournament(tournament):
     tournament.status = 'finished'
     tournament.save()
     tournament.finalize_result_json()
+    notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
 def create_next_round(tournament, current_round):
+    from .tasks import notify_players
     logger.info('create_next_round in')
     previous_round_matches = tournament.matches.filter(round=current_round)
     winners = [match.winner for match in previous_round_matches if match.winner]
+    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
     tournament.update_result_json(current_round)
 
     if tournament.bye_player:
         winners.insert(0, tournament.bye_player)
         tournament.bye_player == None
         tournament.save()
+
+    losers = [player_id for player_id in entried_players_id_list if player_id not in [player.id for player in winners]]
+    notify_players(tournament.name, losers, 'roundEnd', False)
     
     number_of_winners = len(winners)
     if number_of_winners == 2:
@@ -180,7 +194,7 @@ def create_next_round(tournament, current_round):
         create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
         tournament.bye_player = winners[-1]
         tournament.save()
-        notify_bye_player(tournament)#3人準決勝待ち TODO: 特別なメッセージ？
+        notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#準決勝2戦目待ち
         return
     
     current_round += 1
