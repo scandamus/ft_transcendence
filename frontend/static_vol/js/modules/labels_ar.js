@@ -1,6 +1,6 @@
 'use strict';
 
-import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
 
 export const labels_ar = {
     langCode: 'ar',
@@ -74,6 +74,7 @@ export const labels_ar = {
         labelReceivedRequest: 'طلبات الصداقة المستلمة',
         labelRecommended: 'توصيات لك',
         msgNoRecommended: 'لا توجد توصية',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',
@@ -169,6 +170,9 @@ export const labels_ar = {
         received: 'لقد تلقيت طلب صداقة من $name ',
         accepted: 'أنت الآن صديق ل $name ',
         removed: 'لم تعد صديقاً ل $name ',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'ستبدأ المباراة',
