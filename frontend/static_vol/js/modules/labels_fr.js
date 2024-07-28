@@ -167,6 +167,8 @@ export const labels_fr = {
         acceptRequestSuccess: 'Vous êtes maintenant ami avec $name ',
         declineRequestSuccess: 'La demande d’amitié de $name a été annulé',
         removeSuccess: 'Vous avez supprimé l’amitié de $name',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: 'Vous avez reçu une demande d’amitié de la part de $name ',
         accepted: '$name a accepté votre demande d’amitié',
         removed: 'Vous n’êtes plus ami avec $name',

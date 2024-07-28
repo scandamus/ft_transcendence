@@ -141,6 +141,10 @@ const handleFriendRequestAck = (data) => {
             addNotice(labels.friendRequest['sendFriendReqSelf'].replace('$name', data.username), true);
         } else if (data.error === 'invalidDeclineFriendReq') {
             addNotice(labels.friendRequest['invalidDeclineFriendReq'].replace('$name', data.username), true);
+        } else if (data.error === 'mutualReq') {
+            addNotice(labels.friendRequest['mutualReq'].replace('$name', data.username), false);
+        } else if (data.error === 'alreadyReq') {
+            addNotice(labels.friendRequest['alreadyReq'].replace('$name', data.username), false);
         } else {
             console.error(`Error: ${data.message}`);
         }

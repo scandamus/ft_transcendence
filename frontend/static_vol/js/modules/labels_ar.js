@@ -167,6 +167,8 @@ export const labels_ar = {
         acceptRequestSuccess: 'أنت الآن صديق ل $name ',
         declineRequestSuccess: 'م حذف طلب صداقة ل $name ',
         removeSuccess: 'لقد قمت بإلغاء صداقة $name ',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: 'لقد تلقيت طلب صداقة من $name ',
         accepted: 'أنت الآن صديق ل $name ',
         removed: 'لم تعد صديقاً ل $name ',

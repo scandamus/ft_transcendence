@@ -168,6 +168,8 @@ export const labels_ja = {
         acceptRequestSuccess: '$name さんと友達になりました',
         declineRequestSuccess: '$name さんの友達申請を削除しました',
         removeSuccess: '$name さんとの友達を解除しました',
+        mutualReq: '$name さんからはすでに友達申請を受け取っています',
+        alreadyReq: '$name さんへの友達申請は送信済みです',
         received: '$name さんから友達申請が来ました',
         accepted: '$name さんが友達申請を承認しました',
         removed: '$name さんと友達じゃなくなりました',
