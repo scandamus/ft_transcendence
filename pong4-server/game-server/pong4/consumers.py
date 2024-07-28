@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
     PADDLE_SPEED = 7
+    TIME_LIMIT_SEC = 10
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -34,6 +35,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.username = None
         self.player_name = None
         self.scheduled_task = None
+        self.game_timer_task = None
         # 1vs1pongを引き継ぐためplayer1はleft_paddle
         self.right_paddle = None
         # player2
@@ -221,6 +223,26 @@ class PongConsumer(AsyncWebsocketConsumer):
             # タスクがキャンセルされたと後に非同期処理を行った際のハンドリング
             # 今は特に書いていないのでpass
             pass
+
+    async def game_timer(self):
+        try:
+            await asyncio.sleep(self.TIME_LIMIT_SEC)
+            await self.game_over("TimerOver")
+        except asyncio.CancelledError:
+            pass
+
+    async def game_over(self, message):
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'send_game_over_message',
+            'message': message,
+        })
+        await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, self.upper_paddle.score, self.lower_paddle.score, 'after')
+        if self.scheduled_task is not None:
+            self.scheduled_task.cancel()
+            self.scheduled_task = None
+        if self.game_timer_task is not None:
+            self.game_timer_task.cancel()
+            self.game_timer_task = None
 
     async def send_game_over_message(self, event):
         message = event['message']
@@ -526,3 +548,4 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.players_id == master_id:
             logger.info(f"New master appointed: [{self.players_id}]{self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
+            self.game_timer_task = asyncio.create_task(self.game_timer())
