@@ -14,9 +14,9 @@ class FortyTwoAccount(ProviderAccount):
         return self.account.extra_data.get('name', dflt)
 
 class FortyTwoProvider(OAuth2Provider):
-    id = 'fortytwo'
-    # name = '42'
-    # account_class = FortyTwoAccount
+    id = 'providers42'
+    name = 'providers42'
+    account_class = FortyTwoAccount
 
     def get_auth_params(self):
         # トークン取得のためのパラメータを指定

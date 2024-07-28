@@ -168,6 +168,16 @@ GAME_JWT = {
 #    'ISSUER': 'pong-server'
 }
 
+SOCIALACCOUNT_PROVIDERS = {
+    'providers42': {
+        'APP': {
+            'client_id': UID_42,
+            'secret': SECRET_KEY_42,
+            'key': ''
+        }
+    }
+}
+
 ## ブラウザブルAPIレンダリングをOFFにする場合、下記を有効にする
 # TRAILING_SLASH = False
 #
