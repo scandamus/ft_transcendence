@@ -95,8 +95,22 @@ const replaceView = async (matchRoute) => {
 }
 
 const router = async (accessToken) => {
+    let matchRoute;
     if (accessToken instanceof PopStateEvent) {
         accessToken = getToken('accessToken');
+        if (location.pathname.startsWith('/game/pong')) {
+            window.history.pushState({}, '', routes.dashboard.path);
+            matchRoute = {
+                route: routes.dashboard,
+                result: routes.dashboard.path
+            };
+            const oldView = PageBase.instance;
+            if (oldView) {
+                oldView.destroy();
+            }
+            await replaceView(matchRoute);
+            return;
+        }
     }
     //game進行中のexit
     if ((GamePlay.instance && GamePlay.instance.containerId) || (GamePlayQuad.instance && GamePlayQuad.instance.containerId)) {
@@ -113,7 +127,7 @@ const router = async (accessToken) => {
         };
     });
     //実際の遷移先パスを取得
-    let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
+    matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
     if (!matchRoute) {//todo:404はpage_listに移動(暫定)
         matchRoute = {
             route: routes.pageList,
