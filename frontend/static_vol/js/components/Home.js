@@ -26,6 +26,7 @@ export default class LogIn extends PageBase {
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
         this.addAfterRenderHandler(this.listenFocus.bind(this));
+        this.addAfterRenderHandler(this.listenAuthMessage.bind(this));
     }
 
     async renderHtml() {
@@ -176,6 +177,40 @@ export default class LogIn extends PageBase {
             );
         } catch (error) {
             console.error('Failed to get authorize URL:', error);
+        }
+    }
+
+    listenAuthMessage() {
+        const boundHandleAuthMessage = this.handleAuthMessage.bind(this);
+        this.addListListenInInstance(window, boundHandleAuthMessage, 'message');
+    }
+
+    async handleAuthMessage(ev) {
+        if (ev.origin === window.location.origin) {
+            const data = ev.data;
+            if (data.code && data.state) {
+                const response = await fetch('/api/oauth42/exchange_token42/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: data.code,
+                        state: data.state
+                    }),
+                });
+
+                if (response.ok) {
+                    const tokenData = await response.json();
+                    console.log('///42 Access Token:', tokenData.access_token);
+                } else {
+                    console.error('Failed to exchange token');
+                }
+            } else {
+            console.log(`code or state is invalid / code: ${data.code} / state: ${data.state}`);
+            }
+        } else {
+            console.log('Message from untrusted origin:', ev.origin);
         }
     }
 
