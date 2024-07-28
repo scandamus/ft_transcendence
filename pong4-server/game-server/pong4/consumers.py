@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class PongConsumer(AsyncWebsocketConsumer):
     players_ids = {}
     PADDLE_SPEED = 7
-    TIME_LIMIT_SEC = 10
+    TIME_LIMIT_SEC = 180
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
