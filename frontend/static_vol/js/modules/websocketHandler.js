@@ -10,6 +10,7 @@ import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
 import { updateOngoingTournamentList, updateUpcomingTournamentList } from "./tournamentList.js";
 import { enterTournamentRoomRequest } from "./tournament.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
+import { toggleFriendsDisplay } from "./friendsFull.js";
 
 export const pongHandler = (event, containerId) => {
     console.log(`pongHandler called for containerID: ${containerId}`)
@@ -140,6 +141,10 @@ const handleFriendRequestAck = (data) => {
             addNotice(labels.friendRequest['sendFriendReqSelf'].replace('$name', data.username), true);
         } else if (data.error === 'invalidDeclineFriendReq') {
             addNotice(labels.friendRequest['invalidDeclineFriendReq'].replace('$name', data.username), true);
+        } else if (data.error === 'mutualReq') {
+            addNotice(labels.friendRequest['mutualReq'].replace('$name', data.username), false);
+        } else if (data.error === 'alreadyReq') {
+            addNotice(labels.friendRequest['alreadyReq'].replace('$name', data.username), false);
         } else {
             console.error(`Error: ${data.message}`);
         }
@@ -153,8 +158,10 @@ const handleFriendRequestAck = (data) => {
         console.log('Accept friend request is successfully done');
         addNotice(labels.friendRequest['acceptRequestSuccess'].replace('$name', data.from_username), false);
         if (currentPage) {
-            updateFriendRequestList(currentPage).then(() => {});
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
@@ -166,8 +173,13 @@ const handleFriendRequestAck = (data) => {
         console.log('Remove Successfully done');
         addNotice(labels.friendRequest['removeSuccess'].replace('$name', data.username), false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
+    } else if (data.action === 'maxFriendsReached') {
+        addNotice(labels.friendRequest['missedRequestAccept'].replace('$name', data.to_username), true);
     }
 }
 
@@ -182,16 +194,29 @@ const handleFriendRequestReceived = (data) => {
             updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'accepted') {
-        addNotice(labels.friendRequest['accepted'].replace('$name', data.from_username), false);
+        addNotice(labels.friendRequest['accepted'].replace('$name', data.to_username), false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     } else if (data.action === 'removed') {
         //rmられは通知されない
         console.log(labels.friendRequest['removed'].replace('$name', data.from_username));
-        if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
-        }
+        //friendリストもリアルタイムでは更新しない
+        // if (currentPage) {
+        //     updateFriendsList(currentPage)
+        //         .then(() => {
+        //             toggleFriendsDisplay(currentPage);
+        //         });
+        // }
+    } else if (data.action === 'acceptRequestFailedFull') {
+        //承認したけど相手が上限
+        addNotice(labels.friendRequest['acceptRequestFailedFull'].replace('$name', data.from_username), true);
+    } else if (data.action === 'acceptRequestFailedFull2') {
+        //承認したけど自分が上限(通常はフロントで弾く)
+        addNotice(labels.friendRequest['acceptRequestFailedFull2'], true);
     }
 }
 
@@ -245,7 +270,10 @@ const handleFriendStatusReceived = (data) => {
         console.log(`friendStatus change: ${data.username} to ${online_status_msg}`);
         addNotice(`${data.username}が${online_status_msg}しました`, false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     }
 }

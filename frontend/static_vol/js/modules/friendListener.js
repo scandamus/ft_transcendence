@@ -3,7 +3,10 @@
 import { addListenerToList, removeListenerAndClearList } from './listenerCommon.js';
 import { showModalSendMatchRequest } from "./modal.js";
 import { acceptFriendRequest, declineFriendRequest, removeFriend, sendFriendRequest } from "./friendsRequest.js";
+import { FRIENDS_MAX } from './env.js';
 import { labels } from "./labels.js";
+import PageBase from "../components/PageBase.js";
+import { addNotice } from "./notice.js";
 
 const sendFriendRequestHandler = (ev) => {
     const username = ev.target.dataset.username;
@@ -16,6 +19,12 @@ const sendFriendRequestHandler = (ev) => {
 }
 
 const acceptFriendRequestHandler = (ev) => {
+    const instanceDisplayFriends = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
+        ? PageBase.instance : null;
+    if (instanceDisplayFriends && instanceDisplayFriends.numFriends >= FRIENDS_MAX ) {
+        addNotice(`${labels.friends.msgFriendsFull}`, true);
+        return;
+    }
     const requestId = ev.target.dataset.id;
     acceptFriendRequest(requestId);
 }
