@@ -80,6 +80,8 @@ class Player(models.Model):
         ('friend_match', 'フレンドマッチ中'),
         ('lounge_match', 'ラウンジマッチ中'),
         ('tournament_match', 'トーナメントマッチ中'),
+        ('tournament_room', 'トーナメント控室'),
+        ('tournament_prepare', 'トーナメント準備中'),
         ('tournament', 'トーナメント中'),
         ('friend_waiting', 'フレンドマッチ待機中'),
         ('lounge_waiting', 'ラウンジマッチ待機中'),
@@ -108,22 +110,6 @@ class Player(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-        if self.avatar:
-            self._resize_avatar()
-
-    def _resize_avatar(self):
-        avatar_path = self.avatar.path
-        with Image.open(avatar_path) as img:
-            width, height = img.size
-            min_dim = min(width, height)
-            left = (width - min_dim) / 2
-            top = (height - min_dim) / 2
-            right = (width + min_dim) / 2
-            bottom = (height + min_dim) / 2
-            img = img.crop((left, top, right, bottom))
-            img = img.resize((200, 200), Image.Resampling.LANCZOS)
-            img.save(avatar_path)
 
     def __str__(self):
         return f"{self.user.username} - level:{self.level} / win: {self.win_count} / lang: {self.lang}"

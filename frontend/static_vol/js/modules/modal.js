@@ -6,7 +6,6 @@ import { getToken, initToken } from "./token.js";
 import * as mc from "./modalContents.js";
 import { labels } from './labels.js';
 import { entryUpcomingTournament } from "./tournament.js";
-
 import { router } from "./router.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
@@ -14,7 +13,8 @@ import { webSocketManager } from "./websocket.js";
 import { SiteInfo } from "./SiteInfo.js";
 import PageBase from "../components/PageBase.js";
 import { addListenerToList, removeListenerAndClearList } from './listenerCommon.js';
-
+import { addNotice } from "./notice.js";
+import { updateOngoingTournamentList, updateUpcomingTournamentList } from "./tournamentList.js";
 
 const endIndicator = (ev) => {
     const indicatorBar = ev.target;
@@ -340,6 +340,18 @@ const showModalEntryTournament = (ev) => {
         //formから取得するデータが無い
         return;
     }
+
+    const currentTime = new Date();
+    const tournamentStartTime = new Date(data['start']);
+    const entryDeadline = new Date(tournamentStartTime.getTime() - 5 * 60 * 1000);
+    if (currentTime > entryDeadline) {
+        addNotice(`トーナメント ${data['idTitle']} のエントリー期限を過ぎています`, true);
+        const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
+        updateUpcomingTournamentList(currentPage).then(() => {});
+        updateOngoingTournamentList(currentPage).then(() => {});
+        return;
+    }
+
     let listDesc = '';
     for (let i = 0; i < labels.tournament.descNickname.length; i++) {
         listDesc += `<li>${labels.tournament.descNickname[i]}</li>`;
@@ -398,7 +410,6 @@ const updateModalAvailablePlayers = (availablePlayers) => {
         }
     }
 }
-
 
 const showModalExitGame = () => {
     const args = {
