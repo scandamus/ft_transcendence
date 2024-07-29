@@ -63,8 +63,9 @@ class RegisterView(APIView):
             validated_data = serializer.validated_data
             # パスワードをハッシュ化して保存
             hashed_password = make_password(validated_data['password'])
-            new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
-            new_user.save()
+            User.objects.create(username=validated_data['username'], password=hashed_password)
+            # new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
+            # new_user.save() create直後は不要
             return Response({'message': 'User created successfully.'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

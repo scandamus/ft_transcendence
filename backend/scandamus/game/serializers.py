@@ -128,7 +128,7 @@ class MatchSerializer(serializers.ModelSerializer):
         if old_status != 'after' and new_status == 'after':
             self.set_players_to_waiting(instance)
 
-        instance.save()
+        instance.save(update_fields=['status'])
         logger.info(f'//-- Match save() on: update')
         return instance
 

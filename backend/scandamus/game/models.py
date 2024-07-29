@@ -327,3 +327,7 @@ class Entry(models.Model):
 
     class Meta:
         verbose_name = 'エントリー'
+
+    def save(self, *args, **kwargs):
+        logger.info(f'//Entry save() {self.nickname}')
+        super().save(*args, **kwargs)

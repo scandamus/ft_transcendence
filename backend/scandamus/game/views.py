@@ -109,6 +109,7 @@ class MatchViewSet(ModelViewSet):
     
     def perform_update(self, serializer):
         serializer.save()
+        logger.info(f'//-- serializer.save() on: MatchViewSet perform_update')
 
     def update_player_status_after_match(self, match):
         num_matches = match.tournament.matches.filter(round=match.round).count()
@@ -117,15 +118,18 @@ class MatchViewSet(ModelViewSet):
         elif match.round > 0:
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
-            loser.save()
+            loser.save(update_fields=['status'])
+            logger.info(f'//-- player save() on: update_player_status_after_match(loser 1)')
             match.winner.status = 'tournament_room'
-            match.winner.save()
+            match.winner.save(update_fields=['status'])
+            logger.info(f'//-- player save() on: update_player_status_after_match(winner)')
         elif match.round in [-1, -3, -6]: # 決勝or3位決定戦
             self.reset_all_players_status(match)
         elif match.round == -5: # 3人順決勝の2戦目
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
-            loser.save()
+            loser.save(update_fields=['status'])
+            logger.info(f'//-- player save() on: update_player_status_after_match(loser 2)')
 
     def set_all_players_status(self, match, status):
         players = [match.player1, match.player2, match.player3, match.player4]
