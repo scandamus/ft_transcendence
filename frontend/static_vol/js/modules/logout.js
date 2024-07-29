@@ -50,7 +50,6 @@ const handleLogout = (ev) => {
 }
 
 const processLogout = () => {
-    console.log(`processLogout`)
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
     webSocketManager.closeWebSocket('lounge');
