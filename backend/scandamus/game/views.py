@@ -134,6 +134,7 @@ class MatchViewSet(ModelViewSet):
                 player.status = status
                 player.current_match = None
                 player.save(update_fields=['status', 'current_match'])
+                logger.info(f'//-- Player save() on: set_all_players_status')
 
     def reset_all_players_status(self, match):
         self.set_all_players_status(match, 'waiting')

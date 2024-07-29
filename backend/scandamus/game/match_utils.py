@@ -230,12 +230,14 @@ def update_player_status_and_match(player, match, status):
     player.status = status
     player.current_match = match
     player.save(update_fields=['status', 'current_match'])
+    logger.info(f'//-- Player save() on: update_player_status_and_match')
 
 @database_sync_to_async
 def update_player_status(player, status):
     logger.info(f'update_player_status {player.user.username}: {status}')
     player.status = status
     player.save(update_fields=['status'])
+    logger.info(f'//-- Player save() on: update_player_status')
 
 @database_sync_to_async
 def get_nickname(tournament, player):

@@ -266,6 +266,7 @@ class Match(models.Model):
                     player.status = 'waiting'
                     player.current_match = None
                     player.save(update_fields=['status', 'current_match'])
+                    logger.info(f'//-- Player save() on: delete')
         super().delete(*args, **kwargs)
 
     def set_winner(self):

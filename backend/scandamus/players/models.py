@@ -7,6 +7,9 @@ from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 from PIL import Image
 
+import logging
+logger = logging.getLogger(__name__)
+
 def get_default_user():
     try:
         return User.objects.first().id
@@ -109,6 +112,7 @@ class Player(models.Model):
     )
 
     def save(self, *args, **kwargs):
+        logger.info(f'//player save() {self.user.username}')
         super().save(*args, **kwargs)
 
     def __str__(self):
