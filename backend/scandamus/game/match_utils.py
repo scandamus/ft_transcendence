@@ -228,13 +228,13 @@ def get_required_players(game_name):
 def update_player_status_and_match(player, match, status):
     player.status = status
     player.current_match = match
-    player.save()
+    player.save(update_fields=['status', 'current_match'])
 
 @database_sync_to_async
 def update_player_status(player, status):
     logger.info(f'update_player_status {player.user.username}: {status}')
     player.status = status
-    player.save()
+    player.save(update_fields=['status'])
 
 @database_sync_to_async
 def get_nickname(tournament, player):

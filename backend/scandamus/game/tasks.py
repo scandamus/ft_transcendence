@@ -90,7 +90,7 @@ def update_player_status(player_id, status):
     try:
         player = Player.objects.get(id=player_id)
         player.status = status
-        player.save()
+        player.save(update_fields=['status'])
         player_name = player.user.username
         logger.info(f'{player_name} status updated to {status}')
     except Player.DoesNotExist:

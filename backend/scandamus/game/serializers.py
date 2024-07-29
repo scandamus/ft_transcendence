@@ -137,7 +137,7 @@ class MatchSerializer(serializers.ModelSerializer):
             if player:
                 player.status = 'waiting'
                 player.current_match = None
-                player.save()
+                player.save(update_fields=['status', 'current_match'])
 
 class EntrySerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(

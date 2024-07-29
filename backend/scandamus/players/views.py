@@ -272,7 +272,7 @@ class LangUpdateView(APIView):
         new_lang = request.data.get("lang")
         if new_lang and new_lang in dict(player._meta.get_field('lang').choices):
             player.lang = new_lang
-            player.save()
+            player.save(update_fields=['lang'])
             return Response({'message': 'Language updated successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid language choice'}, status=status.HTTP_400_BAD_REQUEST)
