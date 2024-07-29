@@ -9,9 +9,6 @@ import { linkSpa } from "./router.js";
 const updateUpcomingTournamentList = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('upcoming', false);
-        if (!tournaments) {
-            return [];
-        }
         const listWrapper = document.querySelector('.blockTournamentList_upcoming');
         if (!tournaments) {
             throw new Error(`Failed to get upcoming Tournament list`);
@@ -107,7 +104,10 @@ const updateFinishedTournamentList = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('finished', false);
         const listWrapper = document.querySelector('.blockTournamentList_finished');
-        if (tournaments.list.length === 0) {
+        if (!tournaments) {
+            throw new Error(`Failed to get finished Tournament list`);
+        }
+        else if (tournaments && tournaments.list.length === 0) {
             listWrapper.innerHTML = `<p>${labels.tournament.msgNoFinished}</p>`;
         } else {
             listWrapper.innerHTML = '';
@@ -140,6 +140,9 @@ const updateFinishedTournamentList = async (pageInstance) => {
 const getTournamentLog = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('finished', false);
+        if (!tournaments) {
+            throw new Error(`Failed to get Tournament log`);
+        }
         const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         listWrapper.innerHTML = '';
         tournaments.list.forEach(tournament => {

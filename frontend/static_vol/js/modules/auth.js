@@ -70,13 +70,13 @@ const fetchLevel = async (isRefresh) => {
             } else {
                 throw new Error('refreshed accessToken is invalid.');
             }
-            throw new Error(`Failed to fetch rank: ${response.status}`);
+            throw new Error(`Failed to fetch level: ${response.status}`);
         }
         const data = await response.json();
         console.log('fetchLevel API response: ', data);
         return data;
     } catch (error) {
-        console.error('Error fetch rank: ', error);
+        console.error('Error fetch level: ', error);
     }
 }
 

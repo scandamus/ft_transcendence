@@ -96,6 +96,9 @@ export default class Dashboard extends PageBase {
             getMatchLog().then(() => {});
             getTournamentLog(this).then(() => {});
             fetchLevel().then((data) => {
+                if (!data) {
+                    throw new Error(`Failed to get player stats`);
+                }
                 this.displayMatchStats(data);
             });
         } catch (error) {
