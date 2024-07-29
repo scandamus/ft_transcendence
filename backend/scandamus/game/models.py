@@ -106,7 +106,8 @@ class Tournament(models.Model):
             "bye_player_id": bye_player_entry.player.id if bye_player_entry else None,
         })
         self.result_json = json.dumps(result)
-        self.save()
+        self.save(update_fields=['result_json'])
+        logger.info(f'//-- tournament save() on: update_result_json')
 
     def get_round_result(self, matches):
         round_result = []
@@ -151,10 +152,15 @@ class Tournament(models.Model):
         }
         result.append(rankings)
         self.result_json = json.dumps(result)
-        self.save()
+        self.save(update_fields=['result_json'])
+        logger.info(f'//-- tournament save() on: finalize_result_json')
 
     class Meta:
         verbose_name = 'トーナメント'
+
+    def save(self, *args, **kwargs):
+        logger.info(f'//Tournament save() {self.name}')
+        super().save(*args, **kwargs)
 
 class Match(models.Model):
     tournament = models.ForeignKey(

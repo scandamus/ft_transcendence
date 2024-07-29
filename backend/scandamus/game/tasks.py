@@ -33,7 +33,8 @@ def check_tournament_start_times():
     for tournament in tournaments:
         logger.info(f'Tournament {tournament.name} is preparing')
         tournament.status = 'preparing'
-        tournament.save()
+        tournament.save(update_fields=['status'])
+        logger.info(f'//-- tournament save() on: check_tournament_start_times 1')
 
         tournament_name = tournament.name
         
@@ -45,7 +46,8 @@ def check_tournament_start_times():
         if number_of_players < 4: # 4人揃わない場合は中止
             logger.info(f'Entried players in this entry list {number_of_players} <= 4, so cancel tournament {tournament_name}')
             tournament.status = 'canceled'
-            tournament.save()
+            tournament.save(update_fields=['status'])
+            logger.info(f'//-- tournament save() on: check_tournament_start_times 2')
             notify_players.delay(tournament_name, entried_players_id_list, 'canceled', False)
             return
         
@@ -107,7 +109,8 @@ def create_initial_round(tournament_id, entried_players_id_list):
         return
     
     tournament.status = 'ongoing'
-    tournament.save()
+    tournament.save(update_fields=['status'])
+    logger.info(f'//-- tournament save() on: create_initial_round 1')
 
     online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
     number_of_players = online_players.count()
@@ -115,7 +118,8 @@ def create_initial_round(tournament_id, entried_players_id_list):
     if number_of_players < 4: # 4人揃わない場合は中止
         logger.info(f'Online player in this entry list {number_of_players} <= 4, so cancel tournament {tournament.name}')
         tournament.status = 'canceled'
-        tournament.save()
+        tournament.save(update_fields=['status'])
+        logger.info(f'//-- tournament save() on: create_initial_round 2')
         notify_players(tournament.name, entried_players_id_list, 'canceled', False)
         return
 

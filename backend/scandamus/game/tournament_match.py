@@ -128,15 +128,17 @@ def handle_three_players_round(tournament, current_round):
     previous_round_match = tournament.matches.filter(round=current_round).order_by('-id').first()
     if current_round == -4:
         first_loser = previous_round_match.player1 if previous_round_match.winner == previous_round_match.player2 else previous_round_match.player2
-        create_match(tournament, first_loser, tournament.bye_player, -5)
+        create_match(tournament, first_loser, tournament.bye_player, -5) # 内部でtournament.save()あり
         tournament.bye_player = None
-        tournament.save()
+        tournament.save(update_fields=['bye_player'])
+        logger.info(f'//-- tournament save() on: handle_three_players_round 1')
         notify_players(tournament.name, [previous_round_match.winner.id], 'notifyWaitFinal', False)#1戦目勝者は決勝待ち
     elif current_round == -5:
         first_match = tournament.matches.filter(round=-4).order_by('-id').first()
         second_match = tournament.matches.filter(round=-5).order_by('-id').first()
         tournament.third_place = second_match.player1 if second_match.winner == second_match.player2 else second_match.player2
-        tournament.save()
+        tournament.save(update_fields=['third_place'])
+        logger.info(f'//-- tournament save() on: handle_three_players_round 2')
         create_match(tournament, first_match.winner, second_match.winner, -6)
         notify_players(tournament.name, [tournament.third_place.id], 'notifyFinalOnGoing', False)#3位には決勝戦進行中表示
     elif current_round == -6:
@@ -151,7 +153,8 @@ def finalize_tounrnament_by_three_players(tournament):
     tournament.winner = final_match.winner
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
     tournament.status = 'finished'
-    tournament.save()
+    tournament.save(update_fields=['winner', 'second_place', 'status'])
+    logger.info(f'//-- tournament save() on: finalize_tounrnament_by_three_players')
     tournament.finalize_result_json(True)
     notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
@@ -166,7 +169,8 @@ def finalize_tournament(tournament):
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
     tournament.third_place = third_place_match.winner
     tournament.status = 'finished'
-    tournament.save()
+    tournament.save(update_fields=['winner', 'second_place', 'third_place', 'status'])
+    logger.info(f'//-- tournament save() on: finalize_tournament')
     tournament.finalize_result_json()
     notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
@@ -181,7 +185,8 @@ def create_next_round(tournament, current_round):
     if tournament.bye_player:
         winners.insert(0, tournament.bye_player)
         tournament.bye_player == None
-        tournament.save()
+        tournament.save(update_fields=['bye_player'])
+        logger.info(f'//-- tournament save() on: create_next_round 1')
 
     losers = [player_id for player_id in entried_players_id_list if player_id not in [player.id for player in winners]]
     notify_players(tournament.name, losers, 'roundEnd', False)
@@ -193,7 +198,8 @@ def create_next_round(tournament, current_round):
     elif number_of_winners == 3:
         create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
         tournament.bye_player = winners[-1]
-        tournament.save()
+        tournament.save(update_fields=['bye_player'])
+        logger.info(f'//-- tournament save() on: create_next_round 2')
         notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#準決勝2戦目待ち
         return
     
@@ -202,7 +208,8 @@ def create_next_round(tournament, current_round):
     create_matches(tournament, winners, current_round)
 
     tournament.current_round = current_round
-    tournament.save()
+    tournament.save(update_fields=['current_round'])
+    logger.info(f'//-- tournament save() on: create_next_round 3')
 
 def create_final_round(tournament, winners, previous_round_matches):
     logger.info('create_final_round in')
@@ -227,7 +234,8 @@ def create_match(tournament, player1, player2, round, game_name='pong'):
     # match.save() create直後は不要
     logger.info(f'//-- Match save() on: create_match')
     tournament.matches.add(match)
-    tournament.save()
+    tournament.save(update_fields=['matches'])
+    logger.info(f'//-- tournament save() on: create_match')
     async_to_sync(send_tournament_match_jwt)(match)
 
 def create_matches(tournament, players, round_number):
@@ -260,6 +268,7 @@ def create_matches(tournament, players, round_number):
     logger.info(f'size of macthes: {number_of_matches}')
    #Match.objects.bulk_create(matches)
     tournament.matches.add(*matches)
-    tournament.save()
+    tournament.save(update_fields=['bye_player', 'matches'])
+    logger.info(f'//-- tournament save() on: create_matches')
     if tournament.bye_player:
         notify_bye_player(tournament)
