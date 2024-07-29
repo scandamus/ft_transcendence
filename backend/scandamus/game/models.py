@@ -282,8 +282,12 @@ class Match(models.Model):
                 self.winner = self.player1
             else: # トーナメント以外では必ず勝敗を決するまで試合が続行されるためあり得ないが一応
                 self.winner = None
+            self.save(update_fields=['winner'])
+            logger.info(f'//-- Match save() on: set_winner')
+
 
     def save(self, *args, **kwargs):
+        logger.info(f'//Match save() {self.game_name}')
         self.full_clean()
         super().save(*args, **kwargs)
 

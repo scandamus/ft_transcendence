@@ -224,7 +224,8 @@ def create_match(tournament, player1, player2, round, game_name='pong'):
         game_name=game_name,
         status='before'
     )
-    match.save()
+    # match.save() create直後は不要
+    logger.info(f'//-- Match save() on: create_match')
     tournament.matches.add(match)
     tournament.save()
     async_to_sync(send_tournament_match_jwt)(match)
@@ -244,7 +245,8 @@ def create_matches(tournament, players, round_number):
             player2=player2,
             status='before'
         )
-        match.save()
+        # match.save() create直後は不要
+        logger.info(f'//-- Match save() on: create_matches')
         matches.append(match)
         async_to_sync(send_tournament_match_jwt)(match)
 

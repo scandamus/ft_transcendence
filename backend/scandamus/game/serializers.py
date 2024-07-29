@@ -129,6 +129,7 @@ class MatchSerializer(serializers.ModelSerializer):
             self.set_players_to_waiting(instance)
 
         instance.save()
+        logger.info(f'//-- Match save() on: update')
         return instance
 
     def set_players_to_waiting(self, match):

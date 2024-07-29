@@ -198,7 +198,8 @@ def create_match_universal(players_list, game_name):
             player3=player3,
             player4=player4,
         )
-        match.save()
+        # match.save() create直後は不要
+        logger.info(f'//-- Match save() on: create_match_universal')
     logger.info(f'Match created, ID: {match.id}, Players: {[player_info["user"].username for player_info in players_list]}')
     return match
 

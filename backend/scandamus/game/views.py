@@ -91,7 +91,6 @@ class MatchViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         instance.set_winner()
-        instance.save()
 
         if instance.tournament and instance.round:
 #            score1 = instance.score1
