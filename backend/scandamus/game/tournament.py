@@ -158,7 +158,7 @@ async def handle_entry_tournament(consumer, data):
             return
 
         result = await create_entry(tournament, player, nickname)
-        if result is 'capacityFull':
+        if result == 'capacityFull':
             logger.info(f'{tournament.name} capacity is full')
             await send_entry_error(consumer, 'capacityFull')
             return

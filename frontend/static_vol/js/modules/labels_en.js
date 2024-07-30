@@ -6,7 +6,8 @@ export const labels_en = {
     langCode: 'en',
     langName: 'English',
     common: {
-        switchLang: 'Switch Language'
+        switchLang: 'Switch Language',
+        logoutTokenExpired: 'Session expired. You have been logged out. Please log in again.'
     },
     home: {
         title: 'Home',
