@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from .models import Player
 from game.models import Tournament, Entry
 from channels.db import database_sync_to_async
+from asgiref.sync import sync_to_async
 from datetime import datetime, timedelta
 from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -15,6 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 #from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from django.conf import settings
 from players.friend_utils import send_status_to_friends
+from game.match_utils import send_reconnect_match_jwt
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ async def handle_auth(consumer, token):
             consumer.player = player
             consumer.group_name = f'friends_{player.id}'
             await consumer.channel_layer.group_add(consumer.group_name, consumer.channel_name)
-            logger.info(f'Authentiated user_id: {user.id}, username: {user.username}, player_id: {player.id}')
+            logger.info(f'Authentiated user_id: {user.id}, username: {user.username}, player_id: {player.id}, status: {player.status}')
 
             if not player.online:
                 player.online = True
@@ -44,10 +46,10 @@ async def handle_auth(consumer, token):
                 logger.info(f'{user.username} online status is online')
 
                 # tournament_prepare: トーナメントが準備中（5分前〜開始前）の場合
-                if player.status == 'tournament_prepare' or player.status == 'tournament_room':
+                if player.status in ['tournament_prepare', 'tournament_room']:
                     try:
-                        tournament = await database_sync_to_async(Tournament.objects.get)(status='prepare')                
-                        if tournament.status == 'preparing' and await is_entry_available(player, tournament):                        
+                        tournament = await database_sync_to_async(Tournament.objects.get)(status='preparing')                
+                        if await is_entry_available(player, tournament):                        
                             await consumer.send(text_data=json.dumps({
                                 'type': 'tournamentMatch',
                                 'action': player.status,
@@ -59,15 +61,44 @@ async def handle_auth(consumer, token):
                         player.status = 'waiting'
                         await database_sync_to_async(player.save)()
                         logger.info('Player status set to waiting')
+                
+                # tournament: トーナメント参加後にログアウト、再ログインした場合
+                if player.status == 'tournament':
+                    try:
+                        tournament = await database_sync_to_async(Tournament.objects.get)(status='ongoing')
+                        if await is_entry_available(player, tournament):
+                            # 現在playerのマッチが行われている場合は？
+                            # 試合開始時にplayerが不在だった場合の仕様に依存
+                            # もし一方のplayerが不在のままでも試合が行われるのであれば途中参加させるべきか？
+                            # if playerが現在開催中のmatchの参加者ならば
+                            #   player.current_match = そのマッチ
+                            #   player.status = tournament_match
+                            pass
+                        else:
+                            player.status = 'waiting'
+                            await database_sync_to_async(player.save)(update_fields=['status'])
+                    except ObjectDoesNotExist:
+                        player.status = 'waiting'
+                        await database_sync_to_async(player.save)(update_fields=['status'])
 
                 # continue match: マッチ中に切断したユーザーが再度接続した際にマッチへの復帰を試みる
                 if player.status in ['friend_match', 'lounge_match', 'tournament_match']:
                     match = await database_sync_to_async(lambda: player.current_match)()    
-                    logger.info(f'handle_auth: {user.username} is in match_id {match.id}!!')
-                    # TODO: マッチ復帰トライ処理
-                    player.status = 'waiting'
-                    player.current_match = None
-                    await database_sync_to_async(player.save)()
+                    if match and match.status in ['before', 'ongoing']: # マッチ復帰
+                        logger.info(f'handle_auth: {user.username} is in match_id {match.id} and attempting to resume match')
+                        try:
+                            await consumer.send(text_data=json.dumps({
+                                'type': 'ack',
+                                'message': 'Authentication successful'
+                            }))
+                        except () as e:
+                            logger.error(f'Failed to send message to {player.user.usrname}: {e}')
+                        await sync_to_async(send_reconnect_match_jwt)(consumer, player, match)
+                        return
+                    else:
+                        player.status = 'waiting'
+                        player.current_match = None
+                        await database_sync_to_async(player.save)()
                     
                 # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
                 if player.status in ['friend_waiting', 'lounge_waiting']:
