@@ -1,16 +1,23 @@
 import logging
+import random
+import asyncio
+import io
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Q
+from asgiref.sync import async_to_sync, sync_to_async
+from channels.layers import get_channel_layer
 
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
 from game.models import Match
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, FriendSerializer, MatchLogSerializer, RecommendedSerializer
+from PIL import Image
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -18,7 +25,6 @@ from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, JSONParser
-import random
 
 # from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
@@ -103,9 +109,14 @@ class LoginView(APIView):
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            user = serializer.user
             access = serializer.validated_data.get("access", None)
             refresh = serializer.validated_data.get("refresh", None)
             if access and refresh:
+                player = Player.objects.get(user=user)
+                async_to_sync(self.notify_new_login)(player.id)
+                async_to_sync(self.wait_for_old_ws_disconnect)(player.id)
+                
                 return Response({
                     'access_token': access,
                     'refresh_token': refresh
@@ -114,6 +125,31 @@ class LoginView(APIView):
                 return Response({'error': 'Invalid token data'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+    async def notify_new_login(self, player_id):
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            f'friends_{player_id}',
+            {
+                'type': 'disconnect_by_new_login',
+            }
+        )
+
+    # 従前のログインが持つwsがdisconnectし、player.onlineがFalseになるまで待つ
+    async def wait_for_old_ws_disconnect(self, player_id):
+        max_wait_time = 5
+        wait_interval = 0.1
+        elapsed_time = 0
+
+        while elapsed_time < max_wait_time:
+            player = await sync_to_async(Player.objects.get)(id=player_id)
+            if not player.online:
+                break
+            await asyncio.sleep(wait_interval)
+            elapsed_time += wait_interval
+
+        if elapsed_time >= max_wait_time:
+            player.online = False
+            sync_to_async(player.save)()
 
 class LogoutView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -126,7 +162,7 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
+ 
 # @login_required
 # @require_POST
 # def logoutUser(request):
@@ -228,11 +264,32 @@ class AvatarUploadView(APIView):
         avatar_file = request.FILES.get('avatar')
 
         if avatar_file:
-            player.avatar = avatar_file
-            player.save()
+            resized_avatar = self._resize_avatar(avatar_file)
+            player.avatar.save(avatar_file.name, resized_avatar)
             return Response({"newAvatar": player.avatar.url})
         else:
             return Response({"error": "No avatar file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def _resize_avatar(self, avatar_file):
+        ext = avatar_file.name.split('.')[-1].lower()
+        with Image.open(avatar_file) as img:
+            width, height = img.size
+            min_dim = min(width, height)
+            left = (width - min_dim) / 2
+            top = (height - min_dim) / 2
+            right = (width + min_dim) / 2
+            bottom = (height + min_dim) / 2
+            img = img.crop((left, top, right, bottom))
+            img = img.resize((200, 200), Image.Resampling.LANCZOS)
+
+            img_io = io.BytesIO()
+            if ext in ['jpg', 'jpeg']:
+                img.save(img_io, format='JPEG')
+            elif ext == 'png':
+                img.save(img_io, format='PNG')
+            img_io.seek(0)
+
+            return ContentFile(img_io.read(), avatar_file.name)
 
 class LangUpdateView(APIView):
     authentication_classes = [JWTAuthentication]

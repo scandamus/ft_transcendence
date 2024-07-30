@@ -6,6 +6,7 @@ from .serializers import TournamentSerializer, MatchSerializer, EntrySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions, status
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from scandamus.authentication import InternalNetworkAuthentication
 from .tournament_match import report_match_result
 from django.db.models import Q
@@ -60,6 +61,22 @@ class TournamentListView(generics.ListAPIView):
         # 新しいもの10件表示
         return queryset[:10]
 
+    def list(self, request, *args, **kwargs):
+        status = self.kwargs.get('status')
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        if status == 'upcoming':
+            start_dates = queryset.values_list('start', flat=True)
+            return Response({
+                'list': serializer.data,
+                'start_dates': start_dates
+            })
+
+        return Response({
+            'list': serializer.data
+        })
+
 # コンテナ内部からのみのルーティングとなるため認証なし
 class MatchViewSet(ModelViewSet):
     queryset = Match.objects.all()
@@ -70,6 +87,7 @@ class MatchViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+        logger.info(f"Fetched Match instance: {instance.id}, data: {instance}")
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -77,14 +95,10 @@ class MatchViewSet(ModelViewSet):
         instance.save()
 
         if instance.tournament and instance.round:
-#            score1 = instance.score1
-#            score2 = instance.score2
-#            status = instance.status
-
             if instance.tournament.status == 'ongoing':
                 self.update_player_status_after_match(instance)
-#                self.set_all_players_status(instance, 'tournament_room')
                 if self.is_all_matches_finished(instance.tournament, instance.round):
+                    logger.info(f"All matches finished for tournament: {instance.tournament.id}, round: {instance.round}")
                     report_match_result(instance.id)
         elif instance.status == 'after': # トーナメントマッチ以外はリセット
             self.reset_all_players_status(instance)

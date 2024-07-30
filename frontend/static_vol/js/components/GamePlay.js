@@ -4,6 +4,8 @@ import PageBase from './PageBase.js';
 
 import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
+import { isTouchDevice, resetControlSize } from "../modules/judgeTouchDevice.js";
+import { buttonControlManager } from "../modules/ButtonControlManager.js";
 
 export default class GamePlay extends PageBase {
     static instance = null;
@@ -18,6 +20,7 @@ export default class GamePlay extends PageBase {
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.containerId = '';
+        this.player_name = sessionStorage.getItem('player_name');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
         // sound
@@ -31,15 +34,22 @@ export default class GamePlay extends PageBase {
     async renderHtml() {
         const listPlayer = JSON.parse(sessionStorage.getItem('all_usernames'));
         sessionStorage.removeItem('all_usernames');
-        return `
+        let resultHtml = `
            <div class="playBoardWrap playBoardWrap-dual">
                 <ul class="listPlayerActiveMatch listPlayerActiveMatch-dual">
                     <li class="listPlayerActiveMatch_item"><img src="${listPlayer[0].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[0].username}</span></li>
                     <li class="listPlayerActiveMatch_item"><img src="${listPlayer[1].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[1].username}</span></li>
                 </ul>
-                <canvas id="playBoard" width="650" height="450"></canvas>
-            </div>
-        `;
+                <canvas id="playBoard" width="650" height="450"></canvas>`;
+        if (isTouchDevice()) {
+            resultHtml += `
+                <ol class="listButtonControl listButtonControl-dual listButtonControl-updown listButtonControl-${this.player_name}">
+                    <li class="listButtonControl_btn listButtonControl_btn-top"><button type="button">↑</button></li>
+                    <li class="listButtonControl_btn listButtonControl_btn-bottom"><button type="button">↓</button></li>
+                </ol>`;
+        }
+        resultHtml += `</div>`;
+        return resultHtml;
     }
 
     async loadSounds() {
@@ -106,6 +116,12 @@ export default class GamePlay extends PageBase {
             const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById("playBoard");
+
+            if (isTouchDevice()) {
+                const elControl = canvas.closest('div').querySelector('.listButtonControl');
+                resetControlSize(canvas, elControl);
+                buttonControlManager.listenButtonControl(elControl, this);
+            }
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext("2d");
@@ -214,7 +230,7 @@ export default class GamePlay extends PageBase {
     destroy() {
         document.removeEventListener("keydown", this.keyDownHandler, false);
         document.removeEventListener("keyup", this.keyUpHandler, false);
-        // sessionStorage.removeItem('all_usernames');
+        sessionStorage.removeItem('player_name');
         GamePlay.instance = null;
         super.destroy();
     }

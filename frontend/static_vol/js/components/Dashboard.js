@@ -3,9 +3,13 @@
 import PageBase from './PageBase.js';
 import { SiteInfo } from "../modules/SiteInfo.js";
 import { labels } from '../modules/labels.js';
+import { FRIENDS_MAX } from "../modules/env.js";
 import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
 import { getMatchLog } from '../modules/gameList.js';
+
+import { toggleFriendsDisplay, displayFriendsFull, displayFriendsAvailable } from '../modules/friendsFull.js';
 import { getTournamentLog } from '../modules/tournamentList.js';
+
 import {
     removeListenMatchRequest,
     removeListenAcceptFriendRequest,
@@ -31,6 +35,8 @@ export default class Dashboard extends PageBase {
         this.setTitle(`${labels.dashboard.title}: ${this.siteInfo.getUsername()}`);
         this.clearBreadcrumb();
         this.avatar = this.siteInfo.getAvatar();
+        this.numFriends = 0;
+        this.isFriendsFull = false;
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.updateLists.bind(this));
@@ -70,6 +76,9 @@ export default class Dashboard extends PageBase {
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
                         <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
+                        <div class="blockFriendsFull">
+                            <p class="unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>Friends</a></p>
+                        </div>
                     </section>
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
@@ -91,8 +100,10 @@ export default class Dashboard extends PageBase {
 
     updateLists() {
         try {
-            updateFriendsList(this).then(() => {});
-            updateFriendRequestList(this).then(() => {});
+            updateFriendsList(this)
+                .then(() => {
+                    toggleFriendsDisplay(this);
+                });
             getMatchLog().then(() => {});
             getTournamentLog(this).then(() => {});
             fetchLevel().then((data) => {

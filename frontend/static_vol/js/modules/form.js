@@ -13,9 +13,12 @@ const getErrorMessage = (key) => {
         'tooShort': labels.formErrorMessages.tooShort,
         'rangeOverflow': labels.formErrorMessages.outOfRange,
         'rangeUnderflow': labels.formErrorMessages.outOfRange,
-        //for customError
+        //for customError(checkValidityで判定できないもの、backendのvalidateで受け取るもの)
         'passwordIsNotSame': labels.formErrorMessages.passwordIsNotSame,
         'isExists': labels.formErrorMessages.isExists,
+        'startTimeInvalid': labels.formErrorMessages.startTimeInvalid,
+        'intervalError': labels.formErrorMessages.intervalError,
+        'tournamentNameAlreadyExists': labels.formErrorMessages.tournamentNameAlreadyExists,
         //以下はfront validate弾けているはずができずにbackend validateでエラーになるパターン
         'invalidUsernameLenBackend': 'username is invalid.(len - backend)',
         'invalidUsernameCharacterTypesBackend': 'username is invalid.(character types - backend)',
@@ -30,6 +33,8 @@ const getErrorMessage = (key) => {
         'invalidNicknameLenBackend': 'Nickname is invalid.(len - backend)',
         'invalidNicknameCharacterTypesBackend': 'Nickname is invalid.(character types - backend)',
         'invalidNicknameBlank': 'Nickname is required.(required - backend)',
+        'startTimeInvalidBackend': `${labels.formErrorMessages.startTimeInvalid} (startTimeInvalid - backend)`,
+        'intervalErrorBackend': `${labels.formErrorMessages.intervalError}`,
         //for LogIn
         'loginError1': labels.formErrorMessages.loginError1,
         'loginError2': labels.formErrorMessages.loginError2,
@@ -160,6 +165,21 @@ const checkTournamentInputValid = (elInput) => {
             const listLiError = errWrapper.querySelectorAll('li[data-error-type]');
             const targetLi = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === errorKey);
             if (validityState[errorType]) {
+                if (errorKey === 'startTimeInvalid') {
+                    const targetLiIntervalError = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === 'intervalError');
+                    if (targetLiIntervalError) {
+                        targetLiIntervalError.remove();
+                    }
+                } else if (errorKey === 'intervalError') {
+                    const targetLiStartTimeInvalid = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === 'startTimeInvalid');
+                    if (targetLiStartTimeInvalid) {
+                        targetLiStartTimeInvalid.remove();
+                    }
+                    const targetLiIntervalErrorBackend = Array.from(listLiError).find(li => li.getAttribute('data-error-custom') === 'intervalErrorBackend');
+                    if (targetLiIntervalErrorBackend) {
+                        targetLiIntervalErrorBackend.remove();
+                    }
+                }
                 if (!targetLi) {
                     addErrorMessageCustom(errWrapper, errorKey);
                 }
@@ -195,6 +215,7 @@ const handleReceiveWsTournamentValidationError = (error) => {
     const btnEntryTournament = document.getElementById('btnEntryTournament');
     const elInputName = document.getElementById('inputTournamentTitle');
     const elInputNickname = document.getElementById('inputNickname');
+    const elInputStart = document.getElementById('startTime');
 
     const errorObject = error.message;
 
@@ -204,6 +225,9 @@ const handleReceiveWsTournamentValidationError = (error) => {
             btn = btnEntryTournament;
         } else if (key === 'name') {
             elInput = elInputName;
+            btn = btnCreateTournament;
+        } else if (key === 'start') {
+            elInput = elInputStart;
             btn = btnCreateTournament;
         } else {
             return;
@@ -215,20 +239,23 @@ const handleReceiveWsTournamentValidationError = (error) => {
             elInput.setCustomValidity(value);
             addErrorMessageCustom(errWrapper, value);
         });
-        // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
-        elInput.addEventListener('focus', () => {
-            tmpValue = elInput.value;
-        });
-        elInput.addEventListener('blur', () => {
-            if (tmpValue !== elInput.value) {
-                const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
-                listLiCustomError.forEach((li) => {
-                    li.remove();
-                });
-                elInput.setCustomValidity('');
-                checkFormReady(btn.closest('form'), btn);
-            }
-        });
+        if (key !== 'start') {
+            // blur時のチェック用に入力開始時の値をbackup
+            elInput.addEventListener('focus', () => {
+                tmpValue = elInput.value;
+            });
+            // 値が更新されたらエラー表示削除（都度backendでvalidateできないので仮で修正されたとみなす）
+            elInput.addEventListener('blur', () => {
+                if (tmpValue !== elInput.value) {
+                    const listLiCustomError = errWrapper.querySelectorAll('li[data-error-type="customError"]');
+                    listLiCustomError.forEach((li) => {
+                        li.remove();
+                    });
+                    elInput.setCustomValidity('');
+                    checkFormReady(btn.closest('form'), btn);
+                }
+            });
+        }
     });
 }
 
