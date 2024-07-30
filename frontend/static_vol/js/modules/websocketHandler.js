@@ -84,7 +84,7 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name, all_usernames, type, tournament_name, round, tournament_id } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames, type, tournament, tournament_name, round, tournament_id } = data;
 
     closeModal();
 
@@ -120,6 +120,11 @@ const loadGameContent = async (data) => {
             PageBase.instance.displayNextMatch(all_usernames, round);
         }
         await new Promise(resolve => setTimeout(resolve, 5000));
+    } else if (type === 'gameSessionReconnect' && tournament) {
+        const tournamentId = parseInt(sessionStorage.getItem('tournament_id'));
+        if (!tournamentId || tournamentId !== tournament_id) {
+            sessionStorage.setItem('tournament_id', tournament_id);
+        }
     }
 
     try {
