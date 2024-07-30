@@ -25,7 +25,7 @@ def check_tournament_start_times():
 
     all_tournaments = Tournament.objects.all()
     for t in all_tournaments:
-        if t.status in ['upcoming', 'prepagin', 'ongoing']:
+        if t.status in ['upcoming', 'preparing', 'ongoing']:
             logger.info(f'Tournament: {t.name}, Start time: {t.start}, Status: {t.status}')
     
     tournaments = Tournament.objects.filter(start__lte=check_time, status='upcoming')

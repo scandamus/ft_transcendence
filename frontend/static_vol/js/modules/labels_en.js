@@ -1,6 +1,6 @@
 'use strict';
 
-import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
 
 export const labels_en = {
     langCode: 'en',
@@ -75,6 +75,7 @@ export const labels_en = {
         labelReceivedRequest: 'friend requests',
         labelRecommended: 'recommended',
         msgNoRecommended: 'no recommended player',
+        msgFriendsFull: `You have reached the maximum limit of ${FRIENDS_MAX} friends.<br>If you want to add another player as a friend, please remove an existing friend to free up space.`,
     },
     lounge: {
         title: 'Lounge',
@@ -167,9 +168,14 @@ export const labels_en = {
         acceptRequestSuccess: '$name is now your friend',
         declineRequestSuccess: 'friend request from $name has been deleted',
         removeSuccess: '$name is no longer your friend',
+        mutualReq: '$name has already sent you a friend request',
+        alreadyReq: 'You have already sent a friend request to $name',
         received: '$name has sent you a friend request',
         accepted: '$name has accepted your friend request',
         removed: '$name is no longer your friend',
+        missedRequestAccept: '$name tried to accept your friend request, but your friends list has reached its limit. Please remove some friends to make space.',
+        acceptRequestFailedFull: 'You couldn\'t become friends with $name because your friend list is full at the moment.',
+        acceptRequestFailedFull2: 'You couldn\'t become friends because your friend limit has been reached. Please remove some friends to free up space.',
     },
     matchRequest: {
         accepted: 'game is starting',
