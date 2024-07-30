@@ -44,14 +44,13 @@ async def handle_auth(consumer, token):
                 logger.info(f'{user.username} online status is online')
 
                 # tournament_prepare: トーナメントが準備中（5分前〜開始前）の場合
-                if player.status == 'tournament_prepare':
+                if player.status == 'tournament_prepare' or player.status == 'tournament_room':
                     try:
                         tournament = await database_sync_to_async(Tournament.objects.get)(status='prepare')                
-                        if await is_entry_available(player, tournament):
-                        
+                        if tournament.status == 'preparing' and await is_entry_available(player, tournament):                        
                             await consumer.send(text_data=json.dumps({
                                 'type': 'tournamentMatch',
-                                'action': 'tournament_prepare',
+                                'action': player.status,
                                 'name': tournament.name
                             }))
                         else: # すでにエントリーしていたトーナメントが開始後だった場合

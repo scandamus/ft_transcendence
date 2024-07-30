@@ -173,6 +173,8 @@ class LoungeSession(AsyncWebsocketConsumer):
     # jsonのスタイルに合わせてここはcamelCaseのまま（受け取ったjsonをそのまま送るため）
     async def gameSessionTournament(self, data):
         try:
+            username = data['username']
+            logger.info(f'tournament jwt is sending to {username}')
             await self.send(text_data=json.dumps(data))
         except Exception as e:
             logger.error(f'Error in gameSessionTournament: {e}')
