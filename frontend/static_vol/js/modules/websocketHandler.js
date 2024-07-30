@@ -97,19 +97,17 @@ const loadGameContent = async (data) => {
     sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
     sessionStorage.setItem('player_name', player_name);
 
-    if (type === 'gameSessionTournament') {
+    let tournamentId;
+    if (type === 'gameSessionTournament' || (type === 'gameSessionReconnect' && tournament)) {
         // enterRoomできていなかった場合はtournamentIdがnullになるのでここでセットする
-        let tournamentId = sessionStorage.getItem('tournament_id');
-        if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined') {
+        tournamentId = sessionStorage.getItem('tournament_id');
+        if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined' || tournamentId !== tournament_id) {
             sessionStorage.setItem('tournament_id', tournament_id);
             tournamentId = sessionStorage.getItem('tournament_id');
-
-            if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined') {
-                console.log(`can not start tournament: ${username}`);
-                //todo: エラー処理（トーナメント開始できない）
-                return;
-            }
         }
+    }
+
+    if (type === 'gameSessionTournament') {
         //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
         if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {
             window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
@@ -120,11 +118,6 @@ const loadGameContent = async (data) => {
             PageBase.instance.displayNextMatch(all_usernames, round);
         }
         await new Promise(resolve => setTimeout(resolve, 5000));
-    } else if (type === 'gameSessionReconnect' && tournament) {
-        const tournamentId = parseInt(sessionStorage.getItem('tournament_id'));
-        if (!tournamentId || tournamentId !== tournament_id) {
-            sessionStorage.setItem('tournament_id', tournament_id);
-        }
     }
 
     try {
