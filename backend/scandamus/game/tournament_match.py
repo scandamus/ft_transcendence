@@ -223,14 +223,15 @@ def create_final_round(tournament, winners, previous_round_matches):
     create_match(tournament, semifinal_losers[0], semifinal_losers[1], round=-3)
 
 def create_match(tournament, player1, player2, round, game_name='pong'):
-    match = Match.objects.create(
-        tournament=tournament,
-        player1=player1,
-        player2=player2,
-        round=round,
-        game_name=game_name,
-        status='before'
-    )
+    with transaction.atomic():
+        match = Match.objects.create(
+            tournament=tournament,
+            player1=player1,
+            player2=player2,
+            round=round,
+            game_name=game_name,
+            status='before'
+        )
     # match.save() create直後は不要
     logger.info(f'//-- Match save() on: create_match')
     tournament.matches.add(match)
@@ -244,18 +245,19 @@ def create_matches(tournament, players, round_number):
     matches = []
 
     for i in range(0, len(players) - 1, 2):
-        player1 = players[i]
-        player2 = players[i + 1]
-        match = Match(
-            tournament=tournament,
-            round=round_number,
-            player1=player1,
-            player2=player2,
-            status='before'
-        )
-        # match.save() create直後は不要
-        logger.info(f'//-- Match save() on: create_matches')
-        matches.append(match)
+        with transaction.atomic():
+            player1 = players[i]
+            player2 = players[i + 1]
+            match = Match(
+                tournament=tournament,
+                round=round_number,
+                player1=player1,
+                player2=player2,
+                status='before'
+            )
+            # match.save() create直後は不要
+            logger.info(f'//-- Match save() on: create_matches')
+            matches.append(match)
         async_to_sync(send_tournament_match_jwt)(match)
 
     if len(players) % 2 == 1:
@@ -267,8 +269,9 @@ def create_matches(tournament, players, round_number):
     number_of_matches = len(matches)
     logger.info(f'size of macthes: {number_of_matches}')
    #Match.objects.bulk_create(matches)
-    tournament.matches.add(*matches)
-    tournament.save(update_fields=['bye_player', 'matches'])
-    logger.info(f'//-- tournament save() on: create_matches')
+    with transaction.atomic():
+        tournament.matches.add(*matches)
+        tournament.save(update_fields=['bye_player', 'matches'])
+        logger.info(f'//-- tournament save() on: create_matches')
     if tournament.bye_player:
         notify_bye_player(tournament)

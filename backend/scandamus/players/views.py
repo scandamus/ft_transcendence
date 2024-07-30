@@ -1,16 +1,23 @@
 import logging
+import random
+import asyncio
+import io
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Q
+from asgiref.sync import async_to_sync, sync_to_async
+from channels.layers import get_channel_layer
 
 from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
 from game.models import Match
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, FriendSerializer, MatchLogSerializer, RecommendedSerializer
+from PIL import Image
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -18,10 +25,6 @@ from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, JSONParser
-import random
-from PIL import Image
-from django.core.files.base import ContentFile
-import io
 
 # from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
@@ -107,9 +110,14 @@ class LoginView(APIView):
     def post(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            user = serializer.user
             access = serializer.validated_data.get("access", None)
             refresh = serializer.validated_data.get("refresh", None)
             if access and refresh:
+                player = Player.objects.get(user=user)
+                async_to_sync(self.notify_new_login)(player.id)
+                async_to_sync(self.wait_for_old_ws_disconnect)(player.id)
+                
                 return Response({
                     'access_token': access,
                     'refresh_token': refresh
@@ -118,6 +126,31 @@ class LoginView(APIView):
                 return Response({'error': 'Invalid token data'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+    async def notify_new_login(self, player_id):
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            f'friends_{player_id}',
+            {
+                'type': 'disconnect_by_new_login',
+            }
+        )
+
+    # 従前のログインが持つwsがdisconnectし、player.onlineがFalseになるまで待つ
+    async def wait_for_old_ws_disconnect(self, player_id):
+        max_wait_time = 5
+        wait_interval = 0.1
+        elapsed_time = 0
+
+        while elapsed_time < max_wait_time:
+            player = await sync_to_async(Player.objects.get)(id=player_id)
+            if not player.online:
+                break
+            await asyncio.sleep(wait_interval)
+            elapsed_time += wait_interval
+
+        if elapsed_time >= max_wait_time:
+            player.online = False
+            sync_to_async(player.save)()
 
 class LogoutView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -130,7 +163,7 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
+ 
 # @login_required
 # @require_POST
 # def logoutUser(request):
