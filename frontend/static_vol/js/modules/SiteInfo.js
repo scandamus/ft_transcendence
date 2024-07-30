@@ -3,6 +3,8 @@ class SiteInfo {
         if (!SiteInfo.instance) {
             this.username = '';
             this.avatar = '';
+            this.isTokenRefreshing = false;
+            this.promiseTokenRefresh = null;
             SiteInfo.instance = this;
         }
         return SiteInfo.instance;

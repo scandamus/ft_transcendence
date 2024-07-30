@@ -236,6 +236,7 @@ class UserLevelView(APIView):
 #         })
 
 class FriendListView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     serializer_class = FriendSerializer # PlayerSerializer
     permission_classes = [IsAuthenticated]
 
@@ -245,6 +246,7 @@ class FriendListView(generics.ListAPIView):
         return player.friends.all()
     
 class FriendRequestListView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     serializer_class = FriendRequestSerializer
     permission_classes = [IsAuthenticated]
 
@@ -311,6 +313,7 @@ class LangUpdateView(APIView):
             return Response({'error': 'Invalid language choice'}, status=status.HTTP_400_BAD_REQUEST)
 
 class MatchLogView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
@@ -326,6 +329,7 @@ class MatchLogView(APIView):
         return Response(serializer.data)
 
 class RecommendedView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
