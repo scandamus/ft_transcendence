@@ -3,7 +3,9 @@
 import { fetchFriendRequests, fetchFriends, fetchRecommend } from "./friendsApi.js";
 import { addListenSendFriendRequest, resetListenFriendList, resetListenFriendRequestList } from "./friendListener.js";
 import { labels } from "./labels.js";
+import { FRIENDS_MAX } from "../modules/env.js";
 import PageBase from "../components/PageBase.js";
+import { disableAccept } from './friendsFull.js';
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -53,6 +55,8 @@ const updateFriendsList = async (pageInstance) => {
             }
             resetListenFriendList(pageInstance);
         }
+        pageInstance.numFriends = friends.length;
+        //console.log(`/////numFriends: ${pageInstance.numFriends}`)
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }
@@ -90,6 +94,9 @@ const updateFriendRequestList = async (pageInstance) => {
                 listRequestWrapper.innerHTML += requestElement;
             });
             resetListenFriendRequestList(pageInstance);
+            if (pageInstance.numFriends >= FRIENDS_MAX) {
+                disableAccept();
+            }
         }
     } catch (error) {
         console.error('Failed to update friend requests: ', error);

@@ -36,6 +36,7 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
 CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
+FRIENDS_MAX = get_env_var('FRIENDS_MAX')
 
 # SERVER HOST
 SERVER_HOST = get_env_var('DOMAIN_NAME')
@@ -56,8 +57,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'channels',
     'players.apps.PlayersConfig',
-    #'game.apps.GameConfig',
-    'game',
+    'game.apps.GameConfig',
+#    'game',
     'django_celery_beat',
     'django_celery_results',
     # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。

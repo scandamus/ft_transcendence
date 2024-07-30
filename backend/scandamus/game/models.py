@@ -210,7 +210,8 @@ class Match(models.Model):
         choices=[
             ('before', '対戦前'),
             ('ongoing', '対戦中'), # 現在未使用
-            ('after', '対戦後')
+            ('after', '対戦後'),
+            ('canceled', 'キャンセル')
         ],
         default='before',
         verbose_name="status"
