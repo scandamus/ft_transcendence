@@ -6,7 +6,8 @@ export const labels_ar = {
     langCode: 'ar',
     langName: 'العربية',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Home',
