@@ -42,7 +42,8 @@ async def handle_auth(consumer, token):
 
             if not player.online:
                 player.online = True
-                await database_sync_to_async(player.save)()
+                await database_sync_to_async(player.save)(update_fields=['online'])
+                logger.info(f'//-- player save() on: handle_auth 1')
                 logger.info(f'{user.username} online status is online')
 
                 # tournament_prepare: トーナメントが準備中（5分前〜開始前）の場合
@@ -59,7 +60,8 @@ async def handle_auth(consumer, token):
                             raise ObjectDoesNotExist  # エントリーが無効な場合も例外を発生させる
                     except ObjectDoesNotExist:
                         player.status = 'waiting'
-                        await database_sync_to_async(player.save)()
+                        await database_sync_to_async(player.save)(update_fields=['status'])
+                        logger.info(f'//-- player save() on: handle_auth 2')
                         logger.info('Player status set to waiting')
                 
                 # tournament: トーナメント参加後にログアウト、再ログインした場合
@@ -98,12 +100,14 @@ async def handle_auth(consumer, token):
                     else:
                         player.status = 'waiting'
                         player.current_match = None
-                        await database_sync_to_async(player.save)()
+                        await database_sync_to_async(player.save)(update_fields=['status', 'current_match'])
+                        logger.info(f'//-- player save() on: handle_auth 3')
                     
                 # reset player status: backendが意図せず落ちるなどdisconnect時のリセット処理がされなかった場合の対応
                 if player.status in ['friend_waiting', 'lounge_waiting']:
                     player.status = 'waiting'
-                    await database_sync_to_async(player.save)()
+                    await database_sync_to_async(player.save)(update_fields=['status'])
+                    logger.info(f'//-- player save() on: handle_auth 4')
                     logger.info(f'{user.username} status set to waiting')
                 
                 # オフラインからオンラインになった場合にフレンドへ通知

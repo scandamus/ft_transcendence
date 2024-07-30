@@ -150,7 +150,8 @@ class LoginView(APIView):
 
         if elapsed_time >= max_wait_time:
             player.online = False
-            sync_to_async(player.save)()
+            sync_to_async(player.save)(update_fields=['online'])
+            logger.info(f'//-- player save() on: wait_for_old_ws_disconnect')
 
 class LogoutView(APIView):
     authentication_classes = [JWTAuthentication]
