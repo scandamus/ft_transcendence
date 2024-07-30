@@ -86,12 +86,12 @@ const showMenu = () => {
     const onAnimationEnd = (ev) => {
         if (ev.target === navGlobal) {
             navGlobal.style.display = 'none';
-            navGlobal.removeEventListener('animationend', onAnimationEnd);
+            navGlobal.removeEventListener('transitionend', onAnimationEnd);
         }
     };
     if (navGlobal.classList.contains(classIsShow)) {
         navGlobal.classList.remove(classIsShow);
-        navGlobal.addEventListener('animationend', onAnimationEnd);
+        navGlobal.addEventListener('transitionend', onAnimationEnd);
     } else {
         navGlobal.style.display = 'block';
         requestAnimationFrame(() => {

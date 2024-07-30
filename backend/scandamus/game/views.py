@@ -6,6 +6,7 @@ from .serializers import TournamentSerializer, MatchSerializer, EntrySerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions, status
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from scandamus.authentication import InternalNetworkAuthentication
 from .tournament_match import report_match_result
 from django.db.models import Q
@@ -59,6 +60,22 @@ class TournamentListView(generics.ListAPIView):
             queryset = Tournament.objects.all().order_by('start')
         # 新しいもの10件表示
         return queryset[:10]
+
+    def list(self, request, *args, **kwargs):
+        status = self.kwargs.get('status')
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        if status == 'upcoming':
+            start_dates = queryset.values_list('start', flat=True)
+            return Response({
+                'list': serializer.data,
+                'start_dates': start_dates
+            })
+
+        return Response({
+            'list': serializer.data
+        })
 
 # コンテナ内部からのみのルーティングとなるため認証なし
 class MatchViewSet(ModelViewSet):

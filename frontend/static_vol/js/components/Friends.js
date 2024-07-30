@@ -4,10 +4,12 @@ import PageBase from './PageBase.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { initToken } from '../modules/token.js';
 import { pongHandler } from '../modules/websocketHandler.js';
+import { FRIENDS_MAX } from '../modules/env.js';
 import { labels } from '../modules/labels.js';
 
 import { checkSearchFriendInputValid } from "../modules/form.js";
-import { updateFriendsList, updateFriendRequestList, updateRecommend } from '../modules/friendList.js';
+import { updateFriendsList, updateFriendRequestList } from '../modules/friendList.js';
+import { toggleFriendsDisplay, displayFriendsFull, displayFriendsAvailable } from '../modules/friendsFull.js';
 
 import { removeListenMatchRequest, removeListenAcceptFriendRequest, removeListenDeclineFriendRequest, removeListenRemoveFriend, addListenSendFriendRequest }
     from '../modules/friendListener.js';
@@ -22,6 +24,8 @@ export default class Friends extends PageBase {
         super(params);
         Friends.instance = this;
         this.title = labels.friends.title;
+        this.numFriends = 0;
+        this.isFriendsFull = false;
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
 
@@ -46,6 +50,7 @@ export default class Friends extends PageBase {
                     </section>
                 </div>
                 <div class="blockUsers_column">
+                    <p class="blockFriendsFull"></p>
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
                         <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
@@ -69,11 +74,10 @@ export default class Friends extends PageBase {
 
     updateLists() {
         try {
-            updateFriendsList(this).then(() => {});
-            updateFriendRequestList(this).then(() => {});
-            updateRecommend(this).then(() => {});
-            //recommendedのaddListener
-            addListenSendFriendRequest(this);
+            updateFriendsList(this)
+                .then(() => {
+                    toggleFriendsDisplay(this);
+                });
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
@@ -85,6 +89,8 @@ export default class Friends extends PageBase {
         const boundHandleSearchFriend = this.handleSearchFriend.bind(this);
         this.addListListenInInstance(btnSearchFriend, boundHandleSearchFriend, 'click');
     }
+
+
 
     async handleSearchFriend(ev) {
         ev.preventDefault();
