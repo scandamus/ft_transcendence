@@ -6,6 +6,7 @@ import { webSocketManager } from "../modules/websocket.js";
 import { router } from "../modules/router.js";
 import { isTouchDevice, resetControlSize } from "../modules/judgeTouchDevice.js";
 import { buttonControlManager } from "../modules/ButtonControlManager.js";
+import { addNotice } from '../modules/notice.js';
 
 export default class GamePlay extends PageBase {
     static instance = null;
@@ -184,6 +185,9 @@ export default class GamePlay extends PageBase {
 
                 if (!data.game_status) {
                     console.log(data.message);
+                    if (data.message.startsWith('TimerOver')) {
+                        addNotice('TimerOver', true);
+                    }
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
                     //document.location.reload();
