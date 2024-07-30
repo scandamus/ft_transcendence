@@ -227,7 +227,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def game_over(self, message):
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'send_game_over_message',
-            'message': 'GameOver',
+            'message': message,
         })
 
         asyncio.create_task(self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after'))
