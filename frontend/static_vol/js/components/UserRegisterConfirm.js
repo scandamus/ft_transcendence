@@ -16,6 +16,7 @@ export default class SignUpConfirm extends PageBase {
         this.title = 'SIGN UP';
         this.setTitle(this.title);
         this.clearBreadcrumb();
+        this.registerInProgress = false;
 
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.displayInputData.bind(this));
@@ -75,7 +76,11 @@ export default class SignUpConfirm extends PageBase {
 
     handleRegister(ev) {
         ev.preventDefault();
-
+        //すでに処理中ならキャンセル
+        if (this.registerInProgress) {
+            return;
+        }
+        this.registerInProgress = true;
         const data = {
             username: sessionStorage.getItem('username'),
             password: sessionStorage.getItem('password')
@@ -109,6 +114,9 @@ export default class SignUpConfirm extends PageBase {
                 } else {
                     console.error('register failed:', error);
                 }
+            })
+            .finally(() => {
+                this.registerInProgress = false;
             });
     }
 

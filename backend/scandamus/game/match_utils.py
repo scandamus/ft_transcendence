@@ -129,6 +129,12 @@ def send_reconnect_match_jwt(consumer, player, match):
          'avatar': each_player.avatar.url if each_player.avatar else None}
         for each_player in players if each_player is not None]
     
+    if len(usernames) == 2 and match.tournament is not None:
+        player1_nickname = async_to_sync(get_nickname)(match.tournament, match.player1)
+        player2_nickname = async_to_sync(get_nickname)(match.tournament, match.player2)
+        usernames[0]['username'] = player1_nickname
+        usernames[1]['username'] = player2_nickname
+
     user = player.user
     player_name = 'player1' if player == match.player1 else 'player2' if player == match.player2 else 'player3' if player == match.player3 else 'player4' if player == match.player4 else None
     game_token = async_to_sync(issue_jwt)(user, player_name, player_id, match_id, game_name)
@@ -140,7 +146,7 @@ def send_reconnect_match_jwt(consumer, player, match):
             'jwt': game_token,
             'username': player.user.username,
             'all_usernames': usernames,
-            'match_id': match.id,
+            'match_id': match_id,
             'player_name': player_name,
             'tournament_name': tournament_name,
             'round': round,
