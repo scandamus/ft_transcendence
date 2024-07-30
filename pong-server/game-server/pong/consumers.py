@@ -35,6 +35,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.username = None
         self.player_name = None
         self.scheduled_task = None
+        self.is_tournament = False
         self.game_timer_task = None
         self.right_paddle = None
         self.left_paddle = None
@@ -98,8 +99,9 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def handle_authenticate(self, text_data_json, is_reconnect=False):
             logger.error('handle_authenticate in')
             jwt = text_data_json.get('jwt')
-            players_id, player_name, username, jwt_match_id = await self.authenticate_jwt(jwt)
+            players_id, player_name, username, jwt_match_id, is_tournament = await self.authenticate_jwt(jwt)
             self.player_name = player_name
+            self.is_tournament = is_tournament
 
             if not players_id or not username or not jwt_match_id:
                 logger.error('Error occured while decoding JWT')
@@ -235,6 +237,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.scheduled_task is not None:
             self.scheduled_task.cancel()
             self.scheduled_task = None
+        if self.is_tournament:
+            if self.game_timer_task is not None:
+                self.game_timer_task.cancel()
+                self.game_timer_task = None
 
     async def send_game_over_message(self, event):
         message = event['message']
@@ -361,9 +367,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             players_id = validated_token['players_id']
             player_name = validated_token['player_name']
             match_id = validated_token['match_id']
+            is_tournament = validated_token['is_tournament']
             logger.info(
                 f'authenticate_jwt: user_id={user_id}, username={username}, players_id={players_id}, match_id={match_id}')
-            return players_id, player_name, username, match_id
+            return players_id, player_name, username, match_id, is_tournament
         except InvalidToken as e:
             logger.error('Error: invalid token in jwt')
             return None, None
@@ -403,4 +410,5 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.players_id == master_id:
             logger.error(f"New master appointed: {self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
-            self.game_timer_task = asyncio.create_task(self.game_timer())
+            if self.is_tournament:
+                self.game_timer_task = asyncio.create_task(self.game_timer())
