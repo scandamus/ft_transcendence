@@ -6,7 +6,8 @@ export const labels_fr = {
     langCode: 'fr',
     langName: 'français',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Accueil',

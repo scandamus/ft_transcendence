@@ -21,6 +21,7 @@
   --color-black-alpha: rgba(0, 0, 0, 0.5);
   --color-black-alpha2: rgba(0, 0, 0, 0.2);
   --color-black-alpha3: rgba(0, 0, 0, 0.8);
+  --color-black-alpha4: rgba(0, 0, 0, 0.15);
   --color-gray: #666666;
   --color-error1: rgba(243, 0, 67, 0.7);
   --color-error1-alpha: rgba(243, 0, 67, 0.1);
@@ -1829,6 +1830,18 @@ input[type="text"]:disabled {
 
 .blockTournamentRound {
   margin-bottom: 30px;
+}
+
+
+/* blockMatch */
+.blockMatchWrap {
+
+}
+
+.blockMatchWrap_date {
+  padding: 0.3em 0.6em 0.2em ;
+  font-size: 1.8rem;
+  background: var(--color-black-alpha4);
 }
 
 .blockMatch {
