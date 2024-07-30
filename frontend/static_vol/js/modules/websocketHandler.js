@@ -13,10 +13,11 @@ import { handleReceiveWsTournamentValidationError } from './form.js';
 import { handleLogout } from "./logout.js";
 
 export const pongHandler = (event, containerId) => {
-    console.log(`pongHandler called for containerID: ${containerId}`)
+    console.log(`pongHandler called for containerID: ${containerId}`);
     let data;
     try {
         data = JSON.parse(event.data);
+        console.log('Received JSON:', data); // オブジェクト全体をログに表示
         if (data.type === 'authenticationFailed') {
             console.error(data.message);
             refreshAccessToken();
@@ -53,6 +54,9 @@ export const pongHandler = (event, containerId) => {
         }
         else if (data.type === 'disconnectByNewLogin') {
             handleDisconnetByNewLogin();
+        }
+        else if (data.type === 'gameSessionReconnect') {
+            handleGameSesssionReconnect(data);
         }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
@@ -108,9 +112,16 @@ const loadGameContent = async (data) => {
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);
         console.log(`WebSocket for ${containerId} is open!!!`);
+        let action;
+        if (type === 'gameSessionReconnect') {
+            console.log('RECONNECT MATCH!!');
+            action = 'authenticateReconnect';
+        } else {
+            action = 'authenticate';
+        }
         if (socket.readyState === WebSocket.OPEN) {
             webSocketManager.sendWebSocketMessage(containerId, {
-                action: 'authenticate',
+                action: action,
                 jwt: jwt,
                 player_name: player_name,
             });
@@ -380,4 +391,10 @@ const handleDisconnetByNewLogin = () => {
     addNotice('サーバーに新しいログインがあったため切断されました', true);
     console.log('Disconnect by new login');
     handleLogout(new Event('logout'));
+}
+
+const handleGameSesssionReconnect = (data) => {
+    addNotice(`試合中のゲームに復帰します`);
+    console.log('Rejoin to the match');
+    loadGameContent(data);
 }
