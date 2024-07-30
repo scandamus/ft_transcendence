@@ -1,6 +1,7 @@
 import logging
 import random
 import asyncio
+import io
 
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
@@ -14,7 +15,9 @@ from rest_framework import viewsets, renderers, status, generics
 from .models import Player, FriendRequest
 from game.models import Match
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from .serializers import PlayerSerializer, UserSerializer, FriendRequestSerializer, FriendSerializer, MatchLogSerializer, RecommendedSerializer
+from PIL import Image
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -261,11 +264,32 @@ class AvatarUploadView(APIView):
         avatar_file = request.FILES.get('avatar')
 
         if avatar_file:
-            player.avatar = avatar_file
-            player.save()
+            resized_avatar = self._resize_avatar(avatar_file)
+            player.avatar.save(avatar_file.name, resized_avatar)
             return Response({"newAvatar": player.avatar.url})
         else:
             return Response({"error": "No avatar file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def _resize_avatar(self, avatar_file):
+        ext = avatar_file.name.split('.')[-1].lower()
+        with Image.open(avatar_file) as img:
+            width, height = img.size
+            min_dim = min(width, height)
+            left = (width - min_dim) / 2
+            top = (height - min_dim) / 2
+            right = (width + min_dim) / 2
+            bottom = (height + min_dim) / 2
+            img = img.crop((left, top, right, bottom))
+            img = img.resize((200, 200), Image.Resampling.LANCZOS)
+
+            img_io = io.BytesIO()
+            if ext in ['jpg', 'jpeg']:
+                img.save(img_io, format='JPEG')
+            elif ext == 'png':
+                img.save(img_io, format='PNG')
+            img_io.seek(0)
+
+            return ContentFile(img_io.read(), avatar_file.name)
 
 class LangUpdateView(APIView):
     authentication_classes = [JWTAuthentication]
