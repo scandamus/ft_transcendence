@@ -195,31 +195,48 @@ export default class LogIn extends PageBase {
     }
 
     async handleAuthMessage(ev) {
-        if (ev.origin === window.location.origin) {
-            const data = ev.data;
-            if (data.code && data.state) {
-                const response = await fetch('/api/oauth42/exchange_token42/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        code: data.code,
-                        state: data.state
-                    }),
-                });
+        if (ev.origin !== window.location.origin) {
+            console.log('Message from untrusted origin:', ev.origin);
+            return;
+        }
+        const data = ev.data;
+        if (data && data.code && data.state) {
+            const response = await fetch('/api/oauth42/exchange_token42/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code: data.code,
+                    state: data.state
+                }),
+            });
 
-                if (response.ok) {
-                    const tokenData = await response.json();
-                    console.log('///42 Access Token:', tokenData.access_token);
-                } else {
-                    console.error('Failed to exchange token');
+            if (response.ok) {
+                const tokenData = await response.json();
+                sessionStorage.setItem('accessToken', tokenData.access_token);
+                sessionStorage.setItem('refreshToken', tokenData.refresh_token);
+                await webSocketManager.openWebSocket('lounge', pongHandler);
+                window.history.pushState({}, null, '/dashboard');
+                const userInfo = await getUserInfo();
+                if (userInfo) {
+                    const langStorage = localStorage.getItem('configLang');
+                    const elSelectLang = document.getElementById('languageSelect');
+                    // localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
+                    if (langStorage && (userInfo.lang !== langStorage)) {
+                        setLang(elSelectLang, langStorage);
+                        await saveLang(langStorage);
+                    } else {
+                        setLang(elSelectLang, userInfo.lang);
+                        await saveLang(userInfo.lang);
+                    }
+
+                    await switchDisplayAccount();
+                    await router(true);
                 }
             } else {
-            console.log(`code or state is invalid / code: ${data.code} / state: ${data.state}`);
+                console.error('Failed to exchange token');
             }
-        } else {
-            console.log('Message from untrusted origin:', ev.origin);
         }
     }
 

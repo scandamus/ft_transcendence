@@ -17,6 +17,15 @@
             }
             window.close();
         };
+
+        window.addEventListener('message', (ev) => {
+            if (ev.origin !== window.location.origin) {
+                return;
+            }
+            if (ev.data.type === 'request') {
+                ev.source.postMessage({ type: 'response', payload: 'Hello parent' }, ev.origin);
+            }
+        });
     </script>
 </head>
 <body>

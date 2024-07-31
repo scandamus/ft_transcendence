@@ -9,8 +9,19 @@ import string
 from requests import get
 from django.views.decorators.csrf import csrf_exempt
 from allauth.socialaccount.models import SocialApp
-
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from players.models import Player
+from allauth.socialaccount.models import SocialAccount
+from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 from .adapters import FortyTwoOAuth2Adapter
+
+import requests
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.base import ContentFile
 
 #
 # from django.urls import reverse
@@ -75,7 +86,36 @@ def exchange_token42(request):
         response.raise_for_status()
         user_info = response.json()
 
-        logger.info(f'///login:{user_info.get('login')} avatar:{user_info.get('image').get('link')}')
-        return JsonResponse(token_data)
+        login_name = user_info.get('login')
+        avatar_url = user_info.get('image').get('link')
+
+        # todo: username重複時
+        user, created = User.objects.get_or_create(username=login_name)
+        if created:
+            player = Player.objects.get(user=user)
+            if player:
+                response = requests.get(avatar_url)
+                response.raise_for_status()
+
+                image_data = BytesIO(response.content)
+                file_name = f'{login_name}.jpg'
+                # todo: _resize_avatar
+                image_file = InMemoryUploadedFile(image_data, 'ImageField', file_name, 'image/jpeg', len(response.content), None)
+                player.avatar.save(file_name, image_file, save=True)
+
+        social_account, _ = SocialAccount.objects.get_or_create(user=user, provider='providers42')
+        # todo: 取得したuser_info不要か確認
+        # social_account.extra_data = user_info
+        # social_account.save()
+
+        refresh = RefreshToken.for_user(user)
+        if refresh:
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+            return JsonResponse({
+                'access_token': access_token,
+                'refresh_token': refresh_token,
+            })
+        return JsonResponse({'error': 'Token generation failed'}, status=400)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
