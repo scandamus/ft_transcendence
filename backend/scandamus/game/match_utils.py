@@ -61,7 +61,7 @@ async def send_tournament_match_jwt(match, game_name='pong'):
     for player in [player1, player2]:
         player_name = 'player1' if player == player1 else 'player2'
         user = await database_sync_to_async(lambda: player.user)()
-        game_token = await issue_jwt(user, player_name, player.id, match.id, game_name)
+        game_token = await issue_jwt(user, player_name, player.id, match.id, game_name, is_tournament=True)
         #websocket =  LoungeSession.players.get(player.user.username)
         channel_layer = get_channel_layer()
 
@@ -215,7 +215,7 @@ def get_player_by_user(user):
         return None
 
 @database_sync_to_async
-def issue_jwt(user, player_name, players_id, match_id, game_name='pong'):
+def issue_jwt(user, player_name, players_id, match_id, game_name='pong', is_tournament=False):
     expire = datetime.utcnow() + timedelta(minutes=1)
     payload = {
         'game_name': game_name,
@@ -224,6 +224,7 @@ def issue_jwt(user, player_name, players_id, match_id, game_name='pong'):
         'player_name': player_name,
         'players_id': players_id,
         'match_id': match_id,
+        'is_tournament': is_tournament,
         'iat': datetime.utcnow(),
         'exp': expire,
         'aud': 'pong-server',
