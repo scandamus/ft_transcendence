@@ -18,7 +18,7 @@ import {
 }
     from '../modules/friendListener.js';
 import { addListenerToList, removeListenerAndClearList } from "../modules/listenerCommon.js";
-import { getToken } from "../modules/token.js";
+import { getToken, refreshAccessToken } from "../modules/token.js";
 import { switchDisplayAccount, fetchLevel } from "../modules/auth.js";
 import { addNotice } from "../modules/notice.js";
 
@@ -107,6 +107,9 @@ export default class Dashboard extends PageBase {
             getMatchLog().then(() => {});
             getTournamentLog(this).then(() => {});
             fetchLevel().then((data) => {
+                if (!data) {
+                    throw new Error(`Failed to get player stats`);
+                }
                 this.displayMatchStats(data);
             });
         } catch (error) {
@@ -192,34 +195,35 @@ export default class Dashboard extends PageBase {
             this.listListenUploadAvatar, btnAvatarUpload, boundUploadAvatar, 'click');
     }
 
-    async uploadAvatar(ev) {
-        ev.preventDefault();
-        const inputFile = document.getElementById('inputAvatarFile');
-        const formData = new FormData();
-        const file = inputFile.files[0];
-        if (!file) {
-            return;
-        }
-        formData.append('avatar', file);
-
+    fetchUploadAvatar(formData, isRefresh) {
         const accessToken = getToken('accessToken');
         if (accessToken === null) {
             return Promise.resolve(null);
         }
         fetch('/api/players/avatar/', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: formData
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: formData
         })
             .then( async (response) => {
                 if (!response.ok) {
-                    throw new Error(response.status);
+                    if (!isRefresh) {
+                        if (!await refreshAccessToken()) {
+                            throw new Error('fail refresh token');
+                        }
+                        return await this.fetchUploadAvatar(formData, true);
+                    } else {
+                        throw new Error('refreshed accessToken is invalid.');
+                    }
                  }
                 return response.json();
             })
             .then( async (data) => {
+                if (!data) {
+                    return;
+                }
                 this.siteInfo.setAvatar(data.newAvatar);
                 this.cancelAvatar();
                 await switchDisplayAccount();
@@ -230,6 +234,18 @@ export default class Dashboard extends PageBase {
                 addNotice(labels.dashboard.msgInvalidFile, true);
                 this.cancelAvatar();
             });
+    }
+
+    async uploadAvatar(ev) {
+        ev.preventDefault();
+        const inputFile = document.getElementById('inputAvatarFile');
+        const formData = new FormData();
+        const file = inputFile.files[0];
+        if (!file) {
+            return;
+        }
+        formData.append('avatar', file);
+        await this.fetchUploadAvatar(formData, false);
     }
 
     cancelAvatar() {

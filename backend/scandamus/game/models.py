@@ -248,6 +248,10 @@ class Match(models.Model):
         blank=True,
         on_delete=models.SET_NULL
     )
+    last_updated = models.DateTimeField(
+        null=True, blank=True,
+        auto_now=True
+    )
     def __str__(self):
         player_names = ", ".join([str(player) for player in [self.player1, self.player2, self.player3, self.player4] if player])
         return f"{player_names} - Round: {self.round} on {self.tournament}"

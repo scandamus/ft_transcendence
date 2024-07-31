@@ -1,7 +1,6 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
 import { fetchTournamentDetail } from "../modules/tounamentApi.js";
 import { formatDateToLocal } from "../modules/formatDateToLocal.js";
@@ -16,6 +15,7 @@ export default class TournamentDetail extends PageBase {
         super(params);
         TournamentDetail.instance = this;
         //setTitleはrenderHtml()で取得後に行う
+        //トーナメントログを見る場合もあるのでstorageではなくparamから取得
         this.id = params.id.split(':')[1];
         this.tournamentData = ``;
         this.renderedRounds = new Set();
@@ -34,15 +34,9 @@ export default class TournamentDetail extends PageBase {
     }
 
     async renderHtml() {
-        this.tournamentData = await fetchTournamentDetail(this.id, false);
-        this.title = this.tournamentData.name;
-        this.setTitle(this.title);
-        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        this.avatarMap = this.tournamentData.player_avatar_map;
-
         return `
             <div class="wrapTournament">
-                <p class="blockTournamentStart">${formatDateToLocal(this.tournamentData.start)} START</p>
+                <p class="blockTournamentStart"></p>
                 <section class="blockTournamentWaiting unitBox">
                     <h3 class="blockTournamentWaiting_title"></h3>
                     <div class="blockTournamentWaiting_message">
@@ -116,22 +110,39 @@ export default class TournamentDetail extends PageBase {
     }
 
     async generateTournamentResult() {
-        this.tournamentData = await fetchTournamentDetail(this.id, false);
-        const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
-        const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
-        const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
-        result.forEach(item => {
-            if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
-                const roundList = this.generateRoundList(item);
-                if (roundList) {
-                    wrapTournamentRound.insertAdjacentHTML('afterbegin', roundList);
-                }
-                this.renderedRounds.add(item.round);
-            } else if (item.rankings !== undefined) {
-                blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
-                blockTournamentRanking.classList.add('is-show');
+        try {
+            this.tournamentData = await fetchTournamentDetail(this.id, false);
+            if (!this.tournamentData) {
+                throw new Error(`Failed to get Tournament Detail`);
             }
-        });
+            this.title = this.tournamentData.name;
+            this.setTitle(this.title);
+            this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+            this.avatarMap = this.tournamentData.player_avatar_map;
+            const blockStart = document.querySelector('.blockTournamentStart');
+            if (blockStart && this.tournamentData.start) {
+                blockStart.innerHTML = `${formatDateToLocal(this.tournamentData.start)} START`;
+            }
+            const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
+            const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
+            const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
+            if (result) {
+                result.forEach(item => {
+                    if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
+                        const roundList = this.generateRoundList(item);
+                        if (roundList) {
+                            wrapTournamentRound.insertAdjacentHTML('afterbegin', roundList);
+                        }
+                        this.renderedRounds.add(item.round);
+                    } else if (item.rankings !== undefined) {
+                        blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
+                        blockTournamentRanking.classList.add('is-show');
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching Tournament Detail:', error);
+        }
     }
 
     generateRankingList(rankings) {

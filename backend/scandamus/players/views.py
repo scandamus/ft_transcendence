@@ -238,6 +238,7 @@ class UserLevelView(APIView):
 #         })
 
 class FriendListView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     serializer_class = FriendSerializer # PlayerSerializer
     permission_classes = [IsAuthenticated]
 
@@ -247,6 +248,7 @@ class FriendListView(generics.ListAPIView):
         return player.friends.all()
     
 class FriendRequestListView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
     serializer_class = FriendRequestSerializer
     permission_classes = [IsAuthenticated]
 
@@ -314,6 +316,7 @@ class LangUpdateView(APIView):
             return Response({'error': 'Invalid language choice'}, status=status.HTTP_400_BAD_REQUEST)
 
 class MatchLogView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
@@ -323,12 +326,13 @@ class MatchLogView(APIView):
         except Player.DoesNotExist:
             return Response({'detail': 'Player not found'}, status=404)
         matches = Match.objects.filter(
-            (Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)) & Q(tournament__isnull=True)
+            (Q(player1=player) | Q(player2=player) | Q(player3=player) | Q(player4=player)) & Q(tournament__isnull=True) & Q(status='after')
         ).order_by('-id')[:5]
         serializer = MatchLogSerializer(matches, many=True, context={'request': request})
         return Response(serializer.data)
 
 class RecommendedView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):

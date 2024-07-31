@@ -32,7 +32,7 @@ const fetchTournaments = async (listType, isRefresh) => {
 
 const fetchTournamentDetail = async (id, isRefresh) => {
     const accessToken = getToken('accessToken');
-    if (accessToken === null) {
+    if (accessToken === null || !id) {
         return Promise.resolve(null);
     }
     try {
