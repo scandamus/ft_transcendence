@@ -61,7 +61,7 @@ async def send_tournament_match_jwt(match, game_name='pong'):
     for player in [player1, player2]:
         player_name = 'player1' if player == player1 else 'player2'
         user = await database_sync_to_async(lambda: player.user)()
-        game_token = await issue_jwt(user, player_name, player.id, match.id, game_name)
+        game_token = await issue_jwt(user, player_name, player.id, match.id, game_name, is_tournament=True)
         #websocket =  LoungeSession.players.get(player.user.username)
         channel_layer = get_channel_layer()
 
@@ -172,6 +172,32 @@ def notify_bye_player(tournament):
     except Exception as e:
         logger.error(f'Failed to send message to {player.user.username}: {e}')
 
+async def check_player_status(consumer, user, player, match_type):
+    is_in_tournament = player.status in ['tournament_match', 'tournament_room', 'tournament_prepare', 'tournament']
+    is_in_match = player.status in ['friend_match', 'lounge_match', 'tournament_match']
+    is_match_waiting = player.status in ['friend_waiting', 'lounge_waiting']
+    if is_in_tournament or is_in_match or is_match_waiting:
+        if is_in_tournament:
+            logger.error(f'{user.username} cant not request new game in a tournament')
+            error_type = 'inTournament'
+        if is_in_match:
+            logger.error(f'{user.username} can not request new game as playing a match')
+            error_type = 'inMatch'
+        if is_match_waiting:
+            logger.error(f'{user.username} can not request new game as requesting friend match')
+            error_type = 'matchWaiting'            
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': match_type,
+                'action': 'error',
+                'error': error_type
+            }))
+        except Exception as e:
+            logger.error(f'Failed to send to consumer: {e}')
+        return False
+    else:
+        return True
+
 @database_sync_to_async
 def get_user_by_player(player):
     return player.user
@@ -189,7 +215,7 @@ def get_player_by_user(user):
         return None
 
 @database_sync_to_async
-def issue_jwt(user, player_name, players_id, match_id, game_name='pong'):
+def issue_jwt(user, player_name, players_id, match_id, game_name='pong', is_tournament=False):
     expire = datetime.utcnow() + timedelta(minutes=1)
     payload = {
         'game_name': game_name,
@@ -198,6 +224,7 @@ def issue_jwt(user, player_name, players_id, match_id, game_name='pong'):
         'player_name': player_name,
         'players_id': players_id,
         'match_id': match_id,
+        'is_tournament': is_tournament,
         'iat': datetime.utcnow(),
         'exp': expire,
         'aud': 'pong-server',

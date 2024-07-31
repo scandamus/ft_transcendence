@@ -6,7 +6,8 @@ export const labels_la = {
     langCode: 'la',
     langName: 'Latina',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Domus',

@@ -24,7 +24,10 @@ const updateFriendsList = async (pageInstance) => {
             shuffleArray(friends);
         }
         const listFriendsWrapper = document.querySelector('.blockFriends_friends');
-        if (!friends || friends.length === 0) {
+        if (!friends) {
+            throw new Error(`Failed to get friends`);
+        }
+        else if (friends && friends.length === 0) {
             listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
             listFriendsWrapper.innerHTML = '';
@@ -68,7 +71,10 @@ const updateFriendRequestList = async (pageInstance) => {
         const requests = await fetchFriendRequests(false);
         const secRequestWrapper = document.querySelector('.blockFriendRequest');
         const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (!requests || requests.length === 0) {
+        if (!requests) {
+            throw new Error(`Failed to get friend requests`);
+        }
+        else if (requests && requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
             }
@@ -108,7 +114,10 @@ const updateRecommend = async (pageInstance) => {
     try {
         const RecommendedList = await fetchRecommend(false);
         const RecommendedWrapper = document.querySelector('.blockFriendRecommended_friends');
-        if (!RecommendedList || RecommendedList.length === 0) {
+        if (!RecommendedList) {
+            throw new Error(`Failed to get RecommendedList`);
+        }
+        else if (RecommendedList && RecommendedList.length === 0) {
             RecommendedWrapper.innerHTML = `<p>${labels.friends.msgNoRecommended}</p>`
         } else {
             RecommendedWrapper.innerHTML = '';

@@ -140,7 +140,7 @@ export default class GamePlayQuad extends PageBase {
             await this.loadSounds();
 
             function drawBackground() {
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = '#00000066';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
@@ -148,7 +148,7 @@ export default class GamePlayQuad extends PageBase {
                 ctx.lineWidth = line_width;
                 ctx.lineJoin = 'miter';
                 ctx.lineCap = 'butt'
-                ctx.strokeStyle = 'red';
+                ctx.strokeStyle = '#4C4C4C';
                 const offset = line_width / 2;
 
                 // 左上
