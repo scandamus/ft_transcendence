@@ -14,7 +14,7 @@ import GamePlayQuad from '../components/GamePlayQuad.js';
 import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
-import { closeModalOnCancel, closeModal, showModalExitGame } from './modal.js';
+import { closeModalOnCancel, closeModal, showModalExitGame, closeModalOnReturnToGame } from './modal.js';
 
 const routes = {
     login: {path: '/', view: Home, isProtected: false},
@@ -87,6 +87,14 @@ const router = async (accessToken) => {
     let matchRoute;
     if (accessToken instanceof PopStateEvent) {
         accessToken = getToken('accessToken');
+
+        const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+        // wrapModal is-show
+        if (btnReturnToGame) {
+            closeModalOnReturnToGame();
+            return;
+        }
+
         if (location.pathname.startsWith('/game/pong')) {
             window.history.pushState({}, '', routes.dashboard.path);
             matchRoute = {
