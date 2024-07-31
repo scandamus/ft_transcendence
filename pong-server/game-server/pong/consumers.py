@@ -141,17 +141,30 @@ class PongConsumer(AsyncWebsocketConsumer):
                         logger.error('Error too many players in this match')
                     return
                 # 再接続ではないゲームスタート時
-                if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
-                    initial_master = sorted(self.players_ids[self.match_id])[0]
-                    await self.channel_layer.group_send(self.room_group_name, {
-                        'type': 'start.game',
-                        'master_id': initial_master,
-                        'state': 'start',
-                    })
+                # if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
+                #     initial_master = sorted(self.players_ids[self.match_id])[0]
+                #     await self.channel_layer.group_send(self.room_group_name, {
+                #         'type': 'start.game',
+                #         'master_id': initial_master,
+                #         'state': 'start',
+                #     })
+                tmp = asyncio.create_task(self.start_game_timer())
                 # TODO: 2人揃わない場合のタイムアウト処理
             else:
                 logger.error('Match data not found or user is not for this match')
                 await self.close(code=1000)
+
+    async def start_game_timer(self):
+        # 一定時間待つ非同期タイマーを設定
+        await asyncio.sleep(5)
+        # 時間が経過した後、ゲームを開始する条件を確認
+        if len(self.players_ids[self.match_id]) <= 1:  # 2人に決め打ち
+            initial_master = sorted(self.players_ids[self.match_id])[0]
+            await self.channel_layer.group_send(self.room_group_name, {
+                'type': 'start.game',
+                'master_id': initial_master,
+                'state': 'start',
+            })
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
