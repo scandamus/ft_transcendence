@@ -191,7 +191,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             elif exited_player == 'player2':
                 self.right_paddle.score = -1
             self.game_continue = False
-            await self.game_over('')
+            await self.game_over('ExitGame')
 
     # Receive message from room group
     async def pong_message(self, data):
