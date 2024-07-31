@@ -4,7 +4,7 @@ import PageBase from './PageBase.js';
 import { getUserInfo, switchDisplayAccount } from '../modules/auth.js';
 import { router } from '../modules/router.js';
 import { webSocketManager } from '../modules/websocket.js';
-import { pongHandler } from '../modules/WebsocketHandler.js';
+import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { addErrorMessage } from '../modules/form.js';
 import { setLang, saveLang } from '../modules/switchLanguage.js';
@@ -21,6 +21,7 @@ export default class LogIn extends PageBase {
         LogIn.instance = this;
         this.setTitle(this.title);
         this.clearBreadcrumb();
+        this.loginInProgress = false;
         this.loginErrorType = '';
 
         //afterRenderにmethod追加
@@ -76,6 +77,11 @@ export default class LogIn extends PageBase {
 
     handleLogin(ev) {
         ev.preventDefault();
+        //すでに処理中ならキャンセル
+        if (this.loginInProgress) {
+            return;
+        }
+        this.loginInProgress = true;
         const formLogin = document.getElementById('formLogin');
         if (!formLogin.checkValidity()) {
             this.handleValidationError('loginError1');
@@ -140,6 +146,9 @@ export default class LogIn extends PageBase {
             })
             .catch((error) => {
                 this.handleValidationError(error.message);
+            })
+            .finally(() => {
+                this.loginInProgress = false;
             });
     }
 

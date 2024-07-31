@@ -1,10 +1,13 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_la = {
     langCode: 'la',
     langName: 'Latina',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Domus',
@@ -38,6 +41,8 @@ export const labels_la = {
         passwordIsNotSame: 'non eadem tessera',
         isExists: 'nomen usoris alium selige',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'verifica iterum nomen et tesseram',
         loginError2: 'nunc non potest nomen dare',
     },
@@ -70,6 +75,7 @@ export const labels_la = {
         labelReceivedRequest: 'tibi amici esse volunt',
         labelRecommended: 'usores commendati tibi',
         msgNoRecommended: 'nullus iam commendatus',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Sessorium',
@@ -105,8 +111,37 @@ export const labels_la = {
         labelTournamentLog: 'index certaminium',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
+        labelNextMatch: '',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundThirdPlaceRound: '',
+        labelRoundSemiFinal: '',
+        labelRoundFinal: '',
+        labelByePlayer: '',
+        labelWinner: '<strong>1</strong>',
+        labelSecondPlace: '<strong>2</strong>',
+        labelThirdPlace: '<strong>3</strong>',
+        msgNoUpcoming: '',
+        msgNoOngoing: '',
+        msgNoFinished: '',
+        msgNoEntered: '',
+        labelWaitBye: '',
+        msgWaitBye: '<p></p>',
+        labelWaitLose: '',
+        msgWaitLose: '<p></p>',
+        labelWaitStart: '',
+        msgWaitStart: '<p></p>',
+        labelWaitRound: '',
+        msgWaitRound: '<p></p>',
+        labelWaitSemiFinal: '',
+        msgWaitSemiFinal: '<p></p>',
+        labelWaitFinal: '',
+        msgWaitFinal: '<p></p>',
+        labelFinalOnGoing: '',
+        msgFinalOnGoing: '<p></p>',
     },
     modal: {
         labelNickname: 'agnomen',
@@ -133,9 +168,14 @@ export const labels_la = {
         acceptRequestSuccess: '$name et tu iam amici sunt',
         declineRequestSuccess: 'petitio de $name deleta est',
         removeSuccess: 'iam $name non amicus tibi',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: '$name vult tibi amici esse',
         accepted: '$name accepit amici esse',
         removed: '$name non vult amici esse',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'ludum praesens est',

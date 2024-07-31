@@ -36,11 +36,13 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
 CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
+FRIENDS_MAX = get_env_var('FRIENDS_MAX')
 
-ALLOWED_HOSTS = ['backend', 'pong-server', 'frontend' ,'localhost', '127.0.0.1', '[::1]']
+# SERVER HOST
+SERVER_HOST = get_env_var('DOMAIN_NAME')
+ALLOWED_HOSTS = ['backend', 'frontend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
-
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
@@ -56,6 +58,9 @@ INSTALLED_APPS = [
     'channels',
     'players.apps.PlayersConfig',
     'game.apps.GameConfig',
+#    'game',
+    'django_celery_beat',
+    'django_celery_results',
     # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。
     # 'players',
     # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
@@ -226,12 +231,15 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Log level
+LOG_LEVEL = os.getenv('BACKEND_LOG_LEVEL', 'DEBUG')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'class': 'logging.StreamHandler',
         },
     },
@@ -242,7 +250,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
         'django.db.backends': {
@@ -252,12 +260,12 @@ LOGGING = {
         },
         'scandamus' : {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
         'django.channels': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
     },
@@ -275,3 +283,4 @@ CHANNEL_LAYERS = {
     },
 }
 
+CELERY_IMPORTS = ['game.tasks']

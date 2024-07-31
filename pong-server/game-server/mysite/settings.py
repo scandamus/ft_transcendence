@@ -37,7 +37,10 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# SERVER HOST
+SERVER_HOST = get_env_var('DOMAIN_NAME')
+ALLOWED_HOSTS = ['backend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
+#ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -164,28 +167,31 @@ STATICFILES_DIRS = (
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Log level
+LOG_LEVEL = os.getenv('PONG_LOG_LEVEL', 'DEBUG')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'class': 'logging.StreamHandler',
         },
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': LOG_LEVEL,
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
         'django.channels': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': LOG_LEVEL,
             'propagate': False,
         },
     },

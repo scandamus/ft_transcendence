@@ -3,6 +3,7 @@
 import { addListenerToList, removeListenerAndClearList } from './listenerCommon.js';
 import { showModalEntryTournament } from './modal.js';
 import { cancelEntryTournament } from './tournament.js';
+import { linkSpa } from './router.js';
 
 const cancelEntryTournamentHandler = (ev) => {
     ev.preventDefault();
@@ -50,6 +51,20 @@ const addListenCancelEntryTournament = (pageInstance) => {
     });
 }
 
+const addListenLinkTournamentDetail = (pageInstance) => {
+    const LinkTournamentDetail = document.querySelectorAll('.blockTournamentList_finished a[data-link]');
+    LinkTournamentDetail.forEach((linkPage) => {
+        pageInstance.addListListenInInstance(linkPage, linkSpa, 'click');
+    });
+}
+
+const addListenLinkTournamentEntered = (pageInstance) => {
+    const LinkTournamentDetail = document.querySelectorAll('.blockDashboardLog_listTournament a[data-link]');
+    LinkTournamentDetail.forEach((linkPage) => {
+        pageInstance.addListListenInInstance(linkPage, linkSpa, 'click');
+    });
+}
+
 //resetListener
 const removeListenUpcomingTournamentList = (pageInstance) => {
     removeListenEntryTournament(pageInstance);
@@ -66,10 +81,16 @@ const resetListenUpcomingTournamentList = (pageInstance) => {
     addListenUpcomingTournamentList(pageInstance);
 }
 
+const addListenFinishedTournamentDetail = (pageInstance) => {
+    addListenLinkTournamentDetail(pageInstance);
+}
+
 export {
     removeListenEntryTournament,
     removeListenCancelEntryTournament,
     addListenerToList,
     addListenCancelEntryTournament,
-    resetListenUpcomingTournamentList
+    resetListenUpcomingTournamentList,
+    addListenFinishedTournamentDetail,
+    addListenLinkTournamentEntered
 }

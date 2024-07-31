@@ -1,10 +1,13 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_fr = {
     langCode: 'fr',
     langName: 'français',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Accueil',
@@ -38,6 +41,8 @@ export const labels_fr = {
         passwordIsNotSame: 'Veuillez saisir le même mot de passe',
         isExists: 'Ce nom d’utilisateur est utilisé',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'Veuillez vérifier le nom d’utilisateur et le mot de passe',
         loginError2: 'quelque chose s’est mal passé',
     },
@@ -70,6 +75,7 @@ export const labels_fr = {
         labelReceivedRequest: 'Demandes d’amis reçues',
         labelRecommended: 'Recommandations pour vous',
         msgNoRecommended: 'aucune recommandation',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',
@@ -105,8 +111,37 @@ export const labels_fr = {
         labelTournamentLog: 'Journal du tournoi',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
+        labelNextMatch: '',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundThirdPlaceRound: '',
+        labelRoundSemiFinal: '',
+        labelRoundFinal: '',
+        labelByePlayer: '',
+        labelWinner: '<strong>1</strong>',
+        labelSecondPlace: '<strong>2</strong>',
+        labelThirdPlace: '<strong>3</strong>',
+        msgNoUpcoming: '',
+        msgNoOngoing: '',
+        msgNoFinished: '',
+        msgNoEntered: '',
+        labelWaitBye: '',
+        msgWaitBye: '<p></p>',
+        labelWaitLose: '',
+        msgWaitLose: '<p></p>',
+        labelWaitStart: '',
+        msgWaitStart: '<p></p>',
+        labelWaitRound: '',
+        msgWaitRound: '<p></p>',
+        labelWaitSemiFinal: '',
+        msgWaitSemiFinal: '<p></p>',
+        labelWaitFinal: '',
+        msgWaitFinal: '<p></p>',
+        labelFinalOnGoing: '',
+        msgFinalOnGoing: '<p></p>',
     },
     modal: {
         labelNickname: 'pseudo',
@@ -133,9 +168,14 @@ export const labels_fr = {
         acceptRequestSuccess: 'Vous êtes maintenant ami avec $name ',
         declineRequestSuccess: 'La demande d’amitié de $name a été annulé',
         removeSuccess: 'Vous avez supprimé l’amitié de $name',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: 'Vous avez reçu une demande d’amitié de la part de $name ',
         accepted: '$name a accepté votre demande d’amitié',
         removed: 'Vous n’êtes plus ami avec $name',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'Le match va commencer',

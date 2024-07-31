@@ -1,10 +1,13 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_he = {
     langCode: 'he',
     langName: 'עברית',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Home',
@@ -38,6 +41,8 @@ export const labels_he = {
         passwordIsNotSame: 'אנא הזן את אותה סיסמה',
         isExists: 'שם המשתמש כבר בשימוש',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'בדק את שמך וסיסמתך',
         loginError2: 'משהו השתבש',
     },
@@ -70,6 +75,7 @@ export const labels_he = {
         labelReceivedRequest: 'בקשות חברות שקיבלת',
         labelRecommended: 'מומלץ עבורך',
         msgNoRecommended: 'אין מומלץ עבורך',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',
@@ -105,8 +111,37 @@ export const labels_he = {
         labelTournamentLog: 'שיאי טורניר',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
+        labelNextMatch: '',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundThirdPlaceRound: '',
+        labelRoundSemiFinal: '',
+        labelRoundFinal: '',
+        labelByePlayer: '',
+        labelWinner: '<strong>1</strong>',
+        labelSecondPlace: '<strong>2</strong>',
+        labelThirdPlace: '<strong>3</strong>',
+        msgNoUpcoming: '',
+        msgNoOngoing: '',
+        msgNoFinished: '',
+        msgNoEntered: '',
+        labelWaitBye: '',
+        msgWaitBye: '<p></p>',
+        labelWaitLose: '',
+        msgWaitLose: '<p></p>',
+        labelWaitStart: '',
+        msgWaitStart: '<p></p>',
+        labelWaitRound: '',
+        msgWaitRound: '<p></p>',
+        labelWaitSemiFinal: '',
+        msgWaitSemiFinal: '<p></p>',
+        labelWaitFinal: '',
+        msgWaitFinal: '<p></p>',
+        labelFinalOnGoing: '',
+        msgFinalOnGoing: '<p></p>',
     },
     modal: {
         labelNickname: 'כינוי',
@@ -133,9 +168,14 @@ export const labels_he = {
         acceptRequestSuccess: 'אתם עכשיו חברים עם $name',
         declineRequestSuccess: 'מחקת את בקשת החברות של $name',
         removeSuccess: 'מחקת את החבר $name',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: '$name שלח לך בקשת חברות',
         accepted: '$name קיבל את בקשת החברות שלך',
         removed: 'אתם כבר לא חברים עם $name',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'המשחק יתחיל',

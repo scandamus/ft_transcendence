@@ -7,7 +7,7 @@ from .models import Player
 from .models import Match
 from django.conf import settings
 from django.db import transaction
-from .match_utils import send_lounge_match_jwt_to_all, authenticate_token, get_player_by_user, get_required_players, update_player_status
+from .match_utils import send_lounge_match_jwt_to_all, authenticate_token, get_player_by_user, get_required_players, update_player_status, check_player_status
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +32,9 @@ async def handle_join_lounge_match(consumer, token, game_name):
     player = await get_player_by_user(user)
     if not player:
         logger.error(f"No player found for user: {user.username}")
-    if player.status != 'waiting':
-        logger.error(f'{user.username} can not request new game as playing the match')
+        return
+
+    if await check_player_status(consumer, user, player, 'lounge') is False:
         return
 
     async with consumer.matchmaking_lock:

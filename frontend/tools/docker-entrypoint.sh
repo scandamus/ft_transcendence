@@ -44,7 +44,9 @@ else
 fi
 
 echo "set CREATE_TOURNAMENT_TIMELIMIT_MIN=$CREATE_TOURNAMENT_TIMELIMIT_MIN"
+echo "set FRIENDS_MAX=$FRIENDS_MAX"
 echo "export const CREATE_TOURNAMENT_TIMELIMIT_MIN = parseInt('$CREATE_TOURNAMENT_TIMELIMIT_MIN', 10);" > /var/www/html/js/modules/env.js
+echo "export const FRIENDS_MAX = parseInt('$FRIENDS_MAX', 10);" >> /var/www/html/js/modules/env.js
 
 echo "Waiting for backend booting..."
 for i in {30..0}; do
