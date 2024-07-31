@@ -143,7 +143,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 # 再接続ではないゲームスタート時
                 if len(self.players_ids[self.match_id]) == 1:
                     await asyncio.create_task(self.start_game_timer())
-                if len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
+                elif len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
                     initial_master = sorted(self.players_ids[self.match_id])[0]
                     await self.channel_layer.group_send(self.room_group_name, {
                         'type': 'start.game',
@@ -159,14 +159,17 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             # 一定時間待つ非同期タイマーを設定
             await asyncio.sleep(5)
-            # 時間が経過した後、ゲームを開始する条件を確認
-            if len(self.players_ids[self.match_id]) == 1:  # 2人に決め打ち
-                initial_master = sorted(self.players_ids[self.match_id])[0]
-                await self.channel_layer.group_send(self.room_group_name, {
-                    'type': 'start.game',
-                    'master_id': initial_master,
-                    'state': 'start',
-                })
+            # 時間が経過しても片方しかいなかったら、不戦勝
+            if len(self.players_ids[self.match_id]) == 1:
+                # 自分がplayer1(left_paddle)ならゲームに参加していないのはplayer2(right_paddle)
+                # この時点ではpaddleが初期化されていないので初期化を挟む
+                await self.reset_game_data()
+                if self.player_name == 'player1':
+                    self.right_paddle.score = -1
+                else:
+                    self.left_paddle.score = -1
+                await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+                await self.game_over('WinByDefault')
         except asyncio.CancelledError:
             logger.error('start_game_timer cancelled')
 
