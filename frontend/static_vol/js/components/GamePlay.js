@@ -130,7 +130,7 @@ export default class GamePlay extends PageBase {
             await this.loadSounds();
 
             function drawBackground() {
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = '#00000066';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
@@ -146,10 +146,16 @@ export default class GamePlay extends PageBase {
             }
 
             function drawScore(left_paddle, right_paddle) {
-                ctx.font = '48px "Courier New"';
+                ctx.font = '48px "Chakra Petch"';
                 ctx.textAlign = "center";
                 ctx.fillStyle = '#808080FF';
-                ctx.fillText(`${left_paddle.score}   ${right_paddle.score}`, canvas.width / 2, 50);
+
+                const centerX = canvas.width / 2;
+                const scoreOffset = 54;
+                const posY = 60;
+
+                ctx.fillText(left_paddle.score, centerX - scoreOffset, posY);
+                ctx.fillText(right_paddle.score, centerX + scoreOffset, posY);
             }
 
             function drawBall(obj) {

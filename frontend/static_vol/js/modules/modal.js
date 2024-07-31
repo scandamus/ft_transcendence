@@ -303,6 +303,11 @@ const showModalReceiveMatchRequest = (data) => {
         labelAccept: labels.modal.labelAccept,
         labelReject: labels.modal.labelReject,
     }
+    const elModal = document.querySelector('.blockModal');
+    if (elModal) {
+        reject_game(data.request_id, data.from).then(() => {});
+        return;
+    }
     const elHtml = getModalHtml('receiveMatchRequest', args);
     showModal(elHtml);
 }
