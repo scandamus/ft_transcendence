@@ -261,12 +261,15 @@ export default class GamePlayQuad extends PageBase {
                 if (!data.game_status) {
                     console.log('Game Over');
                     // showWinner([data.right_paddle, data.left_paddle, data.upper_paddle, data.lower_paddle]);
+                    webSocketManager.closeWebSocket(this.containerId);
+                    this.containerId = '';
+                    window.history.pushState({}, null, "/dashboard");
                     setTimeout(() => {
-                        webSocketManager.closeWebSocket(this.containerId);
-                        this.containerId = '';
-                        window.history.pushState({}, null, "/dashboard");
+                        this.playSound(data.sound_type);
                         router(true);
-                    }, 3000);
+                    }, 1500);
+                } else {
+                    this.playSound(data.sound_type);
                 }
             }
 
@@ -282,7 +285,6 @@ export default class GamePlayQuad extends PageBase {
                     console.log('received_data -> ', data);
                     // console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score, 'UPPER_PADDLE: ', data.upper_paddle.score, '  LOWER_PADDLE: ', data.lower_paddle.score);
                     updateGameObjects(data);
-                    this.playSound(data.sound_type);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }
