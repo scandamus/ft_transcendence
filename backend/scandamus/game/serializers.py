@@ -151,10 +151,7 @@ class MatchSerializer(serializers.ModelSerializer):
         elif match.round in [-1, -3, -6]: # 決勝or3位決定戦
             self.reset_all_players_status(match)
         elif match.round == -4: # 3人準決勝の1戦目（両者控室）
-            match.player1.status = 'tournament_room'
-            match.player1.save(update_fields=['status'])
-            match.player2.status = 'tournament_room'
-            match.player2.save(update_fields=['status'])
+            self.set_all_players_status(match, 'tournament_room')
         elif match.round == -5: # 3人順決勝の2戦目
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
