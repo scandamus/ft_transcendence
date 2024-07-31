@@ -168,7 +168,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'state': 'start',
                 })
         except asyncio.CancelledError:
-            logger.error("start_game_timer cancelled")
+            logger.error('start_game_timer cancelled')
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
@@ -228,7 +228,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
-                    await self.game_over("GameOver")
+                    await self.game_over('GameOver')
         except asyncio.CancelledError:
             # タスクがキャンセルされたと後に非同期処理を行った際のハンドリング
             # 今は特に書いていないのでpass
@@ -237,9 +237,9 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def game_timer(self):
         try:
             await asyncio.sleep(self.TIME_LIMIT_SEC)
-            await self.game_over("TimerOver")
+            await self.game_over('TimerOver')
         except asyncio.CancelledError:
-            logger.error("game_timer cancelled")
+            logger.error('game_timer cancelled')
 
     async def game_over(self, message):
         await self.channel_layer.group_send(self.room_group_name, {
@@ -425,7 +425,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
         if self.players_id == master_id:
-            logger.error(f"New master appointed: {self.player_name}")
+            logger.error(f'New master appointed: {self.player_name}')
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
             if self.is_tournament:
                 self.game_timer_task = asyncio.create_task(self.game_timer())
