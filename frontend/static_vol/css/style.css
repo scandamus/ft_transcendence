@@ -21,6 +21,7 @@
   --color-black-alpha: rgba(0, 0, 0, 0.5);
   --color-black-alpha2: rgba(0, 0, 0, 0.2);
   --color-black-alpha3: rgba(0, 0, 0, 0.8);
+  --color-black-alpha4: rgba(0, 0, 0, 0.15);
   --color-gray: #666666;
   --color-error1: rgba(243, 0, 67, 0.7);
   --color-error1-alpha: rgba(243, 0, 67, 0.1);
@@ -630,6 +631,13 @@ input.has-input:invalid {
   background-color: var(--color-error1-alpha);
 }
 
+input[type="text"]:disabled {
+  border: 1px solid var(--color-white);
+  box-shadow: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .blockForm {
 }
 
@@ -1016,6 +1024,10 @@ input.has-input:invalid {
 
 }
 
+.blockFriendRecommended.is-hide {
+  display: none;
+}
+
 .blockUsers_column {
 
 }
@@ -1069,6 +1081,28 @@ input.has-input:invalid {
 
 .blockSearchFriend_form .listError {
   flex: 0 0 100%;
+}
+
+.blockFriendsFull {
+  display: none;
+  margin-bottom: 50px;
+  padding: 1em 1.2em;
+  background: var(--color-error2-alpha);
+  background: var(--color-error1-alpha);
+  font-size: 1.8rem;
+  border: 1px solid var(--color-error1);
+}
+
+.blockFriendsFull p + p {
+  margin-top: 0.8em;
+}
+
+.blockFriendRequest_friends + .blockFriendsFull {
+  margin-top: 25px;
+}
+
+.blockFriendsFull.is-show {
+  display: block;
 }
 
 /*UserRegister*/
@@ -1800,6 +1834,18 @@ input.has-input:invalid {
 
 .blockTournamentRound {
   margin-bottom: 30px;
+}
+
+
+/* blockMatch */
+.blockMatchWrap {
+
+}
+
+.blockMatchWrap_date {
+  padding: 0.3em 0.6em 0.2em ;
+  font-size: 1.8rem;
+  background: var(--color-black-alpha4);
 }
 
 .blockMatch {

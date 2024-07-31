@@ -1,12 +1,13 @@
 'use strict';
 
-import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
 
 export const labels_ja = {
     langCode: 'ja',
     langName: '日本語',
     common: {
-        switchLang: '言語選択'
+        switchLang: '言語選択',
+        logoutTokenExpired: 'セッション期限が切れました。再ログインしてください。'
     },
     home: {
         title: 'Home',
@@ -75,6 +76,7 @@ export const labels_ja = {
         labelReceivedRequest: '受け取った友達申請',
         labelRecommended: 'あなたへのおすすめ',
         msgNoRecommended: 'おすすめユーザーはいません',
+        msgFriendsFull: `友達が上限の${FRIENDS_MAX}人に達しています。<br>他のPlayerと友達になりたい場合、友達解除をして枠を空けてください。`,
     },
     lounge: {
         title: 'Lounge',
@@ -167,9 +169,14 @@ export const labels_ja = {
         acceptRequestSuccess: '$name さんと友達になりました',
         declineRequestSuccess: '$name さんの友達申請を削除しました',
         removeSuccess: '$name さんとの友達を解除しました',
+        mutualReq: '$name さんからはすでに友達申請を受け取っています',
+        alreadyReq: '$name さんへの友達申請は送信済みです',
         received: '$name さんから友達申請が来ました',
         accepted: '$name さんが友達申請を承認しました',
         removed: '$name さんと友達じゃなくなりました',
+        missedRequestAccept: '$name さんが友達申請を承認しようとしましたが、あなたの友達が上限に達しています。友達解除をして枠を空けてください。',
+        acceptRequestFailedFull: '$name さんの友達が上限に達しているため今は友達になれませんでした。',
+        acceptRequestFailedFull2: 'あなたの友達が上限に達しているため友達になれませんでした。友達解除をして枠を空けてください。',
     },
     matchRequest: {
         accepted: '対戦が始まります',

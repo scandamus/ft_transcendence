@@ -222,6 +222,16 @@ class PongConsumer(AsyncWebsocketConsumer):
             # 今は特に書いていないのでpass
             pass
 
+    async def game_over(self, message):
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'send_game_over_message',
+            'message': message,
+        })
+        await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, self.upper_paddle.score, self.lower_paddle.score, 'after')
+        if self.scheduled_task is not None:
+            self.scheduled_task.cancel()
+            self.scheduled_task = None
+
     async def send_game_over_message(self, event):
         message = event['message']
         timestamp = dt.utcnow().isoformat()

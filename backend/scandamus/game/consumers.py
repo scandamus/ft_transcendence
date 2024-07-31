@@ -142,10 +142,10 @@ class LoungeSession(AsyncWebsocketConsumer):
             if player:
                 if player.status in ['friend_waiting', 'lounge_waiting']:
                     player.status = 'waiting'
-                    await database_sync_to_async(player.save)()
+                    await database_sync_to_async(player.save)(update_fields=['status'])
                     logger.info(f'{self.user.username} status set to waiting')
                 player.online = False
-                await database_sync_to_async(player.save)()
+                await database_sync_to_async(player.save)(update_fields=['online'])
                 await send_status_to_friends(player, 'offline')
   
             # remove pending_requests
@@ -173,6 +173,8 @@ class LoungeSession(AsyncWebsocketConsumer):
     # jsonのスタイルに合わせてここはcamelCaseのまま（受け取ったjsonをそのまま送るため）
     async def gameSessionTournament(self, data):
         try:
+            username = data['username']
+            logger.info(f'tournament jwt is sending to {username}')
             await self.send(text_data=json.dumps(data))
         except Exception as e:
             logger.error(f'Error in gameSessionTournament: {e}')
@@ -207,3 +209,12 @@ class LoungeSession(AsyncWebsocketConsumer):
                 await update_player_status(player, 'waiting')
         except Exception as e:
             logger.error(f'Error in send_notification: {e}')
+
+    async def disconnect_by_new_login(self, event):
+        logger.info('Disconnect by new login')
+        try:
+            await self.send(text_data=json.dumps({
+                'type': 'disconnectByNewLogin'
+            }))
+        except Exception as e:
+            logger.error(f'Error in send disconnect by new login')

@@ -1,12 +1,13 @@
 'use strict';
 
-import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
 
 export const labels_fr = {
     langCode: 'fr',
     langName: 'français',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Accueil',
@@ -74,6 +75,7 @@ export const labels_fr = {
         labelReceivedRequest: 'Demandes d’amis reçues',
         labelRecommended: 'Recommandations pour vous',
         msgNoRecommended: 'aucune recommandation',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',
@@ -166,9 +168,14 @@ export const labels_fr = {
         acceptRequestSuccess: 'Vous êtes maintenant ami avec $name ',
         declineRequestSuccess: 'La demande d’amitié de $name a été annulé',
         removeSuccess: 'Vous avez supprimé l’amitié de $name',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: 'Vous avez reçu une demande d’amitié de la part de $name ',
         accepted: '$name a accepté votre demande d’amitié',
         removed: 'Vous n’êtes plus ami avec $name',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'Le match va commencer',

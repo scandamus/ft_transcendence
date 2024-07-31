@@ -1,12 +1,13 @@
 'use strict';
 
-import { CREATE_TOURNAMENT_TIMELIMIT_MIN } from './env.js';
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
 
 export const labels_la = {
     langCode: 'la',
     langName: 'Latina',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Domus',
@@ -74,6 +75,7 @@ export const labels_la = {
         labelReceivedRequest: 'tibi amici esse volunt',
         labelRecommended: 'usores commendati tibi',
         msgNoRecommended: 'nullus iam commendatus',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Sessorium',
@@ -166,9 +168,14 @@ export const labels_la = {
         acceptRequestSuccess: '$name et tu iam amici sunt',
         declineRequestSuccess: 'petitio de $name deleta est',
         removeSuccess: 'iam $name non amicus tibi',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: '$name vult tibi amici esse',
         accepted: '$name accepit amici esse',
         removed: '$name non vult amici esse',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'ludum praesens est',

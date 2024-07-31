@@ -210,7 +210,8 @@ class Match(models.Model):
         choices=[
             ('before', '対戦前'),
             ('ongoing', '対戦中'), # 現在未使用
-            ('after', '対戦後')
+            ('after', '対戦後'),
+            ('canceled', 'キャンセル')
         ],
         default='before',
         verbose_name="status"
@@ -240,6 +241,10 @@ class Match(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL
+    )
+    last_updated = models.DateTimeField(
+        null=True, blank=True,
+        auto_now=True
     )
     def __str__(self):
         player_names = ", ".join([str(player) for player in [self.player1, self.player2, self.player3, self.player4] if player])

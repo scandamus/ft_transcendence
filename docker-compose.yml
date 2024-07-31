@@ -33,6 +33,7 @@ services:
       - URL_ACCESS_TOKEN_42=${URL_ACCESS_TOKEN_42}
       - URL_PROFILE_42=${URL_PROFILE_42}
       - URL_AUTH_REDIRECT_42=${URL_AUTH_REDIRECT_42}
+      - FRIENDS_MAX=${FRIENDS_MAX}
     restart: always
     networks:
       - backend-network
@@ -53,6 +54,7 @@ services:
       - EMAIL=${EMAIL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - FRIENDS_MAX=${FRIENDS_MAX}
     container_name: frontend
     depends_on:
       - backend
@@ -176,6 +178,7 @@ services:
       - URL_ACCESS_TOKEN_42=${URL_ACCESS_TOKEN_42}
       - URL_PROFILE_42=${URL_PROFILE_42}
       - URL_AUTH_REDIRECT_42=${URL_AUTH_REDIRECT_42}
+      - FRIENDS_MAX=${FRIENDS_MAX}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     networks:
@@ -220,6 +223,7 @@ services:
       - URL_ACCESS_TOKEN_42=${URL_ACCESS_TOKEN_42}
       - URL_PROFILE_42=${URL_PROFILE_42}
       - URL_AUTH_REDIRECT_42=${URL_AUTH_REDIRECT_42}
+      - FRIENDS_MAX=${FRIENDS_MAX}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     networks:

@@ -42,6 +42,7 @@ URL_AUTHORIZE_42 = get_env_var('URL_AUTHORIZE_42')
 URL_ACCESS_TOKEN_42 = get_env_var('URL_ACCESS_TOKEN_42')
 URL_PROFILE_42 = get_env_var('URL_PROFILE_42')
 URL_AUTH_REDIRECT_42 = get_env_var('URL_AUTH_REDIRECT_42')
+FRIENDS_MAX = get_env_var('FRIENDS_MAX')
 
 # SERVER HOST
 SERVER_HOST = get_env_var('DOMAIN_NAME')
@@ -62,7 +63,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'channels',
     'players.apps.PlayersConfig',
-    'game',
+    'game.apps.GameConfig',
+#    'game',
     'django_celery_beat',
     'django_celery_results',
     'allauth',

@@ -3,7 +3,9 @@
 import { fetchFriendRequests, fetchFriends, fetchRecommend } from "./friendsApi.js";
 import { addListenSendFriendRequest, resetListenFriendList, resetListenFriendRequestList } from "./friendListener.js";
 import { labels } from "./labels.js";
+import { FRIENDS_MAX } from "../modules/env.js";
 import PageBase from "../components/PageBase.js";
+import { disableAccept } from './friendsFull.js';
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -22,7 +24,10 @@ const updateFriendsList = async (pageInstance) => {
             shuffleArray(friends);
         }
         const listFriendsWrapper = document.querySelector('.blockFriends_friends');
-        if (!friends || friends.length === 0) {
+        if (!friends) {
+            throw new Error(`Failed to get friends`);
+        }
+        else if (friends && friends.length === 0) {
             listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
         } else {
             listFriendsWrapper.innerHTML = '';
@@ -53,6 +58,8 @@ const updateFriendsList = async (pageInstance) => {
             }
             resetListenFriendList(pageInstance);
         }
+        pageInstance.numFriends = friends.length;
+        //console.log(`/////numFriends: ${pageInstance.numFriends}`)
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }
@@ -64,7 +71,10 @@ const updateFriendRequestList = async (pageInstance) => {
         const requests = await fetchFriendRequests(false);
         const secRequestWrapper = document.querySelector('.blockFriendRequest');
         const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (!requests || requests.length === 0) {
+        if (!requests) {
+            throw new Error(`Failed to get friend requests`);
+        }
+        else if (requests && requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
             }
@@ -90,6 +100,9 @@ const updateFriendRequestList = async (pageInstance) => {
                 listRequestWrapper.innerHTML += requestElement;
             });
             resetListenFriendRequestList(pageInstance);
+            if (pageInstance.numFriends >= FRIENDS_MAX) {
+                disableAccept();
+            }
         }
     } catch (error) {
         console.error('Failed to update friend requests: ', error);
@@ -101,7 +114,10 @@ const updateRecommend = async (pageInstance) => {
     try {
         const RecommendedList = await fetchRecommend(false);
         const RecommendedWrapper = document.querySelector('.blockFriendRecommended_friends');
-        if (!RecommendedList || RecommendedList.length === 0) {
+        if (!RecommendedList) {
+            throw new Error(`Failed to get RecommendedList`);
+        }
+        else if (RecommendedList && RecommendedList.length === 0) {
             RecommendedWrapper.innerHTML = `<p>${labels.friends.msgNoRecommended}</p>`
         } else {
             RecommendedWrapper.innerHTML = '';
