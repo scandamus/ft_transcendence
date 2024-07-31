@@ -219,13 +219,13 @@ const handleFriendRequestReceived = (data) => {
     } else if (data.action === 'removed') {
         //rmられは通知されない
         console.log(labels.friendRequest['removed'].replace('$name', data.from_username));
-        //friendリストもリアルタイムでは更新しない
-        // if (currentPage) {
-        //     updateFriendsList(currentPage)
-        //         .then(() => {
-        //             toggleFriendsDisplay(currentPage);
-        //         });
-        // }
+        //friendリスト更新
+        if (currentPage) {
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
+        }
     } else if (data.action === 'acceptRequestFailedFull') {
         //承認したけど相手が上限
         addNotice(labels.friendRequest['acceptRequestFailedFull'].replace('$name', data.from_username), true);
