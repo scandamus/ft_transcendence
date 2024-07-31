@@ -4,6 +4,7 @@ import random
 
 from celery import shared_task
 from django.utils import timezone
+from django.db import transaction
 from datetime import timedelta
 from .models import Tournament, Entry, Match
 from players.models import Player
@@ -120,7 +121,9 @@ def create_initial_round(tournament_id, entried_players_id_list):
     tournament.save(update_fields=['status'])
     logger.info(f'//-- tournament save() on: create_initial_round 1')
 
-    online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
+    with transaction.atomic():
+        online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
+        offline_players = Player.objects.filter(id__in=entried_players_id_list, online=False)
     number_of_players = online_players.count()
 
     if number_of_players < 4: # 4人揃わない場合は中止
@@ -130,6 +133,13 @@ def create_initial_round(tournament_id, entried_players_id_list):
         logger.info(f'//-- tournament save() on: create_initial_round 2')
         notify_players(tournament.name, entried_players_id_list, 'canceled', False)
         return
+    
+    # マッチング時にオフラインのPlayerのstatusを'waiting'に
+    number_of_offline = offline_players.count()
+    logger.info(f'{number_of_players} online players are available for this tournament. Offline players: {number_of_offline}')
+    for player in offline_players:
+        player.status = 'waiting'
+        player.save(update_fields=['status'])
 
     player_list = list(online_players)
     random.shuffle(player_list)
