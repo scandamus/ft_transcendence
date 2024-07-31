@@ -148,6 +148,7 @@ def finalize_tounrnament_by_three_players(tournament):
     final_match = tournament.matches.filter(round=-6).order_by('-id').first()
     entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
 
+    reset_player_status_if_in_tournament(tournament)
     tournament.winner = final_match.winner
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
     tournament.status = 'finished'
@@ -162,6 +163,7 @@ def finalize_tournament(tournament):
     third_place_match = tournament.matches.filter(round=-3).order_by('-id').first()
     entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
 
+    reset_player_status_if_in_tournament(tournament)
     tournament.winner = final_match.winner
     tournament.second_place = final_match.player1 if final_match.winner == final_match.player2 else final_match.player2
     tournament.third_place = third_place_match.winner
@@ -265,3 +267,16 @@ def create_matches(tournament, players, round_number):
         tournament.save()
     if tournament.bye_player:
         notify_bye_player(tournament)
+
+def reset_player_status_if_in_tournament(tournament):
+    logger.info('reset_player_status in')
+    entried_players = Entry.objects.filter(tournament=tournament)
+    for entry in entried_players:
+        try:
+            player = entry.player
+            logger.info(f'{entry.nickname}: {player.status}')
+            if player.status in ['tournament', 'tournament_match', 'tournament_room', 'tournament_prepare']:
+                player.status = 'waiting'
+                player.save(update_fields=['status'])
+        except Player.DoesNotExist:
+            pass
