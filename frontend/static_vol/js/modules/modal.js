@@ -231,7 +231,6 @@ const handleExitGame = (instance) => {
     if (PageBase.isInstance(instance, 'GamePlayQuad')) {
         webSocketManager.closeWebSocket(containerId);
         instance.containerId = '';
-        console.log("hogeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
     }
 }
 

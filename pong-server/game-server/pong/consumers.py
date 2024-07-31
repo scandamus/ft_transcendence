@@ -95,6 +95,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.handle_authenticate(text_data_json)
         elif action == 'authenticateReconnect':
             await self.handle_authenticate(text_data_json, True)
+        elif action == 'exit_game':
+            await self.handle_exit_message(text_data)
 
     async def handle_authenticate(self, text_data_json, is_reconnect=False):
             logger.error('handle_authenticate in')
@@ -172,6 +174,24 @@ class PongConsumer(AsyncWebsocketConsumer):
             })
         else:
             logger.info('unknown message:', text_data)
+
+    async def handle_exit_message(self, text_data):
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'exit_game',
+            'player_name': self.player_name,
+            'players_id': self.players_id,
+        })
+
+    async def exit_game(self, event):
+        if self.scheduled_task is not None:
+            exited_player = event['player_name']
+            logger.info(f"{exited_player}")
+            if exited_player == 'player1':
+                self.left_paddle.score = -1
+            elif exited_player == 'player2':
+                self.right_paddle.score = -1
+            self.game_continue = False
+            await self.game_over('')
 
     # Receive message from room group
     async def pong_message(self, data):
