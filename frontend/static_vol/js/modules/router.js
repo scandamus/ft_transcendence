@@ -136,13 +136,13 @@ const router = async (accessToken) => {
     //ログイン状態で非認証ページにアクセス => dashboardにリダイレクト
     //ログイン状態でmatchRouteなし(404) => dashboardにリダイレクト
     if (!accessToken && ((matchRoute && matchRoute.route.isProtected) || !matchRoute)) {
-        window.history.pushState({}, '', routes.login.path);
+        window.history.pushState(null, null, routes.login.path);
         matchRoute = {
             route: routes.login,
             result: routes.login.path
         };
     } else if (accessToken && ((matchRoute && !matchRoute.route.isProtected) || !matchRoute)) {
-        window.history.pushState({}, '', routes.dashboard.path);
+        window.history.pushState(null, null, routes.dashboard.path);
         matchRoute = {
             route: routes.dashboard,
             result: routes.dashboard.path

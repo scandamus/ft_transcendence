@@ -203,9 +203,9 @@ export default class GamePlay extends PageBase {
                     const tournamentId = sessionStorage.getItem("tournament_id");
                     if (tournamentId) {
                         sessionStorage.setItem('tournament_status', 'waiting_round');
-                        window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
+                        window.history.pushState(null, null, `/tournament/detail:${tournamentId}`);
                     } else {
-                        window.history.pushState({}, null, "/dashboard");
+                        window.history.pushState(null, null, "/dashboard");
                     }
                     await router(true);
                 }
