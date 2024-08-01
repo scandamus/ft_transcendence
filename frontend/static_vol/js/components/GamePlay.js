@@ -193,6 +193,8 @@ export default class GamePlay extends PageBase {
                     console.log(data.message);
                     if (data.message.startsWith('TimerOver')) {
                         addNotice('TimerOver', true);
+                    } else if (data.message.startsWith('WinByDefault')) {
+                        addNotice('opponent did not show up', false);
                     }
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
