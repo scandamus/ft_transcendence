@@ -36,6 +36,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.player_name = None
         self.scheduled_task = None
         self.is_tournament = False
+        self.start_game_timer_task = None
         self.game_timer_task = None
         self.right_paddle = None
         self.left_paddle = None
@@ -141,8 +142,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                         logger.error('Error too many players in this match')
                     return
                 # 再接続ではないゲームスタート時
-                if len(self.players_ids[self.match_id]) == 1:
-                    await asyncio.create_task(self.start_game_timer())
+                elif len(self.players_ids[self.match_id]) == 1:
+                    self.start_game_timer_task = asyncio.create_task(self.start_game_timer())
                 elif len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
                     initial_master = sorted(self.players_ids[self.match_id])[0]
                     await self.channel_layer.group_send(self.room_group_name, {
@@ -427,6 +428,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         if state == 'start':
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
+            if self.start_game_timer_task is not None:
+                self.start_game_timer_task.cancel()
+                self.start_game_timer_task = None
         if self.players_id == master_id:
             logger.error(f'New master appointed: {self.player_name}')
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
