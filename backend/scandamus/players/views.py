@@ -270,6 +270,7 @@ class AvatarUploadView(APIView):
         if avatar_file:
             resized_avatar = self._resize_avatar(avatar_file)
             player.avatar.save(avatar_file.name, resized_avatar)
+            logger.info(f'//-- player save() on: AvatarUploadView')
             return Response({"newAvatar": player.avatar.url})
         else:
             return Response({"error": "No avatar file provided"}, status=status.HTTP_400_BAD_REQUEST)

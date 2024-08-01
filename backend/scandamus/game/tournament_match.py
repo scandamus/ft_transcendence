@@ -235,7 +235,7 @@ def create_match(tournament, player1, player2, round, game_name='pong'):
             status='before'
         )
         match.save(update_fields=['tournament', 'player1', 'player2', 'round', 'game_name', 'status'])
-    logger.info(f'//-- Match save() on: create_match')
+        logger.info(f'//-- Match save() on: create_match')
     tournament.matches.add(match)
     tournament.save(update_fields=['matches'])
     logger.info(f'//-- tournament save() on: create_match')
@@ -289,5 +289,6 @@ def reset_player_status_if_in_tournament(tournament):
             if player.status in ['tournament', 'tournament_match', 'tournament_room', 'tournament_prepare']:
                 player.status = 'waiting'
                 player.save(update_fields=['status'])
+                logger.info(f'//-- player save() on: reset_player_status_if_in_tournament')
         except Player.DoesNotExist:
             pass

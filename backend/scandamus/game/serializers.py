@@ -126,6 +126,7 @@ class MatchSerializer(serializers.ModelSerializer):
         instance = super().update(instance, validated_data)
         instance.set_winner()
         # instance.save() update(), 及びset_winner()内で保存済み
+        logger.info(f'//-- Match save() on: MatchSerializer update')
 
         if instance.tournament and instance.round:
             if instance.tournament.status == 'ongoing':

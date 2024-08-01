@@ -42,6 +42,7 @@ def check_tournament_start_times():
     logger.info(f'Tournament {tournament.name} is preparing')
     tournament.status = 'preparing'
     tournament.save(update_fields=['status'])
+    logger.info(f'//-- tournament save() on: check_tournament_start_times 1')
 
     tournament_name = tournament.name
         
@@ -140,6 +141,7 @@ def create_initial_round(tournament_id, entried_players_id_list):
     for player in offline_players:
         player.status = 'waiting'
         player.save(update_fields=['status'])
+        logger.info(f'//-- player save() on: create_initial_round')
 
     player_list = list(online_players)
     random.shuffle(player_list)
