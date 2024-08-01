@@ -206,7 +206,7 @@ export default class GamePlay extends PageBase {
                     }));
                     webSocketManager.closeWebSocket(this.containerId);
                     this.containerId = '';
-                    const tournamentId = sessionStorage.getItem("tournament_id");
+                    const tournamentId = sessionStorage.getItem('tournament_id');
                     if (tournamentId) {
                         sessionStorage.setItem('tournament_status', 'waiting_round');
                         window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);

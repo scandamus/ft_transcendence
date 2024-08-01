@@ -15,6 +15,7 @@ export default class TournamentDetail extends PageBase {
         super(params);
         TournamentDetail.instance = this;
         //setTitleはrenderHtml()で取得後に行う
+        //トーナメントログを見る場合もあるのでstorageではなくparamから取得
         this.id = params.id.split(':')[1];
         this.tournamentData = ``;
         this.renderedRounds = new Set();
@@ -122,7 +123,7 @@ export default class TournamentDetail extends PageBase {
             if (blockStart && this.tournamentData.start) {
                 blockStart.innerHTML = `${formatDateToLocal(this.tournamentData.start)} START`;
             }
-            const result = (this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
+            const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
             const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
             const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
             if (result) {

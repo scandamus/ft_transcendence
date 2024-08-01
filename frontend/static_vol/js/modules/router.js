@@ -33,7 +33,7 @@ const routes = {
 //pathを正規表現に変換
 const pathToRegex = (path) => new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '/?$');
 
-const getParams = (matchRoute) => {
+const getParams = async (matchRoute) => {
     if (!matchRoute || !matchRoute.route || !matchRoute.route.path || !matchRoute.result) {
         return {};
     }
@@ -66,7 +66,8 @@ const addLinkPageEvClick = (linkPages) => {
 }
 
 const replaceView = async (matchRoute) => {
-    const view = new matchRoute.route.view(getParams(matchRoute));
+    const params = await getParams(matchRoute);
+    const view = new matchRoute.route.view(params);
     if (view) {
         //モーダルが開いていたら閉じる
         const elModal = document.querySelector('.blockModal');
