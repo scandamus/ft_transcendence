@@ -85,18 +85,27 @@ const replaceView = async (matchRoute) => {
 
 const router = async (accessToken) => {
     let matchRoute;
-    if (accessToken instanceof PopStateEvent) {
-        accessToken = getToken('accessToken');
+    const flagPopState = (accessToken instanceof PopStateEvent);
 
+    //gameからの移動には確認モーダル
+    if ((GamePlay.instance && GamePlay.instance.containerId) || (GamePlayQuad.instance && GamePlayQuad.instance.containerId)) {
         const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
-        // wrapModal is-show
-        if (btnReturnToGame) {
+        //確認モーダル表示中かつ履歴移動=>ゲームに戻る
+        if (btnReturnToGame && flagPopState) {
             closeModalOnReturnToGame();
             return;
+        } else if (!btnReturnToGame) {
+            //まだ確認モーダルが表示されていない
+            showModalExitGame();
+            return;
         }
+    } else if (flagPopState) {
+        //ゲーム以外からの履歴移動
+        accessToken = getToken('accessToken');
 
+        //gameへの移動はdashboardにリダイレクト
         if (location.pathname.startsWith('/game/pong')) {
-            window.history.pushState({}, '', routes.dashboard.path);
+            window.history.pushState(null, null, routes.dashboard.path);
             matchRoute = {
                 route: routes.dashboard,
                 result: routes.dashboard.path
@@ -108,11 +117,6 @@ const router = async (accessToken) => {
             await replaceView(matchRoute);
             return;
         }
-    }
-    //game進行中のexit
-    if ((GamePlay.instance && GamePlay.instance.containerId) || (GamePlayQuad.instance && GamePlayQuad.instance.containerId)) {
-        showModalExitGame();
-        return ;
     }
 
     console.log('router in');
