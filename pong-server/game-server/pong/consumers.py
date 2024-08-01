@@ -70,8 +70,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 del self.players_ids[self.match_id]
             else:
                 if self.scheduled_task is not None:
-                    self.scheduled_task.cancel()
-                    self.scheduled_task = None
+                    await self.cancel_task('scheduled_task')
                     if self.game_continue:
                         new_next_master = sorted(self.players_ids[self.match_id])[0]
                         await self.channel_layer.group_send(self.room_group_name, {
@@ -255,13 +254,15 @@ class PongConsumer(AsyncWebsocketConsumer):
         # 問題を発生させるには上をコメントアウトして下の#を取る
         # await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
 
-        if self.scheduled_task is not None:
-            self.scheduled_task.cancel()
-            self.scheduled_task = None
-        if self.is_tournament:
-            if self.game_timer_task is not None:
-                self.game_timer_task.cancel()
-                self.game_timer_task = None
+        # if self.scheduled_task is not None:
+        #     self.scheduled_task.cancel()
+        #     self.scheduled_task = None
+        # if self.is_tournament:
+        #     if self.game_timer_task is not None:
+        #         self.game_timer_task.cancel()
+        #         self.game_timer_task = None
+        await self.cancel_task('scheduled_task')
+        await self.cancel_task('game_timer_task')
 
     async def send_game_over_message(self, event):
         message = event['message']
@@ -376,6 +377,20 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.left_paddle.length = left_paddle_data['vertical']
         self.left_paddle.score = left_paddle_data['score']
 
+    async def cancel_task(self, task_name):
+        task = getattr(self, task_name)
+        if task is not None:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                logger.info(f'cancel_task: {task}')
+            except Exception as e:
+                logger.error(f'Error occurred in cancel_task: {task} {str(e)}')
+            setattr(self, task_name, None)
+        else:
+            pass
+
     @database_sync_to_async
     def authenticate_jwt(self, jwt):
         try:
@@ -428,9 +443,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if state == 'start':
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
-            if self.start_game_timer_task is not None:
-                self.start_game_timer_task.cancel()
-                self.start_game_timer_task = None
+            await self.cancel_task('start_game_timer_task')
         if self.players_id == master_id:
             logger.error(f'New master appointed: {self.player_name}')
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
