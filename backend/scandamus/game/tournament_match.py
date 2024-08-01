@@ -273,7 +273,7 @@ def create_matches(tournament, players, round_number):
    #Match.objects.bulk_create(matches)
     with transaction.atomic():
         tournament.matches.add(*matches)
-        tournament.save(update_fields=['bye_player', 'matches'])
+        tournament.save(update_fields=['bye_player'])
         logger.info(f'//-- tournament save() on: create_matches')
     if tournament.bye_player:
         notify_bye_player(tournament)
