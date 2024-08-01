@@ -1,4 +1,5 @@
 usage:
+`npm install ws dotenv readline`
 `export USERNAME PASSWORD`
 `node cli/main.js`
 
