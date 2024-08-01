@@ -2,12 +2,14 @@ import json
 import jwt
 import logging
 
+from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
 from .models import Player
 from .models import Tournament, Entry
-from .serializers import TournamentSerializer, EntrySerializer
+from .serializers import TournamentSerializer, EntrySerializer, async_validate_start_time
 from django.conf import settings
 from django.db import transaction, IntegrityError
+from rest_framework import serializers
 from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
 from django.utils.timezone import make_aware, now as django_now
@@ -30,6 +32,36 @@ async def handle_create_tournament(consumer, data):
     if not player:
         logger.error(f"No player found for user: {user.username}")
     serializer = TournamentSerializer(data = data)
+    start_time = data.get('start')
+    if isinstance(start_time, str):
+        start_time = datetime.fromisoformat(start_time)
+    custom_errors = {}
+    try:
+        await async_validate_start_time(start_time)
+    except serializers.ValidationError as e:
+        if 'start' in custom_errors:
+            custom_errors['start'].extend(e.detail)
+        else:
+            custom_errors['start'] = e.detail
+
+    if custom_errors:
+        await consumer.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': 'invalidTournamentStart',
+            'message': custom_errors
+        }))
+
+    name = data.get('name')
+    existing_tournament = await sync_to_async(lambda: Tournament.objects.filter(name=name).first())()
+    if existing_tournament:
+        await consumer.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': 'invalidTournamentTitle',
+            'message': {'name': ['tournamentNameAlreadyExists']}
+        }))
+    if custom_errors or existing_tournament:
+        return
+
     if serializer.is_valid():
         tournament, created = await create_tournament(data)
         if tournament is None:
@@ -45,13 +77,11 @@ async def handle_create_tournament(consumer, data):
         else:
             await consumer.send(text_data=json.dumps({
                 'type': 'tournament',
-                'action': 'alreadyExists',
-                'name': tournament.name,
-                'start': tournament.start.isoformat(),
-                'period': tournament.start.isoformat(),
+                'action': 'invalidTournamentTitle',
+                'message': {'name': ['tournamentNameAlreadyExists']}
             }))
-    else:
-        logger.error(f"invalid tournament name: {serializer.errors}")
+    else: #charTypeなどフロントで弾けているはずのエラー
+        logger.error(f"invalid tournament data: {serializer.errors}")
         await consumer.send(text_data=json.dumps({
             'type': 'tournament',
             'action': 'invalidTournamentTitle',
@@ -74,8 +104,6 @@ def create_tournament(data):
         start = datetime.fromisoformat(start)    
         start_utc = start
         logger.info(f'start: {start}, start(utc): {start_utc}, min_start(utc): {min_start}')
-        if start_utc < min_start:
-            raise ValueError(f'Start date must be at least {min_offset} minutes in the future')
 
         tournament, created = Tournament.objects.get_or_create(
             name=data['name'],
@@ -87,7 +115,7 @@ def create_tournament(data):
         logger.info(f'Tournament with title "{data["name"]}" already exists')
         tournament = Tournament.objects.get(name=data['name'])
         return tournament, False
-    except ValueError as e: # 時刻がCREATE_TOURNAMENT_TIMELIMIT_MIN分より前だった場合
+    except ValueError as e:
         logger.error(f'Validation error: {e}')
         return None, None
     except Exception as e:
@@ -115,7 +143,7 @@ async def handle_entry_tournament(consumer, data):
     if serializer.is_valid():
         tournament, nickname = await get_tournament_and_nickname(consumer, data)
         if tournament is None:
-            await send_entry_error(consumer, 'invalidTournament')
+            await send_entry_error(consumer, 'invalidEntryRequest')
             return
 
         entry = await get_entry(tournament, player)
@@ -130,7 +158,7 @@ async def handle_entry_tournament(consumer, data):
             return
 
         result = await create_entry(tournament, player, nickname)
-        if result is 'capacityFull':
+        if result == 'capacityFull':
             logger.info(f'{tournament.name} capacity is full')
             await send_entry_error(consumer, 'capacityFull')
             return
@@ -198,7 +226,7 @@ def get_tournament_and_nickname(consumer, data):
             return None, None
         
         tournament = Tournament.objects.get(id=id)
-        if tournament or tournament.status is not 'upcoming': # 本来upcomingではないリクエストは来ない
+        if tournament and tournament.status == 'upcoming': # 本来upcomingではないリクエストは来ない
             logger.info(f'{tournament} found in database')
             return tournament, nickname
         logger.error(f'{name} is not found')

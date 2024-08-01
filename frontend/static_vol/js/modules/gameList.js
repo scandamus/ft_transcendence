@@ -4,13 +4,17 @@ import { fetchMatchLog } from "./gameApi.js";
 import { labels } from "./labels.js";
 import { SiteInfo } from "./SiteInfo.js";
 import { addListenSendFriendRequest } from "./friendListener.js";
+import { formatDateToLocal } from "./formatDateToLocal.js";
 
 const getMatchLog = async () => {
     console.log('getMatchLog');
     try {
         const logList = await fetchMatchLog(false);
         const listRequestWrapper = document.querySelector('.blockDashboardLog_listMatch');
-        if (!logList || logList.length === 0) {
+        if (!logList) {
+            throw new Error(`Failed to get MatchLog`);
+        }
+        else if (logList && logList.length === 0) {
             listRequestWrapper.innerHTML = `<p>${labels.match.msgNoMatch}</p>`
         } else {
             const siteInfo = new SiteInfo();
@@ -47,11 +51,14 @@ const getMatchLog = async () => {
 
                 // 全体のHTMLを結合
                 const requestElement = `
-                    <div class="blockMatch">
-                        ${myResultHTML}
-                        <p class="blockMatch_vs">VS</p>
-                        <div class="blockMatch_opponents">
-                            ${opponentsResultHTML}
+                    <div class="blockMatchWrap">
+                        <p class="blockMatchWrap_date">${formatDateToLocal(logItem.last_updated)}</p>
+                        <div class="blockMatch">
+                            ${myResultHTML}
+                            <p class="blockMatch_vs">VS</p>
+                            <div class="blockMatch_opponents">
+                                ${opponentsResultHTML}
+                            </div>
                         </div>
                     </div>
                 `;

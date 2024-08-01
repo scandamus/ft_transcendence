@@ -5,6 +5,8 @@ import { labels } from '../modules/labels.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
+import { isTouchDevice } from "../modules/judgeTouchDevice.js";
+import { buttonControlManager } from "../modules/ButtonControlManager.js";
 
 export default class GamePlayQuad extends PageBase {
     static instance = null;
@@ -19,6 +21,7 @@ export default class GamePlayQuad extends PageBase {
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.containerId = '';
+        this.player_name = sessionStorage.getItem('player_name');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
         // sound
@@ -31,8 +34,8 @@ export default class GamePlayQuad extends PageBase {
 
     async renderHtml() {
         const listPlayer = JSON.parse(sessionStorage.getItem('all_usernames'));
-        return `
-           <div class='playBoardWrap playBoardWrap-quad'>
+        let resultHtml = `
+            <div class='playBoardWrap playBoardWrap-quad'>
                 <ul class='listPlayerActiveMatch listPlayerActiveMatch-quad-first-half'>
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player1"><img src="${listPlayer[0].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[0].username}</span></li>
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player3"><img src="${listPlayer[2].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[2].username}</span></li>
@@ -41,9 +44,24 @@ export default class GamePlayQuad extends PageBase {
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player2"><img src="${listPlayer[1].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[1].username}</span></li>
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player4"><img src="${listPlayer[3].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[3].username}</span></li>
                 </ul>
-                <canvas id='playBoard' width='650' height='650'></canvas>
-            </div>
-        `;
+                <canvas id='playBoard' width='650' height='650'></canvas>`;
+        if (isTouchDevice()) {
+            if (this.player_name === 'player1' || this.player_name === 'player2') {
+                resultHtml += `
+                    <ol class="listButtonControl listButtonControl-quad listButtonControl-updown listButtonControl-${this.player_name}">
+                        <li class="listButtonControl_btn listButtonControl_btn-top"><button type="button">↑</button></li>
+                        <li class="listButtonControl_btn listButtonControl_btn-bottom"><button type="button">↓</button></li>
+                    </ol>`;
+            } else if (this.player_name === 'player3' || this.player_name === 'player4') {
+                resultHtml += `
+                    <ol class="listButtonControl listButtonControl-quad listButtonControl-leftright listButtonControl-${this.player_name}">
+                        <li class="listButtonControl_btn listButtonControl_btn-left"><button type="button">←</button></li>
+                        <li class="listButtonControl_btn listButtonControl_btn-right"><button type="button">→</button></li>
+                    </ol>`;
+            }
+        }
+        resultHtml += `</div>`;
+        return resultHtml;
     }
 
     async loadSounds() {
@@ -112,13 +130,17 @@ export default class GamePlayQuad extends PageBase {
             const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById('playBoard');
+            if (isTouchDevice()) {
+                const elControl = canvas.closest('div').querySelector('.listButtonControl');
+                buttonControlManager.listenButtonControl(elControl, this);
+            }
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext('2d');
             await this.loadSounds();
 
             function drawBackground() {
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = '#00000066';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
@@ -126,7 +148,7 @@ export default class GamePlayQuad extends PageBase {
                 ctx.lineWidth = line_width;
                 ctx.lineJoin = 'miter';
                 ctx.lineCap = 'butt'
-                ctx.strokeStyle = 'red';
+                ctx.strokeStyle = '#4C4C4C';
                 const offset = line_width / 2;
 
                 // 左上
@@ -263,6 +285,7 @@ export default class GamePlayQuad extends PageBase {
         document.removeEventListener('keydown', this.keyDownHandler, false);
         document.removeEventListener('keyup', this.keyUpHandler, false);
         sessionStorage.removeItem('all_usernames');
+        sessionStorage.removeItem('player_name');
         GamePlayQuad.instance = null;
         super.destroy();
     }

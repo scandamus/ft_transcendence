@@ -1,10 +1,13 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_ar = {
     langCode: 'ar',
     langName: 'العربية',
     common: {
-        switchLang: ''
+        switchLang: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Home',
@@ -38,6 +41,8 @@ export const labels_ar = {
         passwordIsNotSame: 'الرجاء إدخال كلمة المرور نفسها',
         isExists: 'اسم المستخدم هذا قيد الاستخدام',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'يُرجى التحقق من اسم المستخدم وكلمة المرور',
         loginError2: 'تعذر تسجيل الدخول',
     },
@@ -70,6 +75,7 @@ export const labels_ar = {
         labelReceivedRequest: 'طلبات الصداقة المستلمة',
         labelRecommended: 'توصيات لك',
         msgNoRecommended: 'لا توجد توصية',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',
@@ -105,8 +111,37 @@ export const labels_ar = {
         labelTournamentLog: 'سجلات البطولة',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
+        labelNextMatch: '',
+        labelRound1: '',
+        labelRound2: '',
+        labelRound3: '',
+        labelRoundThirdPlaceRound: '',
+        labelRoundSemiFinal: '',
+        labelRoundFinal: '',
+        labelByePlayer: '',
+        labelWinner: '<strong>1</strong>',
+        labelSecondPlace: '<strong>2</strong>',
+        labelThirdPlace: '<strong>3</strong>',
+        msgNoUpcoming: '',
+        msgNoOngoing: '',
+        msgNoFinished: '',
+        msgNoEntered: '',
+        labelWaitBye: '',
+        msgWaitBye: '<p></p>',
+        labelWaitLose: '',
+        msgWaitLose: '<p></p>',
+        labelWaitStart: '',
+        msgWaitStart: '<p></p>',
+        labelWaitRound: '',
+        msgWaitRound: '<p></p>',
+        labelWaitSemiFinal: '',
+        msgWaitSemiFinal: '<p></p>',
+        labelWaitFinal: '',
+        msgWaitFinal: '<p></p>',
+        labelFinalOnGoing: '',
+        msgFinalOnGoing: '<p></p>',
     },
     modal: {
         labelNickname: 'اللقب',
@@ -133,9 +168,14 @@ export const labels_ar = {
         acceptRequestSuccess: 'أنت الآن صديق ل $name ',
         declineRequestSuccess: 'م حذف طلب صداقة ل $name ',
         removeSuccess: 'لقد قمت بإلغاء صداقة $name ',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: 'لقد تلقيت طلب صداقة من $name ',
         accepted: 'أنت الآن صديق ل $name ',
         removed: 'لم تعد صديقاً ل $name ',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'ستبدأ المباراة',
