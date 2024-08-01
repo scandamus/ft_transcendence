@@ -254,13 +254,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         # 問題を発生させるには上をコメントアウトして下の#を取る
         # await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
 
-        # if self.scheduled_task is not None:
-        #     self.scheduled_task.cancel()
-        #     self.scheduled_task = None
-        # if self.is_tournament:
-        #     if self.game_timer_task is not None:
-        #         self.game_timer_task.cancel()
-        #         self.game_timer_task = None
         await self.cancel_task('scheduled_task')
         await self.cancel_task('game_timer_task')
 
