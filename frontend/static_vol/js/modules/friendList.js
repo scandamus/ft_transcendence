@@ -24,11 +24,11 @@ const updateFriendsList = async (pageInstance) => {
             shuffleArray(friends);
         }
         const listFriendsWrapper = document.querySelector('.blockFriends_friends');
-        if (!friends) {
-            throw new Error(`Failed to get friends`);
-        }
-        else if (friends && friends.length === 0) {
-            listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`
+        if (!friends || (friends && friends.length === 0)) {
+            listFriendsWrapper.innerHTML = `<p>${labels.friends.msgNoFriends}</p>`;
+            if (!friends) {
+                throw new Error(`Failed to get friends`);
+            }
         } else {
             listFriendsWrapper.innerHTML = '';
             for (let i = 0; i < friends.length; i++) {
@@ -59,7 +59,6 @@ const updateFriendsList = async (pageInstance) => {
             resetListenFriendList(pageInstance);
         }
         pageInstance.numFriends = friends.length;
-        //console.log(`/////numFriends: ${pageInstance.numFriends}`)
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }
@@ -71,12 +70,12 @@ const updateFriendRequestList = async (pageInstance) => {
         const requests = await fetchFriendRequests(false);
         const secRequestWrapper = document.querySelector('.blockFriendRequest');
         const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (!requests) {
-            throw new Error(`Failed to get friend requests`);
-        }
-        else if (requests && requests.length === 0) {
+        if (!requests ||(requests && requests.length === 0)) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
+            }
+            if (!requests) {
+                throw new Error(`Failed to get friend requests`);
             }
         } else {
             if (secRequestWrapper.classList.contains('is-noRequest')) {
@@ -114,11 +113,11 @@ const updateRecommend = async (pageInstance) => {
     try {
         const RecommendedList = await fetchRecommend(false);
         const RecommendedWrapper = document.querySelector('.blockFriendRecommended_friends');
-        if (!RecommendedList) {
-            throw new Error(`Failed to get RecommendedList`);
-        }
-        else if (RecommendedList && RecommendedList.length === 0) {
-            RecommendedWrapper.innerHTML = `<p>${labels.friends.msgNoRecommended}</p>`
+        if (!RecommendedList || (RecommendedList && RecommendedList.length === 0)) {
+            RecommendedWrapper.innerHTML = `<p>${labels.friends.msgNoRecommended}</p>`;
+            if (!RecommendedList) {
+                throw new Error(`Failed to get RecommendedList`);
+            }
         } else {
             RecommendedWrapper.innerHTML = '';
             RecommendedList.forEach(player => {

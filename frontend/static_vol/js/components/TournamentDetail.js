@@ -113,6 +113,8 @@ export default class TournamentDetail extends PageBase {
         try {
             this.tournamentData = await fetchTournamentDetail(this.id, false);
             if (!this.tournamentData) {
+                this.title = labels.tournament.msgFailGetTournamentDetail;
+                this.setTitle(this.title);
                 throw new Error(`Failed to get Tournament Detail`);
             }
             this.title = this.tournamentData.name;

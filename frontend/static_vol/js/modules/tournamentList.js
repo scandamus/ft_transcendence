@@ -139,10 +139,11 @@ const updateFinishedTournamentList = async (pageInstance) => {
 const getTournamentLog = async (pageInstance) => {
     try {
         const tournaments = await fetchTournaments('finished', false);
+        const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         if (!tournaments) {
+            listWrapper.innerHTML = `<p>${labels.tournament.msgNoEntered}</p>`;
             throw new Error(`Failed to get Tournament log`);
         }
-        const listWrapper = document.querySelector('.blockDashboardLog_listTournament');
         listWrapper.innerHTML = '';
         tournaments.list.forEach(tournament => {
             if (tournament.nickname) {

@@ -144,6 +144,7 @@ export const labels_ja = {
         msgWaitFinal: '<p>対戦開始までお待ちください</p>',
         labelFinalOnGoing: '決勝戦進行中',
         msgFinalOnGoing: '<p>決勝戦終了までお待ちください</p>',
+        msgFailGetTournamentDetail: 'トーナメント詳細が取得できませんでした',
     },
     modal: {
         labelNickname: 'ニックネーム',
