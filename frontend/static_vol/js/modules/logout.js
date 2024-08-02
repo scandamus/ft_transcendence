@@ -14,9 +14,6 @@ import GamePlayQuad from "../components/GamePlayQuad.js";
 const fetchLogout = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            throw new Error('accessToken is invalid.');
-        }
         const response = await fetch('/api/players/logout/', {
             method: 'POST',
             headers: {

@@ -3,9 +3,6 @@ import { getToken, refreshAccessToken } from './token.js';
 const fetchFriends = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         const response = await fetch('/api/friends/friends/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -33,9 +30,6 @@ const fetchFriends = async (isRefresh) => {
 const fetchFriendRequests = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         const response = await fetch('/api/friends/requests/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -63,9 +57,6 @@ const fetchFriendRequests = async (isRefresh) => {
 const fetchRecommend = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         const response = await fetch('/api/players/recommend/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`

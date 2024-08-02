@@ -57,9 +57,6 @@ const getUserInfo = async () => {
 const fetchLevel = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         const response = await fetch('/api/players/level/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`

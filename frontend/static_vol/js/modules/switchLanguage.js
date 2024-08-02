@@ -56,9 +56,6 @@ const getLang = () => {
 const updateDbLang = async (lang, isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         fetch('/api/players/lang/', {
             method: 'PUT',
             headers: {

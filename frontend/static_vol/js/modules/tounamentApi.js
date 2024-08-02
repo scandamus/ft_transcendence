@@ -3,9 +3,6 @@ import { getToken, refreshAccessToken } from './token.js';
 const fetchTournaments = async (listType, isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         const response = await fetch(`/api/tournaments/list/${listType}/`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -33,9 +30,6 @@ const fetchTournaments = async (listType, isRefresh) => {
 const fetchTournamentDetail = async (id, isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null || !id) {
-            return Promise.resolve(null);
-        }
         const response = await fetch(`/api/tournaments/tournaments/${id}/result/`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
