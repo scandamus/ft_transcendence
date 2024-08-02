@@ -124,6 +124,11 @@ class MatchSerializer(serializers.ModelSerializer):
         old_status = instance.status
         new_status = validated_data.get('status', instance.status)
         instance = super().update(instance, validated_data)
+
+        if new_status == 'ongoing':
+            return instance
+
+        # if new_status == 'after' or new_status == 'canceled':
         instance.set_winner()
         instance.save()
 
