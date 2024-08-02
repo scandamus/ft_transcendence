@@ -42,7 +42,7 @@ const getUserInfo = async () => {
     return fetchUserInfo(false)
         .then((userData) => {
             if (!userData) {
-                return Promise.resolve(null);
+                throw new Error(`Failed to fetchUserInfo`);
             }
             const siteInfo = new SiteInfo();
             siteInfo.setUsername(userData.username);
