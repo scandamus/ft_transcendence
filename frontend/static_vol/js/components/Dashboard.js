@@ -254,10 +254,18 @@ export default class Dashboard extends PageBase {
         const btnWrapUpdateAvatar = document.querySelector('.blockAvatar_button');
         const listButton = document.querySelector('.blockAvatar_listButton');
         this.removeListenUploadAvatar();
-        btnWrapUpdateAvatar.classList.add('is-show');
-        listButton.classList.remove('is-show');
-        imgAvatar.src = this.siteInfo.getAvatar();
-        inputFile.value = '';
+        if (btnWrapUpdateAvatar) {
+            btnWrapUpdateAvatar.classList.add('is-show');
+        }
+        if (listButton) {
+            listButton.classList.remove('is-show');
+        }
+        if (imgAvatar) {
+            imgAvatar.src = this.siteInfo.getAvatar();
+        }
+        if (inputFile) {
+            inputFile.value = '';
+        }
     }
 
     removeListenUploadAvatar() {
