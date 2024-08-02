@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from players.models import Player
 from asgiref.sync import async_to_sync, sync_to_async
+from django.utils import timezone
 import logging
 import json
 
@@ -287,18 +288,31 @@ class Match(models.Model):
                 self.winner = self.player1
             else: # トーナメント以外では必ず勝敗を決するまで試合が続行されるためあり得ないが一応
                 self.winner = None
+        elif self.staus == 'canceled':
+            logger.info(f'No winner for canceled match_id:{self.id}')
+            self.winner = None
+
+    def check_timeout(self, before_match_timeout_sec=60):
+        from .serializers import MatchSerializer
+        current_time = timezone.now()
+        elapsed_time = (current_time - self.last_updated).total_seconds()
+        is_timeout = elapsed_time > before_match_timeout_sec
+        logger.info(f'now={current_time}, last_updated={self.last_updated}, elapsed_time={elapsed_time}')
+        if self.status == 'before' and is_timeout:
+            self.status = 'canceled'
+            if self.tournament and self.round: # for tournament match
+                logger.info('トーナメントで両者棄権')
+                self.score1 = -1
+                self.score2 = -1
+                self.save(update_fields=['status', 'score1', 'score2'])
+            else: # for lounge match, friend match
+                self.save(update_fields=['status'])
+            serializer = MatchSerializer()
+            serializer.reset_all_players_status(self) # playerのstatusをwaitingに
 
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-
-    # def send_jwt(self):
-    #     from .match_utils import send_tournament_match_jwt
-
-    #     logger.info('send_jwt')
-    #     if self.tournament:
-    #         logger.info('if self.tournament')
-    #         async_to_sync(send_tournament_match_jwt)(self)
 
 class Entry(models.Model):
     tournament = models.ForeignKey(
