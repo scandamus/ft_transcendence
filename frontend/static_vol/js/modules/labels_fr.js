@@ -144,7 +144,6 @@ export const labels_fr = {
         msgWaitFinal: '<p></p>',
         labelFinalOnGoing: '',
         msgFinalOnGoing: '<p></p>',
-        msgFailGetTournamentDetail: '',
     },
     modal: {
         labelNickname: 'pseudo',

@@ -11,11 +11,11 @@ const getMatchLog = async () => {
     try {
         const logList = await fetchMatchLog(false);
         const listRequestWrapper = document.querySelector('.blockDashboardLog_listMatch');
-        if (!logList || (logList && logList.length === 0)) {
-            listRequestWrapper.innerHTML = `<p>${labels.match.msgNoMatch}</p>`;
-            if (!logList) {
-                throw new Error(`Failed to get MatchLog`);
-            }
+        if (!logList) {
+            throw new Error(`Failed to get MatchLog`);
+        }
+        else if (logList && logList.length === 0) {
+            listRequestWrapper.innerHTML = `<p>${labels.match.msgNoMatch}</p>`
         } else {
             const siteInfo = new SiteInfo();
             const myUsername = siteInfo.getUsername();

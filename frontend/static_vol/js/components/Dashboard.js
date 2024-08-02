@@ -109,7 +109,6 @@ export default class Dashboard extends PageBase {
             fetchLevel()
                 .then((data) => {
                     if (!data) {
-                        this.hiddenMatchStats();
                         throw new Error(`Failed to get player stats`);
                     }
                     this.displayMatchStats(data);
@@ -132,11 +131,6 @@ export default class Dashboard extends PageBase {
                 <p class="unitWinCount"><span>${textWin}</span><span>${textLoss}</span></p>
             `;
         }
-    }
-
-    hiddenMatchStats() {
-        const statsWrap = document.querySelector('.blockPlayerDetail_stats');
-        statsWrap.classList.add('is-hide')
     }
 
     listenUpdateAvatar() {
