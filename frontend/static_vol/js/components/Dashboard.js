@@ -201,9 +201,6 @@ export default class Dashboard extends PageBase {
     fetchUploadAvatar(formData, isRefresh) {
         try {
             const accessToken = getToken('accessToken');
-            if (accessToken === null) {
-                return Promise.resolve(null);
-            }
             fetch('/api/players/avatar/', {
                 method: 'PUT',
                 headers: {
@@ -235,7 +232,7 @@ export default class Dashboard extends PageBase {
                 })
                 .catch((error) => {
                     console.error('Error upload avatar', error);
-                    addNotice(labels.dashboard.msgInvalidFile, true);
+                    addNotice(labels.dashboard.msgFailAvatarUpload, true);
                     this.cancelAvatar();
                 });
         } catch (error) {

@@ -54,6 +54,7 @@ export const labels_en = {
         labelCancel: 'cancel',
         labelUpload: 'upload',
         msgAvatarSwitched: 'avatar successfully changed',
+        msgFailAvatarUpload: 'Failed to change the avatar',
         msgInvalidFile: 'file is invalid',
         msgInvalidFileFormat: 'invalid file format (only .jpg and .png are accepted)',
         labelViewAllFriends: 'View all friends',
