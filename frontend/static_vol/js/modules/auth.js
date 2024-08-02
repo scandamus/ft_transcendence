@@ -7,30 +7,34 @@ import { labels } from './labels.js';
 import { SiteInfo } from "./SiteInfo.js";
 
 const fetchUserInfo = async (isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        return Promise.resolve(null);//logout状態なら何もしない
-    }
-    const response = await fetch('/api/players/userinfo/', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        },
-    });
-    if (response.ok) {
-        return await response.json();
-    } else if (response.status === 401) {
-        if (!isRefresh) {
-            //初回のaccessToken expiredならrefreshして再度ログイン
-            if (!await refreshAccessToken()) {
-                throw new Error('fail refresh token');
-            }
-            return await fetchUserInfo(true);
-        } else {
-            throw new Error('refreshed accessToken is invalid.');
+    try {
+        const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            return Promise.resolve(null);//logout状態なら何もしない
         }
-    } else {
-        throw new Error(`fetchUserInfo error. status: ${response.status}`);
+        const response = await fetch('/api/players/userinfo/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+        });
+        if (response.ok) {
+            return await response.json();
+        } else if (response.status === 401) {
+            if (!isRefresh) {
+                //初回のaccessToken expiredならrefreshして再度ログイン
+                if (!await refreshAccessToken()) {
+                    throw new Error('fail refresh token');
+                }
+                return await fetchUserInfo(true);
+            } else {
+                throw new Error('refreshed accessToken is invalid.');
+            }
+        } else {
+            throw new Error(`fetchUserInfo error. status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error fetch UserInfo: ', error);
     }
 }
 
@@ -51,11 +55,11 @@ const getUserInfo = async () => {
 }
 
 const fetchLevel = async (isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        return Promise.resolve(null);
-    }
     try {
+        const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            return Promise.resolve(null);
+        }
         const response = await fetch('/api/players/level/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -73,7 +77,9 @@ const fetchLevel = async (isRefresh) => {
             throw new Error(`Failed to fetch level: ${response.status}`);
         }
         const data = await response.json();
-        console.log('fetchLevel API response: ', data);
+        if (!data) {
+            throw new Error(`Failed to fetch level: ${response.status}`);
+        }
         return data;
     } catch (error) {
         console.error('Error fetch level: ', error);

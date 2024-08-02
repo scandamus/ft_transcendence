@@ -54,41 +54,46 @@ const getLang = () => {
 };
 
 const updateDbLang = async (lang, isRefresh) => {
-    console.log(`updateDbLang: ${lang}`)
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        return Promise.resolve(null);
-    }
-    console.log(`updateDbLang: ${lang}`)
-    fetch('/api/players/lang/', {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({lang}),
-    })
-        .then( async (response) => {
-            if (!response.ok) {
-                if (!isRefresh) {
-                    if (!await refreshAccessToken()) {
-                        throw new Error('fail refresh token');
+    try {
+        const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            return Promise.resolve(null);
+        }
+        fetch('/api/players/lang/', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({lang}),
+        })
+            .then( async (response) => {
+                if (!response.ok) {
+                    if (!isRefresh) {
+                        if (!await refreshAccessToken()) {
+                            throw new Error('fail refresh token');
+                        }
+                        return await updateDbLang(lang, true);
+                    } else {
+                        throw new Error('refreshed accessToken is invalid.');
                     }
-                    return await updateDbLang(lang, true);
-                } else {
-                    throw new Error('refreshed accessToken is invalid.');
+                    throw new Error(`Failed to update language: ${response.status}`);
+                 }
+                return response.json();
+            })
+            .then((data) => {
+                if (!data) {
+                    throw new Error(`Failed to updateDbLang`);
                 }
-                throw new Error(`Failed to update language: ${response.status}`);
-             }
-            return response.json();
-        })
-        .then((data) => {
-            console.log('Language updated successfully:', data.message);
-            return data;
-        })
-        .catch((error) => {
-            console.error('Error update Lang', error);
-        });
+                console.log('Language updated successfully:', data.message);
+                return data;
+            })
+            .catch((error) => {
+                console.error('Error update Lang', error);
+            });
+    } catch (error) {
+        console.error('Error updateDbLang: ', error);
+    }
 }
 
 export { setLangAttrSelected, setLang, saveLang, getLang, updateDbLang };

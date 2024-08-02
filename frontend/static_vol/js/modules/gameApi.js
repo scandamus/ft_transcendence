@@ -1,11 +1,11 @@
 import { getToken, refreshAccessToken } from './token.js';
 
 const fetchMatchLog = async (isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        return Promise.resolve(null);
-    }
     try {
+        const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            return Promise.resolve(null);
+        }
         const response = await fetch('/api/players/matchlog/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`

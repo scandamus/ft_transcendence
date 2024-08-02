@@ -12,28 +12,32 @@ import GamePlayQuad from "../components/GamePlayQuad.js";
 //import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        throw new Error('accessToken is invalid.');
-    }
-    const response = await fetch('/api/players/logout/', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
+    try {
+        const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            throw new Error('accessToken is invalid.');
         }
-    });
-    if (response.status === 401) {
-        if (!isRefresh) {
-            //初回のaccessToken expiredならrefreshして再度ログイン
-            if (!await refreshAccessToken()) {
-                throw new Error('fail refresh token');
+        const response = await fetch('/api/players/logout/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
             }
-            await fetchLogout(true);
-        } else {
-            throw new Error('refreshed accessToken is invalid.');
+        });
+        if (response.status === 401) {
+            if (!isRefresh) {
+                //初回のaccessToken expiredならrefreshして再度ログイン
+                if (!await refreshAccessToken()) {
+                    throw new Error('fail refresh token');
+                }
+                await fetchLogout(true);
+            } else {
+                throw new Error('refreshed accessToken is invalid.');
+            }
+        } else if (!response.ok) {
+            throw new Error(`fetchLogout error. status: ${response.status}`);
         }
-    } else if (!response.ok) {
-        throw new Error(`fetchLogout error. status: ${response.status}`);
+    } catch (error) {
+        console.error('Error fetchLogout: ', error);
     }
 }
 

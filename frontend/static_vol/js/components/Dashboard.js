@@ -106,12 +106,15 @@ export default class Dashboard extends PageBase {
                 });
             getMatchLog().then(() => {});
             getTournamentLog(this).then(() => {});
-            fetchLevel().then((data) => {
-                if (!data) {
-                    throw new Error(`Failed to get player stats`);
-                }
-                this.displayMatchStats(data);
-            });
+            fetchLevel()
+                .then((data) => {
+                    if (!data) {
+                        throw new Error(`Failed to get player stats`);
+                    }
+                    this.displayMatchStats(data);
+                }).catch ((error) => {
+                    console.error('Failed to get level: ', error);
+                });
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
@@ -196,44 +199,48 @@ export default class Dashboard extends PageBase {
     }
 
     fetchUploadAvatar(formData, isRefresh) {
-        const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
-        fetch('/api/players/avatar/', {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-            body: formData
-        })
-            .then( async (response) => {
-                if (!response.ok) {
-                    if (!isRefresh) {
-                        if (!await refreshAccessToken()) {
-                            throw new Error('fail refresh token');
+        try {
+            const accessToken = getToken('accessToken');
+            if (accessToken === null) {
+                return Promise.resolve(null);
+            }
+            fetch('/api/players/avatar/', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: formData
+            })
+                .then( async (response) => {
+                    if (!response.ok) {
+                        if (!isRefresh) {
+                            if (!await refreshAccessToken()) {
+                                throw new Error('fail refresh token');
+                            }
+                            return await this.fetchUploadAvatar(formData, true);
+                        } else {
+                            throw new Error('refreshed accessToken is invalid.');
                         }
-                        return await this.fetchUploadAvatar(formData, true);
-                    } else {
-                        throw new Error('refreshed accessToken is invalid.');
+                     }
+                    return response.json();
+                })
+                .then( async (data) => {
+                    if (!data) {
+                        return;
                     }
-                 }
-                return response.json();
-            })
-            .then( async (data) => {
-                if (!data) {
-                    return;
-                }
-                this.siteInfo.setAvatar(data.newAvatar);
-                this.cancelAvatar();
-                await switchDisplayAccount();
-                addNotice(labels.dashboard.msgAvatarSwitched, false);
-            })
-            .catch((error) => {
-                console.error('Error upload avatar', error);
-                addNotice(labels.dashboard.msgInvalidFile, true);
-                this.cancelAvatar();
-            });
+                    this.siteInfo.setAvatar(data.newAvatar);
+                    this.cancelAvatar();
+                    await switchDisplayAccount();
+                    addNotice(labels.dashboard.msgAvatarSwitched, false);
+                })
+                .catch((error) => {
+                    console.error('Error upload avatar', error);
+                    addNotice(labels.dashboard.msgInvalidFile, true);
+                    this.cancelAvatar();
+                });
+        } catch (error) {
+            console.error('Error fetch UploadAvatar: ', error);
+        }
     }
 
     async uploadAvatar(ev) {
