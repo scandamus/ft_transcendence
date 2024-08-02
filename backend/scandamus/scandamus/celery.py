@@ -14,6 +14,10 @@ app.conf.beat_schedule = {
         'task': 'game.tasks.check_tournament_start_times',
         'schedule': 60.0,
     },
+    'check_matches_for_timeout': {
+        'task': 'game.tasks.check_matches_for_timeout',
+        'schedule': 120.0,
+    },
 }
 
 # app.autodiscover_tasks()
