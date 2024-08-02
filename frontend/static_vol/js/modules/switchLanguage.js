@@ -35,10 +35,22 @@ const setLang = async (elSelectLang, lang) => {
 }
 
 const saveLang = (lang) => {
-    if (localStorage.getItem('configLang') !== lang) {
-        localStorage.setItem('configLang', lang);
+    try {
+        if (localStorage.getItem('configLang') !== lang) {
+            localStorage.setItem('configLang', lang);
+        }
+        updateDbLang(lang, false)
+            .then((data) => {
+                if (!data) {
+                    throw new Error(`Failed to updateDbLang`);
+                }
+            })
+            .catch((error) => {
+                console.error('Failed to updateDbLang: ', error);
+            });
+    } catch (error) {
+        console.error('Failed to saveLang: ', error);
     }
-    updateDbLang(lang, false).then(() => {});
 }
 
 const getLang = () => {
@@ -56,6 +68,10 @@ const getLang = () => {
 const updateDbLang = async (lang, isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
+        if (accessToken === null) {
+            console.log(`//updateDbLang null`)
+            return Promise.resolve(null);
+        }
         fetch('/api/players/lang/', {
             method: 'PUT',
             headers: {
