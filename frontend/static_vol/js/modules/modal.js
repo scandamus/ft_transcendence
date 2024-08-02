@@ -197,7 +197,6 @@ const closeModalOnReturnToGame = () => {
             }
         })
         .then(() => {
-            window.history.pushState(null, null, `/game/${containerId}`);
             closeModal();
         });
 }
