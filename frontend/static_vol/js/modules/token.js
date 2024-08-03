@@ -3,17 +3,16 @@
 //sessionStorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
 import { SiteInfo } from "./SiteInfo.js";
-import { processLogout } from "./logout.js";
+import { processLogout, forcedLogout } from "./logout.js";
 import { addNotice } from "./notice.js";
 import { labels } from "./labels.js";
 
 const getToken = (nameToken) => {
-    const token = sessionStorage.getItem(nameToken);
+    // const token = sessionStorage.getItem(nameToken);
+    let token = null;
     if (token === null) {
         //console.log(`//token === null logout状態`)
-        addNotice(labels.common.logoutTokenExpired, true);
-        processLogout();
-        // return null;//未ログイン
+        forcedLogout();
         throw new Error(`${nameToken} is null`);
     }
     if (!token) {//todo:test (undefinedなど)
@@ -52,8 +51,8 @@ const refreshAccessToken = async () => {
                 return refreshData.access;
             }
             //refreshToken expired.強制ログアウト
-            addNotice(labels.common.logoutTokenExpired, true);
-            processLogout();
+            console.log(`refreshAccessToken addNotice`)
+            forcedLogout();
             console.error('Failed to refresh token, server responded with: ', response.status);
             return null;
         } catch (error) {

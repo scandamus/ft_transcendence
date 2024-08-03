@@ -47,6 +47,7 @@ const getUserInfo = async () => {
             const siteInfo = new SiteInfo();
             siteInfo.setUsername(userData.username);
             siteInfo.setAvatar(userData.avatar);
+            siteInfo.isLogout = false;
             return userData;
         })
         .catch(error => {

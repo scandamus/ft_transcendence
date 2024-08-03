@@ -9,6 +9,8 @@ import PageBase from "../components/PageBase.js";
 import { handleExitGame } from "./modal.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
+import { addNotice } from "./notice.js";
+import { labels } from "./labels.js";
 //import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
@@ -71,4 +73,13 @@ const processLogout = () => {
     router(false).then(() => {});
 }
 
-export { handleLogout, processLogout };
+const forcedLogout = () => {
+    console.log(`///forcedLogout`)
+    const siteInfo = new SiteInfo();
+    if (!siteInfo.isLogout) {
+        addNotice(labels.common.logoutTokenExpired, true);
+        processLogout();
+    }
+}
+
+export { handleLogout, processLogout, forcedLogout };
