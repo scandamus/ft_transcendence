@@ -10,7 +10,11 @@ import { labels } from "./labels.js";
 const getToken = (nameToken) => {
     const token = sessionStorage.getItem(nameToken);
     if (token === null) {
-        return null;//未ログイン
+        //console.log(`//token === null logout状態`)
+        addNotice(labels.common.logoutTokenExpired, true);
+        processLogout();
+        // return null;//未ログイン
+        throw new Error(`${nameToken} is null`);
     }
     if (!token) {//todo:test (undefinedなど)
         throw new Error(`${nameToken} is invalid`);
@@ -72,27 +76,33 @@ const isTokenExpired = (token) => {
         const currentUnixTime = Math.floor(Date.now() / 1000);
         return exp < currentUnixTime;
     } catch (e) {
-        console.log('Decode token failed: ', e);
+        console.error('Decode token failed: ', e);
         return true;
     }
 }
 
 const getValidToken = async (nameToken) => {
-    let myToken = getToken(nameToken);
-    if (myToken == null) {
-        console.log('No token found.');
-        return { token: null, error: 'No token found' };
+    try {
+        let myToken = getToken(nameToken);
+        if (myToken === null) {
+            console.log('No token found.');
+            //return { token: null, error: 'No token found' };
+            throw new Error(`No token found`);
+        }
+        if (!isTokenExpired(myToken)) {
+            return { token: myToken, error: null };
+        }
+        console.log('token expired');
+        const refreshedToken = await refreshAccessToken();
+        if (!refreshedToken) {
+            console.error('Failed to refresh token.');
+            //return { token: null, error: 'Failed to refresh token' };
+            throw new Error(`Failed to refresh token`);
+        }
+        return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
+    } catch (error) {
+        console.error('getValidToken failed: ', error);
     }
-    if (!isTokenExpired(myToken)) {
-        return { token: myToken, error: null };
-    }
-    console.log('token expired');
-    const refreshedToken = await refreshAccessToken();
-    if (!refreshedToken) {
-        console.error('Failed to refresh token.');
-        return { token: null, error: 'Failed to refresh token' };
-    }
-    return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
 }
 
 const initToken = async () => {
