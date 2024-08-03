@@ -52,13 +52,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.match_id = self.scope['url_route']['kwargs'].get('match_id')
             if not self.match_id:
                 logger.error(f'Match ID is missing in URL path: {self.match_id}')
-                await self.close(code=4200)
+                await self.close(code=4100)
                 return
             logger.info('match_id exists')
             await self.accept()
 
         except Exception as e:
             logger.error(f'Error connecting: {e}')
+            await self.close(code=1011)
 
     async def disconnect(self, close_code):
         try:
@@ -126,6 +127,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'type': 'error',
                 'message': 'Match ID conflict'
             }))
+            await self.close(code=4101)
             return
 
         self.username = username
@@ -162,7 +164,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             # TODO: 2人揃わない場合のタイムアウト処理
         else:
             logger.error('Match data not found or user is not for this match')
-            await self.close(code=1000)
+            await self.close(code=4102)
 
     async def start_game_timer(self):
         try:
