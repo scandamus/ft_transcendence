@@ -143,14 +143,15 @@ class Tournament(models.Model):
         rankings = {
             "rankings": {
                 "winner": winner_entry.nickname if winner_entry else None,
-                "winner_id": self.winner.id,
+                "winner_id": self.winner.id if winner_entry else None,
                 "second": second_place_entry.nickname if second_place_entry else None,
-                "second_id": self.second_place.id,
+                "second_id": self.second_place.id if second_place_entry else None,
                 "third": third_place_entry.nickname if third_place_entry else None,
-                "third_id": self.third_place.id
+                "third_id": self.third_place.id if third_place_entry else None
             }
         }
-        result.append(rankings)
+        if winner_entry: # 少なくとも1位のエントリーが存在する場合のみ
+            result.append(rankings)
         self.result_json = json.dumps(result)
         self.save()
 
@@ -288,27 +289,26 @@ class Match(models.Model):
                 self.winner = self.player1
             else: # トーナメント以外では必ず勝敗を決するまで試合が続行されるためあり得ないが一応
                 self.winner = None
-        elif self.staus == 'canceled':
+        elif self.status == 'canceled':
             logger.info(f'No winner for canceled match_id:{self.id}')
             self.winner = None
 
-    def check_timeout(self, before_match_timeout_sec=60):
+    def check_timeout(self, before_match_timeout_sec=30):
         from .serializers import MatchSerializer
         current_time = timezone.now()
         elapsed_time = (current_time - self.last_updated).total_seconds()
         is_timeout = elapsed_time > before_match_timeout_sec
         logger.info(f'now={current_time}, last_updated={self.last_updated}, elapsed_time={elapsed_time}')
         if self.status == 'before' and is_timeout:
-            self.status = 'canceled'
+            validated_data = {
+                'status': 'canceled',
+                'score1': -1,
+                'score2': -1
+            }
             if self.tournament and self.round: # for tournament match
-                logger.info('トーナメントで両者棄権')
-                self.score1 = -1
-                self.score2 = -1
-                self.save(update_fields=['status', 'score1', 'score2'])
-            else: # for lounge match, friend match
-                self.save(update_fields=['status'])
+                logger.info('Match is canceled because both players did not show up')
             serializer = MatchSerializer()
-            serializer.reset_all_players_status(self) # playerのstatusをwaitingに
+            serializer.update(self, validated_data) # playerのstatusをwaitingに
 
     def save(self, *args, **kwargs):
         self.full_clean()
