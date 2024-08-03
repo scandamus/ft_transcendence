@@ -230,8 +230,10 @@ export default class TournamentDetail extends PageBase {
         } else if (matches.round === -4) {
             labelRound = labels.tournament.labelRoundSemiFinal;
         } else if (matches.round === -5) {
-            const elListSemifinal = document.querySelector('.listSemifinal');
-            elListSemifinal.insertAdjacentHTML('afterbegin', this.generateMatch(matches.matches[0]));
+            if (matches.matches[0]) {
+                const elListSemifinal = document.querySelector('.listSemifinal');
+                elListSemifinal.insertAdjacentHTML('afterbegin', this.generateMatch(matches.matches[0]));
+            }
             return;
         } else if (matches.round === -3) {
             labelRound = labels.tournament.labelRoundThirdPlaceRound
@@ -247,7 +249,9 @@ export default class TournamentDetail extends PageBase {
                 <h3 class="blockTournamentRound_title unitTitle1">${labelRound}</h3>
                 <div class="blockTournamentRound_listMatch${listSemifinal} listLineDivide">`;
             for (const match of matches.matches) {
-                resultHtml += this.generateMatch(match);
+                if (match) {
+                    resultHtml += this.generateMatch(match);
+                }
             }
             if (matches.bye_player) {
                 const avatarBye = this.avatarMap[matches.bye_player_id] ? this.avatarMap[matches.bye_player_id] : `/images/avatar_default.png`;
