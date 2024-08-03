@@ -224,6 +224,7 @@ export default class TournamentDetail extends PageBase {
     generateRoundList(matches) {
         let resultHtml = '';
         let labelRound = '';
+        let lenMatch = 0;
         const listSemifinal = matches.round === -4 ? ' listSemifinal' : '';
         if (matches.round === -1 || matches.round === -6) {
             labelRound = labels.tournament.labelRoundFinal;
@@ -250,8 +251,12 @@ export default class TournamentDetail extends PageBase {
                 <div class="blockTournamentRound_listMatch${listSemifinal} listLineDivide">`;
             for (const match of matches.matches) {
                 if (match) {
+                    lenMatch++;
                     resultHtml += this.generateMatch(match);
                 }
+            }
+            if (lenMatch === 0) {
+                resultHtml += `<p class="textCanceled">${labels.tournament.labelCanceledRound}</p>`;
             }
             if (matches.bye_player) {
                 const avatarBye = this.avatarMap[matches.bye_player_id] ? this.avatarMap[matches.bye_player_id] : `/images/avatar_default.png`;

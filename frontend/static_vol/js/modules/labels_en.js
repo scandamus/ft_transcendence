@@ -143,6 +143,7 @@ export const labels_en = {
         msgWaitFinal: '<p>Please wait for the final match to start</p>',
         labelFinalOnGoing: 'Final Match In Progress',
         msgFinalOnGoing: '<p>Please wait for the final match to end</p>',
+        labelCanceledRound: '(Cancellation due to player forfeiture)',
     },
     modal: {
         labelNickname: 'nickname',

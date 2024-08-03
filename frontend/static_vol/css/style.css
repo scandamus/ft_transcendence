@@ -816,7 +816,8 @@ input[type="text"]:disabled {
 .blockFriendRecommended_friends > p:only-child,
 .blockTournamentList_upcoming > p:only-child,
 .blockTournamentList_ongoing > p:only-child,
-.blockTournamentList_finished > p:only-child {
+.blockTournamentList_finished > p:only-child,
+.blockTournamentRound .textCanceled {
   font-size: 1.8rem;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -1830,6 +1831,10 @@ input[type="text"]:disabled {
 
 .blockTournamentRound {
   margin-bottom: 30px;
+}
+
+.blockTournamentRound .blockMatch + .textCanceled {
+  display: none;
 }
 
 

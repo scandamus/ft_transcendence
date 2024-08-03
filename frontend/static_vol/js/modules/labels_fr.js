@@ -142,6 +142,7 @@ export const labels_fr = {
         msgWaitFinal: '<p></p>',
         labelFinalOnGoing: '',
         msgFinalOnGoing: '<p></p>',
+        labelCanceledRound: '()',
     },
     modal: {
         labelNickname: 'pseudo',
