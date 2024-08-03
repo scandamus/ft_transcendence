@@ -193,6 +193,11 @@ export default class GamePlay extends PageBase {
                     console.log(data.message);
                     if (data.message.startsWith('TimerOver')) {
                         addNotice('TimerOver', true);
+                    } else if (data.message.startsWith('WinByDefault')) {
+                        addNotice('opponent did not show up', false);
+                    }
+                    else if (data.message.startsWith('ExitGame')) {
+                        addNotice('exit button pressed', false);
                     }
                     //alert('GAME OVER');
                     // ここでゲームをリセットする処理を追加するか、ページをリロードする
@@ -207,11 +212,16 @@ export default class GamePlay extends PageBase {
                     const tournamentId = sessionStorage.getItem('tournament_id');
                     if (tournamentId) {
                         sessionStorage.setItem('tournament_status', 'waiting_round');
-                        window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
+                        window.history.pushState(null, null, `/tournament/detail:${tournamentId}`);
                     } else {
-                        window.history.pushState({}, null, "/dashboard");
+                        window.history.pushState(null, null, "/dashboard");
                     }
-                    await router(true);
+                    setTimeout(() => {
+                        this.playSound(data.sound_type);
+                        router(true);
+                    }, 1500);
+                } else {
+                    this.playSound(data.sound_type);
                 }
             }
 
@@ -227,7 +237,7 @@ export default class GamePlay extends PageBase {
                     console.log('received_data -> ', data);
                     console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score);
                     updateGameObjects(data);
-                    this.playSound(data.sound_type);
+                    // this.playSound(data.sound_type);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }
