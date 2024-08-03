@@ -254,7 +254,7 @@ export default class GamePlayQuad extends PageBase {
                     }));
                     webSocketManager.closeWebSocket(this.containerId);
                     this.containerId = '';
-                    window.history.pushState({}, null, '/dashboard');
+                    window.history.pushState(null, null, '/dashboard');
                     await router(true);
                 }
             }
