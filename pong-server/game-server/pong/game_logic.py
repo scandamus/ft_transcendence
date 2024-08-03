@@ -177,6 +177,8 @@ class Ball:
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
         self.dx = new_direction['dx']
         self.dy = new_direction['dy']
+        # paddleのスピードアップ
+        self.speed += 1
 
     def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
         angle_radians = angle_degrees * (math.pi / 180)
