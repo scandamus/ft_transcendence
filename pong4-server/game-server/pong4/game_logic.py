@@ -4,25 +4,6 @@ from .consts import (CANVAS_WIDTH, CANVAS_HEIGHT, REFLECTION_ANGLE, CORNER_BLOCK
                      CANVAS_WIDTH_MULTI, CANVAS_HEIGHT_MULTI, CORNER_BLOCK_THICKNESS, BALL_SIZE)
 
 
-def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier, orientation='vertical'):
-    angle_radians = angle_degrees * (math.pi / 180)
-    speed = random.randint(7, 7)
-    if orientation == 'vertical':
-        cos_value = math.cos(angle_radians)
-        sin_value = math.sin(angle_radians)
-        return {
-            'dx': speed * direction_multiplier * cos_value,
-            'dy': speed * -sin_value,
-        }
-    elif orientation == 'horizontal':
-        cos_value = math.cos(angle_radians)
-        sin_value = math.sin(angle_radians)
-        return {
-            'dx': speed * -sin_value,
-            'dy': speed * direction_multiplier * cos_value,
-        }
-
-
 class Block:
     def __init__(self, x, y, horizontal, vertical, orientation='vertical', position=None):
         self.x = x
@@ -89,7 +70,8 @@ class Paddle(Block):
 
 class Ball:
     def __init__(self, x, y, size):
-        tmp = get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
+        self.speed = 7
+        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -98,7 +80,8 @@ class Ball:
         self.flag = True  # 衝突判定を True:する False:しない
 
     def reset(self, x, y):
-        tmp = get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
+        self.speed = 7
+        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -261,11 +244,30 @@ class Ball:
             angle_degrees = distance_from_paddle_center * normalize
             # 左右で方向を逆に
             ball_direction = 1 if obj_side == 'LEFT' else -1
-            new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction)
+            new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
             distance_from_paddle_center = (obj.x + (obj.length / 2)) - self.x
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
-            new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
+            new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
         self.dx = new_direction['dx']
         self.dy = new_direction['dy']
+        self.speed += 1
+
+    def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
+        angle_radians = angle_degrees * (math.pi / 180)
+        speed = random.randint(self.speed, self.speed)
+        if orientation == 'vertical':
+            cos_value = math.cos(angle_radians)
+            sin_value = math.sin(angle_radians)
+            return {
+                'dx': speed * direction_multiplier * cos_value,
+                'dy': speed * -sin_value,
+            }
+        elif orientation == 'horizontal':
+            cos_value = math.cos(angle_radians)
+            sin_value = math.sin(angle_radians)
+            return {
+                'dx': speed * -sin_value,
+                'dy': speed * direction_multiplier * cos_value,
+            }
