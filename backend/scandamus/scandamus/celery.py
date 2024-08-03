@@ -16,7 +16,7 @@ app.conf.beat_schedule = {
     },
     'check_matches_for_timeout': {
         'task': 'game.tasks.check_matches_for_timeout',
-        'schedule': 120.0,
+        'schedule': 60.0,
     },
 }
 
