@@ -124,6 +124,9 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.username = username
             match = await self.get_match(self.match_id)
             if match and await self.is_player_in_match(players_id, match):
+                if match.get('status') in ['after', 'canceled']:
+                    logger.error(f'match {match.id} is over. close this socket')
+                    self.close(code=4103)
                 logger.info(f'player:{players_id} is in match {self.match_id}!!')
                 self.room_group_name = f'pong_{self.match_id}'
                 await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -131,19 +134,25 @@ class PongConsumer(AsyncWebsocketConsumer):
                 if self.match_id not in self.players_ids:
                     self.players_ids[self.match_id] = set()
                 self.players_ids[self.match_id].add(self.players_id)
+
                 if is_reconnect == True:
                     number_of_player = len(self.players_ids[self.match_id])
                     logger.error(f'number_of_player = {number_of_player}')
-                    if number_of_player == 1: # 再接続したplayerを含んで1人のみ
-                        logger.error('Error no one in this match now')
-                    elif number_of_player == 2: # 正常に再接続した場合
+                    if number_of_player == 1: # 再接続したplayerを含んで1人のみ（ゲーム開始前なのに再接続された１人目）
+                        logger.error('No one in this match now, anyway start game...')
+                    elif number_of_player == 2: # 正常に再接続した場合（開始後のゲームに再接続）
                         logger.info('Rejoin to this match')
-                        await self.reset_game_data()
-                    else:
+                        if match.get('status') == 'ongoing': # 再接続
+                            await self.reset_game_data()
+                            return
+                        elif match.get('status') == 'before': # 再接続だがゲーム開始前なので通常のスタートへ
+                            pass
+                    else: # number_of_player > 2
                         logger.error('Error too many players in this match')
-                    return
+                        self.close(code=4104)
+                        return
                 # 再接続ではないゲームスタート時
-                elif len(self.players_ids[self.match_id]) == 1:
+                if len(self.players_ids[self.match_id]) == 1:
                     self.start_game_timer_task = asyncio.create_task(self.start_game_timer())
                 elif len(self.players_ids[self.match_id]) == 2:  # 2人に決め打ち
                     initial_master = sorted(self.players_ids[self.match_id])[0]
@@ -171,7 +180,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     self.right_paddle.score = -1
                 else:
                     self.left_paddle.score = -1
-                await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
+                #await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
                 await self.game_over('WinByDefault')
         except asyncio.CancelledError:
             logger.error('start_game_timer cancelled')
