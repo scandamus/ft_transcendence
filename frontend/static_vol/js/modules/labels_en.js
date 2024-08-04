@@ -7,7 +7,9 @@ export const labels_en = {
     langName: 'English',
     common: {
         switchLang: 'Switch Language',
-        logoutTokenExpired: 'Session expired. You have been logged out. Please log in again.'
+        logoutTokenExpired: 'Session expired. You have been logged out. Please log in again.',
+        disconnected: '',
+        disconnectedByNewLogin: ''
     },
     home: {
         title: 'Home',
@@ -77,6 +79,9 @@ export const labels_en = {
         labelRecommended: 'recommended',
         msgNoRecommended: 'no recommended player',
         msgFriendsFull: `You have reached the maximum limit of ${FRIENDS_MAX} friends.<br>If you want to add another player as a friend, please remove an existing friend to free up space.`,
+        labelOnline: '',
+        labelOffline: '',
+        msgChangeFriendOnline: '$friend $online ',
     },
     lounge: {
         title: 'Lounge',
@@ -98,10 +103,12 @@ export const labels_en = {
         fmtWin: '$win wins,',
         fmtLoss: '$loss losses',
         msgNoMatch: 'no match log',
+        msgReconnectMatch: '',
     },
     tournament: {
         title: 'Tournament',
         labelCreateTournament: 'create a tournament',
+        msgCreateDone: '$tournament - $start ',
         labelTournamentTitle: 'tournament title',
         labelStart: 'start time',
         labelEntry: 'entry',
@@ -143,6 +150,21 @@ export const labels_en = {
         msgWaitFinal: '<p>Please wait for the final match to start</p>',
         labelFinalOnGoing: 'Final Match In Progress',
         msgFinalOnGoing: '<p>Please wait for the final match to end</p>',
+        msgEntryDone: '',
+        msgNoEntry: '',
+        msgInvalidEntry: '',
+        msgPrepare: '$tournament',
+        msgEnterRoom: '$tournament',
+        msgCanceled: '$tournament',
+        msgStart: '$tournament',
+        msgFinished: '$tournament',
+        msgDeadHasPassed: '$tournament',
+        msgEntryCanceled: '$tournament',
+        msgEntryDupNickname: '',
+        msgAlreadyEntered: '',
+        msgCapacityFull: '',
+        msgEntryInvalidTournament: '',
+        msgEntryInvalidPlayer: '',
     },
     modal: {
         labelNickname: 'nickname',
@@ -184,5 +206,8 @@ export const labels_en = {
         rejected: 'opponent has rejected to play',
         userOffline: 'opponent is offline',
         playerNotWaitingStatus: 'opponent is busy now',
+        msgCannotRequestInTournament: '',
+        msgCannotRequestInMatch: '',
+        msgCannotRequestInMatchWaiting: '',
     },
 };

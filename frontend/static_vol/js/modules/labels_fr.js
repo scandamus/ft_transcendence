@@ -7,7 +7,9 @@ export const labels_fr = {
     langName: 'français',
     common: {
         switchLang: '',
-        logoutTokenExpired: ''
+        logoutTokenExpired: '',
+        disconnected: '',
+        disconnectedByNewLogin: ''
     },
     home: {
         title: 'Accueil',
@@ -41,6 +43,7 @@ export const labels_fr = {
         passwordIsNotSame: 'Veuillez saisir le même mot de passe',
         isExists: 'Ce nom d’utilisateur est utilisé',
         outOfRange: '',
+        startTimeInvalid: `${CREATE_TOURNAMENT_TIMELIMIT_MIN}`,
         intervalError: '',
         tournamentNameAlreadyExists: '',
         loginError1: 'Veuillez vérifier le nom d’utilisateur et le mot de passe',
@@ -75,7 +78,10 @@ export const labels_fr = {
         labelReceivedRequest: 'Demandes d’amis reçues',
         labelRecommended: 'Recommandations pour vous',
         msgNoRecommended: 'aucune recommandation',
-        msgFriendsFull: `${FRIENDS_MAX}<br>`
+        msgFriendsFull: `${FRIENDS_MAX}<br>`,
+        labelOnline: '',
+        labelOffline: '',
+        msgChangeFriendOnline: '$friend $online ',
     },
     lounge: {
         title: 'Lounge',
@@ -97,10 +103,12 @@ export const labels_fr = {
         fmtWin: '$win victoires',
         fmtLoss: '$loss défaites',
         msgNoMatch: 'aucune match',
+        msgReconnectMatch: '',
     },
     tournament: {
         title: 'Tournament',
         labelCreateTournament: 'Créer un tournoi',
+        msgCreateDone: '$tournament - $start ',
         labelTournamentTitle: 'Nom du tournoi',
         labelStart: 'Heure de début',
         labelEntry: 'Entrer',
@@ -111,7 +119,7 @@ export const labels_fr = {
         labelTournamentLog: 'Journal du tournoi',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: ['', ''],
+        descTournamentStart: [`${CREATE_TOURNAMENT_TIMELIMIT_MIN}`, ''],
         descNickname: [''],
         labelNextMatch: '',
         labelRound1: '',
@@ -142,6 +150,21 @@ export const labels_fr = {
         msgWaitFinal: '<p></p>',
         labelFinalOnGoing: '',
         msgFinalOnGoing: '<p></p>',
+        msgEntryDone: '',
+        msgNoEntry: '',
+        msgInvalidEntry: '',
+        msgPrepare: '$tournament',
+        msgEnterRoom: '$tournament',
+        msgCanceled: '$tournament',
+        msgStart: '$tournament',
+        msgFinished: '$tournament',
+        msgDeadHasPassed: '$tournament',
+        msgEntryCanceled: '$tournament',
+        msgEntryDupNickname: '',
+        msgAlreadyEntered: '',
+        msgCapacityFull: '',
+        msgEntryInvalidTournament: '',
+        msgEntryInvalidPlayer: '',
     },
     modal: {
         labelNickname: 'pseudo',
@@ -183,5 +206,8 @@ export const labels_fr = {
         rejected: 'L’adversaire n’est pas d’humeur à jouer',
         userOffline: 'Votre adversaire est hors ligne',
         playerNotWaitingStatus: 'Votre adversaire est occupé',
+        msgCannotRequestInTournament: '',
+        msgCannotRequestInMatch: '',
+        msgCannotRequestInMatchWaiting: '',
     },
 };

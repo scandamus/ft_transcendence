@@ -79,6 +79,8 @@ export const labels_ja = {
         labelRecommended: 'あなたへのおすすめ',
         msgNoRecommended: 'おすすめユーザーはいません',
         msgFriendsFull: `友達が上限の${FRIENDS_MAX}人に達しています。<br>他のPlayerと友達になりたい場合、友達解除をして枠を空けてください。`,
+        labelOnline: 'ログイン',
+        labelOffline: 'ログアウト',
         msgChangeFriendOnline: '$friend が $online しました',
     },
     lounge: {
@@ -157,7 +159,7 @@ export const labels_ja = {
         msgStart: 'トーナメント $tournament を開始します',
         msgFinished: 'トーナメント $tournament は終了しました',
         msgDeadHasPassed: 'トーナメント $tournament のエントリー期限を過ぎています',
-        msgEntryCanceled: 'トーナメント【$tournament】への参加をキャンセルしました',
+        msgEntryCanceled: 'トーナメント $tournament への参加をキャンセルしました',
         msgEntryDupNickname: 'すでに同名のニックネームが使われています',
         msgAlreadyEntered: 'すでにエントリー済みのトーナメントです',
         msgCapacityFull: '満員のためトーナメントにエントリー出来ませんでした',
