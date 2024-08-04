@@ -298,9 +298,9 @@ const handleFriendStatusReceived = (data) => {
                                 ? PageBase.instance : null;
 
     if (data.action === 'change') {
-        const online_status_msg = data.online === 'online' ? 'ログイン' : 'ログアウト';
+        const online_status_msg = data.online === 'online' ? labels.friends.labelOnline : labels.friends.labelOffline;
         console.log(`friendStatus change: ${data.username} to ${online_status_msg}`);
-        addNotice(labels.tournament.msgChangeFriendOnline.replace('$friend', data.username).replace('$online', online_status_msg), false);
+        addNotice(labels.friends.msgChangeFriendOnline.replace('$friend', data.username).replace('$online', online_status_msg), false);
         if (currentPage) {
             updateFriendsList(currentPage)
                 .then(() => {
