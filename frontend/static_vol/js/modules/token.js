@@ -2,23 +2,28 @@
 
 //sessionStorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
+//tokenがnull=>ログイン状態にいてはいけない。強制ログアウト
 import { SiteInfo } from "./SiteInfo.js";
 import { processLogout, forcedLogout } from "./logout.js";
 import { addNotice } from "./notice.js";
 import { labels } from "./labels.js";
 
 const getToken = (nameToken) => {
-    // const token = sessionStorage.getItem(nameToken);
-    let token = null;
-    if (token === null) {
-        //console.log(`//token === null logout状態`)
-        forcedLogout();
-        throw new Error(`${nameToken} is null`);
+    try {
+        const token = sessionStorage.getItem(nameToken);
+        //let token = null;
+        if (token === null) {
+            //console.log(`//token === null logout状態`)
+            forcedLogout();
+            throw new Error(`${nameToken} is null`);
+        }
+        if (!token) {//todo:test (undefinedなど)
+            throw new Error(`${nameToken} is invalid`);
+        }
+        return token;
+    } catch (error) {
+        console.error('getToken failed: ', error);
     }
-    if (!token) {//todo:test (undefinedなど)
-        throw new Error(`${nameToken} is invalid`);
-    }
-    return token;
 }
 
 const refreshAccessToken = async () => {
@@ -83,12 +88,14 @@ const isTokenExpired = (token) => {
 const getValidToken = async (nameToken) => {
     try {
         let myToken = getToken(nameToken);
+        //todo: myTokenがundefになる
         if (myToken === null) {
             console.log('No token found.');
+            forcedLogout();
             //return { token: null, error: 'No token found' };
             throw new Error(`No token found`);
         }
-        if (!isTokenExpired(myToken)) {
+        if (myToken && !isTokenExpired(myToken)) {
             return { token: myToken, error: null };
         }
         console.log('token expired');
@@ -108,16 +115,20 @@ const initToken = async () => {
     console.log('initToken in');
     try {
         const tokenResult = await getValidToken('accessToken');
-        console.log('tokenResult: ', tokenResult);
+        if (!tokenResult) {
+            throw new Error(`fail to tokenResult`);
+        }
         if (tokenResult.token) {
             console.log('accessToken: ', tokenResult.token);
             return tokenResult;
         } else {
             console.error('Token error: ', tokenResult.error);
-            return false;
+            // return false;
+            throw new Error(`fail to tokenResult`);
         }
     } catch (error) {
         console.error('Error user page initToken: ', error);
+        throw error;
     }
 }
 
