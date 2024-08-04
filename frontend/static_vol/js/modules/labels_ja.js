@@ -94,7 +94,7 @@ export const labels_ja = {
         labelWaiting: '対戦相手を募集中',
     },
     match: {
-        title: '',
+        title: 'Match',
         labelMatch: '対戦する',
         labelReceiveMatch: '対戦を受ける',
         labelMatchLog: '対戦記録',
@@ -150,7 +150,7 @@ export const labels_ja = {
         msgWaitFinal: '<p>対戦開始までお待ちください</p>',
         labelFinalOnGoing: '決勝戦進行中',
         msgFinalOnGoing: '<p>決勝戦終了までお待ちください</p>',
-        msgEntryDone: 'トーナメント【$tournament】へのエントリーが完了しました',
+        msgEntryDone: 'トーナメント $tournament へのエントリーが完了しました',
         msgNoEntry: 'トーナメントへのエントリーがありません',
         msgInvalidEntry: '登録期限を過ぎたなど無効なリクエストです',
         msgPrepare: 'トーナメント $tournament の開始５分前になりました',
