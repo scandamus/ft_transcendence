@@ -5,6 +5,7 @@ from .models import Tournament, Match, Entry
 from django.conf import settings
 from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
+from .tournament_match import report_match_result
 
 logger = logging.getLogger(__name__)
 
@@ -121,23 +122,56 @@ class MatchSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         old_status = instance.status
         new_status = validated_data.get('status', instance.status)
-
         instance = super().update(instance, validated_data)
-
-        if old_status != 'after' and new_status == 'after':
-            self.set_players_to_waiting(instance)
-
+        instance.set_winner()
         instance.save()
+
+        if instance.tournament and instance.round:
+            if instance.tournament.status == 'ongoing':
+                self.update_player_status_after_match(instance)
+                if self.is_all_matches_finished(instance.tournament, instance.round):
+                    logger.info(f"All matches finished for tournament: {instance.tournament.id}, round: {instance.round}")
+                    report_match_result(instance.id)
+        elif old_status != 'after' and new_status == 'after': # トーナメントマッチ以外はリセット
+            self.reset_all_players_status(instance)
+
         return instance
 
-    def set_players_to_waiting(self, match):
+    def update_player_status_after_match(self, match):
+        num_matches = match.tournament.matches.filter(round=match.round).count()
+        if num_matches == 2 and match.tournament.bye_player is None: # 準決勝
+            self.set_all_players_status(match, 'tournament_room')
+        elif match.round > 0:
+            loser = match.player2 if match.winner == match.player1 else match.player1
+            loser.status = 'waiting'
+            loser.save()
+            match.winner.status = 'tournament_room'
+            match.winner.save()
+        elif match.round in [-1, -3, -6]: # 決勝or3位決定戦
+            self.reset_all_players_status(match)
+        elif match.round == -4: # 3人準決勝の1戦目（両者控室）
+            self.set_all_players_status(match, 'tournament_room')
+        elif match.round == -5: # 3人順決勝の2戦目
+            loser = match.player2 if match.winner == match.player1 else match.player1
+            loser.status = 'waiting'
+            loser.save()
+
+    def set_all_players_status(self, match, status):
         players = [match.player1, match.player2, match.player3, match.player4]
         for player in players:
             if player:
-                player.status = 'waiting'
+                player.status = status
                 player.current_match = None
                 player.save()
 
+    def reset_all_players_status(self, match):
+        self.set_all_players_status(match, 'waiting')
+    
+    def is_all_matches_finished(self, tournament, current_round):
+        matches = tournament.matches.filter(round=current_round)
+        number_of_finished_matches = len(matches)
+        logger.info(f'number of matches_finished for round:{current_round} = {number_of_finished_matches}')
+        return all(match.status == 'after' for match in matches)
 
 class EntrySerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(

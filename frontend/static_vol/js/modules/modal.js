@@ -197,7 +197,6 @@ const closeModalOnReturnToGame = () => {
             }
         })
         .then(() => {
-            window.history.pushState({}, null, `/game/${containerId}`);
             closeModal();
         });
 }
@@ -225,11 +224,13 @@ const setScoreToInvalid = () => {
 const handleExitGame = (instance) => {
     console.log('handleExitGame')
     const containerId = PageBase.isInstance(instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
-    webSocketManager.closeWebSocket(containerId);
-    instance.containerId = ''
-    //todo: score -1にする
-    //setScoreToInvalid();
-    //todo: status, current_match更新
+    webSocketManager.sendWebSocketMessage(containerId, {
+        'action': 'exit_game',
+    });
+    if (PageBase.isInstance(instance, 'GamePlayQuad')) {
+        webSocketManager.closeWebSocket(containerId);
+        instance.containerId = '';
+    }
 }
 
 const closeModalOnExitGame = (ev) => {
@@ -302,6 +303,11 @@ const showModalReceiveMatchRequest = (data) => {
         avatar: avatar,
         labelAccept: labels.modal.labelAccept,
         labelReject: labels.modal.labelReject,
+    }
+    const elModal = document.querySelector('.blockModal');
+    if (elModal) {
+        reject_game(data.request_id, data.from).then(() => {});
+        return;
     }
     const elHtml = getModalHtml('receiveMatchRequest', args);
     showModal(elHtml);

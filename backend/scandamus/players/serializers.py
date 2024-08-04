@@ -119,7 +119,7 @@ class MatchLogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = ['ID', 'my_score', 'is_win', 'players']
+        fields = ['ID', 'last_updated', 'my_score', 'is_win', 'players']
 
     def get_my_score(self, obj):
         user = self.context['request'].user

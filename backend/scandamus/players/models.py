@@ -112,8 +112,7 @@ class Player(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user.username} - level:{self.level} / win: {self.win_count} / lang: {self.lang}"
-
+        return f"{self.user.username} - online:{self.online} / status: {self.status} / lang: {self.lang}"
 
 @receiver(post_save, sender=User)
 def create_player(sender, instance, created, **kwargs):
