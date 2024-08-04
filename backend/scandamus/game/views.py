@@ -9,7 +9,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from scandamus.authentication import InternalNetworkAuthentication
 from django.db.models import Q
-from decimal import Decimal, ROUND_DOWN
 
 import logging
 
