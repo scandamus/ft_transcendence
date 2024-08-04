@@ -114,7 +114,7 @@ export const labels_fr = {
         labelEntry: 'Entrer',
         labelCancelEntry: 'Annuler',
         labelTitleUpcoming: 'Tournoi à venir',
-        labelTitleInPlay: 'Tournoi en cours',
+        labelTitleOnGoing: 'Tournoi en cours',
         labelTitleRecent: 'Tournoi terminé',
         labelTournamentLog: 'Journal du tournoi',
         labelUpdateLists: 'Mettre à jour les listes',

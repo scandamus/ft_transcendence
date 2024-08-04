@@ -114,7 +114,7 @@ export const labels_ja = {
         labelEntry: '出場する',
         labelCancelEntry: '取り消す',
         labelTitleUpcoming: '開催予定のトーナメント',
-        labelTitleInPlay: '試合中のトーナメント',
+        labelTitleOnGoing: '進行中のトーナメント',
         labelTitleRecent: '終了したトーナメント',
         labelTournamentLog: 'トーナメント記録',
         labelUpdateLists: 'リストを再読み込み',
