@@ -7,7 +7,9 @@ export const labels_ja = {
     langName: '日本語',
     common: {
         switchLang: '言語選択',
-        logoutTokenExpired: 'セッション期限が切れました。再ログインしてください。'
+        logoutTokenExpired: 'セッション期限が切れました。再ログインしてください。',
+        disconnected: 'サーバーとの接続が切れました',
+        disconnectedByNewLogin: 'サーバーに新しいログインがあったため切断されました'
     },
     home: {
         title: 'Home',
@@ -77,6 +79,7 @@ export const labels_ja = {
         labelRecommended: 'あなたへのおすすめ',
         msgNoRecommended: 'おすすめユーザーはいません',
         msgFriendsFull: `友達が上限の${FRIENDS_MAX}人に達しています。<br>他のPlayerと友達になりたい場合、友達解除をして枠を空けてください。`,
+        msgChangeFriendOnline: '$friend が $online しました',
     },
     lounge: {
         title: 'Lounge',
@@ -98,10 +101,12 @@ export const labels_ja = {
         fmtWin: '$win勝',
         fmtLoss: '$loss敗',
         msgNoMatch: '対戦結果がありません',
+        msgReconnectMatch: '試合中のゲームに復帰します',
     },
     tournament: {
         title: 'Tournament',
         labelCreateTournament: 'トーナメントを作成',
+        msgCreateDone: '$tournament - $start が作成されました',
         labelTournamentTitle: 'トーナメント名',
         labelStart: '開始時刻',
         labelEntry: '出場する',
@@ -143,6 +148,21 @@ export const labels_ja = {
         msgWaitFinal: '<p>対戦開始までお待ちください</p>',
         labelFinalOnGoing: '決勝戦進行中',
         msgFinalOnGoing: '<p>決勝戦終了までお待ちください</p>',
+        msgEntryDone: 'トーナメント【$tournament】へのエントリーが完了しました',
+        msgNoEntry: 'トーナメントへのエントリーがありません',
+        msgInvalidEntry: '登録期限を過ぎたなど無効なリクエストです',
+        msgPrepare: 'トーナメント $tournament の開始５分前になりました',
+        msgEnterRoom: 'トーナメント $tournament の控室に移動します',
+        msgCanceled: 'トーナメント $tournament は催行人数に達しなかったためキャンセルされました',
+        msgStart: 'トーナメント $tournament を開始します',
+        msgFinished: 'トーナメント $tournament は終了しました',
+        msgDeadHasPassed: 'トーナメント $tournament のエントリー期限を過ぎています',
+        msgEntryCanceled: 'トーナメント【$tournament】への参加をキャンセルしました',
+        msgEntryDupNickname: 'すでに同名のニックネームが使われています',
+        msgAlreadyEntered: 'すでにエントリー済みのトーナメントです',
+        msgCapacityFull: '満員のためトーナメントにエントリー出来ませんでした',
+        msgEntryInvalidTournament: '無効なトーナメントへのリクエストです',
+        msgEntryInvalidPlayer: 'トーナメントにエントリー出来ませんでした',
     },
     modal: {
         labelNickname: 'ニックネーム',
@@ -184,5 +204,8 @@ export const labels_ja = {
         rejected: '相手は対戦したくない気分です',
         userOffline: '相手はオフラインです',
         playerNotWaitingStatus: '相手は取り込み中です',
+        msgCannotRequestInTournament: 'トーナメント中にマッチリクエストできません',
+        msgCannotRequestInMatch: 'マッチ中にほかのマッチリクエストはできません',
+        msgCannotRequestInMatchWaiting: 'マッチ待機中にマッチリクエストできません',
     },
 };
