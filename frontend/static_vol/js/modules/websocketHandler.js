@@ -324,7 +324,7 @@ const handleTournamentReceived = (data) => {
                 currentPage.start_dates = start_dates;
             });
         }
-        const message = labels.tournament.msgEntryDone.replace('$tournament', data.name).replace('$start', startLocal);
+        const message = labels.tournament.msgCreateDone.replace('$tournament', data.name).replace('$start', startLocal);
         console.log(`${message}`);
         addNotice(message, false);
     } else if (data.action === 'invalidTournamentTitle' || data.action === 'invalidTournamentStart') {
