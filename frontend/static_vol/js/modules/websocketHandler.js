@@ -158,29 +158,29 @@ const handleFriendRequestAck = (data) => {
                                 ? PageBase.instance : null;
     if (data.action === 'error') {
         if (data.error === 'alreadyFriends') {
-            addNotice(labels.friendRequest['alreadyFriends'].replace('$name', data.username), false);
+            addNotice(labels.friendRequest.alreadyFriends.replace('$name', data.username), false);
         } else if (data.error === 'usernameNotExists') {
-            addNotice(labels.friendRequest['usernameNotExists'].replace('$name', data.username), true);
+            addNotice(labels.friendRequest.usernameNotExists.replace('$name', data.username), true);
         } else if (data.error === 'sendFriendReqSelf') {
-            addNotice(labels.friendRequest['sendFriendReqSelf'].replace('$name', data.username), true);
+            addNotice(labels.friendRequest.sendFriendReqSelf.replace('$name', data.username), true);
         } else if (data.error === 'invalidDeclineFriendReq') {
-            addNotice(labels.friendRequest['invalidDeclineFriendReq'].replace('$name', data.username), true);
+            addNotice(labels.friendRequest.invalidDeclineFriendReq.replace('$name', data.username), true);
         } else if (data.error === 'mutualReq') {
-            addNotice(labels.friendRequest['mutualReq'].replace('$name', data.username), false);
+            addNotice(labels.friendRequest.mutualReq.replace('$name', data.username), false);
         } else if (data.error === 'alreadyReq') {
-            addNotice(labels.friendRequest['alreadyReq'].replace('$name', data.username), false);
+            addNotice(labels.friendRequest.alreadyReq.replace('$name', data.username), false);
         } else {
             console.error(`Error: ${data.message}`);
         }
     } else if (data.action === 'sentRequestSuccess') {
         console.log('Friend request by username is sent to ', data.to_username);
-        addNotice(labels.friendRequest['sentRequestSuccess'].replace('$name', data.to_username), false);
+        addNotice(labels.friendRequest.sentRequestSuccess.replace('$name', data.to_username), false);
         if (currentPage) {
             updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'acceptRequestSuccess') {
         console.log('Accept friend request is successfully done');
-        addNotice(labels.friendRequest['acceptRequestSuccess'].replace('$name', data.from_username), false);
+        addNotice(labels.friendRequest.acceptRequestSuccess.replace('$name', data.from_username), false);
         if (currentPage) {
             updateFriendsList(currentPage)
                 .then(() => {
@@ -189,13 +189,13 @@ const handleFriendRequestAck = (data) => {
         }
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
-        addNotice(labels.friendRequest['declineRequestSuccess'].replace('$name', data.username), false);
+        addNotice(labels.friendRequest.declineRequestSuccess.replace('$name', data.username), false);
         if (currentPage) {
             updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'removeSuccess') {
         console.log('Remove Successfully done');
-        addNotice(labels.friendRequest['removeSuccess'].replace('$name', data.username), false);
+        addNotice(labels.friendRequest.removeSuccess.replace('$name', data.username), false);
         if (currentPage) {
             updateFriendsList(currentPage)
                 .then(() => {
@@ -203,7 +203,7 @@ const handleFriendRequestAck = (data) => {
                 });
         }
     } else if (data.action === 'maxFriendsReached') {
-        addNotice(labels.friendRequest['missedRequestAccept'].replace('$name', data.to_username), true);
+        addNotice(labels.friendRequest.missedRequestAccept.replace('$name', data.to_username), true);
     }
 }
 
@@ -213,12 +213,12 @@ const handleFriendRequestReceived = (data) => {
 
     console.log('handleFriendRepuestReceived: received');
     if (data.action === 'received') {
-        addNotice(labels.friendRequest['received'].replace('$name', data.from_username), false);
+        addNotice(labels.friendRequest.received.replace('$name', data.from_username), false);
         if (currentPage) {
             updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'accepted') {
-        addNotice(labels.friendRequest['accepted'].replace('$name', data.to_username), false);
+        addNotice(labels.friendRequest.accepted.replace('$name', data.to_username), false);
         if (currentPage) {
             updateFriendsList(currentPage)
                 .then(() => {
@@ -227,7 +227,7 @@ const handleFriendRequestReceived = (data) => {
         }
     } else if (data.action === 'removed') {
         //rmられは通知されない
-        console.log(labels.friendRequest['removed'].replace('$name', data.from_username));
+        console.log(labels.friendRequest.removed.replace('$name', data.from_username));
         //friendリスト更新
         if (currentPage) {
             updateFriendsList(currentPage)
@@ -237,10 +237,10 @@ const handleFriendRequestReceived = (data) => {
         }
     } else if (data.action === 'acceptRequestFailedFull') {
         //承認したけど相手が上限
-        addNotice(labels.friendRequest['acceptRequestFailedFull'].replace('$name', data.from_username), true);
+        addNotice(labels.friendRequest.acceptRequestFailedFull.replace('$name', data.from_username), true);
     } else if (data.action === 'acceptRequestFailedFull2') {
         //承認したけど自分が上限(通常はフロントで弾く)
-        addNotice(labels.friendRequest['acceptRequestFailedFull2'], true);
+        addNotice(labels.friendRequest.acceptRequestFailedFull2, true);
     }
 }
 
@@ -253,17 +253,17 @@ const handleFriendMatchRequestReceived = (data) => {
     } else if (data.action === 'cancelled') {
         // 対戦を申し込んだ主がキャンセルボタンを押した
         closeModal();
-        addNotice(labels.matchRequest['cancelled'], true);
+        addNotice(labels.matchRequest.cancelled, true);
     } else if (data.action === 'rejected') {
         // 申し込んだ相手がリジェクトボタンを押した
         closeModal();
-        addNotice(labels.matchRequest['rejected'], true);
+        addNotice(labels.matchRequest.rejected, true);
     } else if (data.action === 'error') {
         closeModal();
         if (data.error === 'playerNotWaitingStatus') {
-            addNotice(labels.matchRequest['playerNotWaitingStatus'], true);
+            addNotice(labels.matchRequest.playerNotWaitingStatus, true);
         } else if (data.error === 'userOffline') {
-            addNotice(labels.matchRequest['userOffline'], true);
+            addNotice(labels.matchRequest.userOffline, true);
         } else if (data.error === 'inTournament') {
             addNotice(labels.matchRequest.msgCannotRequestInTournament, true);
         } else if (data.error === 'inMatch') {
