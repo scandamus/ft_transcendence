@@ -48,8 +48,6 @@ class Paddle(Block):
 
 class Ball:
     def __init__(self, x, y, size):
-        self.speed = 7  # 初期値
-        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.speed = 6  # 初期値
         tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
         self.x = x
@@ -60,8 +58,6 @@ class Ball:
         self.flag = True  # 衝突判定を True:する False:しない
 
     def reset(self, x, y):
-        self.speed = 7
-        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.speed = 6
         tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
         self.x = x
