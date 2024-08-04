@@ -70,8 +70,8 @@ class Paddle(Block):
 
 class Ball:
     def __init__(self, x, y, size):
-        self.speed = 7
-        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
+        self.speed = 6
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -80,8 +80,8 @@ class Ball:
         self.flag = True  # 衝突判定を True:する False:しない
 
     def reset(self, x, y):
-        self.speed = 7
-        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
+        self.speed = 6
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -237,7 +237,7 @@ class Ball:
     def reflect_ball(self, obj, obj_side):
         normalize = REFLECTION_ANGLE / (obj.length / 2)
         if obj_side == 'RIGHT' or obj_side == 'LEFT':
-            distance_from_paddle_center = (obj.y + (obj.length / 2)) - self.y
+            distance_from_paddle_center = (obj.y + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
             # 最大の反射角を45°に設定した場合
             # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
             # 角度 / paddleの大きさ で修正
@@ -246,7 +246,7 @@ class Ball:
             ball_direction = 1 if obj_side == 'LEFT' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
-            distance_from_paddle_center = (obj.x + (obj.length / 2)) - self.x
+            distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
