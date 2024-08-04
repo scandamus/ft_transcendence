@@ -166,7 +166,7 @@ class Ball:
     def reflect_ball(self, obj, obj_side):
         normalize = REFLECTION_ANGLE / (obj.length / 2)
         if obj_side == 'RIGHT' or obj_side == 'LEFT':
-            distance_from_paddle_center = (obj.y + (obj.length / 2)) - self.y
+            distance_from_paddle_center = (obj.y + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
             # 最大の反射角を45°に設定した場合
             # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
             # 角度 / paddleの大きさ で修正
@@ -175,7 +175,7 @@ class Ball:
             ball_direction = 1 if obj_side == 'LEFT' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
-            distance_from_paddle_center = (obj.x + (obj.length / 2)) - self.x
+            distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
