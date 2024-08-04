@@ -51,6 +51,7 @@ class Ball:
         self.speed = 7  # 初期値
         tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.speed = 6  # 初期値
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -62,6 +63,7 @@ class Ball:
         self.speed = 7
         tmp = self.get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
         self.speed = 6
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
