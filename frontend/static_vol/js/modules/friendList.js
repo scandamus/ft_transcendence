@@ -24,7 +24,7 @@ const updateFriendsList = async (pageInstance) => {
             shuffleArray(friends);
         }
         const listFriendsWrapper = document.querySelector('.blockFriends_friends');
-        if (!friends) {
+        if (!friends || !listFriendsWrapper) {
             throw new Error(`Failed to get friends`);
         }
         else if (friends && friends.length === 0) {
