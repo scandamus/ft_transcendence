@@ -138,7 +138,7 @@ const startTokenRefreshInterval = () => {
         const currentTime = new Date().getTime();
 
         if (currentTime > accessTokenExpiry - 30000) {
-            console.log('AccessToken is refreshing');
+            console.log('Refreshing access token');
             await refreshAccessToken();
         }
     }, 60000);
