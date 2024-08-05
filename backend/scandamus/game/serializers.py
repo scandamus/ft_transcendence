@@ -124,6 +124,11 @@ class MatchSerializer(serializers.ModelSerializer):
         old_status = instance.status
         new_status = validated_data.get('status', instance.status)
         instance = super().update(instance, validated_data)
+
+        if new_status == 'ongoing':
+            return instance
+
+        # if new_status == 'after' or new_status == 'canceled':
         instance.set_winner()
         instance.save()
 
@@ -133,7 +138,7 @@ class MatchSerializer(serializers.ModelSerializer):
                 if self.is_all_matches_finished(instance.tournament, instance.round):
                     logger.info(f"All matches finished for tournament: {instance.tournament.id}, round: {instance.round}")
                     report_match_result(instance.id)
-        elif old_status != 'after' and new_status == 'after': # トーナメントマッチ以外はリセット
+        elif old_status != 'after' and new_status in ['after', 'canceled']: # トーナメントマッチ以外はリセット
             self.reset_all_players_status(instance)
 
         return instance
@@ -142,6 +147,9 @@ class MatchSerializer(serializers.ModelSerializer):
         num_matches = match.tournament.matches.filter(round=match.round).count()
         if num_matches == 2 and match.tournament.bye_player is None: # 準決勝
             self.set_all_players_status(match, 'tournament_room')
+        elif match.status == 'canceled':
+            self.reset_all_players_status(match)
+            return
         elif match.round > 0:
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
@@ -172,7 +180,7 @@ class MatchSerializer(serializers.ModelSerializer):
         matches = tournament.matches.filter(round=current_round)
         number_of_finished_matches = len(matches)
         logger.info(f'number of matches_finished for round:{current_round} = {number_of_finished_matches}')
-        return all(match.status == 'after' for match in matches)
+        return all(match.status in ['after', 'canceled'] for match in matches)
     
 class EntrySerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(

@@ -14,7 +14,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
-from .api_access import get_match_from_api, patch_match_to_api
+from .api_access import get_match_from_api, patch_match_to_api, update_match_status_to_ongoing
 
 #from .models import Match
 
@@ -99,6 +99,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 await self.handle_authenticate(text_data_json)
             elif action == 'key_event':
                 await self.handle_game_message(text_data)
+            elif action == 'exit_game':
+                await self.handle_exit_message(text_data)
         except json.JSONDecodeError as e:
             logger.error(f'JSON decode error: {e}')
         except Exception as e:
@@ -143,10 +145,30 @@ class PongConsumer(AsyncWebsocketConsumer):
                     'master_id': initial_master,
                     'state': 'start',
                 })
+                await database_sync_to_async(update_match_status_to_ongoing)(self.match_id)
             # TODO: 4人揃わない場合のタイムアウト処理
         else:
             logger.error('Match data not found or user is not for this match')
             await self.close(code=4102)
+            return
+
+    async def handle_exit_message(self, text_data):
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'exit_game',
+            'player_name': self.player_name,
+            'players_id': self.players_id,
+        })
+
+    async def exit_game(self, event):
+        exited_player = event['player_name']
+        if exited_player == 'player1':
+            self.left_paddle.deactivate(-1)
+        elif exited_player == 'player2':
+            self.right_paddle.deactivate(-1)
+        elif exited_player == 'player3':
+            self.upper_paddle.deactivate(-1)
+        elif exited_player == 'player4':
+            self.lower_paddle.deactivate(-1)
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)

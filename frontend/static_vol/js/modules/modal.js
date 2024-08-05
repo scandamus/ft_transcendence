@@ -224,11 +224,13 @@ const setScoreToInvalid = () => {
 const handleExitGame = (instance) => {
     console.log('handleExitGame')
     const containerId = PageBase.isInstance(instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
-    webSocketManager.closeWebSocket(containerId);
-    instance.containerId = ''
-    //todo: score -1にする
-    //setScoreToInvalid();
-    //todo: status, current_match更新
+    webSocketManager.sendWebSocketMessage(containerId, {
+        'action': 'exit_game',
+    });
+    if (PageBase.isInstance(instance, 'GamePlayQuad')) {
+        webSocketManager.closeWebSocket(containerId);
+        instance.containerId = '';
+    }
 }
 
 const closeModalOnExitGame = (ev) => {

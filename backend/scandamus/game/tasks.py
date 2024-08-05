@@ -62,13 +62,10 @@ def check_tournament_start_times():
     # 5分前に準備の通知
     notify_players.delay(tournament_name, entried_players_id_list, 'tournament_prepare', True)
 
-    # 2分前になると控室集合の通知
-    # notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_room', True), countdown=(tournament.start - now - timedelta(minutes=2)).total_seconds())
-    notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_room', True), countdown=60 * 3)
+    # 30秒前になると控室集合の通知
+    notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_room', True), countdown=60 * 4 + 30)
         
-    # 開始時刻の通知
-    # notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_match', True), countdown=(tournament.start - now).total_seconds())
-    # create_initial_round.apply_async((tournament.id, entried_players_id_list), countdown=(tournament.start - now).total_seconds())
+    # マッチング＆トーナメント開始
     create_initial_round.apply_async((tournament.id, entried_players_id_list), countdown=60 * 5)
 
 @shared_task
@@ -140,3 +137,14 @@ def create_initial_round(tournament_id, entried_players_id_list):
     player_list = list(online_players)
     random.shuffle(player_list)
     create_matches(tournament, player_list, round_number=1)
+
+@shared_task
+def check_matches_for_timeout():
+    try:
+        matches = Match.objects.filter(status='before')
+        number_of_matches_with_before = matches.count()
+        logger.info(f'maches with before status: {number_of_matches_with_before}')
+        for match in matches:
+            match.check_timeout()
+    except Exception as e:
+        logger.error(f'Error in check_matches_for_timeout: {e}')
