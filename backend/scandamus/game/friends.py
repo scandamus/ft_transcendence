@@ -27,14 +27,6 @@ def get_user(user_id):
         logger.error(f'Error retrieving player profile for user {user_id}: {str(e)}')
         raise
 
-# @database_sync_to_async
-# def get_player(user):
-#     try:
-#         return Player.objects.get(user=user)
-#     except Player.DoesNotExist:
-#         logger.error(f'Player profile does not exist for user {user.username}')
-#         raise
-
 @database_sync_to_async
 def get_player_from_user(user):
     try:
@@ -161,6 +153,7 @@ def are_mutual_request(user1, user2):
         raise
 
 async def send_friend_request(consumer, player):
+    try:
         to_user = player
         from_user = consumer.player
         to_user_id = to_user.user.id
@@ -187,8 +180,11 @@ async def send_friend_request(consumer, player):
             }
         ))
         logger.info(f'Sent friend request from {from_username} to {to_username}')
+    except Exception as e:
+        logger.error(f'Error in decline_frined_request: {e}')
     
 async def accept_friend_request(consumer, request_id):
+    try:
         friend_request = await get_friend_request(request_id)
         if not friend_request:
              await consumer.send(text_data=json.dumps({
@@ -216,11 +212,11 @@ async def accept_friend_request(consumer, request_id):
                 if from_user_username in consumer.players:
                     # toが承認したがfromが上限(from)
                     await consumer.players[from_user_username].send(text_data=json.dumps(
-                         {
+                        {
                             'type': 'ack',
                             'to_username': to_user_username,
                             'action': 'maxFriendsReached',
-                         }
+                        }
                     ))
                 else:
                     logger.warning(f'User {from_user_username} not found in consumer.players')
@@ -254,11 +250,11 @@ async def accept_friend_request(consumer, request_id):
             from_user_id = await get_from_id_by_request(friend_request)
             if from_user_username in consumer.players:
                 await consumer.players[from_user_username].send(text_data=json.dumps(
-                     {
+                    {
                         'type': 'friendRequest',
                         'to_username': to_user_username,
                         'action': 'accepted',
-                     }
+                    }
                 ))
             else:
                 logger.warning(f'User {from_user_username} not found in consumer.players')
@@ -274,8 +270,11 @@ async def accept_friend_request(consumer, request_id):
         else:
             from_user_username = await get_user_request_from_username(friend_request)
             logger.error(f'Error in accept_friend_request {from_user_username} to {to_user_username}')
+    except Exception as e:
+        logger.error(f'Error in decline_frined_request: {e}')
 
 async def decline_friend_request(consumer, request_id):
+    try:
         friend_request = await get_friend_request(request_id)
         to_username = await get_user_request_to_username(friend_request)
         from_username = await get_user_request_from_username(friend_request)
@@ -297,8 +296,11 @@ async def decline_friend_request(consumer, request_id):
             }
         ))
         logger.info(f'Decline friend request {from_username} to {to_username}')
+    except Exception as e:
+        logger.error(f'Error in decline_frined_request: {e}')
 
 async def remove_friend(consumer, username):
+    try:
         user_to_remove = await get_user_by_username(username)
         to_player = await get_player_from_user(user_to_remove)
         from_player = consumer.player
@@ -322,13 +324,18 @@ async def remove_friend(consumer, username):
             }            
         ))
         logger.info(f'Remove friend {user_to_remove.username}')
+    except Exception as e:
+        logger.error(f'Error in remove_friend: {e}')
 
 async def friend_request(self, event):
+    try:
         await self.send(text_data=json.dumps({
             'from_user': event['from_user'],
             'action': event['action'],
         }))
         logger.info(f'Event: {event}')
+    except Exception as e:
+        logger.error(f'Error in decline_frined_request: {e}')
 
 async def send_friend_request_by_username(consumer, username):
     try:
@@ -380,9 +387,9 @@ async def send_friend_request_by_username(consumer, username):
                 'error': 'usernameNotExists',
         }))
     except Exception as e:
-        logger.error(f'Error in send_frined_request_by_username: {str(e)}')
+        logger.error(f'Error in send_frined_request_by_username: {e}')
         await consumer.send(text_data=json.dumps({
                 'type': 'ack',
                 'action': 'error',
-                'message': f'Error occured in send_frined_request_by_username: {str(e)}'
+                'message': f'Error occured in send_frined_request_by_username: {e}'
         }))

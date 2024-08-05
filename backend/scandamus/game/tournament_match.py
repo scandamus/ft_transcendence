@@ -28,20 +28,23 @@ logger = logging.getLogger(__name__)
 async def handle_enter_tournament_room(consumer, token, data):
     from .consumers import LoungeSession
 
-    user, error = await authenticate_token(token)
-    if not user:
-        logger.error('Error: Authentication Failed')
-        logger.error(f'error={error}')
-        try:
-            await consumer.send(text_data=json.dumps({
-                'type': 'authenticationFailed',
-                'message': error
-            }))
-        except Exception as e:
-            logger.error(f'Failed to send to consumer: {e}')
-        return
+    # user, error = await authenticate_token(token)
+    # if not user:
+    #     logger.error('Error: Authentication Failed')
+    #     logger.error(f'error={error}')
+    #     try:
+    #         await consumer.send(text_data=json.dumps({
+    #             'type': 'authenticationFailed',
+    #             'message': error
+    #         }))
+    #     except Exception as e:
+    #         logger.error(f'Failed to send to consumer: {e}')
+    #     return
+    #
+    # player = await get_player_by_user(user)
     
-    player = await get_player_by_user(user)
+    user = consumer.user
+    player = consumer.player
     if not player:
         logger.error(f"No player found for user: {user.username}")
     if player.status != 'tournament_room':

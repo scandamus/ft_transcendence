@@ -7,7 +7,7 @@ from .models import Player
 from .models import Match
 from django.conf import settings
 from django.db import transaction
-from .match_utils import send_lounge_match_jwt_to_all, authenticate_token, get_player_by_user, get_required_players, update_player_status, check_player_status
+from .match_utils import send_lounge_match_jwt_to_all, get_required_players, update_player_status, check_player_status
 
 logger = logging.getLogger(__name__)
 
@@ -16,21 +16,24 @@ async def handle_join_lounge_match(consumer, token, game_name):
         logger.error(f'Error game_name:{game_name} in handle_join_lounge_match')
         return
     
-    user, error = await authenticate_token(token)
-    if not user:
-        logger.error('Error: Authentication Failed')
-        logger.error(f'error={error}')
-        try:
-            await consumer.send(text_data=json.dumps({
-                'type': 'authenticationFailed',
-                'message': error
-            }))
-        except Exception as e:
-            logger.error(f'Failed to send to consumer: {e}')
-        return
-    
-    player = await get_player_by_user(user)
-    if not player:
+    # user, error = await authenticate_token(token)
+    # if not user:
+    #     logger.error('Error: Authentication Failed')
+    #     logger.error(f'error={error}')
+    #     try:
+    #         await consumer.send(text_data=json.dumps({
+    #             'type': 'authenticationFailed',
+    #             'message': error
+    #         }))
+    #     except Exception as e:
+    #         logger.error(f'Failed to send to consumer: {e}')
+    #     return
+    #
+    #player = await get_player_by_user(user)
+
+    user = consumer.user
+    player = consumer.player
+    if not player or not user:
         logger.error(f"No player found for user: {user.username}")
         return
 
@@ -79,7 +82,10 @@ async def send_available_players(consumer, game_name):
     for player_info in consumer.gamePlayers[game_name].values():
         websocket = player_info['websocket']
         if websocket:
-            await websocket.send(text_data=message)
+            try:
+                await websocket.send(text_data=message)
+            except Exception as e:
+                logger.error(f'Error in send_available_players: {e}')
         else:
             logger.warning(f'No websocket for player: {player_info['user'].username}')
 
