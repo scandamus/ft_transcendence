@@ -15,27 +15,9 @@ async def handle_join_lounge_match(consumer, token, game_name):
     if not validate_game_name(game_name):
         logger.error(f'Error game_name:{game_name} in handle_join_lounge_match')
         return
-    
-    # user, error = await authenticate_token(token)
-    # if not user:
-    #     logger.error('Error: Authentication Failed')
-    #     logger.error(f'error={error}')
-    #     try:
-    #         await consumer.send(text_data=json.dumps({
-    #             'type': 'authenticationFailed',
-    #             'message': error
-    #         }))
-    #     except Exception as e:
-    #         logger.error(f'Failed to send to consumer: {e}')
-    #     return
-    #
-    #player = await get_player_by_user(user)
 
     user = consumer.user
     player = consumer.player
-    if not player or not user:
-        logger.error(f"No player found for user: {user.username}")
-        return
 
     if await check_player_status(consumer, user, player, 'lounge') is False:
         return

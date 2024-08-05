@@ -44,7 +44,6 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
 
 async def send_tournament_match_jwt(match, game_name='pong'):
     logger.info('send_tournament_match_jwt in')
-    #from .consumers import LoungeSession
 
     tournament = await database_sync_to_async(lambda: match.tournament)()
     if not tournament:
@@ -62,11 +61,9 @@ async def send_tournament_match_jwt(match, game_name='pong'):
         player_name = 'player1' if player == player1 else 'player2'
         user = await database_sync_to_async(lambda: player.user)()
         game_token = await issue_jwt(user, player_name, player.id, match.id, game_name, is_tournament=True)
-        #websocket =  LoungeSession.players.get(player.user.username)
         channel_layer = get_channel_layer()
 
         try:
-            #await websocket.send(text_data=json.dumps({
             await channel_layer.group_send(
                 f'friends_{player.id}',
                 {

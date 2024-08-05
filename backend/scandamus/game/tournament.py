@@ -12,28 +12,13 @@ from django.db import transaction, IntegrityError
 from rest_framework import serializers
 from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
-from django.utils.timezone import make_aware, now as django_now
-from .match_utils import authenticate_token, get_player_by_user
 
 logger = logging.getLogger(__name__)
 
 async def handle_create_tournament(consumer, data):
-    # user, error = await authenticate_token(data['token'])
-    # if not user:
-    #     logger.error('Error: Authentication Failed')
-    #     logger.error(f'error={error}')
-    #     await consumer.send(text_data=json.dumps({
-    #         'type': 'authenticationFailed',
-    #         'message': error
-    #     }))
-    #     return
-
-    # player = await get_player_by_user(user)
-    
     user = consumer.user
     player = consumer.player
-    if not player or not user:
-        logger.error(f"No player found for user: {user.username}")
+
     serializer = TournamentSerializer(data = data)
     start_time = data.get('start')
     if isinstance(start_time, str):
@@ -136,24 +121,13 @@ def create_tournament(data):
         return None, None
 
 async def handle_entry_tournament(consumer, data):
-    # user, error = await authenticate_token(data['token'])
-    # if not user:
-    #     logger.error('Error: Authentication Failed')
-    #     logger.error(f'error={error}')
-    #     await consumer.send(text_data=json.dumps({
-    #         'type': 'authenticationFailed',
-    #         'message': error
-    #     }))
-    #     return
-    #
-    #player = await get_player_by_user(user)
-    
     user = consumer.user
     player = consumer.player
     if not player:
         logger.error(f"No player found for user: {user.username}")
         await send_entry_error(consumer, 'invalidPlayer')
         return
+
     try:
         serializer = EntrySerializer(data=data)
         if serializer.is_valid():
@@ -196,18 +170,6 @@ async def handle_entry_tournament(consumer, data):
         logger.error(f'Error in handle_entry_tournament: {e}')
 
 async def handle_cancel_entry(consumer, data):
-    # user, error = await authenticate_token(data['token'])
-    # if not user:
-    #     logger.error('Error: Authentication Failed')
-    #     logger.error(f'error={error}')
-    #     await consumer.send(text_data=json.dumps({
-    #         'type': 'authenticationFailed',
-    #         'message': error
-    #     }))
-    #     return
-
-    # player = await get_player_by_user(user)
-    
     user = consumer.user
     player = consumer.player
     if not player or not user:

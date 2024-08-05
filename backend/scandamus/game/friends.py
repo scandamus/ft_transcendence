@@ -84,7 +84,6 @@ def approve_frined_request_db(friend_request):
 @database_sync_to_async
 def cancel_friend_request_db(request_id): #from_user, to_user):
      FriendRequest.objects.get(id=request_id).delete()
-#        FriendRequest.objects.filter(from_user=from_user, to_user=to_user).delete()
 
 @database_sync_to_async
 def remove_friend_db(from_user, user_to_remove):
@@ -106,18 +105,10 @@ def get_user_request_to_username(friend_request):
 @database_sync_to_async
 def get_from_id_by_request(friend_request):
      return friend_request.from_user.id
-#        return friend_request.from_user.id
 
 @database_sync_to_async
 def get_to_id_by_request(friend_request):
     return friend_request.to_user.id
-#        return friend_request.to_user.id
-
-
-
-# @database_sync_to_async
-# def are_already_friends(user1, user2):
-#     return user1.friends.filter(id=user2.id).exists()
 
 @database_sync_to_async
 def are_already_friends(user1, user2):
@@ -197,7 +188,6 @@ async def accept_friend_request(consumer, request_id):
         from_user = await get_user_by_id(to_user_id)
         to_player = await get_player_from_user(from_user)
         scope_user_username = await get_username_by_player(consumer.player)
-        # from_user_username = await get_user_request_from_username(friend_request)
         logger.info(f'scope_user_username={scope_user_username}')
         if to_user_username == scope_user_username:
             from_user_id = await get_from_id_by_request(friend_request)
