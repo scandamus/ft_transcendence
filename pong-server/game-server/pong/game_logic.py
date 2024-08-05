@@ -182,18 +182,17 @@ class Ball:
 
     def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
         angle_radians = angle_degrees * (math.pi / 180)
-        speed = random.randint(self.speed, self.speed)
         if orientation == 'vertical':
             cos_value = math.cos(angle_radians)
             sin_value = math.sin(angle_radians)
             return {
-                'dx': speed * direction_multiplier * cos_value,
-                'dy': speed * -sin_value,
+                'dx': self.speed * direction_multiplier * cos_value,
+                'dy': self.speed * -sin_value,
             }
         elif orientation == 'horizontal':
             cos_value = math.cos(angle_radians)
             sin_value = math.sin(angle_radians)
             return {
-                'dx': speed * -sin_value,
-                'dy': speed * direction_multiplier * cos_value,
+                'dx': self.speed * -sin_value,
+                'dy': self.speed * direction_multiplier * cos_value,
             }
