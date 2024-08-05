@@ -90,11 +90,12 @@ class MatchViewSet(ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-
         return Response(serializer.data)
     
     def perform_update(self, serializer):
         serializer.save()
+        logger.info(f'//-- serializer.save() on: MatchViewSet perform_update')
+
 
 
 class EntryViewSet(ModelViewSet):

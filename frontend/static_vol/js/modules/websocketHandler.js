@@ -84,7 +84,7 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name, all_usernames, type, tournament, tournament_name, round, tournament_id } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames, type, round, tournament_id } = data;
 
     closeModal();
 
@@ -98,7 +98,7 @@ const loadGameContent = async (data) => {
     sessionStorage.setItem('player_name', player_name);
 
     let tournamentId;
-    if (type === 'gameSessionTournament' || (type === 'gameSessionReconnect' && tournament)) {
+    if (type === 'gameSessionTournament' || (type === 'gameSessionReconnect' && tournament_id !== null)) {
         // enterRoomできていなかった場合はtournamentIdがnullになるのでここでセットする
         tournamentId = sessionStorage.getItem('tournament_id');
         if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined' || tournamentId !== tournament_id) {
