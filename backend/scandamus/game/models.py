@@ -328,7 +328,6 @@ class Match(models.Model):
                 logger.info('Match is canceled because both players did not show up')
             serializer = MatchSerializer()
             serializer.update(self, validated_data) # playerのstatusをwaitingに
->>>>>>> main
 
     def save(self, *args, **kwargs):
         logger.info(f'//Match save() {self.game_name}')
