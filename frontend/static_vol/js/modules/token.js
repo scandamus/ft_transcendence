@@ -11,13 +11,8 @@ import { labels } from "./labels.js";
 const getToken = (nameToken) => {
     try {
         const token = sessionStorage.getItem(nameToken);
-        //let token = null;
-        if (token === null) {
-            //console.log(`//token === null logout状態`)
-            forcedLogout();
-            throw new Error(`${nameToken} is null`);
-        }
-        if (!token) {//todo:test (undefinedなど)
+        //nullは呼び出し先で処理される
+        if (!token && token !== null) {
             throw new Error(`${nameToken} is invalid`);
         }
         return token;
