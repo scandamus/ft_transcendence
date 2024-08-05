@@ -11,8 +11,12 @@ import { labels } from "./labels.js";
 const getToken = (nameToken) => {
     try {
         const token = sessionStorage.getItem(nameToken);
-        //nullは呼び出し先で処理される
-        if (!token && token !== null) {
+        if (token === null) {
+            console.log(`No ${nameToken} is in sessionStorage.`);
+            forcedLogout();
+            throw new Error(`No ${nameToken} is in sessionStorage.`);
+        }
+        if (!token) {
             throw new Error(`${nameToken} is invalid`);
         }
         return token;
@@ -83,13 +87,6 @@ const isTokenExpired = (token) => {
 const getValidToken = async (nameToken) => {
     try {
         let myToken = getToken(nameToken);
-        //todo: myTokenがundefになる
-        if (myToken === null) {
-            console.log('No token found.');
-            forcedLogout();
-            //return { token: null, error: 'No token found' };
-            throw new Error(`No token found`);
-        }
         if (myToken && !isTokenExpired(myToken)) {
             return { token: myToken, error: null };
         }

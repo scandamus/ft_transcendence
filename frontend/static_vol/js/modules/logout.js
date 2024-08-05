@@ -74,7 +74,6 @@ const processLogout = () => {
 }
 
 const forcedLogout = () => {
-    console.log(`///forcedLogout`)
     const siteInfo = new SiteInfo();
     if (!siteInfo.isLogout) {
         addNotice(labels.common.logoutTokenExpired, true);
