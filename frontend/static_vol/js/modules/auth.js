@@ -1,7 +1,7 @@
 'use strict';
 
 import { getToken, refreshAccessToken } from './token.js';
-import { handleLogout } from './logout.js';
+import { forcedLogout, handleLogout } from './logout.js';
 import PageBase from '../components/PageBase.js';
 import { labels } from './labels.js';
 import { SiteInfo } from "./SiteInfo.js";
@@ -9,9 +9,6 @@ import { SiteInfo } from "./SiteInfo.js";
 const fetchUserInfo = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);//logout状態なら何もしない
-        }
         const response = await fetch('/api/players/userinfo/', {
             method: 'GET',
             headers: {
@@ -22,19 +19,19 @@ const fetchUserInfo = async (isRefresh) => {
             return await response.json();
         } else if (response.status === 401) {
             if (!isRefresh) {
-                //初回のaccessToken expiredならrefreshして再度ログイン
                 if (!await refreshAccessToken()) {
-                    throw new Error('fail refresh token');
+                    throw new Error(`fail refresh token( ${response.status} )`);
                 }
                 return await fetchUserInfo(true);
             } else {
-                throw new Error('refreshed accessToken is invalid.');
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
             }
         } else {
-            throw new Error(`fetchUserInfo error. status: ${response.status}`);
+            throw new Error(`fetchUserInfo error. status( ${response.status} )`);
         }
     } catch (error) {
-        console.error('Error fetch UserInfo: ', error);
+        console.error('Error on fetchUserInfo: ', error);
+        forcedLogout();
     }
 }
 
@@ -51,16 +48,13 @@ const getUserInfo = async () => {
             return userData;
         })
         .catch(error => {
-            console.error('getUserInfo failed:', error);
+            console.error('Error getUserInfo:', error);
         })
 }
 
 const fetchLevel = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         const response = await fetch('/api/players/level/', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -69,13 +63,12 @@ const fetchLevel = async (isRefresh) => {
         if (!response.ok) { //response.status=>403
             if (!isRefresh) {
                 if (!await refreshAccessToken()) {
-                    throw new Error('fail refresh token');
+                    throw new Error(`fail refresh token( ${response.status} )`);
                 }
                 return await fetchLevel(true);
             } else {
-                throw new Error('refreshed accessToken is invalid.');
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
             }
-            throw new Error(`Failed to fetch level: ${response.status}`);
         }
         const data = await response.json();
         if (!data) {
@@ -83,7 +76,8 @@ const fetchLevel = async (isRefresh) => {
         }
         return data;
     } catch (error) {
-        console.error('Error fetch level: ', error);
+        console.error('Error on fetchLevel: ', error);
+        forcedLogout();
     }
 }
 

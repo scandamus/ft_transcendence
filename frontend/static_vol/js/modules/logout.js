@@ -16,9 +16,6 @@ import { labels } from "./labels.js";
 const fetchLogout = async (isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            throw new Error('accessToken is invalid.');
-        }
         const response = await fetch('/api/players/logout/', {
             method: 'POST',
             headers: {
@@ -29,17 +26,18 @@ const fetchLogout = async (isRefresh) => {
             if (!isRefresh) {
                 //初回のaccessToken expiredならrefreshして再度ログイン
                 if (!await refreshAccessToken()) {
-                    throw new Error('fail refresh token');
+                    throw new Error(`fail refresh token( ${response.status} )`);
                 }
                 await fetchLogout(true);
             } else {
-                throw new Error('refreshed accessToken is invalid.');
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
             }
         } else if (!response.ok) {
             throw new Error(`fetchLogout error. status: ${response.status}`);
         }
     } catch (error) {
-        console.error('Error fetchLogout: ', error);
+        console.error('Error on fetchLogout: ', error);
+        forcedLogout();
     }
 }
 

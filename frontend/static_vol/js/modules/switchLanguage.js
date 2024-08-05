@@ -3,6 +3,7 @@
 import { labels, switchLabels } from './labels.js';
 import { getToken, refreshAccessToken } from './token.js';
 import { languageLabels } from './labels.js';
+import { forcedLogout } from "./logout.js";
 
 const setLangAttrSelected = (elSelectLang, lang) => {
     const options = elSelectLang.querySelectorAll('option');
@@ -63,9 +64,6 @@ const getLang = () => {
 const updateDbLang = async (lang, isRefresh) => {
     try {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         const response = await fetch('/api/players/lang/', {
             method: 'PUT',
             headers: {
@@ -78,16 +76,17 @@ const updateDbLang = async (lang, isRefresh) => {
         if (!response.ok) {
             if (!isRefresh) {
                 if (!await refreshAccessToken()) {
-                    throw new Error('Failed to refresh token');
+                    throw new Error(`fail refresh token( ${response.status} )`);
                 }
                 return await updateDbLang(lang, true);
             } else {
-                throw new Error('Refreshed accessToken is invalid.');
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
             }
         }
         return await response.json();
     } catch (error) {
-        console.error('Error in updateDbLang: ', error);
+        console.error('Error on updateDbLang:', error);
+        forcedLogout();
         return null;
     }
 }
