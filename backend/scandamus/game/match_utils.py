@@ -20,7 +20,7 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
     player1 = await get_player_by_username(from_username)
     player2 = consumer.player
     match = await create_match(player1, player2)
-    usernames = [{'username': player1.user.username, 'avatar': player1.avatar.url if player2.avatar else None},
+    usernames = [{'username': player1.user.username, 'avatar': player1.avatar.url if player1.avatar else None},
                  {'username': player2.user.username, 'avatar': player2.avatar.url if player2.avatar else None}]
 
     for player in [player1, player2]:

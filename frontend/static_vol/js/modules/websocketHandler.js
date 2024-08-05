@@ -84,7 +84,7 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name, all_usernames, type, tournament, tournament_name, round, tournament_id } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames, type, round, tournament_id } = data;
 
     closeModal();
 
@@ -98,7 +98,7 @@ const loadGameContent = async (data) => {
     sessionStorage.setItem('player_name', player_name);
 
     let tournamentId;
-    if (type === 'gameSessionTournament' || (type === 'gameSessionReconnect' && tournament)) {
+    if (type === 'gameSessionTournament' || (type === 'gameSessionReconnect' && tournament_id !== null)) {
         // enterRoomできていなかった場合はtournamentIdがnullになるのでここでセットする
         tournamentId = sessionStorage.getItem('tournament_id');
         if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined' || tournamentId !== tournament_id) {
@@ -110,7 +110,7 @@ const loadGameContent = async (data) => {
     if (type === 'gameSessionTournament') {
         //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
         if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {
-            window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
+            window.history.pushState(null, null, `/tournament/detail:${tournamentId}`);
             await router(true);
         }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
@@ -139,10 +139,10 @@ const loadGameContent = async (data) => {
             console.log('Token sent to pong-server');
             // TODO: ゲーム画面に変遷してゲーム続行
             if (game_name === 'pong') {
-                window.history.pushState({}, null, `/game/pong/play:${gameMatchId}`);
+                window.history.pushState(null, null, `/game/pong/play:${gameMatchId}`);
             } else {
                 // game_name === 'pong4'
-                window.history.pushState({}, null, `/game/pong4/play:${gameMatchId}`);
+                window.history.pushState(null, null, `/game/pong4/play:${gameMatchId}`);
             }
             await router(true);
         } else {
@@ -400,7 +400,7 @@ const handleTournamentMatchReceived = async (data) => {
             return;
         }
         if (window.location.pathname !== `/tournament/detail:${data.id}`) {
-            window.history.pushState({}, null, `/tournament/detail:${data.id}`);
+            window.history.pushState(null, null, `/tournament/detail:${data.id}`);
             await router(true);
         }
     } else if (data.action === 'canceled') {
@@ -409,7 +409,7 @@ const handleTournamentMatchReceived = async (data) => {
             updateUpcomingTournamentList(currentPage).then(() => {});
             updateOngoingTournamentList(currentPage).then(() => {});
         }
-        window.history.pushState({}, null, '/dashboard');
+        window.history.pushState(null, null, '/dashboard');
         await router(true);
     } else if (data.action === 'finished') {
         addNotice(`トーナメント ${data.name} は終了しました`);
