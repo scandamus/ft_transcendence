@@ -215,6 +215,10 @@ def get_player_by_user(user):
         return None
 
 @database_sync_to_async
+def get_player_by_id(player_id):
+    return Player.objects.get(id=player_id)
+
+@database_sync_to_async
 def issue_jwt(user, player_name, players_id, match_id, game_name='pong', is_tournament=False):
     expire = datetime.utcnow() + timedelta(minutes=1)
     payload = {
