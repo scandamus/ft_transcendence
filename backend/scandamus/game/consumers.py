@@ -29,16 +29,6 @@ class LoungeSession(AsyncWebsocketConsumer):
         await self.accept()
         self.player = None
         self.user = None
-        # self.user = await (get_user)(self.scope)
-
-        # if self.user.is_anonymous:
-        #     logger.error('Anonymous user attempted to connect')
-        #     await self.send(text_data=json.dumps({
-        #         'type': 'authenticationFailed',
-        #         'action': 'forceLogout',
-        #         'message': 'Anonymous user webscoket access'
-        #     }))
-        #     return
 
     async def receive(self, text_data):
         logger.info(f'received text_data: {text_data}')
