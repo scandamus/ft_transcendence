@@ -4,6 +4,9 @@ import { webSocketManager } from './websocket.js';
 import { pongHandler } from './websocketHandler.js';
 import { initToken } from './token.js';
 import { addNotice } from './notice.js';
+import GamePlay from '../components/GamePlay.js';
+import { handleExitGame } from './modal.js';
+import PageBase from '../components/PageBase.js';
 
 const createTournament = async(tournamentTitle, startTime) => {
     console.log(`createTournament ${tournamentTitle} - ${startTime}`);
@@ -64,6 +67,10 @@ const cancelEntryTournament = async(tournamentId, tournamentName) => {
 
 const enterTournamentRoomRequest = async(tournamentName) => {
     console.log(`enterTournamentRoom ${tournamentName}`);
+    if (GamePlay.instance) {
+        handleExitGame(PageBase.instance);
+        addNotice('トーナメントの開始時刻が近づいているためマッチを棄権しました', true);
+    }
     try {
         const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);

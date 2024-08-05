@@ -10,12 +10,15 @@ import { updateModalAvailablePlayers, closeModalOnEntryDone } from "./modal.js";
 import { updateOngoingTournamentList, updateUpcomingTournamentList } from "./tournamentList.js";
 import { enterTournamentRoomRequest } from "./tournament.js";
 import { handleReceiveWsTournamentValidationError } from './form.js';
+import { handleLogout } from "./logout.js";
+import { toggleFriendsDisplay } from "./friendsFull.js";
 
 export const pongHandler = (event, containerId) => {
-    console.log(`pongHandler called for containerID: ${containerId}`)
+    console.log(`pongHandler called for containerID: ${containerId}`);
     let data;
     try {
         data = JSON.parse(event.data);
+        console.log('Received JSON:', data); // オブジェクト全体をログに表示
         if (data.type === 'authenticationFailed') {
             console.error(data.message);
             refreshAccessToken();
@@ -50,6 +53,12 @@ export const pongHandler = (event, containerId) => {
         else if (data.type === 'tournamentMatch') {
             handleTournamentMatchReceived(data);
         }
+        else if (data.type === 'disconnectByNewLogin') {
+            handleDisconnetByNewLogin();
+        }
+        else if (data.type === 'gameSessionReconnect') {
+            handleGameSesssionReconnect(data);
+        }
     } catch(error) {
         console.error(`Error parsing data from ${containerId}: `, error);
     }
@@ -75,23 +84,33 @@ const pongGameHandler = (event, containerId) => {
 }
 
 const loadGameContent = async (data) => {
-    const { game_name, jwt, match_id, username, player_name, all_usernames, type, tournament_name, round, tournament_id } = data;
+    const { game_name, jwt, match_id, username, player_name, all_usernames, type, round, tournament_id } = data;
 
     closeModal();
 
     console.log(`Loading ${game_name} content with JWT: `, jwt);
-    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}, all_usernames: ${JSON.stringify(all_usernames)}`);
+    console.log(`match_id: ${match_id}, Username: ${username}, Player_name: ${player_name}, all_usernames: ${JSON.stringify(all_usernames)}, tournament_id: ${tournament_id}`);
 
     const gameMatchId = match_id; 
     const containerId = `${game_name}/${gameMatchId}`;
     console.log(`URL = ${containerId}`);
     sessionStorage.setItem('all_usernames', JSON.stringify(all_usernames));
+    sessionStorage.setItem('player_name', player_name);
+
+    let tournamentId;
+    if (type === 'gameSessionTournament' || (type === 'gameSessionReconnect' && tournament_id !== null)) {
+        // enterRoomできていなかった場合はtournamentIdがnullになるのでここでセットする
+        tournamentId = sessionStorage.getItem('tournament_id');
+        if (!tournamentId || tournamentId === 'null' || tournamentId === 'undefined' || tournamentId !== tournament_id) {
+            sessionStorage.setItem('tournament_id', tournament_id);
+            tournamentId = sessionStorage.getItem('tournament_id');
+        }
+    }
 
     if (type === 'gameSessionTournament') {
-        const tournamentId = sessionStorage.getItem("tournament_id");
         //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
         if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {
-            window.history.pushState({}, null, `/tournament/detail:${tournamentId}`);
+            window.history.pushState(null, null, `/tournament/detail:${tournamentId}`);
             await router(true);
         }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
@@ -104,19 +123,26 @@ const loadGameContent = async (data) => {
     try {
         const socket = await webSocketManager.openWebSocket(containerId, pongGameHandler);
         console.log(`WebSocket for ${containerId} is open!!!`);
+        let action;
+        if (type === 'gameSessionReconnect') {
+            console.log('RECONNECT MATCH!!');
+            action = 'authenticateReconnect';
+        } else {
+            action = 'authenticate';
+        }
         if (socket.readyState === WebSocket.OPEN) {
             webSocketManager.sendWebSocketMessage(containerId, {
-                action: 'authenticate',
+                action: action,
                 jwt: jwt,
                 player_name: player_name,
             });
             console.log('Token sent to pong-server');
             // TODO: ゲーム画面に変遷してゲーム続行
             if (game_name === 'pong') {
-                window.history.pushState({}, null, `/game/pong/play:${gameMatchId}`);
+                window.history.pushState(null, null, `/game/pong/play:${gameMatchId}`);
             } else {
                 // game_name === 'pong4'
-                window.history.pushState({}, null, `/game/pong4/play:${gameMatchId}`);
+                window.history.pushState(null, null, `/game/pong4/play:${gameMatchId}`);
             }
             await router(true);
         } else {
@@ -139,6 +165,10 @@ const handleFriendRequestAck = (data) => {
             addNotice(labels.friendRequest['sendFriendReqSelf'].replace('$name', data.username), true);
         } else if (data.error === 'invalidDeclineFriendReq') {
             addNotice(labels.friendRequest['invalidDeclineFriendReq'].replace('$name', data.username), true);
+        } else if (data.error === 'mutualReq') {
+            addNotice(labels.friendRequest['mutualReq'].replace('$name', data.username), false);
+        } else if (data.error === 'alreadyReq') {
+            addNotice(labels.friendRequest['alreadyReq'].replace('$name', data.username), false);
         } else {
             console.error(`Error: ${data.message}`);
         }
@@ -152,8 +182,10 @@ const handleFriendRequestAck = (data) => {
         console.log('Accept friend request is successfully done');
         addNotice(labels.friendRequest['acceptRequestSuccess'].replace('$name', data.from_username), false);
         if (currentPage) {
-            updateFriendRequestList(currentPage).then(() => {});
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     } else if (data.action === 'declineRequestSuccess') {
         console.log('Decline friend request is successfully done');
@@ -165,8 +197,13 @@ const handleFriendRequestAck = (data) => {
         console.log('Remove Successfully done');
         addNotice(labels.friendRequest['removeSuccess'].replace('$name', data.username), false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
+    } else if (data.action === 'maxFriendsReached') {
+        addNotice(labels.friendRequest['missedRequestAccept'].replace('$name', data.to_username), true);
     }
 }
 
@@ -181,16 +218,29 @@ const handleFriendRequestReceived = (data) => {
             updateFriendRequestList(currentPage).then(() => {});
         }
     } else if (data.action === 'accepted') {
-        addNotice(labels.friendRequest['accepted'].replace('$name', data.from_username), false);
+        addNotice(labels.friendRequest['accepted'].replace('$name', data.to_username), false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     } else if (data.action === 'removed') {
         //rmられは通知されない
         console.log(labels.friendRequest['removed'].replace('$name', data.from_username));
+        //friendリスト更新
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
+    } else if (data.action === 'acceptRequestFailedFull') {
+        //承認したけど相手が上限
+        addNotice(labels.friendRequest['acceptRequestFailedFull'].replace('$name', data.from_username), true);
+    } else if (data.action === 'acceptRequestFailedFull2') {
+        //承認したけど自分が上限(通常はフロントで弾く)
+        addNotice(labels.friendRequest['acceptRequestFailedFull2'], true);
     }
 }
 
@@ -214,8 +264,12 @@ const handleFriendMatchRequestReceived = (data) => {
             addNotice(labels.matchRequest['playerNotWaitingStatus'], true);
         } else if (data.error === 'userOffline') {
             addNotice(labels.matchRequest['userOffline'], true);
-        } else if (data.error === 'tournament') {
+        } else if (data.error === 'inTournament') {
             addNotice('トーナメント中にマッチリクエストできません', true);
+        } else if (data.error === 'inMatch') {
+            addNotice('マッチ中にほかのマッチリクエストはできません', true);
+        } else if (data.error === 'matchWaiting') {
+            addNotice('マッチ待機中にマッチリクエストできません', true);
         } else {
             console.error(`Error: ${data.message}`);
         }
@@ -227,10 +281,14 @@ const handleLoungeMatchReceived = (data) => {
         updateModalAvailablePlayers(data.availablePlayers);
     } else if (data.action === 'error') {
         closeModal();
-        if (data.error === 'tournament') {
+        if (data.error === 'inTournament') {
             addNotice('トーナメント中にマッチリクエストできません', true);
+        } else if (data.error === 'inMatch') {
+            addNotice('マッチ中にほかのマッチリクエストはできません', true);
+        } else if (data.error === 'matchWaiting') {
+            addNotice('マッチ待機中にマッチリクエストできません', true);
         } else {
-            alert(`Error: ${data.message}`);
+            console.error(`Error: ${data.message}`);
         }
     }
 }
@@ -244,7 +302,10 @@ const handleFriendStatusReceived = (data) => {
         console.log(`friendStatus change: ${data.username} to ${online_status_msg}`);
         addNotice(`${data.username}が${online_status_msg}しました`, false);
         if (currentPage) {
-            updateFriendsList(currentPage).then(() => {});
+            updateFriendsList(currentPage)
+                .then(() => {
+                    toggleFriendsDisplay(currentPage);
+                });
         }
     }
 }
@@ -259,21 +320,27 @@ const handleTournamentReceived = (data) => {
         console.log(`Local Time: ${startLocal}`);
         if (currentPage) {
             PageBase.instance.resetFormCreateTournament();
-            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
         }
         const message = `${data.name} - ${startLocal} が作成されました`;
         console.log(`${message}`);
         addNotice(message, false);
-    } else if (data.action === 'alreadyExists') {
-        const message = `同名のトーナメントがすでに存在しています`;
-        addNotice(message, true);
-    } else if (data.action === 'invalidTournamentTitle') {
+    } else if (data.action === 'invalidTournamentTitle' || data.action === 'invalidTournamentStart') {
         handleReceiveWsTournamentValidationError(data);
+        if (currentPage) {
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
+        }
     } else if (data.action === 'entryDone') {
         closeModalOnEntryDone();
         addNotice(`トーナメント【${data.name}】へのエントリーが完了しました`);
         if (currentPage) {
-            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
         }
     } else if (data.action === 'duplicateNickname') {
         addNotice(`すでに同名のニックネームが使われています`, true);
@@ -292,7 +359,9 @@ const handleTournamentReceived = (data) => {
     } else if (data.action === 'removeEntryDone') {
         addNotice(`トーナメント【${data.name}】への参加をキャンセルしました`);
         if (currentPage) {
-            updateUpcomingTournamentList(currentPage).then(() => {});
+            updateUpcomingTournamentList(currentPage).then((start_dates) => {
+                currentPage.start_dates = start_dates;
+            });
         }
     } else if (data.action === 'invalidCancelRequest') {
         addNotice('トーナメントへのエントリーがありません');
@@ -317,16 +386,21 @@ const handleTournamentMatchReceived = async (data) => {
             updateOngoingTournamentList(currentPage).then(() => {});
         }
     } else if (data.action === 'tournament_room') {
-        //addNotice(`トーナメント ${data.name} の控室への移動時間になりました`);
-        enterTournamentRoomRequest(data.name);
+        //ここでdata.nameを渡せないとentry情報が取得できずcan not enter tournament roomになる
+        await enterTournamentRoomRequest(data.name);
     } else if (data.action === 'tournament_match') {
         addNotice(`トーナメント ${data.name} を開始します`);
     } else if (data.action === 'enterRoom') {
+        //tornament.nameを渡せずenterRoomできなければここに入れない
         sessionStorage.setItem('tournament_id', data.id);
         sessionStorage.setItem('tournament_status', 'waiting_start');
         addNotice(`トーナメント ${data.name} の控室に移動します`);
+        if (!data.id) {
+            console.log(`can not enter room`);
+            return;
+        }
         if (window.location.pathname !== `/tournament/detail:${data.id}`) {
-            window.history.pushState({}, null, `/tournament/detail:${data.id}`);
+            window.history.pushState(null, null, `/tournament/detail:${data.id}`);
             await router(true);
         }
     } else if (data.action === 'canceled') {
@@ -335,7 +409,7 @@ const handleTournamentMatchReceived = async (data) => {
             updateUpcomingTournamentList(currentPage).then(() => {});
             updateOngoingTournamentList(currentPage).then(() => {});
         }
-        window.history.pushState({}, null, '/dashboard');
+        window.history.pushState(null, null, '/dashboard');
         await router(true);
     } else if (data.action === 'finished') {
         addNotice(`トーナメント ${data.name} は終了しました`);
@@ -370,4 +444,16 @@ const handleTournamentMatchReceived = async (data) => {
         }
     }
     console.log(`${data.name} ${data.action}の通知です`);
+}
+
+const handleDisconnetByNewLogin = () => {
+    addNotice('サーバーに新しいログインがあったため切断されました', true);
+    console.log('Disconnect by new login');
+    handleLogout(new Event('logout'));
+}
+
+const handleGameSesssionReconnect = (data) => {
+    addNotice(`試合中のゲームに復帰します`);
+    console.log('Rejoin to the match');
+    loadGameContent(data);
 }

@@ -1,11 +1,14 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_en = {
     langCode: 'en',
     langName: 'English',
     common: {
         switchLang: 'Switch Language',
-        btnEnable: 'The button becomes clickable when valid values are entered.'
+        btnEnable: 'The button becomes clickable when valid values are entered.',
+        logoutTokenExpired: 'Session expired. You have been logged out. Please log in again.'
     },
     home: {
         title: 'Log In',
@@ -39,6 +42,9 @@ export const labels_en = {
         passwordIsNotSame: 'The passwords do not match.',
         isExists: 'This username is already taken.',
         outOfRange: 'That date and time cannot be specified',
+        startTimeInvalid: `Please set the tournament start time to be at least ${CREATE_TOURNAMENT_TIMELIMIT_MIN} minutes from now.`,
+        intervalError: 'An interval of at least 6 hours is required between tournaments.',
+        tournamentNameAlreadyExists: 'Tournament name already exists.',
         loginError1: 'Login failed. Please check your username and password.',
         loginError2: 'Something went wrong. Unable to log in.',
     },
@@ -70,6 +76,7 @@ export const labels_en = {
         labelReceivedRequest: 'friend requests',
         labelRecommended: 'recommended',
         msgNoRecommended: 'no recommended player',
+        msgFriendsFull: `You have reached the maximum limit of ${FRIENDS_MAX} friends.<br>If you want to add another player as a friend, please remove an existing friend to free up space.`,
     },
     lounge: {
         title: 'Lounge',
@@ -105,7 +112,7 @@ export const labels_en = {
         labelTournamentLog: 'tournament log',
         labelUpdateLists: 'Update Lists',
         descTournamentTitle: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 50 characters long'],
-        descTournamentStart: ['[Allowable Range] From 1 hour later to 1 month later.'],
+        descTournamentStart: [`[Allowable Range] From ${CREATE_TOURNAMENT_TIMELIMIT_MIN} minutes later to 1 month later.`, '[between tournaments] At least 6 hours'],
         descNickname: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 20 characters long'],
         labelNextMatch: 'Next Match',
         labelRound1: 'First Round',
@@ -162,9 +169,14 @@ export const labels_en = {
         acceptRequestSuccess: '$name is now your friend',
         declineRequestSuccess: 'friend request from $name has been deleted',
         removeSuccess: '$name is no longer your friend',
+        mutualReq: '$name has already sent you a friend request',
+        alreadyReq: 'You have already sent a friend request to $name',
         received: '$name has sent you a friend request',
         accepted: '$name has accepted your friend request',
         removed: '$name is no longer your friend',
+        missedRequestAccept: '$name tried to accept your friend request, but your friends list has reached its limit. Please remove some friends to make space.',
+        acceptRequestFailedFull: 'You couldn\'t become friends with $name because your friend list is full at the moment.',
+        acceptRequestFailedFull2: 'You couldn\'t become friends because your friend limit has been reached. Please remove some friends to free up space.',
     },
     matchRequest: {
         accepted: 'game is starting',

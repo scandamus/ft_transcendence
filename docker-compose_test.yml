@@ -1,14 +1,17 @@
 services:
   backend:
-    build: backend
+    build:
+      context: ./backend
+      target: backend
     container_name: backend
-    ports:
-      - "8001:8001"
+    expose:
+      - "8001"
     volumes:
       - ./backend/scandamus:/app
     depends_on:
       - redis
     environment:
+      - BACKEND_LOG_LEVEL=${BACKEND_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -23,6 +26,8 @@ services:
       - DJANGO_SU_PASSWORD=${DJANGO_SU_PASSWORD}
       - DJANGO_PLAYER1_PASSWORD=${DJANGO_PLAYER1_PASSWORD}
       - POSTGRES_USER=${DB_USER}
+      - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - FRIENDS_MAX=${FRIENDS_MAX}
     restart: always
     networks:
       - backend-network
@@ -42,11 +47,12 @@ services:
       - COMMON_NAME=${DOMAIN_NAME}
       - EMAIL=${EMAIL}
       - DOMAIN_NAME=${DOMAIN_NAME}
+      - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - FRIENDS_MAX=${FRIENDS_MAX}
     container_name: frontend
     depends_on:
       - backend
     ports:
-      - "80:80"
       - "443:443"
     volumes:
       - ./frontend/static_vol:/var/www/html
@@ -65,8 +71,8 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     restart: always
     networks:
       - backend-network
@@ -75,28 +81,7 @@ services:
     build: pong-server
     container_name: pong-server
     environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - SIGNING_KEY=${PONG_SERVER_SIGNING_KEY}
-      - SECRET_KEY=${PONG_SERVER_SECRET_KEY}
-      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
-      - CHANNEL_SECRET_KEY=${PONG_SERVER_CHANNEL_SECRET_KEY}
-      - POSTGRES_USER=${DB_USER}
-    depends_on:
-      - redis
-    ports:
-      - "8002:8002"
-    restart: always
-    volumes:
-      - ./pong-server/game-server:/app
-    networks:
-      - backend-network
-
-  pong4-server:
-    build: pong4-server
-    container_name: pong4-server
-    environment:
+      - PONG_LOG_LEVEL=${PONG_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -108,8 +93,32 @@ services:
       - POSTGRES_USER=${DB_USER}
     depends_on:
       - redis
-    ports:
-      - "8003:8003"
+    expose:
+      - "8002"
+    restart: always
+    volumes:
+      - ./pong-server/game-server:/app
+    networks:
+      - backend-network
+
+  pong4-server:
+    build: pong4-server
+    container_name: pong4-server
+    environment:
+      - PONG4_LOG_LEVEL=${PONG4_LOG_LEVEL}
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SIGNING_KEY=${PONG_SERVER_SIGNING_KEY}
+      - SECRET_KEY=${PONG_SERVER_SECRET_KEY}
+      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
+      - CHANNEL_SECRET_KEY=${PONG_SERVER_CHANNEL_SECRET_KEY}
+      - POSTGRES_USER=${DB_USER}
+    depends_on:
+      - redis
+    expose:
+      - "8003"
     restart: always
     volumes:
       - ./pong4-server/game-server:/app
@@ -121,21 +130,21 @@ services:
     restart: always
     networks:
       - backend-network
-  # ports:
-  #   - "6379:6379"
-
+    expose:
+      - "6379"
+  
   celery:
     build: 
       context: ./backend
       target: celery
     container_name: celery
-#    command: celery -A my_project worker --loglevel=info
     volumes:
       - ./backend/scandamus:/app
     depends_on:
       - backend
       - redis
     environment:
+      - BACKEND_LOG_LEVEL=${BACKEND_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -156,6 +165,7 @@ services:
       - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
       - POSTGRES_USER=${DB_USER}
       - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - FRIENDS_MAX=${FRIENDS_MAX}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     networks:
@@ -166,13 +176,13 @@ services:
       context: ./backend
       target: celery-beat
     container_name: celery-beat
-#    command: celery -A my_project beat --loglevel=info
     volumes:
       - ./backend/scandamus:/app
     depends_on:
       - backend
       - redis
     environment:
+      - BACKEND_LOG_LEVEL=${BACKEND_LOG_LEVEL}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -193,6 +203,7 @@ services:
       - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
       - POSTGRES_USER=${DB_USER}
       - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - FRIENDS_MAX=${FRIENDS_MAX}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     networks:

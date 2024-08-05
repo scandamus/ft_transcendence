@@ -22,6 +22,7 @@ export default class LogIn extends PageBase {
         this.title = labels.home.title;
         this.setTitle(this.title);
         this.clearBreadcrumb();
+        this.loginInProgress = false;
         this.loginErrorType = '';
 
         //afterRenderにmethod追加
@@ -77,6 +78,11 @@ export default class LogIn extends PageBase {
 
     handleLogin(ev) {
         ev.preventDefault();
+        //すでに処理中ならキャンセル
+        if (this.loginInProgress) {
+            return;
+        }
+        this.loginInProgress = true;
         const formLogin = document.getElementById('formLogin');
         if (!formLogin.checkValidity()) {
             this.handleValidationError('loginError1');
@@ -141,6 +147,9 @@ export default class LogIn extends PageBase {
             })
             .catch((error) => {
                 this.handleValidationError(error.message);
+            })
+            .finally(() => {
+                this.loginInProgress = false;
             });
     }
 

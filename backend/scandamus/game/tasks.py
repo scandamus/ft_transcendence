@@ -4,6 +4,7 @@ import random
 
 from celery import shared_task
 from django.utils import timezone
+from django.db import transaction
 from datetime import timedelta
 from .models import Tournament, Entry, Match
 from players.models import Player
@@ -25,45 +26,51 @@ def check_tournament_start_times():
 
     all_tournaments = Tournament.objects.all()
     for t in all_tournaments:
-        if t.status in ['upcoming', 'prepagin', 'ongoing']:
+        if t.status in ['upcoming', 'preparing', 'ongoing']:
             logger.info(f'Tournament: {t.name}, Start time: {t.start}, Status: {t.status}')
     
-    tournaments = Tournament.objects.filter(start__lte=check_time, status='upcoming')
-
-    for tournament in tournaments:
-        logger.info(f'Tournament {tournament.name} is preparing')
-        tournament.status = 'preparing'
-        tournament.save()
-
-        tournament_name = tournament.name
+    ongoing_or_preparing_tournament = Tournament.objects.filter(status__in=['preparing', 'ongoing']).first()
+    if ongoing_or_preparing_tournament:
+        logger.info(f'Tournament {ongoing_or_preparing_tournament} is still going on (status: {ongoing_or_preparing_tournament.status})')
+        return
         
-        # 5分前までのエントリーが有効
-        entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
+    tournaments = Tournament.objects.filter(start__lte=check_time, status='upcoming')    
+    if not tournaments.exists():
+        return
+    
+    tournament = tournaments.first()
+    logger.info(f'Tournament {tournament.name} is preparing')
+    tournament.status = 'preparing'
+    tournament.save(update_fields=['status'])
 
-        # エントリーしている人数が４人未満の場合はトーナメントをキャンセル
-        number_of_players = len(entried_players_id_list)
-        if number_of_players < 4: # 4人揃わない場合は中止
+    tournament_name = tournament.name
+        
+    # 5分前までのエントリーが有効
+    entried_players_id_list = list(Entry.objects.filter(tournament=tournament).values_list('player_id', flat=True))
+
+    # エントリーしている人数が４人未満の場合はトーナメントをキャンセル
+    number_of_players = len(entried_players_id_list)
+    if number_of_players < 4: # 4人揃わない場合は中止
             logger.info(f'Entried players in this entry list {number_of_players} <= 4, so cancel tournament {tournament_name}')
             tournament.status = 'canceled'
-            tournament.save()
+            tournament.save(update_fields=['status'])
             notify_players.delay(tournament_name, entried_players_id_list, 'canceled', False)
             return
         
-        logger.info(f'{number_of_players} players entries {tournament_name}')
+    logger.info(f'{number_of_players} players entries {tournament_name}')
     
-        # 5分前に準備の通知
-        notify_players.delay(tournament_name, entried_players_id_list, 'tournament_prepare', True)
+    # 5分前に準備の通知
+    notify_players.delay(tournament_name, entried_players_id_list, 'tournament_prepare', True)
 
-        # 2分前になると控室集合の通知
-        notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_room', True), countdown=(tournament.start - now - timedelta(minutes=2)).total_seconds())
+    # 30秒前になると控室集合の通知
+    notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_room', True), countdown=60 * 4 + 30)
         
-        # 開始時刻の通知
-        # notify_players.apply_async((tournament_name, entried_players_id_list, 'tournament_match', True), countdown=(tournament.start - now).total_seconds())
-        create_initial_round.apply_async((tournament.id, entried_players_id_list), countdown=(tournament.start - now).total_seconds())
+    # マッチング＆トーナメント開始
+    create_initial_round.apply_async((tournament.id, entried_players_id_list), countdown=60 * 5)
 
 @shared_task
 def notify_players(tournament_name, entried_players_id_list, status, is_update_player_status):
-    logger.info(f'{tournament_name} status: {status}')
+    logger.info(f'notify_players {tournament_name} status: {status}')
 
     for player_id in entried_players_id_list:
         try:
@@ -108,7 +115,9 @@ def create_initial_round(tournament_id, entried_players_id_list):
     tournament.status = 'ongoing'
     tournament.save()
 
-    online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
+    with transaction.atomic():
+        online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
+        offline_players = Player.objects.filter(id__in=entried_players_id_list, online=False)
     number_of_players = online_players.count()
 
     if number_of_players < 4: # 4人揃わない場合は中止
@@ -117,7 +126,25 @@ def create_initial_round(tournament_id, entried_players_id_list):
         tournament.save()
         notify_players(tournament.name, entried_players_id_list, 'canceled', False)
         return
+    
+    # マッチング時にオフラインのPlayerのstatusを'waiting'に
+    number_of_offline = offline_players.count()
+    logger.info(f'{number_of_players} online players are available for this tournament. Offline players: {number_of_offline}')
+    for player in offline_players:
+        player.status = 'waiting'
+        player.save(update_fields=['status'])
 
     player_list = list(online_players)
     random.shuffle(player_list)
     create_matches(tournament, player_list, round_number=1)
+
+@shared_task
+def check_matches_for_timeout():
+    try:
+        matches = Match.objects.filter(status='before')
+        number_of_matches_with_before = matches.count()
+        logger.info(f'maches with before status: {number_of_matches_with_before}')
+        for match in matches:
+            match.check_timeout()
+    except Exception as e:
+        logger.error(f'Error in check_matches_for_timeout: {e}')

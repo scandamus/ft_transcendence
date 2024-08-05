@@ -5,6 +5,8 @@ import { labels } from '../modules/labels.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { router } from '../modules/router.js';
 import { initToken } from '../modules/token.js';
+import { isTouchDevice } from "../modules/judgeTouchDevice.js";
+import { buttonControlManager } from "../modules/ButtonControlManager.js";
 
 export default class GamePlayQuad extends PageBase {
     static instance = null;
@@ -19,6 +21,7 @@ export default class GamePlayQuad extends PageBase {
         this.setTitle(this.title);
         this.generateBreadcrumb(this.title, this.breadcrumbLinks);
         this.containerId = '';
+        this.player_name = sessionStorage.getItem('player_name');
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.initGame.bind(this));
         // sound
@@ -31,8 +34,8 @@ export default class GamePlayQuad extends PageBase {
 
     async renderHtml() {
         const listPlayer = JSON.parse(sessionStorage.getItem('all_usernames'));
-        return `
-           <div class='playBoardWrap playBoardWrap-quad'>
+        let resultHtml = `
+            <div class='playBoardWrap playBoardWrap-quad'>
                 <ul class='listPlayerActiveMatch listPlayerActiveMatch-quad-first-half'>
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player1"><img src="${listPlayer[0].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[0].username}</span></li>
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player3"><img src="${listPlayer[2].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[2].username}</span></li>
@@ -41,9 +44,24 @@ export default class GamePlayQuad extends PageBase {
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player2"><img src="${listPlayer[1].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[1].username}</span></li>
                     <li class="listPlayerActiveMatch_item listPlayerActiveMatch_item-player4"><img src="${listPlayer[3].avatar || '/images/avatar_default.png'}" alt="" width="50" height="50"><span>${listPlayer[3].username}</span></li>
                 </ul>
-                <canvas id='playBoard' width='650' height='650'></canvas>
-            </div>
-        `;
+                <canvas id='playBoard' width='650' height='650'></canvas>`;
+        if (isTouchDevice()) {
+            if (this.player_name === 'player1' || this.player_name === 'player2') {
+                resultHtml += `
+                    <ol class="listButtonControl listButtonControl-quad listButtonControl-updown listButtonControl-${this.player_name}">
+                        <li class="listButtonControl_btn listButtonControl_btn-top"><button type="button">↑</button></li>
+                        <li class="listButtonControl_btn listButtonControl_btn-bottom"><button type="button">↓</button></li>
+                    </ol>`;
+            } else if (this.player_name === 'player3' || this.player_name === 'player4') {
+                resultHtml += `
+                    <ol class="listButtonControl listButtonControl-quad listButtonControl-leftright listButtonControl-${this.player_name}">
+                        <li class="listButtonControl_btn listButtonControl_btn-left"><button type="button">←</button></li>
+                        <li class="listButtonControl_btn listButtonControl_btn-right"><button type="button">→</button></li>
+                    </ol>`;
+            }
+        }
+        resultHtml += `</div>`;
+        return resultHtml;
     }
 
     async loadSounds() {
@@ -112,13 +130,17 @@ export default class GamePlayQuad extends PageBase {
             const pongSocket = await webSocketManager.openWebSocket(this.containerId);
             // ノードを取得
             const canvas = document.getElementById('playBoard');
+            if (isTouchDevice()) {
+                const elControl = canvas.closest('div').querySelector('.listButtonControl');
+                buttonControlManager.listenButtonControl(elControl, this);
+            }
             // 2dの描画コンテキストにアクセスできるように
             // キャンバスに描画するために使うツール
             const ctx = canvas.getContext('2d');
             await this.loadSounds();
 
             function drawBackground() {
-                ctx.fillStyle = 'black';
+                ctx.fillStyle = '#00000066';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
@@ -126,7 +148,7 @@ export default class GamePlayQuad extends PageBase {
                 ctx.lineWidth = line_width;
                 ctx.lineJoin = 'miter';
                 ctx.lineCap = 'butt'
-                ctx.strokeStyle = 'red';
+                ctx.strokeStyle = '#4C4C4C';
                 const offset = line_width / 2;
 
                 // 左上
@@ -200,6 +222,22 @@ export default class GamePlayQuad extends PageBase {
                 }
             }
 
+            // function showWinner(paddles) {
+            //     const scores = paddles.map(paddle => paddle.score);
+            //     const maxScore = Math.max(...scores);
+            //     const winningIndex = scores.indexOf(maxScore);
+            //     const winner = paddles[winningIndex];
+            //
+            //     ctx.fillStyle = 'red';
+            //     ctx.font = '48px Arial';
+            //     ctx.textAlign = 'center';
+            //
+            //     let xPosition = winner.x + (winner.horizontal / 2);
+            //     let yPosition = winner.y + (winner.vertical / 2);
+            //
+            //     ctx.fillText('WIN', xPosition, yPosition);
+            // }
+
             const updateGameObjects = async (data) => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // 背景色
@@ -222,18 +260,16 @@ export default class GamePlayQuad extends PageBase {
 
                 if (!data.game_status) {
                     console.log('Game Over');
-                    //alert('GAME OVER');
-                    // ここでゲームをリセットする処理を追加するか、ページをリロードする
-                    //document.location.reload();
-                    // TODO 勝敗を記録など
-                    pongSocket.send(JSON.stringify({
-                        action: 'end_game',
-                        match_id: gameMatchId,
-                    }));
+                    // showWinner([data.right_paddle, data.left_paddle, data.upper_paddle, data.lower_paddle]);
                     webSocketManager.closeWebSocket(this.containerId);
                     this.containerId = '';
-                    window.history.pushState({}, null, '/dashboard');
-                    await router(true);
+                    window.history.pushState({}, null, "/dashboard");
+                    setTimeout(() => {
+                        this.playSound(data.sound_type);
+                        router(true);
+                    }, 1500);
+                } else {
+                    this.playSound(data.sound_type);
                 }
             }
 
@@ -249,7 +285,6 @@ export default class GamePlayQuad extends PageBase {
                     console.log('received_data -> ', data);
                     // console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score, 'UPPER_PADDLE: ', data.upper_paddle.score, '  LOWER_PADDLE: ', data.lower_paddle.score);
                     updateGameObjects(data);
-                    this.playSound(data.sound_type);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }
@@ -263,6 +298,7 @@ export default class GamePlayQuad extends PageBase {
         document.removeEventListener('keydown', this.keyDownHandler, false);
         document.removeEventListener('keyup', this.keyUpHandler, false);
         sessionStorage.removeItem('all_usernames');
+        sessionStorage.removeItem('player_name');
         GamePlayQuad.instance = null;
         super.destroy();
     }

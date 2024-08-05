@@ -1,11 +1,14 @@
 'use strict';
 
+import { CREATE_TOURNAMENT_TIMELIMIT_MIN, FRIENDS_MAX } from './env.js';
+
 export const labels_he = {
     langCode: 'he',
     langName: 'עברית',
     common: {
         switchLang: '',
-        btnEnable: ''
+        btnEnable: '',
+        logoutTokenExpired: ''
     },
     home: {
         title: 'Log In',
@@ -39,6 +42,8 @@ export const labels_he = {
         passwordIsNotSame: 'אנא הזן את אותה סיסמה',
         isExists: 'שם המשתמש כבר בשימוש',
         outOfRange: '',
+        intervalError: '',
+        tournamentNameAlreadyExists: '',
         loginError1: 'בדק את שמך וסיסמתך',
         loginError2: 'משהו השתבש',
     },
@@ -70,6 +75,7 @@ export const labels_he = {
         labelReceivedRequest: 'בקשות חברות שקיבלת',
         labelRecommended: 'מומלץ עבורך',
         msgNoRecommended: 'אין מומלץ עבורך',
+        msgFriendsFull: `${FRIENDS_MAX}<br>`
     },
     lounge: {
         title: 'Lounge',
@@ -105,7 +111,7 @@ export const labels_he = {
         labelTournamentLog: 'שיאי טורניר',
         labelUpdateLists: '',
         descTournamentTitle: [''],
-        descTournamentStart: [''],
+        descTournamentStart: ['', ''],
         descNickname: [''],
         labelNextMatch: '',
         labelRound1: '',
@@ -162,9 +168,14 @@ export const labels_he = {
         acceptRequestSuccess: 'אתם עכשיו חברים עם $name',
         declineRequestSuccess: 'מחקת את בקשת החברות של $name',
         removeSuccess: 'מחקת את החבר $name',
+        mutualReq: '$name',
+        alreadyReq: '$name',
         received: '$name שלח לך בקשת חברות',
         accepted: '$name קיבל את בקשת החברות שלך',
         removed: 'אתם כבר לא חברים עם $name',
+        missedRequestAccept: '',
+        acceptRequestFailedFull: '',
+        acceptRequestFailedFull2: '',
     },
     matchRequest: {
         accepted: 'המשחק יתחיל',

@@ -1,7 +1,6 @@
 'use strict';
 
 import PageBase from './PageBase.js';
-import { showModalEntryTournament, showModalSendMatchRequest } from "../modules/modal.js";
 import { labels } from '../modules/labels.js';
 import { fetchTournamentDetail } from "../modules/tounamentApi.js";
 import { formatDateToLocal } from "../modules/formatDateToLocal.js";
@@ -16,6 +15,7 @@ export default class TournamentDetail extends PageBase {
         super(params);
         TournamentDetail.instance = this;
         //setTitleはrenderHtml()で取得後に行う
+        //トーナメントログを見る場合もあるのでstorageではなくparamから取得
         this.id = params.id.split(':')[1];
         this.tournamentData = ``;
         this.renderedRounds = new Set();
@@ -34,15 +34,9 @@ export default class TournamentDetail extends PageBase {
     }
 
     async renderHtml() {
-        this.tournamentData = await fetchTournamentDetail(this.id, false);
-        this.title = this.tournamentData.name;
-        this.setTitle(this.title);
-        this.generateBreadcrumb(this.title, this.breadcrumbLinks);
-        this.avatarMap = this.tournamentData.player_avatar_map;
-
         return `
             <div class="wrapTournament">
-                <p class="blockTournamentStart">${formatDateToLocal(this.tournamentData.start)} START</p>
+                <p class="blockTournamentStart"></p>
                 <section class="blockTournamentWaiting unitBox" aria-live="polite">
                     <h3 class="blockTournamentWaiting_title"></h3>
                     <div class="blockTournamentWaiting_message">
@@ -58,13 +52,56 @@ export default class TournamentDetail extends PageBase {
             </div>`;
     }
 
+    getElWaiting() {
+        if (!this.elWaiting) {
+            this.elWaiting = document.querySelector('.blockTournamentWaiting');
+        }
+        return this.elWaiting;
+    }
+
+    getElNextMatchWrap() {
+        if (!this.elNextMatchWrap) {
+            this.elNextMatchWrap = document.querySelector('.blockTournamentNextMatch');
+        }
+        return this.elNextMatchWrap;
+    }
+
+    getElNextMatch() {
+        if (!this.elNextMatch) {
+            this.elNextMatch = this.elNextMatchWrap.querySelector('.blockNextMatch');
+        }
+        return this.elNextMatch;
+    }
+
+    getElNextMatchTitle() {
+        if (!this.elNextMatchTitle) {
+            this.elNextMatchTitle = this.elNextMatchWrap.querySelector('.blockTournamentNextMatch_title');
+        }
+        return this.elNextMatchTitle;
+    }
+
+    getElWaitingTitle() {
+        if (!this.elWaitingTitle) {
+            this.elWaitingTitle = this.elWaiting.querySelector('.blockTournamentWaiting_title');
+        }
+        return this.elWaitingTitle;
+    }
+
+    getElWaitingContent() {
+        if (!this.elWaitingContent) {
+            this.elWaitingContent = this.elWaiting.querySelector('.blockTournamentWaiting_message');
+        }
+        return this.elWaitingContent;
+    }
+
     getDomElements() {
-        this.elWaiting = document.querySelector('.blockTournamentWaiting');
-        this.elNextMatchWrap = document.querySelector('.blockTournamentNextMatch');
-        this.elNextMatch = this.elNextMatchWrap.querySelector('.blockNextMatch');
-        this.elNextMatchTitle = this.elNextMatchWrap.querySelector('.blockTournamentNextMatch_title');
-        this.elWaitingTitle = this.elWaiting.querySelector('.blockTournamentWaiting_title');
-        this.elWaitingContent = this.elWaiting.querySelector('.blockTournamentWaiting_message');
+        this.getElWaiting();
+        this.getElNextMatchWrap();
+        this.getElNextMatch();
+        this.getElNextMatchTitle();
+        this.getElWaitingTitle();
+        this.getElWaitingContent();
+
         if (sessionStorage.getItem('tournament_status') === 'waiting_start') {
             this.displayWaiting(labels.tournament.labelWaitStart, labels.tournament.msgWaitStart);
         } else if (sessionStorage.getItem('tournament_status') === 'waiting_round') {
@@ -73,22 +110,39 @@ export default class TournamentDetail extends PageBase {
     }
 
     async generateTournamentResult() {
-        this.tournamentData = await fetchTournamentDetail(this.id, false);
-        const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
-        const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
-        const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
-        result.forEach(item => {
-            if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
-                const roundList = this.generateRoundList(item);
-                if (roundList) {
-                    wrapTournamentRound.insertAdjacentHTML('afterbegin', roundList);
-                }
-                this.renderedRounds.add(item.round);
-            } else if (item.rankings !== undefined) {
-                blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
-                blockTournamentRanking.classList.add('is-show');
+        try {
+            this.tournamentData = await fetchTournamentDetail(this.id, false);
+            if (!this.tournamentData) {
+                throw new Error(`Failed to get Tournament Detail`);
             }
-        });
+            this.title = this.tournamentData.name;
+            this.setTitle(this.title);
+            this.generateBreadcrumb(this.title, this.breadcrumbLinks);
+            this.avatarMap = this.tournamentData.player_avatar_map;
+            const blockStart = document.querySelector('.blockTournamentStart');
+            if (blockStart && this.tournamentData.start) {
+                blockStart.innerHTML = `${formatDateToLocal(this.tournamentData.start)} START`;
+            }
+            const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
+            const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
+            const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
+            if (result) {
+                result.forEach(item => {
+                    if (item.round !== undefined && !this.renderedRounds.has(item.round)) {
+                        const roundList = this.generateRoundList(item);
+                        if (roundList) {
+                            wrapTournamentRound.insertAdjacentHTML('afterbegin', roundList);
+                        }
+                        this.renderedRounds.add(item.round);
+                    } else if (item.rankings !== undefined) {
+                        blockTournamentRanking.innerHTML = this.generateRankingList(item.rankings);
+                        blockTournamentRanking.classList.add('is-show');
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching Tournament Detail:', error);
+        }
     }
 
     generateRankingList(rankings) {
@@ -130,7 +184,7 @@ export default class TournamentDetail extends PageBase {
                             <img src="${avatar1}" alt="" width="50" height="50">
                             <h4 class="unitMatchPlayer_title">${match.player1}</h4>
                         </header>`;
-        if (match.score1) {
+        if (match.score1 !== undefined && match.score1 !== null) {
             matchHtml += `
                         <p class="unitMatchPlayer_score">${match.score1}</p>`;
         } else {
@@ -149,7 +203,8 @@ export default class TournamentDetail extends PageBase {
                             <img src="${avatar2}" alt="" width="50" height="50">
                             <h4 class="unitMatchPlayer_title">${match.player2}</h4>
                         </header>`;
-        if (match.score2) {
+        if (match.score2 !== undefined && match.score2 !== null) {
+
             matchHtml += `
                         <p class="unitMatchPlayer_score">${match.score2}</p>`;
         } else {
@@ -214,7 +269,7 @@ export default class TournamentDetail extends PageBase {
     displayNextMatch(all_usernames, round) {
         this.hideWaiting();
         let labelRound = '';
-        this.elNextMatch.innerHTML = `
+        this.getElNextMatch().innerHTML = `
             <section class="blockNextMatch_player unitNextMatchPlayer">
                 <h4 class="unitNextMatchPlayer_title">${all_usernames[0].username}</h4>
                 <img src="${all_usernames[0].avatar || '/images/avatar_default.png'}" alt="" width="100" height="100" class="unitNextMatchPlayer_thumb">
@@ -237,22 +292,24 @@ export default class TournamentDetail extends PageBase {
         } else if (round === 1) {
             labelRound = labels.tournament.labelRound1;
         }
-        this.elNextMatchTitle.innerHTML = `<small>${labels.tournament.labelNextMatch}</small><strong>${labelRound}</strong>`;
-        this.elNextMatchWrap.classList.add('is-show');
+        this.getElNextMatchTitle().innerHTML = `<small>${labels.tournament.labelNextMatch}</small><strong>${labelRound}</strong>`;
+        this.getElNextMatchWrap().classList.add('is-show');
     }
 
     displayWaiting(title, contents) {
-        this.elWaitingTitle.textContent = title;
-        this.elWaitingContent.innerHTML = contents;
+        this.getElWaiting();
+        this.getElWaitingTitle().textContent = title;
+        this.getElWaitingContent().innerHTML = contents;
         if (!this.elWaiting.classList.contains('is-show')) {
             this.elWaiting.classList.add('is-show');
         }
     }
 
     hideWaiting() {
+        this.getElWaiting();
         if (this.elWaiting.classList.contains('is-show')) {
-            this.elWaitingTitle.textContent = '';
-            this.elWaitingContent.innerHTML = '';
+            this.getElWaitingTitle().textContent = '';
+            this.getElWaitingContent().innerHTML = '';
             this.elWaiting.classList.remove('is-show');
         }
         sessionStorage.removeItem('tournament_status');
