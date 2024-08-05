@@ -1,6 +1,6 @@
 'use strict';
 
-import { getToken, refreshAccessToken } from './token.js';
+import { getToken, refreshAccessToken, stopTokenRefreshInterval } from './token.js';
 import { switchDisplayAccount } from './auth.js';
 import { router } from './router.js';
 import { webSocketManager } from './websocket.js';
@@ -9,7 +9,6 @@ import PageBase from "../components/PageBase.js";
 import { handleExitGame } from "./modal.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
-//import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
     const accessToken = getToken('accessToken');
@@ -50,8 +49,11 @@ const handleLogout = (ev) => {
 }
 
 const processLogout = () => {
+    stopTokenRefreshInterval();
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('accessTokenExpiry');
+    sessionStorage.removeItem('refreshTokenExpiry');
     sessionStorage.removeItem('all_usernames');
     sessionStorage.removeItem('player_name');
     sessionStorage.removeItem('tournament_id');
