@@ -70,7 +70,7 @@ const updateFriendRequestList = async (pageInstance) => {
         const requests = await fetchFriendRequests(false);
         const secRequestWrapper = document.querySelector('.blockFriendRequest');
         const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (!requests) {
+        if (!requests || !secRequestWrapper || !listRequestWrapper) {
             throw new Error(`Failed to get friend requests`);
         }
         else if (requests && requests.length === 0) {

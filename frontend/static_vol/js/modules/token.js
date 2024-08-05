@@ -54,8 +54,6 @@ const refreshAccessToken = async () => {
                 console.log(`Successfully token refreshed: ${refreshData.access}`);
                 return refreshData.access;
             }
-            //refreshToken expired.強制ログアウト
-            console.log(`refreshAccessToken addNotice`)
             forcedLogout();
             console.error('Failed to refresh token, server responded with: ', response.status);
             return null;
