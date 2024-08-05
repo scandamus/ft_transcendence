@@ -21,6 +21,7 @@ import { addListenerToList, removeListenerAndClearList } from "../modules/listen
 import { getToken, refreshAccessToken } from "../modules/token.js";
 import { switchDisplayAccount, fetchLevel } from "../modules/auth.js";
 import { addNotice } from "../modules/notice.js";
+import { forcedLogout } from "../modules/logout.js";
 
 export default class Dashboard extends PageBase {
     static instance = null;
@@ -199,45 +200,43 @@ export default class Dashboard extends PageBase {
     }
 
     fetchUploadAvatar(formData, isRefresh) {
-        try {
-            const accessToken = getToken('accessToken');
-            fetch('/api/players/avatar/', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: formData
-            })
-                .then( async (response) => {
-                    if (!response.ok) {
-                        if (!isRefresh) {
-                            if (!await refreshAccessToken()) {
-                                throw new Error('fail refresh token');
-                            }
-                            return await this.fetchUploadAvatar(formData, true);
-                        } else {
-                            throw new Error('refreshed accessToken is invalid.');
+        const accessToken = getToken('accessToken');
+        fetch('/api/players/avatar/', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+            body: formData
+        })
+            .then( async (response) => {
+                if (!response.ok) {
+                    if (!isRefresh) {
+                        if (!await refreshAccessToken()) {
+                            throw new Error(`fail refresh token( ${response.status} )`);
                         }
-                     }
-                    return response.json();
-                })
-                .then( async (data) => {
-                    if (!data) {
+                        await this.fetchUploadAvatar(formData, true);
                         return;
+                    } else {
+                        throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
                     }
-                    this.siteInfo.setAvatar(data.newAvatar);
-                    this.cancelAvatar();
-                    await switchDisplayAccount();
-                    addNotice(labels.dashboard.msgAvatarSwitched, false);
-                })
-                .catch((error) => {
-                    console.error('Error upload avatar', error);
-                    addNotice(labels.dashboard.msgFailAvatarUpload, true);
-                    this.cancelAvatar();
-                });
-        } catch (error) {
-            console.error('Error fetch UploadAvatar: ', error);
-        }
+                 }
+                return response.json();
+            })
+            .then( async (data) => {
+                if (!data) {
+                    return;
+                }
+                this.siteInfo.setAvatar(data.newAvatar);
+                this.cancelAvatar();
+                await switchDisplayAccount();
+                addNotice(labels.dashboard.msgAvatarSwitched, false);
+            })
+            .catch((error) => {
+                console.error('Error fetchUploadAvatar: ', error);
+                addNotice(labels.dashboard.msgFailAvatarUpload, true);
+                this.cancelAvatar();
+                forcedLogout();
+            });
     }
 
     async uploadAvatar(ev) {
