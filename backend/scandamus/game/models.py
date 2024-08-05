@@ -282,10 +282,19 @@ class Match(models.Model):
 
             if len(winners) == 1:
                 self.winner = winners[0]
-            elif len(winners) > 1 and self.tournament and self.tournament.status == 'ongoing':
-                # 最高点のPlayerが複数人いてトーナメントの場合
+            elif self.tournament and self.tournament.status == 'ongoing':
+                if len(winners) == 2: # 同点のときはplayer1を勝者とする決まり
+                    self.winner = self.player1
+                elif max_score == 0: # 最高点が0のときはもう一方が-1（no show）あるいは途中棄権したとき
+                    self.winner = (
+                        self.player1 if self.score1 == 0
+                        else self.player2 if self.score2 == 0
+                        else None
+                    )
+            elif len(winners) == 2 and self.tournament and self.tournament.status == 'ongoing':
+                # 最高点のPlayerが2人いてトーナメントの場合（status == 'canceled'の場合はNone）
                 self.winner = self.player1
-            else: # トーナメント以外では必ず勝敗を決するまで試合が続行されるためあり得ないが一応
+            else:
                 self.winner = None
 
     def save(self, *args, **kwargs):
