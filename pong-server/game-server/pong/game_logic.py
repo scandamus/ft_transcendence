@@ -163,38 +163,203 @@ class Ball:
     #             return collision_type
     #     return collision_type
 
-    def collision_detection(self, obj, obj_side):
-        # 衝突判定の基準となるボールの角を決定
-        def get_ball_corner():
-            if obj_side == 'RIGHT':
-                if self.y + self.size / 2 < obj.y + obj.length / 2:
-                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
-                else:
-                    return Point(self.x + self.size, self.y)  # ボールの右上
-            elif obj_side == 'LEFT':
-                if self.y + self.size / 2 < obj.y + obj.length / 2:
-                    return Point(self.x, self.y + self.size)  # ボールの左下
-                else:
-                    return Point(self.x, self.y)  # ボールの左上
-            elif obj_side == 'UPPER':
-                if self.x + self.size / 2 < obj.x + obj.length / 2:
-                    return Point(self.x + self.size, self.y)  # ボールの右上
-                else:
-                    return Point(self.x, self.y)  # ボールの左上
-            elif obj_side == 'LOWER':
-                if self.x + self.size / 2 < obj.x + obj.length / 2:
-                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
-                else:
-                    return Point(self.x, self.y + self.size)  # ボールの左下
+    # def collision_detection(self, obj, obj_side):
+    #     def get_ball_corner():
+    #         # ボールの基準点を設定（正面のみ）
+    #         vertical_shift = self.size if self.y + self.size / 2 < obj.y + obj.length / 2 else 0
+    #         horizontal_shift = self.size if self.x + self.size / 2 < obj.x + obj.length / 2 else 0
+    #         if obj_side in ['RIGHT', 'LEFT']:
+    #             return Point(self.x + horizontal_shift, self.y + vertical_shift)
+    #         else:
+    #             return Point(self.x + vertical_shift, self.y + horizontal_shift)
+    #
+    #     ball_start = get_ball_corner()
+    #     ball_end = Point(ball_start.x + self.dx, ball_start.y + self.dy)
+    #     collision_type = False
+    #
+    #     # パドルの辺とボールの軌道を比較
+    #     paddle_edges = {
+    #         'RIGHT': (Point(obj.x, obj.y), Point(obj.x, obj.y + obj.length)),
+    #         'LEFT': (Point(obj.x + obj.thickness, obj.y), Point(obj.x + obj.thickness, obj.y + obj.length)),
+    #         'UPPER': (Point(obj.x, obj.y + obj.thickness), Point(obj.x + obj.length, obj.y + obj.thickness)),
+    #         'LOWER': (Point(obj.x, obj.y), Point(obj.x + obj.length, obj.y))
+    #     }
+    #
+    #     # 正面衝突の確認
+    #     paddle_start, paddle_end = paddle_edges[obj_side]
+    #     if intersects(ball_start, ball_end, paddle_start, paddle_end):
+    #         collision_type = 'collision_front'
+    #
+    #     # 側面衝突の確認（すべての辺に対して）
+    #     for key, (start, end) in paddle_edges.items():
+    #         if key != obj_side and intersects(ball_start, ball_end, start, end):
+    #             collision_type = 'collision_side'
+    #
+    #     return collision_type
 
-        ball_start = get_ball_corner()
+
+    def collision_detection(self, obj, obj_side):
+        # def hoge(side):
+        #     horizontal_center = obj.x + obj.thickness / 2
+        #     vertical_center = obj.y + obj.length / 2
+        #     is_right_or_left = obj_side in ['RIGHT', 'LEFT']
+        #
+        #     x_front = self.x + self.size if obj_side == 'RIGHT' else self.x
+        #     x_side = self.x + self.size if self.x + self.size / 2 < horizontal_center else self.x
+        #
+        #     y_front = self.y + self.size if self.y + self.size / 2 < vertical_center else self.y
+
+        # 衝突判定の基準となるボールの角を決定
+        def get_ball_corner(side):
+            if obj_side == 'RIGHT':
+                if side == 'front':
+                    if self.y + self.size / 2 < obj.y + obj.length / 2:
+                        return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                    else:
+                        return Point(self.x + self.size, self.y)  # ボールの右上
+                else:
+                    if self.y + self.size / 2 < obj.y + obj.length / 2:
+                        if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                            return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                        else:
+                            return Point(self.x, self.y + self.size)  # ボールの左下
+                    else:  # side
+                        if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                            return Point(self.x + self.size, self.y)  # ボールの右上
+                        else:
+                            return Point(self.x, self.y)  # ボールの左下
+            elif obj_side == 'LEFT':
+                if side == 'front':
+                    if self.y + self.size / 2 < obj.y + obj.length / 2:
+                        return Point(self.x, self.y + self.size)  # ボールの左下
+                    else:
+                        return Point(self.x, self.y)  # ボールの左上
+                else:
+                    if self.y + self.size / 2 < obj.y + obj.length / 2:
+                        if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                            return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                        else:
+                            return Point(self.x, self.y + self.size)  # ボールの左下
+                    else:  # side
+                        if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                            return Point(self.x + self.size, self.y)  # ボールの右上
+                        else:
+                            return Point(self.x, self.y)  # ボールの左上
+            elif obj_side == 'UPPER':
+                if side == 'front':
+                    if self.x + self.size / 2 < obj.x + obj.length / 2:
+                        return Point(self.x + self.size, self.y)  # ボールの右上
+                    else:
+                        return Point(self.x, self.y)  # ボールの左上
+                else:
+                    if self.x + self.size / 2 < obj.x + obj.length / 2:
+                        if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                            return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                        else:
+                            return Point(self.x + self.size, self.y)  # ボールの右上
+                    else:  # side
+                        if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                            return Point(self.x, self.y + self.size)  # ボールの左下
+                        else:  # side
+                            return Point(self.x, self.y)  # ボールの左上
+            elif obj_side == 'LOWER':
+                if side == 'front':
+                    if self.x + self.size / 2 < obj.x + obj.length / 2:
+                        return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                    else:
+                        return Point(self.x, self.y + self.size)  # ボールの左下
+                else:
+                    if self.x + self.size / 2 < obj.x + obj.length / 2:
+                        if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                            return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                        else:
+                            return Point(self.x + self.size, self.y)  # ボールの右上
+                    else:  # side
+                        if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                            return Point(self.x, self.y + self.size)  # ボールの左下
+                        else:
+                            return Point(self.x, self.y)  # ボールの左上
+
+
+
+            # if obj_side == 'RIGHT':
+            #     if self.y + self.size / 2 < obj.y + obj.length / 2:
+            #         if side == 'front':
+            #             return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            #         else:  # side
+            #             if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+            #                 return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            #             else:
+            #                 return Point(self.x, self.y + self.size)  # ボールの左下
+            #     else:
+            #         if side == 'front':
+            #             return Point(self.x + self.size, self.y)  # ボールの右上
+            #         else:  # side
+            #             if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+            #                 return Point(self.x + self.size, self.y)  # ボールの右上
+            #             else:
+            #                 return Point(self.x, self.y)  # ボールの左下
+            # elif obj_side == 'LEFT':
+            #     if self.y + self.size / 2 < obj.y + obj.length / 2:
+            #         if side == 'front':
+            #             return Point(self.x, self.y + self.size)  # ボールの左下
+            #         else:  # side
+            #             if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+            #                 return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            #             else:
+            #                 return Point(self.x, self.y + self.size)  # ボールの左下
+            #     else:
+            #         if side == 'front':
+            #             return Point(self.x, self.y)  # ボールの左上
+            #         else:  # side
+            #             if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+            #                 return Point(self.x + self.size, self.y)  # ボールの右上
+            #             else:
+            #                 return Point(self.x, self.y)  # ボールの左上
+            # elif obj_side == 'UPPER':
+            #     if self.x + self.size / 2 < obj.x + obj.length / 2:
+            #         if side == 'front':
+            #             return Point(self.x + self.size, self.y)  # ボールの右上
+            #         else:  # side
+            #             if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+            #                 return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            #             else:
+            #                 return Point(self.x + self.size, self.y)  # ボールの右上
+            #     else:
+            #         if side == 'front':
+            #             return Point(self.x, self.y)  # ボールの左上
+            #         else:  # side
+            #             if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+            #                 return Point(self.x, self.y + self.size)  # ボールの左下
+            #             else:
+            #                 return Point(self.x, self.y)  # ボールの左上
+            # elif obj_side == 'LOWER':
+            #     if self.x + self.size / 2 < obj.x + obj.length / 2:
+            #         if side == 'front':
+            #             return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            #         else:
+            #             if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+            #                 return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            #             else:
+            #                 return Point(self.x + self.size, self.y)  # ボールの右上
+            #     else:
+            #         if side == 'front':
+            #             return Point(self.x, self.y + self.size)  # ボールの左下
+            #         else:  # side
+            #             if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+            #                 return Point(self.x, self.y + self.size)  # ボールの左下
+            #             else:
+            #                 return Point(self.x, self.y)  # ボールの左上
+
+        ball_start = get_ball_corner('front')
         ball_end = Point(ball_start.x + self.dx, ball_start.y + self.dy)
         paddle_start = paddle_end = None
         collision_type = False
+
+        # paddleの正面との衝突判定
         if obj_side == 'RIGHT':
             paddle_start = Point(obj.x, obj.y)
             paddle_end = Point(obj.x, obj.y + obj.length)
-            # paddleの半分よりどちらにあるかによって基準になるPointを変える
         elif obj_side == 'LEFT':
             paddle_start = Point(obj.x + obj.thickness, obj.y)
             paddle_end = Point(obj.x + obj.thickness, obj.y + obj.length)
@@ -204,9 +369,31 @@ class Ball:
         elif obj_side == 'LOWER':
             paddle_start = Point(obj.x, obj.y)
             paddle_end = Point(obj.x + obj.length, obj.y)
-
         if intersects(ball_start, ball_end, paddle_start, paddle_end):
             collision_type = 'collision_front'
+
+        ball_start2 = get_ball_corner('side')
+        ball_end2 = Point(ball_start2.x + self.dx, ball_start2.y + self.dy)
+        paddle_end_side1 = paddle_end_side2 = None
+        # paddleの側面との衝突判定
+        if obj_side == 'RIGHT':
+            paddle_end_side1 = Point(obj.x + obj.thickness, obj.y)
+            paddle_end_side2 = Point(obj.x + obj.thickness, obj.y + obj.length)
+        elif obj_side == 'LEFT':
+            paddle_end_side1 = Point(obj.x, obj.y)
+            paddle_end_side2 = Point(obj.x, obj.y + obj.length)
+        elif obj_side == 'UPPER':
+            paddle_end_side1 = Point(obj.x, obj.y)
+            paddle_end_side2 = Point(obj.x + obj.length, obj.y)
+        elif obj_side == 'LOWER':
+            paddle_end_side1 = Point(obj.x, obj.y + obj.thickness)
+            paddle_end_side2 = Point(obj.x + obj.length, obj.y + obj.thickness)
+        # paddle_endをもう片側の側面のスタート座標として使う
+        paddle_start2 = paddle_end
+        if intersects(ball_start2, ball_end2, paddle_start, paddle_end_side1):
+            collision_type = 'collision_side'
+        elif intersects(ball_start2, ball_end2, paddle_start2, paddle_end_side2):
+            collision_type = 'collision_side'
         return collision_type
 
     def reflect_ball(self, obj, obj_side):
@@ -228,7 +415,7 @@ class Ball:
         self.dx = new_direction['dx']
         self.dy = new_direction['dy']
         # paddleのスピードアップ
-        self.speed += 1
+        self.speed += 0
 
     def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
         angle_radians = angle_degrees * (math.pi / 180)
