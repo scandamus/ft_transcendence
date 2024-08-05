@@ -52,8 +52,8 @@ class Paddle(Block):
 
 class Ball:
     def __init__(self, x, y, size):
-        self.speed = 50  # 初期値
-        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 0), random.choice((-1, 1)))
+        self.speed = 6  # 初期値
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -109,13 +109,13 @@ class Ball:
             paddle1.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
             sound_type = 'scored'
-            return paddle1.score < 1, sound_type
+            return paddle1.score < 10, sound_type
         # 右の壁との衝突判定
         elif self.x + self.dx > CANVAS_WIDTH:
             paddle2.increment_score()
             self.reset(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2)
             sound_type = 'scored'
-            return paddle2.score < 1, sound_type
+            return paddle2.score < 10, sound_type
         # y座標の操作
         if self.y + self.dy < 0:
             self.y = 0
@@ -269,7 +269,8 @@ class Ball:
         self.dy = new_direction['dy']
         # paddleのスピードアップ
         self.speed += 1
-        logger.error(f'{self.speed}')
+        if self.speed > 60:
+            self.speed = 60
 
     def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
         angle_radians = angle_degrees * (math.pi / 180)
