@@ -137,3 +137,14 @@ def create_initial_round(tournament_id, entried_players_id_list):
     player_list = list(online_players)
     random.shuffle(player_list)
     create_matches(tournament, player_list, round_number=1)
+
+@shared_task
+def check_matches_for_timeout():
+    try:
+        matches = Match.objects.filter(status='before')
+        number_of_matches_with_before = matches.count()
+        logger.info(f'maches with before status: {number_of_matches_with_before}')
+        for match in matches:
+            match.check_timeout()
+    except Exception as e:
+        logger.error(f'Error in check_matches_for_timeout: {e}')

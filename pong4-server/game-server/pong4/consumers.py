@@ -14,7 +14,7 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
-from .api_access import get_match_from_api, patch_match_to_api
+from .api_access import get_match_from_api, patch_match_to_api, update_match_status_to_ongoing
 
 #from .models import Match
 
@@ -128,6 +128,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                         'master_id': initial_master,
                         'state': 'start',
                     })
+                    await database_sync_to_async(update_match_status_to_ongoing)(self.match_id)
                 # TODO: 4人揃わない場合のタイムアウト処理
             else:
                 logger.error('Match data not found or user is not for this match')
