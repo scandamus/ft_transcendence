@@ -3,6 +3,10 @@ import math
 from .consts import (CANVAS_WIDTH, CANVAS_HEIGHT, REFLECTION_ANGLE, CORNER_BLOCK_SIZE,
                      CANVAS_WIDTH_MULTI, CANVAS_HEIGHT_MULTI, CORNER_BLOCK_THICKNESS, BALL_SIZE)
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Block:
     def __init__(self, x, y, horizontal, vertical, orientation='vertical', position=None):
@@ -125,38 +129,84 @@ class Ball:
             self.dy = tmp['dy']
         return True, sound_type
 
+    # def collision_detection(self, obj, obj_side):
+    #     next_x = self.x + self.dx
+    #     next_y = self.y + self.dy
+    #     collision_type = False
+    #     if obj_side == 'RIGHT' and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
+    #         if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
+    #             if self.x + self.size <= obj.x:
+    #                 collision_type = 'collision_front'
+    #             elif obj.x < self.x + self.size:
+    #                 collision_type = 'collision_side'
+    #             return collision_type
+    #     elif obj_side == 'LEFT' and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
+    #         if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
+    #             if obj.x + obj.thickness <= self.x:
+    #                 collision_type = 'collision_front'
+    #             elif self.x < obj.x:
+    #                 collision_type = 'collision_side'
+    #             return collision_type
+    #     elif obj_side == 'UPPER' and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
+    #         if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
+    #             if obj.y + obj.thickness <= self.y:
+    #                 collision_type = 'collision_front'
+    #             elif self.y < obj.y + obj.thickness:
+    #                 collision_type = 'collision_side'
+    #             return collision_type
+    #     elif obj_side == 'LOWER' and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
+    #         if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
+    #             if self.y + self.size <= obj.y:
+    #                 collision_type = 'collision_front'
+    #             elif obj.y < self.y + self.size:
+    #                 collision_type = 'collision_side'
+    #             return collision_type
+    #     return collision_type
+
     def collision_detection(self, obj, obj_side):
-        next_x = self.x + self.dx
-        next_y = self.y + self.dy
+        # 衝突判定の基準となるボールの角を決定
+        def get_ball_corner():
+            if obj_side == 'RIGHT':
+                if self.y + self.size / 2 < obj.y + obj.length / 2:
+                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                else:
+                    return Point(self.x + self.size, self.y)  # ボールの右上
+            elif obj_side == 'LEFT':
+                if self.y + self.size / 2 < obj.y + obj.length / 2:
+                    return Point(self.x, self.y + self.size)  # ボールの左下
+                else:
+                    return Point(self.x, self.y)  # ボールの左上
+            elif obj_side == 'UPPER':
+                if self.x + self.size / 2 < obj.x + obj.length / 2:
+                    return Point(self.x + self.size, self.y)  # ボールの右上
+                else:
+                    return Point(self.x, self.y)  # ボールの左上
+            elif obj_side == 'LOWER':
+                if self.x + self.size / 2 < obj.x + obj.length / 2:
+                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                else:
+                    return Point(self.x, self.y + self.size)  # ボールの左下
+
+        ball_start = get_ball_corner()
+        ball_end = Point(ball_start.x + self.dx, ball_start.y + self.dy)
+        paddle_start = paddle_end = None
         collision_type = False
-        if obj_side == 'RIGHT' and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
-            if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
-                if self.x + self.size <= obj.x:
-                    collision_type = 'collision_front'
-                elif obj.x < self.x + self.size:
-                    collision_type = 'collision_side'
-                return collision_type
-        elif obj_side == 'LEFT' and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
-            if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
-                if obj.x + obj.thickness <= self.x:
-                    collision_type = 'collision_front'
-                elif self.x < obj.x:
-                    collision_type = 'collision_side'
-                return collision_type
-        elif obj_side == 'UPPER' and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
-            if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
-                if obj.y + obj.thickness <= self.y:
-                    collision_type = 'collision_front'
-                elif self.y < obj.y + obj.thickness:
-                    collision_type = 'collision_side'
-                return collision_type
-        elif obj_side == 'LOWER' and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
-            if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
-                if self.y + self.size <= obj.y:
-                    collision_type = 'collision_front'
-                elif obj.y < self.y + self.size:
-                    collision_type = 'collision_side'
-                return collision_type
+        if obj_side == 'RIGHT':
+            paddle_start = Point(obj.x, obj.y)
+            paddle_end = Point(obj.x, obj.y + obj.length)
+            # paddleの半分よりどちらにあるかによって基準になるPointを変える
+        elif obj_side == 'LEFT':
+            paddle_start = Point(obj.x + obj.thickness, obj.y)
+            paddle_end = Point(obj.x + obj.thickness, obj.y + obj.length)
+        elif obj_side == 'UPPER':
+            paddle_start = Point(obj.x, obj.y + obj.thickness)
+            paddle_end = Point(obj.x + obj.length, obj.y + obj.thickness)
+        elif obj_side == 'LOWER':
+            paddle_start = Point(obj.x, obj.y)
+            paddle_end = Point(obj.x + obj.length, obj.y)
+
+        if intersects(ball_start, ball_end, paddle_start, paddle_end):
+            collision_type = 'collision_front'
         return collision_type
 
     def reflect_ball(self, obj, obj_side):
@@ -196,3 +246,29 @@ class Ball:
                 'dx': self.speed * -sin_value,
                 'dy': self.speed * direction_multiplier * cos_value,
             }
+
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+# 線分が交差するかを確認する関数
+# abとcdが交差するか
+def intersects(a: Point, b: Point, c: Point, d: Point):
+    if a is None or b is None or c is None or d is None:
+        return False
+    # 線分ABと点Cを用いた外積
+    s = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+    # 線分ABと点Dを用いた外積
+    t = (b.x - a.x) * (d.y - a.y) - (b.y - a.y) * (d.x - a.x)
+    # 線分CDと点Aを用いた外積
+    u = (d.x - c.x) * (a.y - c.y) - (d.y - c.y) * (a.x - c.x)
+    # 線分CDと点Bを用いた外積
+    v = (d.x - c.x) * (b.y - c.y) - (d.y - c.y) * (b.x - c.x)
+    # すべての外積の符号が一致しない場合、交差していると判定
+    if (s * t <= 0) and (u * v <= 0):
+        return True
+    # それ以外は交差していない
+    return False
