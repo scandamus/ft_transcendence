@@ -22,6 +22,7 @@ import requests
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
+from players.player_utils import resize_avatar
 
 #
 # from django.urls import reverse
@@ -101,7 +102,10 @@ def exchange_token42(request):
                 file_name = f'{login_name}.jpg'
                 # todo: _resize_avatar
                 image_file = InMemoryUploadedFile(image_data, 'ImageField', file_name, 'image/jpeg', len(response.content), None)
-                player.avatar.save(file_name, image_file, save=True)
+                if image_file:
+                    resized_avatar = resize_avatar(image_file)
+                    player.avatar.save(file_name, resized_avatar)
+                # player.avatar.save(file_name, image_file, save=True)
 
         social_account, _ = SocialAccount.objects.get_or_create(user=user, provider='providers42')
         # todo: 取得したuser_info不要か確認
