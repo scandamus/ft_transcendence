@@ -22,7 +22,7 @@ const acceptFriendRequestHandler = (ev) => {
     const instanceDisplayFriends = (PageBase.isInstance(PageBase.instance, 'Friends') || PageBase.isInstance(PageBase.instance, 'Dashboard'))
         ? PageBase.instance : null;
     if (instanceDisplayFriends && instanceDisplayFriends.numFriends >= FRIENDS_MAX ) {
-        addNotice(`${labels.friends.msgFriendsFull}`, true);
+        addNotice(labels.friends.msgFriendsFull, true);
         return;
     }
     const requestId = ev.target.dataset.id;

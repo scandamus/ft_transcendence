@@ -6,6 +6,7 @@ class SiteInfo {
             this.isTokenRefreshing = false;
             this.promiseTokenRefresh = null;
             this.refreshIntervalId = null;
+            this.isLogout = true;
             SiteInfo.instance = this;
         }
         return SiteInfo.instance;
@@ -35,6 +36,7 @@ class SiteInfo {
         this.username = '';
         this.avatar = '';
         this.refreshIntervalId = null;
+        this.isLogout = true;
     }
 
     setRefreshIntervalId(id) {

@@ -14,9 +14,8 @@ from rest_framework_simplejwt.backends import TokenBackend
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from django.conf import settings
-from .api_access import get_match_from_api, patch_match_to_api
-
-#from .models import Match
+from .api_access import get_match_from_api, patch_match_to_api, update_match_status_to_ongoing
+from .data_serialize import serialize_transfer_data, deserialize_tranfer_data
 
 logger = logging.getLogger(__name__)
 
@@ -56,87 +55,124 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.match_id = self.scope['url_route']['kwargs'].get('match_id')
             if not self.match_id:
                 logger.error(f'Match ID is missing in URL path: {self.match_id}')
-                await self.close(code=4200)
+                await self.close(code=4100)
                 return
             logger.info('match_id exists')
             await self.accept()
 
         except Exception as e:
             logger.error(f'Error connecting: {e}')
+            await self.close(code=1011)
 
     async def disconnect(self, close_code):
-        # Leave room group
-        if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
-            logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
-            self.players_ids[self.match_id].remove(self.players_id)
-            if not self.players_ids[self.match_id]:
-                logger.info(f'del: {self.players_ids}[{self.match_id}]')
-                del self.players_ids[self.match_id]
-            else:
-                if self.scheduled_task is not None:
-                    self.scheduled_task.cancel()
-                    self.scheduled_task = None
-                    new_next_master = sorted(self.players_ids[self.match_id])[0]
-                    await self.channel_layer.group_send(self.room_group_name, {
-                        'type': 'start_game',
-                        'master_id': new_next_master,
-                        'state': 'ongoing',
-                    })
-        await self.channel_layer.group_discard(
-            self.room_group_name, self.channel_name
-        )
+        try:
+            # Leave room group
+            if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
+                logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
+                self.players_ids[self.match_id].remove(self.players_id)
+                if not self.players_ids[self.match_id]:
+                    logger.info(f'del: {self.players_ids}[{self.match_id}]')
+                    del self.players_ids[self.match_id]
+                else:
+                    if self.scheduled_task is not None:
+                        # self.scheduled_task.cancel()
+                        await self.cancel_task('scheduled_task')
+                        self.scheduled_task = None
+                        if self.game_continue:
+                            new_next_master = sorted(self.players_ids[self.match_id])[0]
+                            await self.send_transfer_data()
+                            await self.channel_layer.group_send(self.room_group_name, {
+                                'type': 'start_game',
+                                'master_id': new_next_master,
+                                'state': 'ongoing',
+                            })
+            await self.channel_layer.group_discard(
+                self.room_group_name, self.channel_name
+            )
+        except Exception as e:
+            logger.error(f'Error disconnecting: {e}')
 
     async def receive(self, text_data=None, bytes_data=None):
-        text_data_json = json.loads(text_data)
-        action = text_data_json.get('action')
+        try:
+            text_data_json = json.loads(text_data)
+            action = text_data_json.get('action')
 
-        if action == 'authenticate':
-            jwt = text_data_json.get('jwt')
-            players_id, player_name, username, jwt_match_id = await self.authenticate_jwt(jwt)
-            self.player_name = player_name
+            if action == 'authenticate':
+                await self.handle_authenticate(text_data_json)
+            elif action == 'key_event':
+                await self.handle_game_message(text_data)
+            elif action == 'authenticateReconnect':
+                await self.handle_authenticate(text_data_json, True)
+            elif action == 'exit_game':
+                await self.handle_exit_message(text_data)
+        except json.JSONDecodeError as e:
+            logger.error(f'JSON decode error: {e}')
+        except Exception as e:
+            logger.error(f'Error in receiving: {e}')
 
-            if not players_id or not username or not jwt_match_id:
-                logger.error('Error occured while decoding JWT')
-                await self.send(text_data=json.dumps({
-                    'type': 'authenticationFailed',
-                    'message': 'Authentication failed. please log in again.'
-                }))
-                return
+    async def handle_authenticate(self, text_data_json, is_reconnect=False):
+        jwt = text_data_json.get('jwt')
+        players_id, player_name, username, jwt_match_id = await self.authenticate_jwt(jwt)
+        self.player_name = player_name
 
-            if int(self.match_id) != int(jwt_match_id):
-                logger.error(f'Error: match ID conflict jwt match_id: {jwt_match_id}, URL match_id: {self.match_id}')
-                await self.send(text_data=json.dumps({
+        if not players_id or not username or not jwt_match_id:
+            logger.error('Error occured while decoding JWT')
+            await self.send(text_data=json.dumps({
+                'type': 'authenticationFailed',
+                'message': 'Authentication failed. please log in again.'
+            }))
+            return
+
+        if int(self.match_id) != int(jwt_match_id):
+            logger.error(f'Error: match ID conflict jwt match_id: {jwt_match_id}, URL match_id: {self.match_id}')
+            await self.send(text_data=json.dumps({
                     'type': 'error',
                     'message': 'Match ID conflict'
-                }))
-                return
+            }))
+            await self.close(code=4101)
+            return
 
-            self.username = username
-            match = await self.get_match(self.match_id)
-            if match and await self.is_player_in_match(players_id, match):
-                logger.info(f'player:{players_id} is in match {self.match_id}!!')
-                self.room_group_name = f'pong4_{self.match_id}'
-                await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-                self.players_id = players_id
-                if self.match_id not in self.players_ids:
-                    self.players_ids[self.match_id] = set()
-                self.players_ids[self.match_id].add(self.players_id)
-                if len(self.players_ids[self.match_id]) == 4:  # 4人に決め打ち
-                    initial_master = sorted(self.players_ids[self.match_id])[0]
-                    await self.channel_layer.group_send(self.room_group_name, {
-                        'type': 'start.game',
-                        'master_id': initial_master,
-                        'state': 'start',
-                    })
-                # TODO: 4人揃わない場合のタイムアウト処理
-            else:
-                logger.error('Match data not found or user is not for this match')
-                await self.close(code=1000)
-                return
-        elif action == 'key_event':
-            await self.handle_game_message(text_data)
-        elif action == 'exit_game':
-            await self.handle_exit_message(text_data)
+        self.username = username
+        match = await self.get_match(self.match_id)
+        if match and await self.is_player_in_match(players_id, match):
+            logger.info(f'player:{players_id} is in match {self.match_id}!!')
+            self.room_group_name = f'pong4_{self.match_id}'
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            self.players_id = players_id
+            if self.match_id not in self.players_ids:
+                self.players_ids[self.match_id] = set()
+            self.players_ids[self.match_id].add(self.players_id)
+            
+            if is_reconnect == True:
+                number_of_player = len(self.players_ids[self.match_id])
+                if number_of_player == 1: # 再接続したplayerを含んで1人のみ（ゲーム開始前なのに再接続された１人目）
+                    logger.error('No one in this match now, anyway start game...')
+                elif number_of_player >= 2 and number_of_player <= 4: # 正常に再接続した場合（開始後のゲームに再接続）
+                    logger.info('Rejoin to this match')
+                    if match.get('status') == 'ongoing': # 再接続
+                        await self.reset_game_data()
+                        return
+                    elif match.get('status') == 'before': # 再接続だがゲーム開始前なので通常のスタートへ
+                        pass
+                else: # number_of_player > 4
+                    logger.error('Error too many players in this match')
+                    self.close(code=4104)
+                    return
+            
+            if len(self.players_ids[self.match_id]) == 4:  # 4人に決め打ち
+                initial_master = sorted(self.players_ids[self.match_id])[0]
+                logger.info(f'initial_master: {initial_master}')
+                await self.channel_layer.group_send(self.room_group_name, {
+                    'type': 'start.game',
+                    'master_id': initial_master,
+                    'state': 'start',
+                })
+                await database_sync_to_async(update_match_status_to_ongoing)(self.match_id)
+            # TODO: 4人揃わない場合のタイムアウト処理
+        else:
+            logger.error('Match data not found or user is not for this match')
+            await self.close(code=4102)
+            return
 
     async def handle_exit_message(self, text_data):
         await self.channel_layer.group_send(self.room_group_name, {
@@ -238,9 +274,9 @@ class PongConsumer(AsyncWebsocketConsumer):
                         self.scheduled_task.cancel()
                         self.scheduled_task = None
         except asyncio.CancelledError:
-            # タスクがキャンセルされたと後に非同期処理を行った際のハンドリング
-            # 今は特に書いていないのでpass
-            pass
+            logger.error('schedule_ball_update cancelled')
+        except Exception as e:
+            logger.error(f'Error in schedule_ball_update: {e} by {self.username}')
 
     async def game_over(self, message):
         await self.channel_layer.group_send(self.room_group_name, {
@@ -290,6 +326,18 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.info("Wall removed")
         else:
             logger.info("No wall removed")
+
+    async def send_transfer_data(self):
+        game_state = serialize_transfer_data(self)
+        await self.channel_layer.group_send(self.room_group_name, {
+            'type': 'receive_transfer_data',
+            'game_state': game_state,
+        })
+        
+    async def receive_transfer_data(self, event):
+        data = event['game_state']
+        deserialize_tranfer_data(data, self)
+        logger.info(f'{self.username}: receive transfer data')
 
     async def update_ball_and_send_data(self):
         self.right_paddle.move_for_multiple()
@@ -361,46 +409,49 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.send_game_data(game_status=True, message=message, timestamp=timestamp, sound_type=sound_type)
 
     async def send_game_data(self, game_status, message, timestamp, sound_type):
-        await self.send(text_data=json.dumps({
-            'message': message + f'\n{timestamp}\n\n',
-            'game_status': game_status,
-            'ball': {
-                'x': self.ball.x,
-                'y': self.ball.y,
-                'dx': self.ball.dx,
-                'dy': self.ball.dy,
-                'size': self.ball.size,
-            },
-            'right_paddle': {
-                'x': self.right_paddle.x,
-                'y': self.right_paddle.y,
-                'horizontal': self.right_paddle.thickness,
-                'vertical': self.right_paddle.length,
-                'score': self.right_paddle.score,
-            },
-            'left_paddle': {
-                'x': self.left_paddle.x,
-                'y': self.left_paddle.y,
-                'horizontal': self.left_paddle.thickness,
-                'vertical': self.left_paddle.length,
-                'score': self.left_paddle.score,
-            },
-            'upper_paddle': {
-                'x': self.upper_paddle.x,
-                'y': self.upper_paddle.y,
-                'horizontal': self.upper_paddle.length,
-                'vertical': self.upper_paddle.thickness,
-                'score': self.upper_paddle.score,
-            },
-            'lower_paddle': {
-                'x': self.lower_paddle.x,
-                'y': self.lower_paddle.y,
-                'horizontal': self.lower_paddle.length,
-                'vertical': self.lower_paddle.thickness,
-                'score': self.lower_paddle.score,
-            },
-            'sound_type': sound_type,
-        }))
+        try:
+            await self.send(text_data=json.dumps({
+                'message': message + f'\n{timestamp}\n\n',
+                'game_status': game_status,
+                'ball': {
+                    'x': self.ball.x,
+                    'y': self.ball.y,
+                    'dx': self.ball.dx,
+                    'dy': self.ball.dy,
+                    'size': self.ball.size,
+                },
+                'right_paddle': {
+                    'x': self.right_paddle.x,
+                    'y': self.right_paddle.y,
+                    'horizontal': self.right_paddle.thickness,
+                    'vertical': self.right_paddle.length,
+                    'score': self.right_paddle.score,
+                },
+                'left_paddle': {
+                    'x': self.left_paddle.x,
+                    'y': self.left_paddle.y,
+                    'horizontal': self.left_paddle.thickness,
+                    'vertical': self.left_paddle.length,
+                    'score': self.left_paddle.score,
+                },
+                'upper_paddle': {
+                    'x': self.upper_paddle.x,
+                    'y': self.upper_paddle.y,
+                    'horizontal': self.upper_paddle.length,
+                    'vertical': self.upper_paddle.thickness,
+                    'score': self.upper_paddle.score,
+                },
+                'lower_paddle': {
+                    'x': self.lower_paddle.x,
+                    'y': self.lower_paddle.y,
+                    'horizontal': self.lower_paddle.length,
+                    'vertical': self.lower_paddle.thickness,
+                    'score': self.lower_paddle.score,
+                },
+                'sound_type': sound_type,
+            }))
+        except Exception as e:
+            logger.error(f'Error in send_game_data: {e}')
 
     async def reset_game_data(self):
         self.scheduled_task = None
@@ -498,7 +549,22 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.lower_paddle.thickness = lower_paddle_data['vertical']
         self.lower_paddle.length = lower_paddle_data['horizontal']
         self.lower_paddle.score = lower_paddle_data['score']
+        # wall
 
+    async def cancel_task(self, task_name):
+        task = getattr(self, task_name)
+        if task is not None:
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                logger.info(f'cancel_task: {task}')
+            except Exception as e:
+                logger.error(f'Error occurred in cancel_task: {task} {str(e)}')
+            setattr(self, task_name, None)
+        else:
+            pass
+        
     @database_sync_to_async
     def authenticate_jwt(self, jwt):
         try:

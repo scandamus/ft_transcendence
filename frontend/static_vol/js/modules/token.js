@@ -2,20 +2,27 @@
 
 //sessionStorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
+//tokenがnull=>ログイン状態にいてはいけない。強制ログアウト
 import { SiteInfo } from "./SiteInfo.js";
-import { processLogout } from "./logout.js";
+import { processLogout, forcedLogout } from "./logout.js";
 import { addNotice } from "./notice.js";
 import { labels } from "./labels.js";
 
 const getToken = (nameToken) => {
-    const token = sessionStorage.getItem(nameToken);
-    if (token === null) {
-        return null;//未ログイン
+    try {
+        const token = sessionStorage.getItem(nameToken);
+        if (token === null) {
+            console.log(`No ${nameToken} is in sessionStorage.`);
+            forcedLogout();
+            throw new Error(`No ${nameToken} is in sessionStorage.`);
+        }
+        if (!token) {
+            throw new Error(`${nameToken} is invalid`);
+        }
+        return token;
+    } catch (error) {
+        console.error('getToken failed: ', error);
     }
-    if (!token) {//todo:test (undefinedなど)
-        throw new Error(`${nameToken} is invalid`);
-    }
-    return token;
 }
 
 const refreshAccessToken = async () => {
@@ -56,9 +63,7 @@ const refreshAccessToken = async () => {
                 console.log(`Successfully token refreshed: ${refreshData.access}`);
                 return refreshData.access;
             }
-            //refreshToken expired.強制ログアウト
-            addNotice(labels.common.logoutTokenExpired, true);
-            processLogout();
+            forcedLogout();
             console.error('Failed to refresh token, server responded with: ', response.status);
             return null;
         } catch (error) {
@@ -90,43 +95,48 @@ const isTokenExpired = (token) => {
         const currentUnixTime = Math.floor(Date.now() / 1000);
         return expiry < currentUnixTime;
     } catch (e) {
-        console.log('Decode token failed: ', e);
+        console.error('Decode token failed: ', e);
         return true;
     }
 }
 
 const getValidToken = async (nameToken) => {
-    let myToken = getToken(nameToken);
-    if (myToken == null) {
-        console.log('No token found.');
-        return { token: null, error: 'No token found' };
+    try {
+        let myToken = getToken(nameToken);
+        if (myToken && !isTokenExpired(myToken)) {
+            return { token: myToken, error: null };
+        }
+        console.log('token expired');
+        const refreshedToken = await refreshAccessToken();
+        if (!refreshedToken) {
+            console.error('Failed to refresh token.');
+            //return { token: null, error: 'Failed to refresh token' };
+            throw new Error(`Failed to refresh token`);
+        }
+        return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
+    } catch (error) {
+        console.error('getValidToken failed: ', error);
     }
-    if (!isTokenExpired(myToken)) {
-        return { token: myToken, error: null };
-    }
-    console.log('token expired');
-    const refreshedToken = await refreshAccessToken();
-    if (!refreshedToken) {
-        console.error('Failed to refresh token.');
-        return { token: null, error: 'Failed to refresh token' };
-    }
-    return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
 }
 
 const initToken = async () => {
     console.log('initToken in');
     try {
         const tokenResult = await getValidToken('accessToken');
-        console.log('tokenResult: ', tokenResult);
+        if (!tokenResult) {
+            throw new Error(`fail to tokenResult`);
+        }
         if (tokenResult.token) {
             console.log('accessToken: ', tokenResult.token);
             return tokenResult;
         } else {
             console.error('Token error: ', tokenResult.error);
-            return false;
+            // return false;
+            throw new Error(`fail to tokenResult`);
         }
     } catch (error) {
         console.error('Error user page initToken: ', error);
+        throw error;
     }
 }
 
