@@ -24,7 +24,7 @@ const updateFriendsList = async (pageInstance) => {
             shuffleArray(friends);
         }
         const listFriendsWrapper = document.querySelector('.blockFriends_friends');
-        if (!friends) {
+        if (!friends || !listFriendsWrapper) {
             throw new Error(`Failed to get friends`);
         }
         else if (friends && friends.length === 0) {
@@ -59,7 +59,6 @@ const updateFriendsList = async (pageInstance) => {
             resetListenFriendList(pageInstance);
         }
         pageInstance.numFriends = friends.length;
-        //console.log(`/////numFriends: ${pageInstance.numFriends}`)
     } catch (error) {
         console.error('Failed to update friends list: ', error);
     }
@@ -71,7 +70,7 @@ const updateFriendRequestList = async (pageInstance) => {
         const requests = await fetchFriendRequests(false);
         const secRequestWrapper = document.querySelector('.blockFriendRequest');
         const listRequestWrapper = document.querySelector('.blockFriendRequest_friends');
-        if (!requests) {
+        if (!requests || !secRequestWrapper || !listRequestWrapper) {
             throw new Error(`Failed to get friend requests`);
         }
         else if (requests && requests.length === 0) {

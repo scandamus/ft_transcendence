@@ -11,7 +11,7 @@ const getMatchLog = async () => {
     try {
         const logList = await fetchMatchLog(false);
         const listRequestWrapper = document.querySelector('.blockDashboardLog_listMatch');
-        if (!logList) {
+        if (!logList || !listRequestWrapper) {
             throw new Error(`Failed to get MatchLog`);
         }
         else if (logList && logList.length === 0) {

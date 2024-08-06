@@ -22,7 +22,7 @@ class WebSocketManager {
             }
 
             const accessTokenResult = await getValidToken('accessToken');
-            if (!accessTokenResult.token) {
+            if (!accessTokenResult || !accessTokenResult.token) {
                 console.error('Access token is missing or invalid');
                 reject('Access token is missing or invalid.');
                 return;
