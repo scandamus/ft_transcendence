@@ -2,6 +2,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from players.models import Player
 from asgiref.sync import async_to_sync, sync_to_async
+from django.utils import timezone
+from django.utils import timezone
 import logging
 import json
 
@@ -106,7 +108,8 @@ class Tournament(models.Model):
             "bye_player_id": bye_player_entry.player.id if bye_player_entry else None,
         })
         self.result_json = json.dumps(result)
-        self.save()
+        self.save(update_fields=['result_json'])
+        logger.info(f'//-- tournament save() on: update_result_json')
 
     def get_round_result(self, matches):
         round_result = []
@@ -142,19 +145,25 @@ class Tournament(models.Model):
         rankings = {
             "rankings": {
                 "winner": winner_entry.nickname if winner_entry else None,
-                "winner_id": self.winner.id,
+                "winner_id": self.winner.id if winner_entry else None,
                 "second": second_place_entry.nickname if second_place_entry else None,
-                "second_id": self.second_place.id,
+                "second_id": self.second_place.id if second_place_entry else None,
                 "third": third_place_entry.nickname if third_place_entry else None,
-                "third_id": self.third_place.id
+                "third_id": self.third_place.id if third_place_entry else None
             }
         }
-        result.append(rankings)
+        if winner_entry: # 少なくとも1位のエントリーが存在する場合のみ
+            result.append(rankings)
         self.result_json = json.dumps(result)
-        self.save()
+        self.save(update_fields=['result_json'])
+        logger.info(f'//-- tournament save() on: finalize_result_json')
 
     class Meta:
         verbose_name = 'トーナメント'
+
+    def save(self, *args, **kwargs):
+        logger.info(f'//Tournament save() {self.name}')
+        super().save(*args, **kwargs)
 
 class Match(models.Model):
     tournament = models.ForeignKey(
@@ -270,7 +279,8 @@ class Match(models.Model):
                 if player and player.current_match == self:
                     player.status = 'waiting'
                     player.current_match = None
-                    player.save()
+                    player.save(update_fields=['status', 'current_match'])
+                    logger.info(f'//-- Player save() on: delete')
         super().delete(*args, **kwargs)
 
     def set_winner(self):
@@ -296,18 +306,33 @@ class Match(models.Model):
                 self.winner = self.player1
             else:
                 self.winner = None
+        elif self.status == 'canceled':
+            logger.info(f'No winner for canceled match_id:{self.id}')
+            self.winner = None
+        self.save(update_fields=['winner'])
+        logger.info(f'//-- Match save() on: set_winner')
+
+    def check_timeout(self, before_match_timeout_sec=30):
+        from .serializers import MatchSerializer
+        current_time = timezone.now()
+        elapsed_time = (current_time - self.last_updated).total_seconds()
+        is_timeout = elapsed_time > before_match_timeout_sec
+        logger.info(f'now={current_time}, last_updated={self.last_updated}, elapsed_time={elapsed_time}')
+        if self.status == 'before' and is_timeout:
+            validated_data = {
+                'status': 'canceled',
+                'score1': -1,
+                'score2': -1
+            }
+            if self.tournament and self.round: # for tournament match
+                logger.info('Match is canceled because both players did not show up')
+            serializer = MatchSerializer()
+            serializer.update(self, validated_data) # playerのstatusをwaitingに
 
     def save(self, *args, **kwargs):
+        logger.info(f'//Match save() {self.game_name}')
         self.full_clean()
         super().save(*args, **kwargs)
-
-    # def send_jwt(self):
-    #     from .match_utils import send_tournament_match_jwt
-
-    #     logger.info('send_jwt')
-    #     if self.tournament:
-    #         logger.info('if self.tournament')
-    #         async_to_sync(send_tournament_match_jwt)(self)
 
 class Entry(models.Model):
     tournament = models.ForeignKey(
@@ -330,3 +355,7 @@ class Entry(models.Model):
 
     class Meta:
         verbose_name = 'エントリー'
+
+    def save(self, *args, **kwargs):
+        logger.info(f'//Entry save() {self.nickname}')
+        super().save(*args, **kwargs)
