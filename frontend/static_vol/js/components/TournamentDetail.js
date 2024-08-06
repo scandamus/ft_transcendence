@@ -15,6 +15,7 @@ export default class TournamentDetail extends PageBase {
         super(params);
         TournamentDetail.instance = this;
         //setTitleはrenderHtml()で取得後に行う
+        //トーナメントログを見る場合もあるのでstorageではなくparamから取得
         this.id = params.id.split(':')[1];
         this.tournamentData = ``;
         this.renderedRounds = new Set();
@@ -122,7 +123,7 @@ export default class TournamentDetail extends PageBase {
             if (blockStart && this.tournamentData.start) {
                 blockStart.innerHTML = `${formatDateToLocal(this.tournamentData.start)} START`;
             }
-            const result = (this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
+            const result = (this.tournamentData && this.tournamentData.result) ? JSON.parse(this.tournamentData.result) : '';
             const wrapTournamentRound = document.querySelector('.wrapTournamentRound');
             const blockTournamentRanking = document.querySelector('.blockTournamentRanking');
             if (result) {
@@ -140,7 +141,7 @@ export default class TournamentDetail extends PageBase {
                 });
             }
         } catch (error) {
-            console.error('Error fetching Tournament Detail:', error);
+            console.error('Error generateTournamentResult:', error);
         }
     }
 
@@ -223,14 +224,17 @@ export default class TournamentDetail extends PageBase {
     generateRoundList(matches) {
         let resultHtml = '';
         let labelRound = '';
+        let lenMatch = 0;
         const listSemifinal = matches.round === -4 ? ' listSemifinal' : '';
         if (matches.round === -1 || matches.round === -6) {
             labelRound = labels.tournament.labelRoundFinal;
         } else if (matches.round === -4) {
             labelRound = labels.tournament.labelRoundSemiFinal;
         } else if (matches.round === -5) {
-            const elListSemifinal = document.querySelector('.listSemifinal');
-            elListSemifinal.insertAdjacentHTML('afterbegin', this.generateMatch(matches.matches[0]));
+            if (matches.matches[0]) {
+                const elListSemifinal = document.querySelector('.listSemifinal');
+                elListSemifinal.insertAdjacentHTML('afterbegin', this.generateMatch(matches.matches[0]));
+            }
             return;
         } else if (matches.round === -3) {
             labelRound = labels.tournament.labelRoundThirdPlaceRound
@@ -246,7 +250,13 @@ export default class TournamentDetail extends PageBase {
                 <h3 class="blockTournamentRound_title unitTitle1">${labelRound}</h3>
                 <div class="blockTournamentRound_listMatch${listSemifinal} listLineDivide">`;
             for (const match of matches.matches) {
-                resultHtml += this.generateMatch(match);
+                if (match) {
+                    lenMatch++;
+                    resultHtml += this.generateMatch(match);
+                }
+            }
+            if (lenMatch === 0) {
+                resultHtml += `<p class="textCanceled">${labels.tournament.labelCanceledRound}</p>`;
             }
             if (matches.bye_player) {
                 const avatarBye = this.avatarMap[matches.bye_player_id] ? this.avatarMap[matches.bye_player_id] : `/images/avatar_default.png`;

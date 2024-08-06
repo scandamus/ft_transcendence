@@ -4,8 +4,8 @@ services:
       context: ./backend
       target: backend
     container_name: backend
-    ports:
-      - "8001:8001"
+    expose:
+      - "8001"
     volumes:
       - ./backend/scandamus:/app
     depends_on:
@@ -59,7 +59,6 @@ services:
     depends_on:
       - backend
     ports:
-      - "80:80"
       - "443:443"
     volumes:
       - ./frontend/static_vol:/var/www/html
@@ -77,8 +76,8 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     restart: always
     networks:
       - backend-network
@@ -99,8 +98,8 @@ services:
       - POSTGRES_USER=${DB_USER}
     depends_on:
       - redis
-    ports:
-      - "8002:8002"
+    expose:
+      - "8002"
     restart: always
     volumes:
       - ./pong-server/game-server:/app
@@ -123,8 +122,8 @@ services:
       - POSTGRES_USER=${DB_USER}
     depends_on:
       - redis
-    ports:
-      - "8003:8003"
+    expose:
+      - "8003"
     restart: always
     volumes:
       - ./pong4-server/game-server:/app
@@ -136,15 +135,14 @@ services:
     restart: always
     networks:
       - backend-network
-  # ports:
-  #   - "6379:6379"
+    expose:
+      - "6379"
 
   celery:
     build: 
       context: ./backend
       target: celery
     container_name: celery
-#    command: celery -A my_project worker --loglevel=info
     volumes:
       - ./backend/scandamus:/app
     depends_on:
@@ -189,7 +187,6 @@ services:
       context: ./backend
       target: celery-beat
     container_name: celery-beat
-#    command: celery -A my_project beat --loglevel=info
     volumes:
       - ./backend/scandamus:/app
     depends_on:

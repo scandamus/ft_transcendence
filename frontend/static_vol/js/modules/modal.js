@@ -197,7 +197,6 @@ const closeModalOnReturnToGame = () => {
             }
         })
         .then(() => {
-            window.history.pushState({}, null, `/game/${containerId}`);
             closeModal();
         });
 }
@@ -225,11 +224,13 @@ const setScoreToInvalid = () => {
 const handleExitGame = (instance) => {
     console.log('handleExitGame')
     const containerId = PageBase.isInstance(instance, 'GamePlay') ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
-    webSocketManager.closeWebSocket(containerId);
-    instance.containerId = ''
-    //todo: score -1にする
-    //setScoreToInvalid();
-    //todo: status, current_match更新
+    webSocketManager.sendWebSocketMessage(containerId, {
+        'action': 'exit_game',
+    });
+    if (PageBase.isInstance(instance, 'GamePlayQuad')) {
+        webSocketManager.closeWebSocket(containerId);
+        instance.containerId = '';
+    }
 }
 
 const closeModalOnExitGame = (ev) => {
@@ -350,7 +351,7 @@ const showModalEntryTournament = (ev) => {
     const tournamentStartTime = new Date(data['start']);
     const entryDeadline = new Date(tournamentStartTime.getTime() - 5 * 60 * 1000);
     if (currentTime > entryDeadline) {
-        addNotice(`トーナメント ${data['idTitle']} のエントリー期限を過ぎています`, true);
+        addNotice(labels.tournament.msgDeadHasPassed.replace('$tournament', data['idTitle']), true);
         const currentPage = PageBase.isInstance(PageBase.instance, 'Tournament') ? PageBase.instance : null;
         updateUpcomingTournamentList(currentPage).then(() => {});
         updateOngoingTournamentList(currentPage).then(() => {});

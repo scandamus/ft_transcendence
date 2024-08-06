@@ -144,8 +144,10 @@ class LoungeSession(AsyncWebsocketConsumer):
                     player.status = 'waiting'
                     await database_sync_to_async(player.save)(update_fields=['status'])
                     logger.info(f'{self.user.username} status set to waiting')
+                    logger.info(f'//-- player save() on: disconnect 1')
                 player.online = False
                 await database_sync_to_async(player.save)(update_fields=['online'])
+                logger.info(f'//-- player save() on: disconnect 2')
                 await send_status_to_friends(player, 'offline')
   
             # remove pending_requests

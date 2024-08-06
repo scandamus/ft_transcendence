@@ -137,22 +137,23 @@ export default class LogIn extends PageBase {
                 return getUserInfo();
             })
             .then((data) => {
-                if (data) {
-                    const langStorage = localStorage.getItem('configLang');
-                    const elSelectLang = document.getElementById('languageSelect');
-                    //localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
-                    if (langStorage && (data.lang !== langStorage)) {
-                        setLang(elSelectLang, langStorage);
-                        saveLang(langStorage);
-                    } else {
-                        setLang(elSelectLang, data.lang);
-                        saveLang(data.lang);
-                    }
-                    switchDisplayAccount()
-                        .then(() => {
-                            router(true).then(() => {});
-                        });
+                if (!data) {
+                    throw new Error('loginError2');
                 }
+                const langStorage = localStorage.getItem('configLang');
+                const elSelectLang = document.getElementById('languageSelect');
+                //localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
+                if (langStorage && (data.lang !== langStorage)) {
+                    setLang(elSelectLang, langStorage).then(() => {});
+                    saveLang(langStorage);
+                } else {
+                    setLang(elSelectLang, data.lang).then(() => {});
+                    saveLang(data.lang);
+                }
+                switchDisplayAccount()
+                    .then(() => {
+                        router(true).then(() => {});
+                    });
             })
             .catch((error) => {
                 this.handleValidationError(error.message);

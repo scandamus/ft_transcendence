@@ -6,7 +6,7 @@ const addNoticeMod = async (textNotice, isError) => {
     const elNoticeHtml = `
         <li class="${noticeClass}">
             <p>${textNotice}</p>
-            <button type="button" class="unitNotice_button"><img src="/images/ico-cross-white.svg" alt="close" width="10px" height="10px"></button>
+            <button type="button" class="unitNotice_button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:10px;height:10px;" xml:space="preserve"><path style="fill:rgba(255, 255, 255, 0.7)" d="M512 52.535 459.467.002l-203.465 203.46L52.538.002 0 52.535l203.47 203.47L0 459.465l52.533 52.533 203.469-203.471 203.465 203.471L512 459.475l-203.464-203.47z"/></svg></button>
         </li>
     `;
     elNoticeWrap.insertAdjacentHTML('beforeend', elNoticeHtml);

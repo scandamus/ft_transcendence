@@ -20,7 +20,7 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
     player1 = await get_player_by_username(from_username)
     player2 = consumer.player
     match = await create_match(player1, player2)
-    usernames = [{'username': player1.user.username, 'avatar': player1.avatar.url if player2.avatar else None},
+    usernames = [{'username': player1.user.username, 'avatar': player1.avatar.url if player1.avatar else None},
                  {'username': player2.user.username, 'avatar': player2.avatar.url if player2.avatar else None}]
 
     for player in [player1, player2]:
@@ -266,7 +266,8 @@ def create_match_universal(players_list, game_name):
             player3=player3,
             player4=player4,
         )
-        match.save()
+        # match.save() create直後は不要
+        logger.info(f'//-- Match save() on: create_match_universal')
     logger.info(f'Match created, ID: {match.id}, Players: {[player_info["user"].username for player_info in players_list]}')
     return match
 
@@ -296,13 +297,15 @@ def get_required_players(game_name):
 def update_player_status_and_match(player, match, status):
     player.status = status
     player.current_match = match
-    player.save()
+    player.save(update_fields=['status', 'current_match'])
+    logger.info(f'//-- Player save() on: update_player_status_and_match')
 
 @database_sync_to_async
 def update_player_status(player, status):
     logger.info(f'update_player_status {player.user.username}: {status}')
     player.status = status
-    player.save()
+    player.save(update_fields=['status'])
+    logger.info(f'//-- Player save() on: update_player_status')
 
 @database_sync_to_async
 def get_nickname(tournament, player):

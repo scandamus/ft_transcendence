@@ -14,7 +14,7 @@ import GamePlayQuad from '../components/GamePlayQuad.js';
 import Tournament from '../components/Tournament.js';
 import TournamentDetail from '../components/TournamentDetail.js';
 import { getToken } from './token.js';
-import { closeModalOnCancel, closeModal, showModalExitGame } from './modal.js';
+import { closeModalOnCancel, closeModal, showModalExitGame, closeModalOnReturnToGame } from './modal.js';
 
 const routes = {
     login: {path: '/', view: Home, isProtected: false},
@@ -33,7 +33,7 @@ const routes = {
 //pathを正規表現に変換
 const pathToRegex = (path) => new RegExp('^' + path.replace(/\//g, '\\/').replace(/:\w+/g, '(.+)') + '/?$');
 
-const getParams = (matchRoute) => {
+const getParams = async (matchRoute) => {
     if (!matchRoute || !matchRoute.route || !matchRoute.route.path || !matchRoute.result) {
         return {};
     }
@@ -66,7 +66,8 @@ const addLinkPageEvClick = (linkPages) => {
 }
 
 const replaceView = async (matchRoute) => {
-    const view = new matchRoute.route.view(getParams(matchRoute));
+    const params = await getParams(matchRoute);
+    const view = new matchRoute.route.view(params);
     if (view) {
         //モーダルが開いていたら閉じる
         const elModal = document.querySelector('.blockModal');
@@ -84,13 +85,39 @@ const replaceView = async (matchRoute) => {
 }
 
 const router = async (accessToken) => {
-    if (accessToken instanceof PopStateEvent) {
-        accessToken = getToken('accessToken');
-    }
-    //game進行中のexit
+    let matchRoute;
+    const flagPopState = (accessToken instanceof PopStateEvent);
+
+    //gameからの移動には確認モーダル
     if ((GamePlay.instance && GamePlay.instance.containerId) || (GamePlayQuad.instance && GamePlayQuad.instance.containerId)) {
-        showModalExitGame();
-        return ;
+        const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
+        //確認モーダル表示中かつ履歴移動=>ゲームに戻る
+        if (btnReturnToGame && flagPopState) {
+            closeModalOnReturnToGame();
+            return;
+        } else if (!btnReturnToGame) {
+            //まだ確認モーダルが表示されていない
+            showModalExitGame();
+            return;
+        }
+    } else if (flagPopState) {
+        //ゲーム以外からの履歴移動
+        accessToken = getToken('accessToken');
+
+        //gameへの移動はdashboardにリダイレクト
+        if (location.pathname.startsWith('/game/pong')) {
+            window.history.pushState(null, null, routes.dashboard.path);
+            matchRoute = {
+                route: routes.dashboard,
+                result: routes.dashboard.path
+            };
+            const oldView = PageBase.instance;
+            if (oldView) {
+                oldView.destroy();
+            }
+            await replaceView(matchRoute);
+            return;
+        }
     }
 
     console.log('router in');
@@ -102,7 +129,7 @@ const router = async (accessToken) => {
         };
     });
     //実際の遷移先パスを取得
-    let matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
+    matchRoute = mapRoutes.find(elRoute => elRoute.result !== null);
 
     //認証ページ判定
     //非ログイン状態で要認証ページにアクセス => ログインにリダイレクト
@@ -110,13 +137,13 @@ const router = async (accessToken) => {
     //ログイン状態で非認証ページにアクセス => dashboardにリダイレクト
     //ログイン状態でmatchRouteなし(404) => dashboardにリダイレクト
     if (!accessToken && ((matchRoute && matchRoute.route.isProtected) || !matchRoute)) {
-        window.history.pushState({}, '', routes.login.path);
+        window.history.pushState(null, null, routes.login.path);
         matchRoute = {
             route: routes.login,
             result: routes.login.path
         };
     } else if (accessToken && ((matchRoute && !matchRoute.route.isProtected) || !matchRoute)) {
-        window.history.pushState({}, '', routes.dashboard.path);
+        window.history.pushState(null, null, routes.dashboard.path);
         matchRoute = {
             route: routes.dashboard,
             result: routes.dashboard.path
