@@ -12,25 +12,13 @@ from django.db import transaction, IntegrityError
 from rest_framework import serializers
 from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
-from django.utils.timezone import make_aware, now as django_now
-from .match_utils import authenticate_token, get_player_by_user
 
 logger = logging.getLogger(__name__)
 
 async def handle_create_tournament(consumer, data):
-    user, error = await authenticate_token(data['token'])
-    if not user:
-        logger.error('Error: Authentication Failed')
-        logger.error(f'error={error}')
-        await consumer.send(text_data=json.dumps({
-            'type': 'authenticationFailed',
-            'message': error
-        }))
-        return
+    user = consumer.user
+    player = consumer.player
 
-    player = await get_player_by_user(user)
-    if not player:
-        logger.error(f"No player found for user: {user.username}")
     serializer = TournamentSerializer(data = data)
     start_time = data.get('start')
     if isinstance(start_time, str):
@@ -45,48 +33,58 @@ async def handle_create_tournament(consumer, data):
             custom_errors['start'] = e.detail
 
     if custom_errors:
-        await consumer.send(text_data=json.dumps({
-            'type': 'tournament',
-            'action': 'invalidTournamentStart',
-            'message': custom_errors
-        }))
+        try:
+            await consumer.send(text_data=json.dumps({
+                'type': 'tournament',
+                'action': 'invalidTournamentStart',
+                'message': custom_errors
+            }))
+        except Exception as e:
+            logger.error(f'Error in decline_frined_request: {e}')
 
     name = data.get('name')
     existing_tournament = await sync_to_async(lambda: Tournament.objects.filter(name=name).first())()
     if existing_tournament:
-        await consumer.send(text_data=json.dumps({
-            'type': 'tournament',
-            'action': 'invalidTournamentTitle',
-            'message': {'name': ['tournamentNameAlreadyExists']}
-        }))
-    if custom_errors or existing_tournament:
-        return
-
-    if serializer.is_valid():
-        tournament, created = await create_tournament(data)
-        if tournament is None:
-            return  # 無効なjsonを送ってきた場合はセキュリティの観点から無視
-        if created:
-            await consumer.send(text_data=json.dumps({
-                'type': 'tournament',
-                'action': 'created',
-                'name': tournament.name,
-                'start': tournament.start.isoformat(),
-                'period': tournament.start.isoformat(),
-            }))
-        else:
+        try:
             await consumer.send(text_data=json.dumps({
                 'type': 'tournament',
                 'action': 'invalidTournamentTitle',
                 'message': {'name': ['tournamentNameAlreadyExists']}
             }))
-    else: #charTypeなどフロントで弾けているはずのエラー
-        logger.error(f"invalid tournament data: {serializer.errors}")
-        await consumer.send(text_data=json.dumps({
-            'type': 'tournament',
-            'action': 'invalidTournamentTitle',
-            'message': serializer.errors
-        }))
+        except Exception as e:
+            logger.error(f'Error in decline_frined_request: {e}')
+
+    if custom_errors or existing_tournament:
+        return
+
+    try:
+        if serializer.is_valid():
+            tournament, created = await create_tournament(data)
+            if tournament is None:
+                return  # 無効なjsonを送ってきた場合はセキュリティの観点から無視
+            if created:
+                await consumer.send(text_data=json.dumps({
+                    'type': 'tournament',
+                    'action': 'created',
+                    'name': tournament.name,
+                    'start': tournament.start.isoformat(),
+                    'period': tournament.start.isoformat(),
+                }))
+            else:
+                await consumer.send(text_data=json.dumps({
+                    'type': 'tournament',
+                    'action': 'invalidTournamentTitle',
+                    'message': {'name': ['tournamentNameAlreadyExists']}
+                }))
+        else: #charTypeなどフロントで弾けているはずのエラー
+            logger.error(f"invalid tournament data: {serializer.errors}")
+            await consumer.send(text_data=json.dumps({
+                'type': 'tournament',
+                'action': 'invalidTournamentTitle',
+                'message': serializer.errors
+            }))
+    except Exception as e:
+        logger.error(f'Error in handle_create_tournament: {e}')
 
 @database_sync_to_async
 def create_tournament(data):
@@ -119,77 +117,62 @@ def create_tournament(data):
         logger.error(f'Validation error: {e}')
         return None, None
     except Exception as e:
-        logger.error(f'Error in tournament json: {e}')
+        logger.error(f'Error create_tournament: {e}')
         return None, None
 
 async def handle_entry_tournament(consumer, data):
-    user, error = await authenticate_token(data['token'])
-    if not user:
-        logger.error('Error: Authentication Failed')
-        logger.error(f'error={error}')
-        await consumer.send(text_data=json.dumps({
-            'type': 'authenticationFailed',
-            'message': error
-        }))
-        return
-
-    player = await get_player_by_user(user)
+    user = consumer.user
+    player = consumer.player
     if not player:
         logger.error(f"No player found for user: {user.username}")
         await send_entry_error(consumer, 'invalidPlayer')
         return
 
-    serializer = EntrySerializer(data=data)
-    if serializer.is_valid():
-        tournament, nickname = await get_tournament_and_nickname(consumer, data)
-        if tournament is None:
-            await send_entry_error(consumer, 'invalidEntryRequest')
-            return
+    try:
+        serializer = EntrySerializer(data=data)
+        if serializer.is_valid():
+            tournament, nickname = await get_tournament_and_nickname(consumer, data)
+            if tournament is None:
+                await send_entry_error(consumer, 'invalidEntryRequest')
+                return
 
-        entry = await get_entry(tournament, player)
-        if entry:
-            logger.info(f"Entry already exists for player {user.username} in tournament {tournament.name}")
-            await send_entry_error(consumer, 'alreadyEnterd')
-            return
+            entry = await get_entry(tournament, player)
+            if entry:
+                logger.info(f"Entry already exists for player {user.username} in tournament {tournament.name}")
+                await send_entry_error(consumer, 'alreadyEnterd')
+                return
 
-        if await is_duplicate_nickname(tournament, nickname):
-            logger.info(f'Nickname {nickname} already exists in tournament {tournament}')
-            await send_entry_error(consumer, 'duplicateNickname')
-            return
+            if await is_duplicate_nickname(tournament, nickname):
+                logger.info(f'Nickname {nickname} already exists in tournament {tournament}')
+                await send_entry_error(consumer, 'duplicateNickname')
+                return
 
-        result = await create_entry(tournament, player, nickname)
-        if result == 'capacityFull':
-            logger.info(f'{tournament.name} capacity is full')
-            await send_entry_error(consumer, 'capacityFull')
-            return
+            result = await create_entry(tournament, player, nickname)
+            if result == 'capacityFull':
+                logger.info(f'{tournament.name} capacity is full')
+                await send_entry_error(consumer, 'capacityFull')
+                return
 
-        logger.info(f'nickname {result.nickname} just entried {tournament.name}')
-        await consumer.send(text_data=json.dumps({
-            'type': 'tournament',
-            'action': 'entryDone',
-            'name': tournament.name
-        }))
-    else:
-        logger.error(f"invalid nickname: {serializer.errors}")
-        await consumer.send(text_data=json.dumps({
-            'type': 'tournament',
-            'action': 'invalidNickname',
-            'message': serializer.errors
-        }))
+            logger.info(f'nickname {result.nickname} just entried {tournament.name}')
+            await consumer.send(text_data=json.dumps({
+                'type': 'tournament',
+                'action': 'entryDone',
+                'name': tournament.name
+            }))
+        else:
+            logger.error(f"invalid nickname: {serializer.errors}")
+            await consumer.send(text_data=json.dumps({
+                'type': 'tournament',
+                'action': 'invalidNickname',
+                'message': serializer.errors
+            }))
+    except Exception as e:
+        logger.error(f'Error in handle_entry_tournament: {e}')
 
 async def handle_cancel_entry(consumer, data):
-    user, error = await authenticate_token(data['token'])
-    if not user:
-        logger.error('Error: Authentication Failed')
-        logger.error(f'error={error}')
-        await consumer.send(text_data=json.dumps({
-            'type': 'authenticationFailed',
-            'message': error
-        }))
-        return
-
-    player = await get_player_by_user(user)
-    if not player:
+    user = consumer.user
+    player = consumer.player
+    if not player or not user:
         logger.error(f"No player found for user: {user.username}")
         await send_entry_error(consumer, 'invalidPlayer')
         return
@@ -208,11 +191,14 @@ async def handle_cancel_entry(consumer, data):
     await remove_entry(tournament, player)
 
     logger.info(f'Entry for player {user.username} in tournament {tournament.name} has been removed')
-    await consumer.send(text_data=json.dumps({
-        'type': 'tournament',
-        'action': 'removeEntryDone',
-        'name': tournament.name
-    }))
+    try:
+        await consumer.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': 'removeEntryDone',
+            'name': tournament.name
+        }))
+    except Exception as e:
+        logger.error(f'Error in handle_cancel_entry: {e}')
 
 @database_sync_to_async
 def get_tournament_and_nickname(consumer, data):
@@ -260,8 +246,11 @@ def remove_entry(tournament, player):
 
 
 async def send_entry_error(websocket, action):
-    await websocket.send(text_data=json.dumps({
-        'type': 'tournament',
-        'action': action
-    }))
+    try:
+        await websocket.send(text_data=json.dumps({
+            'type': 'tournament',
+            'action': action
+        }))
+    except Exception as e:
+        logger.error(f'Error in send_entry_error: {e}')
     logger.error(f'sent error to user: {action}')
