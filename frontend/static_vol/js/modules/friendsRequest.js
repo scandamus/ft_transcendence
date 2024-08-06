@@ -7,7 +7,6 @@ import { initToken } from './token.js';
 const sendFriendRequest = async (to_username) => {
     console.log('sendFriendRequest');
     try {
-//        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'friendRequest',

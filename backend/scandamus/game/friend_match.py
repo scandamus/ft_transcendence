@@ -7,7 +7,7 @@ from .models import Player
 from .models import Match
 from django.conf import settings
 from django.db import transaction
-from .match_utils import send_friend_match_jwt, authenticate_token, get_player_by_username, get_player_by_user, update_player_status, check_player_status
+from .match_utils import send_friend_match_jwt, get_player_by_username, update_player_status, check_player_status
 
 logger = logging.getLogger(__name__)
 
@@ -16,25 +16,9 @@ async def handle_request_game(consumer, data):
 
     logger.info('handle_request_game in')
     opponent_name = data.get('opponent_username')
-    token = data.get('token')
-    
-    user, error = await authenticate_token(token)
-    if not user:
-        logger.error('Error: Authentication Failed')
-        logger.error(f'error={error}')
-        try:
-            await consumer.send(text_data=json.dumps({
-                'type': 'authenticationFailed',
-                'message': error
-            }))
-        except Exception as e:
-            logger.error(f'Failed to send to consumer: {e}')
-        return
-    
-    player = await get_player_by_user(user)
-    if not player:
-        logger.error(f"No player found for user: {user.username}")
-        return
+
+    user = consumer.user
+    player = consumer.player
     
     if await check_player_status(consumer, user, player, 'friendMatchRequest') is False:
         return
