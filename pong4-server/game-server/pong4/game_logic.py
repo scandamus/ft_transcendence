@@ -259,7 +259,7 @@ class Ball:
             ball_direction = 1 if obj_side == 'LEFT' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
-            distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
+            distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.x + (BALL_SIZE / 2))
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
