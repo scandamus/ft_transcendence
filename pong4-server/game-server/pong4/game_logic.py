@@ -75,7 +75,7 @@ class Paddle(Block):
 class Ball:
     def __init__(self, x, y, size):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -85,7 +85,7 @@ class Ball:
 
     def reset(self, x, y):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-45, 45), random.choice((-1, 1)))
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
