@@ -259,7 +259,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             logger.error(f'Error in schedule_ball_update: {e}')
 
     async def game_over(self, message, is_match_discarded=False):
-        if is_match_discarded:
+        if not is_match_discarded:
             await self.channel_layer.group_send(self.room_group_name, {
                 'type': 'send_game_over_message',
                 'message': message,
