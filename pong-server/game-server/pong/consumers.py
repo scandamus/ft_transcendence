@@ -68,13 +68,15 @@ class PongConsumer(AsyncWebsocketConsumer):
                 logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
                 self.players_ids[self.match_id].remove(self.players_id)
                 if not self.players_ids[self.match_id]:
-                    logger.info(f'del: {self.players_ids}[{self.match_id}]')
+                    logger.error(f'no players left in match_id: {self.match_id}')
+                    await self.game_over('', True)
                     del self.players_ids[self.match_id]
                 else:
                     if self.scheduled_task is not None:
                         await self.cancel_task('scheduled_task')
                         if self.game_continue:
                             new_next_master = sorted(self.players_ids[self.match_id])[0]
+                            logger.error(f'new_next_master: {new_next_master}')
                             await self.channel_layer.group_send(self.room_group_name, {
                                 'type': 'start_game',
                                 'master_id': new_next_master,
@@ -289,11 +291,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f'Error in schedule_ball_update: {e}')            
 
-    async def game_over(self, message):
-        await self.channel_layer.group_send(self.room_group_name, {
-            'type': 'send_game_over_message',
-            'message': message,
-        })
+    async def game_over(self, message, is_match_discarded=False):
+        if not is_match_discarded:
+            await self.channel_layer.group_send(self.room_group_name, {
+                'type': 'send_game_over_message',
+                'message': message,
+            })
 
         asyncio.create_task(self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after'))
         # 問題を発生させるには上をコメントアウトして下の#を取る

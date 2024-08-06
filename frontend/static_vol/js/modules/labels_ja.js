@@ -151,6 +151,7 @@ export const labels_ja = {
         msgWaitFinal: '<p>対戦開始までお待ちください</p>',
         labelFinalOnGoing: '決勝戦進行中',
         msgFinalOnGoing: '<p>決勝戦終了までお待ちください</p>',
+        labelCanceledRound: '(棄権player発生につきキャンセル)',
         msgEntryDone: 'トーナメント $tournament へのエントリーが完了しました',
         msgNoEntry: 'トーナメントへのエントリーがありません',
         msgInvalidEntry: '登録期限を過ぎたなど無効なリクエストです',

@@ -11,7 +11,6 @@ import PageBase from '../components/PageBase.js';
 const createTournament = async(tournamentTitle, startTime) => {
     console.log(`createTournament ${tournamentTitle} - ${startTime}`);
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'tournament',
@@ -19,7 +18,6 @@ const createTournament = async(tournamentTitle, startTime) => {
             name: tournamentTitle,
             start: startTime,
             period: startTime,
-            token: accessToken.token
         });
         console.log(`Create tournament: ${tournamentTitle}  sent to backend.`);
     } catch (error) {
@@ -30,7 +28,6 @@ const createTournament = async(tournamentTitle, startTime) => {
 const entryUpcomingTournament = async(data) => {
     console.log(`entryTournament ${data.title}`);
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'tournament',
@@ -38,7 +35,6 @@ const entryUpcomingTournament = async(data) => {
             id: data.idTitle,
             name: data.title,
             nickname: data.nickname,
-            token: accessToken.token
         });
         console.log(`Entry tournament request: ${data.title}  sent to backend.`);
     } catch (error) {
@@ -49,7 +45,6 @@ const entryUpcomingTournament = async(data) => {
 const cancelEntryTournament = async(tournamentId, tournamentName) => {
     console.log(`cancelTournamentEntry ${tournamentName}`);
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'tournament',
@@ -57,7 +52,6 @@ const cancelEntryTournament = async(tournamentId, tournamentName) => {
             id: tournamentId,
             name: tournamentName,
             nickname: 'dummy',
-            token: accessToken.token
         });
         console.log(`Cancel tournament entry: ${tournamentName}  sent to backend.`);
     } catch (error) {
@@ -72,13 +66,11 @@ const enterTournamentRoomRequest = async(tournamentName) => {
         addNotice('トーナメントの開始時刻が近づいているためマッチを棄権しました', true);
     }
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'tournament',
             action: 'enterRoomRequest',
             name: tournamentName,
-            token: accessToken.token
         });
         console.log(`Sent entering request tournament room ${tournamentName}`);
     } catch (error) {

@@ -118,6 +118,7 @@ export const labels_fr = {
         labelTitleOnGoing: 'Tournoi en cours',
         labelTitleRecent: 'Tournoi terminé',
         labelTournamentLog: 'Journal du tournoi',
+        labelCanceledRound: '(Annulation en raison de la défaite du joueur)',
         labelUpdateLists: 'Mettre à jour les listes',
         descTournamentTitle: ['Vous pouvez utiliser des lettres minuscules, des chiffres, des hiragana, des katakana, des kanji et des symboles(@_#$%&!.+*~)', 'Entre 3 et 50 caractères'],
         descTournamentStart: [`[Plage autorisée] À partir de ${CREATE_TOURNAMENT_TIMELIMIT_MIN} minutes plus tard jusqu’à 1 mois plus tard.`, '[entre les tournois] Au moins 6 heures'],
