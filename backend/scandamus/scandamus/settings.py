@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 #    'game',
     'django_celery_beat',
     'django_celery_results',
+    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -74,6 +75,7 @@ INSTALLED_APPS = [
     'providers42',
 ]
 
+SITE_ID = 1
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
