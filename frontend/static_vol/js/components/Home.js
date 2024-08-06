@@ -238,7 +238,11 @@ export default class LogIn extends PageBase {
             } else {
                 console.error('Failed to exchange token');
                 const errorData = await response.json();
-                addNotice(`${errorData.error}`, true)
+                if (errorData.error === 'NoUsernamesAvailable') {
+                    addNotice(labels.home.fail42Login1, true);
+                } else {
+                    addNotice(labels.home.fail42Login2, true);
+                }
             }
         }
     }

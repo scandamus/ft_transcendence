@@ -67,7 +67,7 @@ def generate_unique_username(base_username):
         if not User.objects.filter(username=base_username).exists():
             return base_username
         base_username = f"{original_username}{suffix}{char}"
-    raise Exception("All possible usernames are taken.")
+    raise Exception("NoUsernamesAvailable")
 
 @csrf_exempt
 def exchange_token42(request):

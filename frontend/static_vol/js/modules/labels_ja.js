@@ -17,6 +17,8 @@ export const labels_ja = {
         labelButtonLogout: 'ログアウト',
         textSignUp: '初めての方はこちら',
         labelLinkSignUp: '登録',
+        fail42Login1: '42Loginで取得できるアカウントの空きがありません。sign upから登録してください',
+        fail42Login2: '42Loginに失敗しました',
     },
     register: {
         title: 'Register',
