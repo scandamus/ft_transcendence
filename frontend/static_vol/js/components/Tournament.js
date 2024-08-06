@@ -194,7 +194,7 @@ export default class Tournament extends PageBase {
             elInput.setCustomValidity( '');
             if (startUTC < minUTC) {
                 elInput.setCustomValidity( 'startTimeInvalid');
-
+            }
             if (elInput.validity.valid) {
                 let isIntervalInvalid = false;
                 for (const existingStart of this.start_dates) {
