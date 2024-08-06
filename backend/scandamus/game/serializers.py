@@ -157,7 +157,8 @@ class MatchSerializer(serializers.ModelSerializer):
             loser.save(update_fields=['status'])
             logger.info(f'//-- Player save() on: update_player_status_after_match 1')
             match.winner.status = 'tournament_room'
-            match.winner.save(update_fields=['status'])
+            self.calc_players_level(match.winner)
+            match.winner.save(update_fields=['status', 'level'])
             logger.info(f'//-- Player save() on: update_player_status_after_match 2')
         elif match.round in [-1, -3, -6]: # 決勝or3位決定戦
             self.reset_all_players_status(match)
@@ -167,6 +168,8 @@ class MatchSerializer(serializers.ModelSerializer):
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
             loser.save(update_fields=['status'])
+            self.calc_players_level(match.winner)
+            match.winner.save(update_fields=['level'])
             logger.info(f'//-- Player save() on: update_player_status_after_match 3')
 
     def set_all_players_status(self, match, status):
