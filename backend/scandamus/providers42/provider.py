@@ -28,19 +28,4 @@ class FortyTwoProvider(OAuth2Provider):
             'scope': 'public'
         }
 
-    # def parse_token(self, response):
-    #     # トークンを解析する
-    #     return response.json().get('access_token')
-
-    # def extract_uid(self, data):
-    #     return str(data['id'])
-    #
-    # def extract_common_fields(self, data):
-    #     return dict(
-    #         username=data.get('login'),
-    #         email=data.get('email'),
-    #         first_name=data.get('first_name'),
-    #         last_name=data.get('last_name')
-    #     )
-
 provider_classes = [FortyTwoProvider]

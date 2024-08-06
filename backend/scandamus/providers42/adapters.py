@@ -1,7 +1,5 @@
 import requests
 from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter
-# from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-# from allauth.socialaccount.models import SocialLogin
 from .provider import FortyTwoProvider
 from django.conf import settings
 
@@ -12,11 +10,6 @@ logger = logging.getLogger(__name__)
 class FortyTwoOAuth2Adapter(OAuth2Adapter):
     provider_id = FortyTwoProvider.id
 
-    # def complete_login(self, request, app, token, **kwargs):
-    #     headers = {'Authorization': f'Bearer {token.token}'}
-    #     extra_data = requests.get(self.profile_url, headers=headers).json()
-    #     return self.get_provider().sociallogin_from_response(request, extra_data)
-
     def complete_login(self, request, app, token, **kwargs):
         headers = {'Authorization': f'Bearer {token.token}'}
         resp = requests.get(settings.URL_PROFILE_42, headers=headers)
@@ -25,7 +18,6 @@ class FortyTwoOAuth2Adapter(OAuth2Adapter):
         return self.get_provider().sociallogin_from_response(request, extra_data)
 
     def get_access_token(self, request, code):
-        logger.info(f'/////get_access_token')
         payload = {
             'grant_type': 'authorization_code',
             'client_id': settings.UID_42,
@@ -35,5 +27,4 @@ class FortyTwoOAuth2Adapter(OAuth2Adapter):
         }
         response = requests.post(settings.URL_ACCESS_TOKEN_42, data=payload)
         response.raise_for_status()
-        logger.info(f'/////response.json(){response.text}')
         return response.json()
