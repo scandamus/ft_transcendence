@@ -24,6 +24,7 @@ class GameConfig(AppConfig):
         for match in incomplete_matches:
             match.status = 'canceled'
             match.save(update_fields=['status'])
+            logger.info(f'//-- Match save() on: GameConfig')
             reset_count += 1
         logger.info(f'{reset_count} incomplete matches have been reset')
 
@@ -35,5 +36,6 @@ class GameConfig(AppConfig):
         for tournament in incomplete_tournaments:
             tournament.status = 'canceled'
             tournament.save(update_fields=['status'])
+            logger.info(f'//-- tournament save() on: GameConfig')
             reset_count += 1
         logger.info(f'{reset_count} incomplete tournaments have been reset')
