@@ -85,6 +85,7 @@ export default class LogIn extends PageBase {
         const formLogin = document.getElementById('formLogin');
         if (!formLogin.checkValidity()) {
             this.handleValidationError('loginError1');
+            this.loginInProgress = false;
             return;
         }
 
