@@ -27,23 +27,10 @@ logger = logging.getLogger(__name__)
 
 async def handle_enter_tournament_room(consumer, token, data):
     from .consumers import LoungeSession
-
-    user, error = await authenticate_token(token)
-    if not user:
-        logger.error('Error: Authentication Failed')
-        logger.error(f'error={error}')
-        try:
-            await consumer.send(text_data=json.dumps({
-                'type': 'authenticationFailed',
-                'message': error
-            }))
-        except Exception as e:
-            logger.error(f'Failed to send to consumer: {e}')
-        return
     
-    player = await get_player_by_user(user)
-    if not player:
-        logger.error(f"No player found for user: {user.username}")
+    user = consumer.user
+    player = consumer.player
+
     if player.status != 'tournament_room':
         logger.error(f'{user.username} can not enter tournament room as status: {player.status}')
         await send_entry_error(consumer, 'invalidEnter')
@@ -137,13 +124,15 @@ def handle_three_players_round(tournament, current_round):
         )
         create_match(tournament, first_loser, tournament.bye_player, -5)
         tournament.bye_player = None
-        tournament.save()
+        tournament.save(update_fields=['bye_player'])
+        logger.info(f'//-- tournament save() on: handle_three_players_round 1')
         notify_players(tournament.name, [previous_round_match.winner.id], 'notifyWaitFinal', False)#1戦目勝者は決勝待ち
     elif current_round == -5:
         first_match = tournament.matches.filter(round=-4).order_by('-id').first()
         second_match = tournament.matches.filter(round=-5).order_by('-id').first()
         tournament.third_place = second_match.player1 if second_match.winner == second_match.player2 else second_match.player2
-        tournament.save()
+        tournament.save(update_fields=['third_place'])
+        logger.info(f'//-- tournament save() on: handle_three_players_round 2')
         create_match(tournament, first_match.winner, second_match.winner, -6)
         notify_players(tournament.name, [tournament.third_place.id], 'notifyFinalOnGoing', False)#3位には決勝戦進行中表示
     elif current_round == -6:
@@ -171,7 +160,8 @@ def finalize_tounrnament_by_three_players(tournament, current_round=-6):
         logger.error(f'Failed to finalize {tournament.name}')
 
     tournament.status = 'finished'
-    tournament.save()
+    tournament.save(update_fields=['winner', 'second_place', 'status'])
+    logger.info(f'//-- tournament save() on: finalize_tounrnament_by_three_players')
     tournament.finalize_result_json(True)
     notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
@@ -260,7 +250,8 @@ def finalize_tournament(tournament, current_round=-1):
         logger.error(f'Failed to finalize {tournament.name}')
 
     tournament.status = 'finished'
-    tournament.save()
+    tournament.save(update_fields=['winner', 'second_place', 'third_place', 'status'])
+    logger.info(f'//-- tournament save() on: finalize_tournament')
     tournament.finalize_result_json()
     notify_players(tournament.name, entried_players_id_list, 'finished', False)
 
@@ -275,7 +266,8 @@ def create_next_round(tournament, current_round):
     if tournament.bye_player:
         winners.insert(0, tournament.bye_player)
         tournament.bye_player == None
-        tournament.save()
+        tournament.save(update_fields=['bye_player'])
+        logger.info(f'//-- tournament save() on: create_next_round 1')
 
     losers = [player_id for player_id in entried_players_id_list if player_id not in [player.id for player in winners]]
     notify_players(tournament.name, losers, 'roundEnd', False)
@@ -287,7 +279,8 @@ def create_next_round(tournament, current_round):
     elif number_of_winners == 3:
         create_match(tournament, winners[0], winners[1], -4) # -4:3人決戦の1戦目
         tournament.bye_player = winners[-1]
-        tournament.save()
+        tournament.save(update_fields=['bye_player'])
+        logger.info(f'//-- tournament save() on: create_next_round 2')
         notify_players(tournament.name, [tournament.bye_player.id], 'notifyWaitSemiFinal', False)#準決勝2戦目待ち
         return
     elif number_of_winners < 2: # ２人未満のとき。両者がMatchに接続せずにMatch.status == 'canceled'となった場合に生じる可能性があり
@@ -299,7 +292,8 @@ def create_next_round(tournament, current_round):
     create_matches(tournament, winners, current_round)
 
     tournament.current_round = current_round
-    tournament.save()
+    tournament.save(update_fields=['current_round'])
+    logger.info(f'//-- tournament save() on: create_next_round 3')
 
 def create_final_round(tournament, winners, previous_round_matches):
     logger.info('create_final_round in')
@@ -322,7 +316,6 @@ def create_final_round(tournament, winners, previous_round_matches):
 
 def create_match(tournament, player1, player2, round, game_name='pong'):
     with transaction.atomic():
-
         match = Match.objects.create(
             tournament=tournament,
             player1=player1,
@@ -332,8 +325,9 @@ def create_match(tournament, player1, player2, round, game_name='pong'):
             status='before'
         )
         match.save()
-        tournament.matches.add(match)
-        tournament.save()
+        logger.info(f'//-- Match save() on: create_match')
+    tournament.matches.add(match)
+    logger.info(f'//-- tournament save() on: create_match')
     async_to_sync(send_tournament_match_jwt)(match)
 
 def create_matches(tournament, players, round_number):
@@ -353,6 +347,7 @@ def create_matches(tournament, players, round_number):
                 status='before'
             )
             match.save()
+            logger.info(f'//-- Match save() on: create_matches')
             matches.append(match)
         async_to_sync(send_tournament_match_jwt)(match)
 
@@ -367,9 +362,11 @@ def create_matches(tournament, players, round_number):
    #Match.objects.bulk_create(matches)
     with transaction.atomic():
         tournament.matches.add(*matches)
-        tournament.save()
+        tournament.save(update_fields=['bye_player'])
+        logger.info(f'//-- tournament save() on: create_matches')
     if tournament.bye_player:
         notify_bye_player(tournament)
+
 
 def reset_player_status_if_in_tournament(tournament):
     logger.info('reset_player_status in')
@@ -381,5 +378,6 @@ def reset_player_status_if_in_tournament(tournament):
             if player.status in ['tournament', 'tournament_match', 'tournament_room', 'tournament_prepare']:
                 player.status = 'waiting'
                 player.save(update_fields=['status'])
+                logger.info(f'//-- player save() on: reset_player_status_if_in_tournament')
         except Player.DoesNotExist:
             pass

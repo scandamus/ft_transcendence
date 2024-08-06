@@ -141,7 +141,7 @@ export default class TournamentDetail extends PageBase {
                 });
             }
         } catch (error) {
-            console.error('Error fetching Tournament Detail:', error);
+            console.error('Error generateTournamentResult:', error);
         }
     }
 
@@ -224,14 +224,17 @@ export default class TournamentDetail extends PageBase {
     generateRoundList(matches) {
         let resultHtml = '';
         let labelRound = '';
+        let lenMatch = 0;
         const listSemifinal = matches.round === -4 ? ' listSemifinal' : '';
         if (matches.round === -1 || matches.round === -6) {
             labelRound = labels.tournament.labelRoundFinal;
         } else if (matches.round === -4) {
             labelRound = labels.tournament.labelRoundSemiFinal;
         } else if (matches.round === -5) {
-            const elListSemifinal = document.querySelector('.listSemifinal');
-            elListSemifinal.insertAdjacentHTML('afterbegin', this.generateMatch(matches.matches[0]));
+            if (matches.matches[0]) {
+                const elListSemifinal = document.querySelector('.listSemifinal');
+                elListSemifinal.insertAdjacentHTML('afterbegin', this.generateMatch(matches.matches[0]));
+            }
             return;
         } else if (matches.round === -3) {
             labelRound = labels.tournament.labelRoundThirdPlaceRound
@@ -247,7 +250,13 @@ export default class TournamentDetail extends PageBase {
                 <h3 class="blockTournamentRound_title unitTitle1">${labelRound}</h3>
                 <div class="blockTournamentRound_listMatch${listSemifinal} listLineDivide">`;
             for (const match of matches.matches) {
-                resultHtml += this.generateMatch(match);
+                if (match) {
+                    lenMatch++;
+                    resultHtml += this.generateMatch(match);
+                }
+            }
+            if (lenMatch === 0) {
+                resultHtml += `<p class="textCanceled">${labels.tournament.labelCanceledRound}</p>`;
             }
             if (matches.bye_player) {
                 const avatarBye = this.avatarMap[matches.bye_player_id] ? this.avatarMap[matches.bye_player_id] : `/images/avatar_default.png`;

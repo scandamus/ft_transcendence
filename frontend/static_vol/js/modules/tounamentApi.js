@@ -1,11 +1,9 @@
 import { getToken, refreshAccessToken } from './token.js';
+import { forcedLogout } from "./logout.js";
 
 const fetchTournaments = async (listType, isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        return Promise.resolve(null);
-    }
     try {
+        const accessToken = getToken('accessToken');
         const response = await fetch(`/api/tournaments/list/${listType}/`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -14,28 +12,28 @@ const fetchTournaments = async (listType, isRefresh) => {
         if (!response.ok) {
             if (!isRefresh) {
                 if (!await refreshAccessToken()) {
-                    throw new Error('fail refresh token');
+                    throw new Error(`fail refresh token( ${response.status} )`);
                 }
                 return await fetchTournaments(listType, true);
             } else {
-                throw new Error('refreshed accessToken is invalid.');
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
             }
-            throw new Error('Failed to fetch tournaments');
         }
         const data = await response.json();
         console.log('fetchTournaments API response: ', data);
         return data;
     } catch (error) {
-        console.error('Error fetching tournaments:', error);
+        console.error('Error on fetchTournaments:', error);
+        forcedLogout();
     }
 }
 
 const fetchTournamentDetail = async (id, isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null || !id) {
-        return Promise.resolve(null);
-    }
     try {
+        if (!id) {
+            throw new Error('TournamentId is invalid');
+        }
+        const accessToken = getToken('accessToken');
         const response = await fetch(`/api/tournaments/tournaments/${id}/result/`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -44,19 +42,19 @@ const fetchTournamentDetail = async (id, isRefresh) => {
         if (!response.ok) {
             if (!isRefresh) {
                 if (!await refreshAccessToken()) {
-                    throw new Error('fail refresh token');
+                    throw new Error(`fail refresh token( ${response.status} )`);
                 }
                 return await fetchTournamentDetail(id, true);
             } else {
-                throw new Error('refreshed accessToken is invalid.');
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
             }
-            throw new Error('Failed to fetch tournament detail');
         }
         const data = await response.json();
         console.log('fetchTournamentDetail API response: ', data);
         return data;
     } catch (error) {
-        console.error('Error fetching tournament detail:', error);
+        console.error('Error on fetchTournamentDetail:', error);
+        forcedLogout();
     }
 }
 

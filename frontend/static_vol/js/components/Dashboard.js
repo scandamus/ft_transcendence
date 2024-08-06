@@ -21,6 +21,7 @@ import { addListenerToList, removeListenerAndClearList } from "../modules/listen
 import { getToken, refreshAccessToken } from "../modules/token.js";
 import { switchDisplayAccount, fetchLevel } from "../modules/auth.js";
 import { addNotice } from "../modules/notice.js";
+import { forcedLogout } from "../modules/logout.js";
 
 export default class Dashboard extends PageBase {
     static instance = null;
@@ -106,12 +107,15 @@ export default class Dashboard extends PageBase {
                 });
             getMatchLog().then(() => {});
             getTournamentLog(this).then(() => {});
-            fetchLevel().then((data) => {
-                if (!data) {
-                    throw new Error(`Failed to get player stats`);
-                }
-                this.displayMatchStats(data);
-            });
+            fetchLevel()
+                .then((data) => {
+                    if (!data) {
+                        throw new Error(`Failed to get player stats`);
+                    }
+                    this.displayMatchStats(data);
+                }).catch ((error) => {
+                    console.error('Failed to get level: ', error);
+                });
         } catch (error) {
             console.error('Failed to update lists: ', error);
             throw error;
@@ -120,7 +124,7 @@ export default class Dashboard extends PageBase {
 
     displayMatchStats(data) {
         const statsWrap = document.querySelector('.blockPlayerDetail_stats');
-        if (data) {
+        if (data && statsWrap) {
             const textWin = (labels.match.fmtWin).replace('$win', data.win_count);
             const textLoss = (labels.match.fmtLoss).replace('$loss', data.loss_count);
             statsWrap.innerHTML = `
@@ -197,9 +201,6 @@ export default class Dashboard extends PageBase {
 
     fetchUploadAvatar(formData, isRefresh) {
         const accessToken = getToken('accessToken');
-        if (accessToken === null) {
-            return Promise.resolve(null);
-        }
         fetch('/api/players/avatar/', {
             method: 'PUT',
             headers: {
@@ -211,11 +212,12 @@ export default class Dashboard extends PageBase {
                 if (!response.ok) {
                     if (!isRefresh) {
                         if (!await refreshAccessToken()) {
-                            throw new Error('fail refresh token');
+                            throw new Error(`fail refresh token( ${response.status} )`);
                         }
-                        return await this.fetchUploadAvatar(formData, true);
+                        await this.fetchUploadAvatar(formData, true);
+                        return;
                     } else {
-                        throw new Error('refreshed accessToken is invalid.');
+                        throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
                     }
                  }
                 return response.json();
@@ -230,9 +232,10 @@ export default class Dashboard extends PageBase {
                 addNotice(labels.dashboard.msgAvatarSwitched, false);
             })
             .catch((error) => {
-                console.error('Error upload avatar', error);
-                addNotice(labels.dashboard.msgInvalidFile, true);
+                console.error('Error fetchUploadAvatar: ', error);
+                addNotice(labels.dashboard.msgFailAvatarUpload, true);
                 this.cancelAvatar();
+                forcedLogout();
             });
     }
 
@@ -254,10 +257,18 @@ export default class Dashboard extends PageBase {
         const btnWrapUpdateAvatar = document.querySelector('.blockAvatar_button');
         const listButton = document.querySelector('.blockAvatar_listButton');
         this.removeListenUploadAvatar();
-        btnWrapUpdateAvatar.classList.add('is-show');
-        listButton.classList.remove('is-show');
-        imgAvatar.src = this.siteInfo.getAvatar();
-        inputFile.value = '';
+        if (btnWrapUpdateAvatar) {
+            btnWrapUpdateAvatar.classList.add('is-show');
+        }
+        if (listButton) {
+            listButton.classList.remove('is-show');
+        }
+        if (imgAvatar) {
+            imgAvatar.src = this.siteInfo.getAvatar();
+        }
+        if (inputFile) {
+            inputFile.value = '';
+        }
     }
 
     removeListenUploadAvatar() {

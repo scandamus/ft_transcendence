@@ -12,7 +12,7 @@ from .lounge_match import handle_join_lounge_match, handle_exit_lounge_room
 from .tournament import handle_create_tournament, handle_entry_tournament, handle_cancel_entry
 from .tournament_match import handle_enter_tournament_room
 from players.friend_utils import send_status_to_friends
-from .match_utils import get_player_by_user, send_tournament_match_jwt, update_player_status
+from .match_utils import get_player_by_user, send_tournament_match_jwt, update_player_status, get_player_by_id
 from channels.db import database_sync_to_async
 from channels.auth import get_user
 
@@ -25,18 +25,10 @@ class LoungeSession(AsyncWebsocketConsumer):
     tournament_entry = {}
     matchmaking_lock = asyncio.Lock()
 
-    async def connect(self): 
+    async def connect(self):
         await self.accept()
-        self.user = await (get_user)(self.scope)
-
-        if self.user.is_anonymous:
-            logger.error('Anonymous user attempted to connect')
-            await self.send(text_data=json.dumps({
-                'type': 'authenticationFailed',
-                'action': 'forceLogout',
-                'message': 'Anonymous user webscoket access'
-            }))
-            return
+        self.player = None
+        self.user = None
 
     async def receive(self, text_data):
         logger.info(f'received text_data: {text_data}')
@@ -56,7 +48,16 @@ class LoungeSession(AsyncWebsocketConsumer):
                 await handle_auth(self, token)
                 LoungeSession.players[self.user.username] = self
                 logger.info(f'LoungeSession.players: {list(LoungeSession.players.keys())}')
-            elif msg_type == 'friendMatchRequest':
+                return
+            
+            if not self.player or not self.user:
+                logger.error('Error in receive: authWebSocket needed')
+                return
+
+            self.player = await get_player_by_id(self.player.id)
+            logger.info(f'received by {self.user.username}')
+
+            if msg_type == 'friendMatchRequest':
                 if action == 'requestGame':
                     await handle_request_game(self, text_data_json)
                 elif action == 'acceptGame':
@@ -138,14 +139,16 @@ class LoungeSession(AsyncWebsocketConsumer):
             logger.info(f'LoungeSession.players: {list(LoungeSession.players.keys())}')
 
             # reset player status
-            player = self.player
+            player = await get_player_by_id(self.player.id)
             if player:
                 if player.status in ['friend_waiting', 'lounge_waiting']:
                     player.status = 'waiting'
                     await database_sync_to_async(player.save)(update_fields=['status'])
                     logger.info(f'{self.user.username} status set to waiting')
+                    logger.info(f'//-- player save() on: disconnect 1')
                 player.online = False
                 await database_sync_to_async(player.save)(update_fields=['online'])
+                logger.info(f'//-- player save() on: disconnect 2')
                 await send_status_to_friends(player, 'offline')
   
             # remove pending_requests

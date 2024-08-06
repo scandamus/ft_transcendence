@@ -1,6 +1,6 @@
 'use strict';
 
-import { getToken, refreshAccessToken } from './token.js';
+import { getToken, refreshAccessToken, stopTokenRefreshInterval } from './token.js';
 import { switchDisplayAccount } from './auth.js';
 import { router } from './router.js';
 import { webSocketManager } from './websocket.js';
@@ -9,31 +9,34 @@ import PageBase from "../components/PageBase.js";
 import { handleExitGame } from "./modal.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
-//import { closeWebSocket } from './websocket.js';
+import { addNotice } from "./notice.js";
+import { labels } from "./labels.js";
 
 const fetchLogout = async (isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        throw new Error('accessToken is invalid.');
-    }
-    const response = await fetch('/api/players/logout/', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
-    });
-    if (response.status === 401) {
-        if (!isRefresh) {
-            //初回のaccessToken expiredならrefreshして再度ログイン
-            if (!await refreshAccessToken()) {
-                throw new Error('fail refresh token');
+    try {
+        const accessToken = getToken('accessToken');
+        const response = await fetch('/api/players/logout/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
             }
-            await fetchLogout(true);
-        } else {
-            throw new Error('refreshed accessToken is invalid.');
+        });
+        if (response.status === 401) {
+            if (!isRefresh) {
+                //初回のaccessToken expiredならrefreshして再度ログイン
+                if (!await refreshAccessToken()) {
+                    throw new Error(`fail refresh token( ${response.status} )`);
+                }
+                await fetchLogout(true);
+            } else {
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
+            }
+        } else if (!response.ok) {
+            throw new Error(`fetchLogout error. status: ${response.status}`);
         }
-    } else if (!response.ok) {
-        throw new Error(`fetchLogout error. status: ${response.status}`);
+    } catch (error) {
+        console.error('Error on fetchLogout: ', error);
+        forcedLogout();
     }
 }
 
@@ -50,8 +53,11 @@ const handleLogout = (ev) => {
 }
 
 const processLogout = () => {
+    stopTokenRefreshInterval();
     sessionStorage.removeItem('accessToken');
     sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('accessTokenExpiry');
+    sessionStorage.removeItem('refreshTokenExpiry');
     sessionStorage.removeItem('all_usernames');
     sessionStorage.removeItem('player_name');
     sessionStorage.removeItem('tournament_id');
@@ -67,4 +73,12 @@ const processLogout = () => {
     router(false).then(() => {});
 }
 
-export { handleLogout, processLogout };
+const forcedLogout = () => {
+    const siteInfo = new SiteInfo();
+    if (!siteInfo.isLogout) {
+        addNotice(labels.common.logoutTokenExpired, true);
+        processLogout();
+    }
+}
+
+export { handleLogout, processLogout, forcedLogout };

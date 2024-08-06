@@ -1,6 +1,7 @@
 import { getValidToken, initToken } from "./token.js";
 import { handleLogout } from "./logout.js";
 import { addNotice } from "./notice.js";
+import { labels } from "./labels.js";
 
 class WebSocketManager {
     constructor() {
@@ -21,7 +22,7 @@ class WebSocketManager {
             }
 
             const accessTokenResult = await getValidToken('accessToken');
-            if (!accessTokenResult.token) {
+            if (!accessTokenResult || !accessTokenResult.token) {
                 console.error('Access token is missing or invalid');
                 reject('Access token is missing or invalid.');
                 return;
@@ -72,7 +73,7 @@ class WebSocketManager {
                         this.openWebSocket(containerId, handler);
                     }, this.reconnectInterval);
                 } else if (!this.isWebSocketClosed[containerId]) {
-                    addNotice('サーバーとの接続が切れました', true);
+                    addNotice(labels.common.disconnected, true);
                     handleLogout(new Event('logout'));
                 }
             };

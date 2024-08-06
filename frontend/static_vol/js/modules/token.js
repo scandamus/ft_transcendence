@@ -2,20 +2,27 @@
 
 //sessionStorageにtokenがkey自体ない=>ログアウト状態
 //tokenがundefined=>何かがおかしい
+//tokenがnull=>ログイン状態にいてはいけない。強制ログアウト
 import { SiteInfo } from "./SiteInfo.js";
-import { processLogout } from "./logout.js";
+import { processLogout, forcedLogout } from "./logout.js";
 import { addNotice } from "./notice.js";
 import { labels } from "./labels.js";
 
 const getToken = (nameToken) => {
-    const token = sessionStorage.getItem(nameToken);
-    if (token === null) {
-        return null;//未ログイン
+    try {
+        const token = sessionStorage.getItem(nameToken);
+        if (token === null) {
+            console.log(`No ${nameToken} is in sessionStorage.`);
+            forcedLogout();
+            throw new Error(`No ${nameToken} is in sessionStorage.`);
+        }
+        if (!token) {
+            throw new Error(`${nameToken} is invalid`);
+        }
+        return token;
+    } catch (error) {
+        console.error('getToken failed: ', error);
     }
-    if (!token) {//todo:test (undefinedなど)
-        throw new Error(`${nameToken} is invalid`);
-    }
-    return token;
 }
 
 const refreshAccessToken = async () => {
@@ -42,14 +49,21 @@ const refreshAccessToken = async () => {
             if (response.ok) {
                 const refreshData = await response.json();
                 console.log(`refreshData: `, refreshData);
-                sessionStorage.setItem('accessToken', refreshData.access);
-                sessionStorage.setItem('refreshToken', refreshData.refresh);
+
+                const accessToken = refreshData.access;
+                const refreshToken = refreshData.refresh;
+                const accessTokenExpiry = decodeTokenExpiry(accessToken);
+                const refreshTokenExpiry = decodeTokenExpiry(refreshToken);
+
+                sessionStorage.setItem('accessToken', accessToken);
+                sessionStorage.setItem('refreshToken', refreshToken);
+                sessionStorage.setItem('accessTokenExpiry', accessTokenExpiry);
+                sessionStorage.setItem('refreshTokenExpiry', refreshTokenExpiry);
+
                 console.log(`Successfully token refreshed: ${refreshData.access}`);
                 return refreshData.access;
             }
-            //refreshToken expired.強制ログアウト
-            addNotice(labels.common.logoutTokenExpired, true);
-            processLogout();
+            forcedLogout();
             console.error('Failed to refresh token, server responded with: ', response.status);
             return null;
         } catch (error) {
@@ -64,52 +78,91 @@ const refreshAccessToken = async () => {
     return siteInfo.promiseTokenRefresh;
 }
 
-const isTokenExpired = (token) => {
+const decodeTokenExpiry = (token) => {
     try {
         const payloadBase64 = token.split('.')[1];
-        const decodePayload = JSON.parse(atob(payloadBase64));
-        const exp = decodePayload.exp;
-        const currentUnixTime = Math.floor(Date.now() / 1000);
-        return exp < currentUnixTime;
+        const decodedPayload = JSON.parse(atob(payloadBase64));
+        return decodedPayload.exp;
     } catch (e) {
         console.log('Decode token failed: ', e);
+        return 0;
+    }
+};
+
+const isTokenExpired = (token) => {
+    try {
+        const expiry = decodeTokenExpiry(token);
+        const currentUnixTime = Math.floor(Date.now() / 1000);
+        return expiry < currentUnixTime;
+    } catch (e) {
+        console.error('Decode token failed: ', e);
         return true;
     }
 }
 
 const getValidToken = async (nameToken) => {
-    let myToken = getToken(nameToken);
-    if (myToken == null) {
-        console.log('No token found.');
-        return { token: null, error: 'No token found' };
+    try {
+        let myToken = getToken(nameToken);
+        if (myToken && !isTokenExpired(myToken)) {
+            return { token: myToken, error: null };
+        }
+        console.log('token expired');
+        const refreshedToken = await refreshAccessToken();
+        if (!refreshedToken) {
+            console.error('Failed to refresh token.');
+            //return { token: null, error: 'Failed to refresh token' };
+            throw new Error(`Failed to refresh token`);
+        }
+        return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
+    } catch (error) {
+        console.error('getValidToken failed: ', error);
     }
-    if (!isTokenExpired(myToken)) {
-        return { token: myToken, error: null };
-    }
-    console.log('token expired');
-    const refreshedToken = await refreshAccessToken();
-    if (!refreshedToken) {
-        console.error('Failed to refresh token.');
-        return { token: null, error: 'Failed to refresh token' };
-    }
-    return { token: refreshedToken, error: (!refreshedToken ? null : 'No access token though refresh is success')};
 }
 
 const initToken = async () => {
     console.log('initToken in');
     try {
         const tokenResult = await getValidToken('accessToken');
-        console.log('tokenResult: ', tokenResult);
+        if (!tokenResult) {
+            throw new Error(`fail to tokenResult`);
+        }
         if (tokenResult.token) {
             console.log('accessToken: ', tokenResult.token);
             return tokenResult;
         } else {
             console.error('Token error: ', tokenResult.error);
-            return false;
+            // return false;
+            throw new Error(`fail to tokenResult`);
         }
     } catch (error) {
         console.error('Error user page initToken: ', error);
+        throw error;
     }
 }
 
-export { getToken, refreshAccessToken, isTokenExpired, getValidToken, initToken };
+const startTokenRefreshInterval = () => {
+    const siteInfo = new SiteInfo();
+
+    const intervalId = setInterval(async() => {
+        const accessTokenExpiry = parseInt(sessionStorage.getItem('accessTokenExpiry'), 10);
+        const currentTime = new Date().getTime();
+
+        if (currentTime > accessTokenExpiry - 30000) {
+            console.log('Refreshing access token');
+            await refreshAccessToken();
+        }
+    }, 60000);
+    siteInfo.setRefreshIntervalId(intervalId);
+}
+
+const stopTokenRefreshInterval = () => {
+    const siteInfo = new SiteInfo();
+
+    const intervalId = siteInfo.getRefreshIntervalId();
+    if (intervalId !== null) {
+        clearInterval(intervalId);
+        siteInfo.setRefreshIntervalId(null);
+    }
+}
+
+export { getToken, refreshAccessToken, isTokenExpired, getValidToken, initToken, startTokenRefreshInterval, stopTokenRefreshInterval, decodeTokenExpiry };

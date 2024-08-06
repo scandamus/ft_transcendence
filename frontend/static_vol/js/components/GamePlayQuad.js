@@ -261,11 +261,11 @@ export default class GamePlayQuad extends PageBase {
                 if (!data.game_status) {
                     console.log('Game Over');
                     // showWinner([data.right_paddle, data.left_paddle, data.upper_paddle, data.lower_paddle]);
-                    webSocketManager.closeWebSocket(this.containerId);
-                    this.containerId = '';
                     window.history.pushState({}, null, "/dashboard");
                     setTimeout(() => {
                         this.playSound(data.sound_type);
+                        webSocketManager.closeWebSocket(this.containerId);
+                        this.containerId = '';
                         router(true);
                     }, 1500);
                 } else {

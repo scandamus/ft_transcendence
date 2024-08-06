@@ -82,7 +82,7 @@ export default class Tournament extends PageBase {
                     <div class="blockTournamentList_upcoming listLineDivide" aria-live="polite"></div>
                 </section>
                 <section class="blockTournamentList">
-                    <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleInPlay}</h3>
+                    <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleOnGoing}</h3>
                     <div class="blockTournamentList_ongoing listLineDivide" aria-live="polite"></div>
                 </section>
                 <section class="blockTournamentList">
@@ -95,6 +95,7 @@ export default class Tournament extends PageBase {
 
     updateLists() {
         try {
+            this.start_dates = [];
             updateUpcomingTournamentList(this).then((start_dates) => {
                 if (start_dates) {
                     this.start_dates = start_dates;
@@ -189,11 +190,10 @@ export default class Tournament extends PageBase {
             now.setMinutes(now.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
             const minUTC = new Date(now.toISOString());
             const startUTC = new Date(startTime.toISOString());
+
+            elInput.setCustomValidity( '');
             if (startUTC < minUTC) {
                 elInput.setCustomValidity( 'startTimeInvalid');
-            } else {
-                elInput.setCustomValidity( '');
-            }
 
             if (elInput.validity.valid) {
                 let isIntervalInvalid = false;

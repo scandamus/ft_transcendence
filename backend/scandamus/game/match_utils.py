@@ -44,7 +44,6 @@ async def send_friend_match_jwt(consumer, from_username, game_name='pong'):
 
 async def send_tournament_match_jwt(match, game_name='pong'):
     logger.info('send_tournament_match_jwt in')
-    #from .consumers import LoungeSession
 
     tournament = await database_sync_to_async(lambda: match.tournament)()
     if not tournament:
@@ -62,11 +61,9 @@ async def send_tournament_match_jwt(match, game_name='pong'):
         player_name = 'player1' if player == player1 else 'player2'
         user = await database_sync_to_async(lambda: player.user)()
         game_token = await issue_jwt(user, player_name, player.id, match.id, game_name, is_tournament=True)
-        #websocket =  LoungeSession.players.get(player.user.username)
         channel_layer = get_channel_layer()
 
         try:
-            #await websocket.send(text_data=json.dumps({
             await channel_layer.group_send(
                 f'friends_{player.id}',
                 {
@@ -215,6 +212,10 @@ def get_player_by_user(user):
         return None
 
 @database_sync_to_async
+def get_player_by_id(player_id):
+    return Player.objects.get(id=player_id)
+
+@database_sync_to_async
 def issue_jwt(user, player_name, players_id, match_id, game_name='pong', is_tournament=False):
     expire = datetime.utcnow() + timedelta(minutes=1)
     payload = {
@@ -266,7 +267,8 @@ def create_match_universal(players_list, game_name):
             player3=player3,
             player4=player4,
         )
-        match.save()
+        # match.save() create直後は不要
+        logger.info(f'//-- Match save() on: create_match_universal')
     logger.info(f'Match created, ID: {match.id}, Players: {[player_info["user"].username for player_info in players_list]}')
     return match
 
@@ -296,13 +298,15 @@ def get_required_players(game_name):
 def update_player_status_and_match(player, match, status):
     player.status = status
     player.current_match = match
-    player.save()
+    player.save(update_fields=['status', 'current_match'])
+    logger.info(f'//-- Player save() on: update_player_status_and_match')
 
 @database_sync_to_async
 def update_player_status(player, status):
     logger.info(f'update_player_status {player.user.username}: {status}')
     player.status = status
-    player.save()
+    player.save(update_fields=['status'])
+    logger.info(f'//-- Player save() on: update_player_status')
 
 @database_sync_to_async
 def get_nickname(tournament, player):

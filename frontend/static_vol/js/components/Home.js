@@ -8,7 +8,7 @@ import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { addErrorMessage } from '../modules/form.js';
 import { setLang, saveLang } from '../modules/switchLanguage.js';
-//import { openWebSocket } from '../modules/websocket.js';
+import { decodeTokenExpiry, startTokenRefreshInterval } from '../modules/token.js';
 
 export default class LogIn extends PageBase {
     static instance = null;
@@ -86,6 +86,7 @@ export default class LogIn extends PageBase {
         const formLogin = document.getElementById('formLogin');
         if (!formLogin.checkValidity()) {
             this.handleValidationError('loginError1');
+            this.loginInProgress = false;
             return;
         }
 
@@ -115,8 +116,18 @@ export default class LogIn extends PageBase {
                 return response.json();
             })
             .then(data => {
-                sessionStorage.setItem('accessToken', data.access_token);
-                sessionStorage.setItem('refreshToken', data.refresh_token);
+                const accessToken = data.access_token;
+                const refreshToken = data.refresh_token;
+                const accessTokenPayload = decodeTokenExpiry(accessToken);
+                const refreshTokenPayload = decodeTokenExpiry(refreshToken);
+
+                sessionStorage.setItem('accessToken', accessToken);
+                sessionStorage.setItem('refreshToken', refreshToken);
+                sessionStorage.setItem('accessTokenExpiry', accessTokenPayload);
+                sessionStorage.setItem('refreshTokenExpiry', refreshTokenPayload);
+                // トークンの自動定期実行
+                startTokenRefreshInterval();
+
                 webSocketManager.openWebSocket('lounge', pongHandler)
                     .then(() => {
                         //return webSocketManager.sendAccessToken('lounge');
@@ -128,22 +139,23 @@ export default class LogIn extends PageBase {
                 return getUserInfo();
             })
             .then((data) => {
-                if (data) {
-                    const langStorage = localStorage.getItem('configLang');
-                    const elSelectLang = document.getElementById('languageSelect');
-                    //localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
-                    if (langStorage && (data.lang !== langStorage)) {
-                        setLang(elSelectLang, langStorage);
-                        saveLang(langStorage);
-                    } else {
-                        setLang(elSelectLang, data.lang);
-                        saveLang(data.lang);
-                    }
-                    switchDisplayAccount()
-                        .then(() => {
-                            router(true).then(() => {});
-                        });
+                if (!data) {
+                    throw new Error('loginError2');
                 }
+                const langStorage = localStorage.getItem('configLang');
+                const elSelectLang = document.getElementById('languageSelect');
+                //localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
+                if (langStorage && (data.lang !== langStorage)) {
+                    setLang(elSelectLang, langStorage).then(() => {});
+                    saveLang(langStorage);
+                } else {
+                    setLang(elSelectLang, data.lang).then(() => {});
+                    saveLang(data.lang);
+                }
+                switchDisplayAccount()
+                    .then(() => {
+                        router(true).then(() => {});
+                    });
             })
             .catch((error) => {
                 this.handleValidationError(error.message);

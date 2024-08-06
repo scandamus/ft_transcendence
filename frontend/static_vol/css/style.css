@@ -881,7 +881,8 @@ input[type="text"]:disabled {
 .blockFriendRecommended_friends > p:only-child,
 .blockTournamentList_upcoming > p:only-child,
 .blockTournamentList_ongoing > p:only-child,
-.blockTournamentList_finished > p:only-child {
+.blockTournamentList_finished > p:only-child,
+.blockTournamentRound .textCanceled {
   font-size: 1.8rem;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -1840,6 +1841,10 @@ input[type="text"]:disabled {
   /*text-shadow: 0.09em 0.05em var(--content-color1), -0.09em -0.05em var(--content-color2);*/
 }
 
+html[lang="fr"] .unitRanker_rank {
+  width: 9.5em;
+}
+
 .unitRanker_rank::before,
 .unitTournament_rank::before {
   content: "\01F732";
@@ -1901,6 +1906,10 @@ input[type="text"]:disabled {
 
 .blockTournamentRound {
   margin-bottom: 30px;
+}
+
+.blockTournamentRound .blockMatch + .textCanceled {
+  display: none;
 }
 
 

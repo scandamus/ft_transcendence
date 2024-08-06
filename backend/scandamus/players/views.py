@@ -66,8 +66,9 @@ class RegisterView(APIView):
             validated_data = serializer.validated_data
             # パスワードをハッシュ化して保存
             hashed_password = make_password(validated_data['password'])
-            new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
-            new_user.save()
+            User.objects.create(username=validated_data['username'], password=hashed_password)
+            # new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
+            # new_user.save() create直後は不要
             return Response({'message': 'User created successfully.'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -149,7 +150,8 @@ class LoginView(APIView):
 
         if elapsed_time >= max_wait_time:
             player.online = False
-            sync_to_async(player.save)()
+            sync_to_async(player.save)(update_fields=['online'])
+            logger.info(f'//-- player save() on: wait_for_old_ws_disconnect')
 
 class LogoutView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -215,7 +217,7 @@ class UserLevelView(APIView):
 
         data = {
             'is_authenticated': user.is_authenticated,
-            'level': player.level,
+            'level': "{:.1f}".format(player.level),
             'win_count': player.win_count,
             'loss_count': player.play_count - player.win_count,
         }
@@ -268,6 +270,7 @@ class AvatarUploadView(APIView):
         if avatar_file:
             resized_avatar = self._resize_avatar(avatar_file)
             player.avatar.save(avatar_file.name, resized_avatar)
+            logger.info(f'//-- player save() on: AvatarUploadView')
             return Response({"newAvatar": player.avatar.url})
         else:
             return Response({"error": "No avatar file provided"}, status=status.HTTP_400_BAD_REQUEST)
@@ -307,7 +310,8 @@ class LangUpdateView(APIView):
         new_lang = request.data.get("lang")
         if new_lang and new_lang in dict(player._meta.get_field('lang').choices):
             player.lang = new_lang
-            player.save()
+            player.save(update_fields=['lang'])
+            logger.info(f'//-- Player save() on: LangUpdateView put')
             return Response({'message': 'Language updated successfully'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid language choice'}, status=status.HTTP_400_BAD_REQUEST)
