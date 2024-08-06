@@ -118,34 +118,6 @@ class Ball:
             sound_type = 'scored'
             return sound_type
 
-        for wall in walls:
-            collision_detected = self.collision_detection(wall, wall.position)
-            if collision_detected == 'collision_front':
-                sound_type = 'wall_collision'
-                tmp = random.uniform(0, 0.5)
-                # 座標調整
-                if wall.position == 'RIGHT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
-                elif wall.position == 'LEFT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
-                elif wall.position == 'UPPER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy + tmp
-                elif wall.position == 'LOWER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy
-                return sound_type
-            elif collision_detected == 'collision_side':
-                sound_type = 'wall_collision'
-                if wall.position == 'RIGHT' or wall.position == 'LEFT':
-                    self.dy = -self.dy
-                    self.x += self.dx
-                elif wall.position == 'UPPER' or wall.position == 'LOWER':
-                    self.dx = -self.dx
-                    self.y += self.dy
-                return sound_type
         # x座標の操作
         collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
         if collision_detected_right == 'collision_front':
@@ -197,7 +169,36 @@ class Ball:
         if not collision_detected_upper and not collision_detected_lower:
             self.x += self.dx
         if collision_detected_left or collision_detected_right or collision_detected_lower or collision_detected_upper:
-            sound_type = 'paddle_collision'
+            return 'paddle_collision'
+
+        for wall in walls:
+            collision_detected = self.collision_detection(wall, wall.position)
+            if collision_detected == 'collision_front':
+                sound_type = 'wall_collision'
+                tmp = random.uniform(0, 0.5)
+                # 座標調整
+                if wall.position == 'RIGHT':
+                    tmp = tmp if self.y > 0 else -tmp
+                    self.dx = -self.dx + tmp
+                elif wall.position == 'LEFT':
+                    tmp = tmp if self.y > 0 else -tmp
+                    self.dx = -self.dx + tmp
+                elif wall.position == 'UPPER':
+                    tmp = tmp if self.x > 0 else -tmp
+                    self.dy = -self.dy + tmp
+                elif wall.position == 'LOWER':
+                    tmp = tmp if self.x > 0 else -tmp
+                    self.dy = -self.dy
+                return sound_type
+            elif collision_detected == 'collision_side':
+                sound_type = 'wall_collision'
+                if wall.position == 'RIGHT' or wall.position == 'LEFT':
+                    self.dy = -self.dy
+                    self.x += self.dx
+                elif wall.position == 'UPPER' or wall.position == 'LOWER':
+                    self.dx = -self.dx
+                    self.y += self.dy
+                return sound_type
         return sound_type
 
     def collision_detection(self, obj, obj_side):
