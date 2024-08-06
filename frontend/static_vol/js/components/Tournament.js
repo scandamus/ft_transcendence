@@ -80,7 +80,7 @@ export default class Tournament extends PageBase {
                     <div class="blockTournamentList_upcoming listLineDivide"></div>
                 </section>
                 <section class="blockTournamentList">
-                    <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleInPlay}</h3>
+                    <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleOnGoing}</h3>
                     <div class="blockTournamentList_ongoing listLineDivide"></div>
                 </section>
                 <section class="blockTournamentList">

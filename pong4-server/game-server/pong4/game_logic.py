@@ -3,24 +3,9 @@ import math
 from .consts import (CANVAS_WIDTH, CANVAS_HEIGHT, REFLECTION_ANGLE, CORNER_BLOCK_SIZE,
                      CANVAS_WIDTH_MULTI, CANVAS_HEIGHT_MULTI, CORNER_BLOCK_THICKNESS, BALL_SIZE)
 
+import logging
 
-def get_ball_direction_and_random_speed(angle_degrees, direction_multiplier, orientation='vertical'):
-    angle_radians = angle_degrees * (math.pi / 180)
-    speed = random.randint(7, 7)
-    if orientation == 'vertical':
-        cos_value = math.cos(angle_radians)
-        sin_value = math.sin(angle_radians)
-        return {
-            'dx': speed * direction_multiplier * cos_value,
-            'dy': speed * -sin_value,
-        }
-    elif orientation == 'horizontal':
-        cos_value = math.cos(angle_radians)
-        sin_value = math.sin(angle_radians)
-        return {
-            'dx': speed * -sin_value,
-            'dy': speed * direction_multiplier * cos_value,
-        }
+logger = logging.getLogger(__name__)
 
 
 class Block:
@@ -89,7 +74,8 @@ class Paddle(Block):
 
 class Ball:
     def __init__(self, x, y, size):
-        tmp = get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
+        self.speed = 6
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -98,7 +84,8 @@ class Ball:
         self.flag = True  # 衝突判定を True:する False:しない
 
     def reset(self, x, y):
-        tmp = get_ball_direction_and_random_speed(random.randint(0, 45), random.choice((-1, 1)))
+        self.speed = 6
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x
         self.y = y
         self.dx = tmp['dx']
@@ -131,38 +118,6 @@ class Ball:
             sound_type = 'scored'
             return sound_type
 
-        for wall in walls:
-            collision_detected = self.collision_detection(wall, wall.position)
-            if collision_detected == 'collision_front':
-                sound_type = 'wall_collision'
-                tmp = random.uniform(0, 0.5)
-                # 座標調整
-                if wall.position == 'RIGHT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
-                    self.x = wall.x - self.size
-                elif wall.position == 'LEFT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
-                    self.x = wall.thickness
-                elif wall.position == 'UPPER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy + tmp
-                    self.y = wall.y + wall.thickness
-                elif wall.position == 'LOWER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy
-                    self.y = wall.y - wall.thickness
-                return sound_type
-            elif collision_detected == 'collision_side':
-                sound_type = 'wall_collision'
-                if wall.position == 'RIGHT' or wall.position == 'LEFT':
-                    self.dy = -self.dy
-                    self.x += self.dx
-                elif wall.position == 'UPPER' or wall.position == 'LOWER':
-                    self.dx = -self.dx
-                    self.y += self.dy
-                return sound_type
         # x座標の操作
         collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
         if collision_detected_right == 'collision_front':
@@ -214,47 +169,88 @@ class Ball:
         if not collision_detected_upper and not collision_detected_lower:
             self.x += self.dx
         if collision_detected_left or collision_detected_right or collision_detected_lower or collision_detected_upper:
-            sound_type = 'paddle_collision'
+            return 'paddle_collision'
+
+        for wall in walls:
+            collision_detected = self.collision_detection(wall, wall.position)
+            if collision_detected == 'collision_front':
+                sound_type = 'wall_collision'
+                tmp = random.uniform(0, 0.5)
+                # 座標調整
+                if wall.position == 'RIGHT':
+                    tmp = tmp if self.y > 0 else -tmp
+                    self.dx = -self.dx + tmp
+                elif wall.position == 'LEFT':
+                    tmp = tmp if self.y > 0 else -tmp
+                    self.dx = -self.dx + tmp
+                elif wall.position == 'UPPER':
+                    tmp = tmp if self.x > 0 else -tmp
+                    self.dy = -self.dy + tmp
+                elif wall.position == 'LOWER':
+                    tmp = tmp if self.x > 0 else -tmp
+                    self.dy = -self.dy
+                return sound_type
+            elif collision_detected == 'collision_side':
+                sound_type = 'wall_collision'
+                if wall.position == 'RIGHT' or wall.position == 'LEFT':
+                    self.dy = -self.dy
+                    self.x += self.dx
+                elif wall.position == 'UPPER' or wall.position == 'LOWER':
+                    self.dx = -self.dx
+                    self.y += self.dy
+                return sound_type
         return sound_type
 
     def collision_detection(self, obj, obj_side):
-        next_x = self.x + self.dx
-        next_y = self.y + self.dy
-        collision_type = False
-        if obj_side == 'RIGHT' and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
-            if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
-                if self.x + self.size <= obj.x:
-                    collision_type = 'collision_front'
-                elif obj.x < self.x + self.size:
-                    collision_type = 'collision_side'
-                return collision_type
-        elif obj_side == 'LEFT' and obj.x <= next_x + self.size and next_x <= obj.x + obj.thickness:
-            if obj.y <= next_y + self.size and next_y <= obj.y + obj.length:
-                if obj.x + obj.thickness <= self.x:
-                    collision_type = 'collision_front'
-                elif self.x < obj.x:
-                    collision_type = 'collision_side'
-                return collision_type
-        elif obj_side == 'UPPER' and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
-            if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
-                if obj.y + obj.thickness <= self.y:
-                    collision_type = 'collision_front'
-                elif self.y < obj.y + obj.thickness:
-                    collision_type = 'collision_side'
-                return collision_type
-        elif obj_side == 'LOWER' and obj.y <= next_y + self.size and next_y <= obj.y + obj.thickness:
-            if obj.x <= next_x + self.size and next_x <= obj.x + obj.length:
-                if self.y + self.size <= obj.y:
-                    collision_type = 'collision_front'
-                elif obj.y < self.y + self.size:
-                    collision_type = 'collision_side'
-                return collision_type
-        return collision_type
+        ball_start = self.get_ball_corner_for_front(obj, obj_side)
+        ball_end = Point(ball_start.x + self.dx, ball_start.y + self.dy)
+        paddle_start = paddle_end = None
+
+        # paddleの正面との衝突判定
+        if obj_side == 'RIGHT':
+            paddle_start = Point(obj.x, obj.y)
+            paddle_end = Point(obj.x, obj.y + obj.length)
+        elif obj_side == 'LEFT':
+            paddle_start = Point(obj.x + obj.thickness, obj.y)
+            paddle_end = Point(obj.x + obj.thickness, obj.y + obj.length)
+        elif obj_side == 'UPPER':
+            paddle_start = Point(obj.x, obj.y + obj.thickness)
+            paddle_end = Point(obj.x + obj.length, obj.y + obj.thickness)
+        elif obj_side == 'LOWER':
+            paddle_start = Point(obj.x, obj.y)
+            paddle_end = Point(obj.x + obj.length, obj.y)
+        if intersects(ball_start, ball_end, paddle_start, paddle_end):
+            logger.error(f'{obj_side}: collision_front detected')
+            return 'collision_front'
+
+        ball_start2 = self.get_ball_corner_for_side(obj, obj_side)
+        ball_end2 = Point(ball_start2.x + self.dx, ball_start2.y + self.dy)
+        paddle_end_side1 = paddle_end_side2 = None
+        # paddleの側面との衝突判定
+        if obj_side == 'RIGHT':
+            paddle_end_side1 = Point(obj.x + obj.thickness, obj.y)
+            paddle_end_side2 = Point(obj.x + obj.thickness, obj.y + obj.length)
+        elif obj_side == 'LEFT':
+            paddle_end_side1 = Point(obj.x, obj.y)
+            paddle_end_side2 = Point(obj.x, obj.y + obj.length)
+        elif obj_side == 'UPPER':
+            paddle_end_side1 = Point(obj.x, obj.y)
+            paddle_end_side2 = Point(obj.x + obj.length, obj.y)
+        elif obj_side == 'LOWER':
+            paddle_end_side1 = Point(obj.x, obj.y + obj.thickness)
+            paddle_end_side2 = Point(obj.x + obj.length, obj.y + obj.thickness)
+        # paddle_endをもう片側の側面のスタート座標として使う
+        paddle_start2 = paddle_end
+        if (intersects(ball_start2, ball_end2, paddle_start, paddle_end_side1)
+                or intersects(ball_start2, ball_end2, paddle_start2, paddle_end_side2)):
+            logger.error(f'{obj_side}: collision_side detected')
+            return 'collision_side'
+        return False
 
     def reflect_ball(self, obj, obj_side):
         normalize = REFLECTION_ANGLE / (obj.length / 2)
         if obj_side == 'RIGHT' or obj_side == 'LEFT':
-            distance_from_paddle_center = (obj.y + (obj.length / 2)) - self.y
+            distance_from_paddle_center = (obj.y + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
             # 垂直方向のときのみ
             if distance_from_paddle_center == 0:
                 distance_from_paddle_center = random.choice((-1, 1))
@@ -264,14 +260,132 @@ class Ball:
             angle_degrees = distance_from_paddle_center * normalize
             # 左右で方向を逆に
             ball_direction = 1 if obj_side == 'LEFT' else -1
-            new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction)
+            new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
-            distance_from_paddle_center = (obj.x + (obj.length / 2)) - self.x
+            distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.x + (BALL_SIZE / 2))
             # 垂直方向のときのみ
             if distance_from_paddle_center == 0:
                 distance_from_paddle_center = random.choice((-1, 1))
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
-            new_direction = get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
+            new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
         self.dx = new_direction['dx']
         self.dy = new_direction['dy']
+        self.speed += 1
+        if self.speed > 60:
+            self.speed = 60
+
+    def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
+        angle_radians = angle_degrees * (math.pi / 180)
+        if orientation == 'vertical':
+            cos_value = math.cos(angle_radians)
+            sin_value = math.sin(angle_radians)
+            return {
+                'dx': self.speed * direction_multiplier * cos_value,
+                'dy': self.speed * -sin_value,
+            }
+        elif orientation == 'horizontal':
+            cos_value = math.cos(angle_radians)
+            sin_value = math.sin(angle_radians)
+            return {
+                'dx': self.speed * -sin_value,
+                'dy': self.speed * direction_multiplier * cos_value,
+            }
+
+    # 衝突判定の基準となるボールの角を決定
+    def get_ball_corner_for_front(self, obj, obj_side):
+        if obj_side == 'RIGHT':
+            # 半分より上か下か
+            if self.y + self.size / 2 < obj.y + obj.length / 2:
+                return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            else:
+                return Point(self.x + self.size, self.y)  # ボールの右上
+        elif obj_side == 'LEFT':
+            if self.y + self.size / 2 < obj.y + obj.length / 2:
+                return Point(self.x, self.y + self.size)  # ボールの左下
+            else:
+                return Point(self.x, self.y)  # ボールの左上
+        elif obj_side == 'UPPER':
+            if self.x + self.size / 2 < obj.x + obj.length / 2:
+                return Point(self.x + self.size, self.y)  # ボールの右上
+            else:
+                return Point(self.x, self.y)  # ボールの左上
+        elif obj_side == 'LOWER':
+            if self.x + self.size / 2 < obj.x + obj.length / 2:
+                return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+            else:
+                return Point(self.x, self.y + self.size)  # ボールの左下
+
+    # 衝突判定の基準となるボールの角を決定
+    def get_ball_corner_for_side(self, obj, obj_side):
+        if obj_side == 'RIGHT':
+            if self.y + self.size / 2 < obj.y + obj.length / 2:
+                if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                else:
+                    return Point(self.x, self.y + self.size)  # ボールの左下
+            else:
+                if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                    return Point(self.x + self.size, self.y)  # ボールの右上
+                else:
+                    return Point(self.x, self.y)  # ボールの左上
+        elif obj_side == 'LEFT':
+            if self.y + self.size / 2 < obj.y + obj.length / 2:
+                if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                else:
+                    return Point(self.x, self.y + self.size)  # ボールの左下
+            else:  # side
+                if self.x + self.size / 2 < obj.x + obj.thickness / 2:
+                    return Point(self.x + self.size, self.y)  # ボールの右上
+                else:
+                    return Point(self.x, self.y)  # ボールの左上
+        elif obj_side == 'UPPER':
+            if self.x + self.size / 2 < obj.x + obj.length / 2:
+                if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                else:
+                    return Point(self.x + self.size, self.y)  # ボールの右上
+            else:  # side
+                if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                    return Point(self.x, self.y + self.size)  # ボールの左下
+                else:  # side
+                    return Point(self.x, self.y)  # ボールの左上
+        elif obj_side == 'LOWER':
+            if self.x + self.size / 2 < obj.x + obj.length / 2:
+                if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                    return Point(self.x + self.size, self.y + self.size)  # ボールの右下
+                else:
+                    return Point(self.x + self.size, self.y)  # ボールの右上
+            else:  # side
+                if self.y + self.size / 2 < obj.y + obj.thickness / 2:
+                    return Point(self.x, self.y + self.size)  # ボールの左下
+                else:
+                    return Point(self.x, self.y)  # ボールの左上
+
+
+# 座標を扱うクラス
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+
+# 線分が交差するかを確認する関数
+# abとcdが交差するか
+def intersects(a: Point, b: Point, c: Point, d: Point):
+    if a is None or b is None or c is None or d is None:
+        return False
+    # 線分ABと点Cを用いた外積
+    s = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+    # 線分ABと点Dを用いた外積
+    t = (b.x - a.x) * (d.y - a.y) - (b.y - a.y) * (d.x - a.x)
+    # 線分CDと点Aを用いた外積
+    u = (d.x - c.x) * (a.y - c.y) - (d.y - c.y) * (a.x - c.x)
+    # 線分CDと点Bを用いた外積
+    v = (d.x - c.x) * (b.y - c.y) - (d.y - c.y) * (b.x - c.x)
+    # すべての外積の符号が一致しない場合、交差していると判定
+    if (s * t <= 0) and (u * v <= 0):
+        return True
+    # それ以外は交差していない
+    return False

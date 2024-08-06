@@ -141,7 +141,7 @@ export default class TournamentDetail extends PageBase {
                 });
             }
         } catch (error) {
-            console.error('Error fetching Tournament Detail:', error);
+            console.error('Error generateTournamentResult:', error);
         }
     }
 

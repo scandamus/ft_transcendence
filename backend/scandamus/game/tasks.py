@@ -28,7 +28,7 @@ def check_tournament_start_times():
     for t in all_tournaments:
         if t.status in ['upcoming', 'preparing', 'ongoing']:
             logger.info(f'Tournament: {t.name}, Start time: {t.start}, Status: {t.status}')
-    
+
     ongoing_or_preparing_tournament = Tournament.objects.filter(status__in=['preparing', 'ongoing']).first()
     if ongoing_or_preparing_tournament:
         logger.info(f'Tournament {ongoing_or_preparing_tournament} is still going on (status: {ongoing_or_preparing_tournament.status})')
@@ -42,6 +42,7 @@ def check_tournament_start_times():
     logger.info(f'Tournament {tournament.name} is preparing')
     tournament.status = 'preparing'
     tournament.save(update_fields=['status'])
+    logger.info(f'//-- tournament save() on: check_tournament_start_times 1')
 
     tournament_name = tournament.name
         
@@ -54,6 +55,7 @@ def check_tournament_start_times():
             logger.info(f'Entried players in this entry list {number_of_players} <= 4, so cancel tournament {tournament_name}')
             tournament.status = 'canceled'
             tournament.save(update_fields=['status'])
+            logger.info(f'//-- tournament save() on: check_tournament_start_times 2')
             notify_players.delay(tournament_name, entried_players_id_list, 'canceled', False)
             return
         
@@ -97,7 +99,8 @@ def update_player_status(player_id, status):
     try:
         player = Player.objects.get(id=player_id)
         player.status = status
-        player.save()
+        player.save(update_fields=['status'])
+        logger.info(f'//-- Player save() on: update_player_status')
         player_name = player.user.username
         logger.info(f'{player_name} status updated to {status}')
     except Player.DoesNotExist:
@@ -113,7 +116,8 @@ def create_initial_round(tournament_id, entried_players_id_list):
         return
     
     tournament.status = 'ongoing'
-    tournament.save()
+    tournament.save(update_fields=['status'])
+    logger.info(f'//-- tournament save() on: create_initial_round 1')
 
     with transaction.atomic():
         online_players = Player.objects.filter(id__in=entried_players_id_list, online=True)
@@ -123,7 +127,8 @@ def create_initial_round(tournament_id, entried_players_id_list):
     if number_of_players < 4: # 4人揃わない場合は中止
         logger.info(f'Online player in this entry list {number_of_players} <= 4, so cancel tournament {tournament.name}')
         tournament.status = 'canceled'
-        tournament.save()
+        tournament.save(update_fields=['status'])
+        logger.info(f'//-- tournament save() on: create_initial_round 2')
         notify_players(tournament.name, entried_players_id_list, 'canceled', False)
         return
     
@@ -133,6 +138,7 @@ def create_initial_round(tournament_id, entried_players_id_list):
     for player in offline_players:
         player.status = 'waiting'
         player.save(update_fields=['status'])
+        logger.info(f'//-- player save() on: create_initial_round')
 
     player_list = list(online_players)
     random.shuffle(player_list)
