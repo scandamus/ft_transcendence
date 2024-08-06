@@ -8,6 +8,7 @@ import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { addErrorMessage } from '../modules/form.js';
 import { setLang, saveLang } from '../modules/switchLanguage.js';
+import { addNotice } from "../modules/notice.js";
 //import { openWebSocket } from '../modules/websocket.js';
 
 export default class LogIn extends PageBase {
@@ -236,6 +237,8 @@ export default class LogIn extends PageBase {
                 }
             } else {
                 console.error('Failed to exchange token');
+                const errorData = await response.json();
+                addNotice(`${errorData.error}`, true)
             }
         }
     }

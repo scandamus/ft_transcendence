@@ -53,7 +53,6 @@ def get_authorize42_url(request):
 
 
 def list_social_apps():
-    logger.info(f'/////list_social_apps')
     apps = SocialApp.objects.all()
     for app in apps:
         logger.info(f'App Name: {app.name}, Provider: {app.provider}')
@@ -62,11 +61,13 @@ def list_social_apps():
 def generate_unique_username(base_username):
     original_username = base_username
     suffix = '42'
-    while User.objects.filter(username=base_username).exists():
-        base_username = f"{original_username}{suffix}"
-        suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=1))
-    return base_username
-
+    characters = string.ascii_lowercase + string.digits #a-z0-9
+    base_username = f"{original_username}{suffix}"
+    for char in characters:
+        if not User.objects.filter(username=base_username).exists():
+            return base_username
+        base_username = f"{original_username}{suffix}{char}"
+    raise Exception("All possible usernames are taken.")
 
 @csrf_exempt
 def exchange_token42(request):
@@ -98,31 +99,36 @@ def exchange_token42(request):
         login_name = user_info.get('login')
         avatar_url = user_info.get('image').get('link')
 
-        # 42login存在確認
-        social_account = SocialAccount.objects.filter(uid=login_name, provider='providers42').first()
-        # 存在していればログインするだけ。
-        if social_account:
-            user = social_account.user
-        # 存在していない=>playerID重複チェックしてアカウント作成
-        else:
-            player_name = generate_unique_username(login_name)
-            user = User.objects.create(username=player_name)
+        try:
+            # 42login存在確認
+            social_account = SocialAccount.objects.filter(uid=login_name, provider='providers42').first()
+            # 存在していればログインするだけ。
+            if social_account:
+                user = social_account.user
+            # 存在していない=>playerID重複チェックしてアカウント作成
+            else:
+                player_name = generate_unique_username(login_name)
+                user = User.objects.create(username=player_name)
 
-            social_account = SocialAccount.objects.create(user=user, provider='providers42')
-            social_account.uid = login_name
-            social_account.save()
+                social_account = SocialAccount.objects.create(user=user, provider='providers42')
+                social_account.uid = login_name
+                social_account.save()
 
-            player = Player.objects.get(user=user)
-            if player:
-                response = requests.get(avatar_url)
-                response.raise_for_status()
+                player = Player.objects.get(user=user)
+                if player:
+                    response = requests.get(avatar_url)
+                    response.raise_for_status()
 
-                image_data = BytesIO(response.content)
-                file_name = f'{player_name}.jpg'
-                image_file = InMemoryUploadedFile(image_data, 'ImageField', file_name, 'image/jpeg', len(response.content), None)
-                if image_file:
-                    resized_avatar = resize_avatar(image_file)
-                    player.avatar.save(file_name, resized_avatar)
+                    image_data = BytesIO(response.content)
+                    file_name = f'{player_name}.jpg'
+                    image_file = InMemoryUploadedFile(image_data, 'ImageField', file_name, 'image/jpeg', len(response.content), None)
+                    if image_file:
+                        resized_avatar = resize_avatar(image_file)
+                        player.avatar.save(file_name, resized_avatar)
+
+        except Exception as e:
+            logger.error(f"Exception occurred: {e}")
+            return JsonResponse({'error': str(e)}, status=400)
 
         refresh = RefreshToken.for_user(user)
         if refresh:
