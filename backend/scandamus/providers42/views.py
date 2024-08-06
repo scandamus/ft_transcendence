@@ -59,6 +59,14 @@ def list_social_apps():
         logger.info(f'App Name: {app.name}, Provider: {app.provider}')
 
 
+def generate_unique_username(base_username):
+    original_username = base_username
+    suffix = '42'
+    while User.objects.filter(username=base_username).exists():
+        base_username = f"{original_username}{suffix}"
+        suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=1))
+    return base_username
+
 
 @csrf_exempt
 def exchange_token42(request):
@@ -69,7 +77,6 @@ def exchange_token42(request):
 
         if not code or not state:
             return JsonResponse({'error': 'Missing code or state'}, status=400)
-        adapter = FortyTwoOAuth2Adapter(request)
         provider_name = 'providers42'
         # list_social_apps()
         social_apps = SocialApp.objects.filter(provider=provider_name)
@@ -79,6 +86,7 @@ def exchange_token42(request):
             return JsonResponse({'error': 'No SocialApp found for provider'}, status=404)
 
         app = social_apps.first()
+        adapter = FortyTwoOAuth2Adapter(request)
         token_data = adapter.get_access_token(request, code)
         access_token = token_data.get('access_token')
 
@@ -90,27 +98,31 @@ def exchange_token42(request):
         login_name = user_info.get('login')
         avatar_url = user_info.get('image').get('link')
 
-        # todo: username重複時
-        user, created = User.objects.get_or_create(username=login_name)
-        if created:
+        # 42login存在確認
+        social_account = SocialAccount.objects.filter(uid=login_name, provider='providers42').first()
+        # 存在していればログインするだけ。
+        if social_account:
+            user = social_account.user
+        # 存在していない=>playerID重複チェックしてアカウント作成
+        else:
+            player_name = generate_unique_username(login_name)
+            user = User.objects.create(username=player_name)
+
+            social_account = SocialAccount.objects.create(user=user, provider='providers42')
+            social_account.uid = login_name
+            social_account.save()
+
             player = Player.objects.get(user=user)
             if player:
                 response = requests.get(avatar_url)
                 response.raise_for_status()
 
                 image_data = BytesIO(response.content)
-                file_name = f'{login_name}.jpg'
-                # todo: _resize_avatar
+                file_name = f'{player_name}.jpg'
                 image_file = InMemoryUploadedFile(image_data, 'ImageField', file_name, 'image/jpeg', len(response.content), None)
                 if image_file:
                     resized_avatar = resize_avatar(image_file)
                     player.avatar.save(file_name, resized_avatar)
-                # player.avatar.save(file_name, image_file, save=True)
-
-        social_account, _ = SocialAccount.objects.get_or_create(user=user, provider='providers42')
-        # todo: 取得したuser_info不要か確認
-        # social_account.extra_data = user_info
-        # social_account.save()
 
         refresh = RefreshToken.for_user(user)
         if refresh:
@@ -121,5 +133,4 @@ def exchange_token42(request):
                 'refresh_token': refresh_token,
             })
         return JsonResponse({'error': 'Token generation failed'}, status=400)
-
     return JsonResponse({'error': 'Invalid request method'}, status=405)
