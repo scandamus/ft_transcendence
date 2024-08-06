@@ -2,11 +2,11 @@ import logging
 from rest_framework import serializers
 from django.core.validators import RegexValidator
 from .models import Tournament, Match, Entry
-from players.models import Player
 from django.conf import settings
-from datetime import datetime, timedelta, timezone
 from channels.db import database_sync_to_async
+from datetime import datetime, timedelta, timezone
 from .tournament_match import report_match_result
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -157,7 +157,8 @@ class MatchSerializer(serializers.ModelSerializer):
             loser.save(update_fields=['status'])
             logger.info(f'//-- Player save() on: update_player_status_after_match 1')
             match.winner.status = 'tournament_room'
-            match.winner.save(update_fields=['status'])
+            self.calc_players_level(match.winner)
+            match.winner.save(update_fields=['status', 'level'])
             logger.info(f'//-- Player save() on: update_player_status_after_match 2')
         elif match.round in [-1, -3, -6]: # 決勝or3位決定戦
             self.reset_all_players_status(match)
@@ -167,6 +168,8 @@ class MatchSerializer(serializers.ModelSerializer):
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
             loser.save(update_fields=['status'])
+            self.calc_players_level(match.winner)
+            match.winner.save(update_fields=['level'])
             logger.info(f'//-- Player save() on: update_player_status_after_match 3')
 
     def set_all_players_status(self, match, status):
@@ -175,7 +178,13 @@ class MatchSerializer(serializers.ModelSerializer):
             if player:
                 player.status = status
                 player.current_match = None
-                player.save(update_fields=['status', 'current_match'])
+                if match.winner == player:
+                    self.calc_players_level(player)
+                    if match.tournament is None:
+                        player.win_count += 1
+                if match.tournament is None:
+                    player.play_count += 1
+                player.save(update_fields=['status', 'current_match', 'play_count', 'win_count', 'level'])
                 logger.info(f'//-- Player save() on: set_players_to_waiting')
 
     def reset_all_players_status(self, match):
@@ -186,7 +195,13 @@ class MatchSerializer(serializers.ModelSerializer):
         number_of_finished_matches = len(matches)
         logger.info(f'number of matches_finished for round:{current_round} = {number_of_finished_matches}')
         return all(match.status in ['after', 'canceled'] for match in matches)
-    
+
+    def calc_players_level(self, winner):
+        # Tournament含め全てのmatchで勝つとlevel += 0.2
+        level_decimal_tenfold = Decimal(winner.level) * Decimal(10)
+        updated_level_decimal_tenfold = level_decimal_tenfold + Decimal(2)
+        winner.level = (updated_level_decimal_tenfold / Decimal(10)).quantize(Decimal('0.0'))
+
 class EntrySerializer(serializers.ModelSerializer):
     nickname = serializers.CharField(
         validators=[CustomNicknameValidator(), nicknameCharacterTypesValidator],
