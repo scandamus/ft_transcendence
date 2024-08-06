@@ -71,7 +71,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
                 self.players_ids[self.match_id].remove(self.players_id)
                 if not self.players_ids[self.match_id]:
-                    logger.info(f'del: {self.players_ids}[{self.match_id}]')
+                    logger.error(f'no players left in match_id: {self.match_id}')
+                    await self.game_over('', True)
                     del self.players_ids[self.match_id]
                 else:
                     if self.scheduled_task is not None:
@@ -142,7 +143,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             if self.match_id not in self.players_ids:
                 self.players_ids[self.match_id] = set()
             self.players_ids[self.match_id].add(self.players_id)
-            
+
             if is_reconnect == True:
                 number_of_player = len(self.players_ids[self.match_id])
                 if number_of_player == 1: # 再接続したplayerを含んで1人のみ（ゲーム開始前なのに再接続された１人目）
@@ -158,7 +159,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     logger.error('Error too many players in this match')
                     self.close(code=4104)
                     return
-            
+
             if len(self.players_ids[self.match_id]) == 4:  # 4人に決め打ち
                 initial_master = sorted(self.players_ids[self.match_id])[0]
                 logger.info(f'initial_master: {initial_master}')
@@ -278,11 +279,13 @@ class PongConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f'Error in schedule_ball_update: {e} by {self.username}')
 
-    async def game_over(self, message):
-        await self.channel_layer.group_send(self.room_group_name, {
-            'type': 'send_game_over_message',
-            'message': message,
-        })
+    async def game_over(self, message, is_match_discarded=False):
+        if not is_match_discarded:
+            await self.channel_layer.group_send(self.room_group_name, {
+                'type': 'send_game_over_message',
+                'message': message,
+            })
+
         await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, self.upper_paddle.score, self.lower_paddle.score, 'after')
         if self.scheduled_task is not None:
             self.scheduled_task.cancel()
@@ -333,7 +336,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             'type': 'receive_transfer_data',
             'game_state': game_state,
         })
-        
+
     async def receive_transfer_data(self, event):
         data = event['game_state']
         deserialize_tranfer_data(data, self)
@@ -564,7 +567,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             setattr(self, task_name, None)
         else:
             pass
-        
+
     @database_sync_to_async
     def authenticate_jwt(self, jwt):
         try:
