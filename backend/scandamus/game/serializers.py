@@ -130,7 +130,8 @@ class MatchSerializer(serializers.ModelSerializer):
 
         # if new_status == 'after' or new_status == 'canceled':
         instance.set_winner()
-        instance.save()
+        # instance.save() update(), 及びset_winner()内で保存済み
+        logger.info(f'//-- Match save() on: MatchSerializer update')
 
         if instance.tournament and instance.round:
             if instance.tournament.status == 'ongoing':
@@ -153,9 +154,11 @@ class MatchSerializer(serializers.ModelSerializer):
         elif match.round > 0:
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
-            loser.save()
+            loser.save(update_fields=['status'])
+            logger.info(f'//-- Player save() on: update_player_status_after_match 1')
             match.winner.status = 'tournament_room'
-            match.winner.save()
+            match.winner.save(update_fields=['status'])
+            logger.info(f'//-- Player save() on: update_player_status_after_match 2')
         elif match.round in [-1, -3, -6]: # 決勝or3位決定戦
             self.reset_all_players_status(match)
         elif match.round == -4: # 3人準決勝の1戦目（両者控室）
@@ -163,7 +166,8 @@ class MatchSerializer(serializers.ModelSerializer):
         elif match.round == -5: # 3人順決勝の2戦目
             loser = match.player2 if match.winner == match.player1 else match.player1
             loser.status = 'waiting'
-            loser.save()
+            loser.save(update_fields=['status'])
+            logger.info(f'//-- Player save() on: update_player_status_after_match 3')
 
     def set_all_players_status(self, match, status):
         players = [match.player1, match.player2, match.player3, match.player4]
@@ -171,7 +175,8 @@ class MatchSerializer(serializers.ModelSerializer):
             if player:
                 player.status = status
                 player.current_match = None
-                player.save()
+                player.save(update_fields=['status', 'current_match'])
+                logger.info(f'//-- Player save() on: set_players_to_waiting')
 
     def reset_all_players_status(self, match):
         self.set_all_players_status(match, 'waiting')
