@@ -64,9 +64,6 @@ class Player(models.Model):
             ('en', '英語'),
             ('ja', '日本語'),
             ('fr', 'フランス語'),
-            ('la', 'ラテン語'),
-            ('he', 'ヘブライ語'),
-            ('ar', 'アラビア語'),
         ],
         default='en',
         verbose_name="言語設定"
