@@ -40,7 +40,7 @@ FRIENDS_MAX = get_env_var('FRIENDS_MAX')
 
 # SERVER HOST
 SERVER_HOST = get_env_var('DOMAIN_NAME')
-ALLOWED_HOSTS = ['backend', 'frontend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['backend', 'frontend', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
 INSTALLED_APPS = [
@@ -58,14 +58,12 @@ INSTALLED_APPS = [
     'channels',
     'players.apps.PlayersConfig',
     'game.apps.GameConfig',
-#    'game',
     'django_celery_beat',
     'django_celery_results',
     # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。
     # 'players',
     # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
 ]
-
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -81,15 +79,13 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'scandamus.urls'
 
 CORS_ALLOW_CREDENTIALS = True
-
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost',
-    'https://localhost',
-    'http://localhost:80',
-    'https://localhost:80',
-    'https://localhost:443'
+     'https://localhost',
+     f'https://{SERVER_HOST}',
 ]
 
+# adminアクセスはlocalhostのみ
 CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://127.0.0.1']
 
 # クライアントからのリクエストヘッダーに含める項目をカスタマイズ
@@ -97,14 +93,14 @@ CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://127.0.0.1']
 #     'Refresh-Token',  # カスタムヘッダーを追加
 # ]
 
-CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS',
-]
+# CORS_ALLOW_METHODS = [
+#     'GET',
+#     'POST',
+#     'PUT',
+#     'PATCH',
+#     'DELETE',
+#     'OPTIONS',
+# ]
 
 TEMPLATES = [
     {
@@ -122,7 +118,6 @@ TEMPLATES = [
     },
 ]
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'scandamus.authentication.InternalNetworkAuthentication',
@@ -139,8 +134,6 @@ AUTHENTICATION_BACKENDS = (
     # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-#JWT_SECRET_KEY = get_env_var('SECRET_KEY')
-
 SIMPLE_JWT = {
     'SIGNING_KEY': get_env_var('BACKEND_JWT_SIGNING_KEY'),
     'ALGORITHM': 'HS256',
@@ -150,15 +143,6 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
     'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化
     'UPDATE_LAST_LOGIN': True,
-}
-
-GAME_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=3),
-    'SIGNING_KEY': get_env_var('GAME_JWT_SIGNING_KEY'),
-    'ALGORITHM': 'HS256',
-#    'AUDIENCE': '',
-#    'ISSUER': 'pong-server'
 }
 
 ## ブラウザブルAPIレンダリングをOFFにする場合、下記を有効にする
