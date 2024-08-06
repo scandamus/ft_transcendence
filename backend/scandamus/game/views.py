@@ -97,6 +97,7 @@ class MatchViewSet(ModelViewSet):
         logger.info(f'//-- serializer.save() on: MatchViewSet perform_update')
 
 
+
 class EntryViewSet(ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
