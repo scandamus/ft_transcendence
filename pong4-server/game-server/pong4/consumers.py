@@ -48,6 +48,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.down_pressed = False
         self.right_pressed = False
         self.left_pressed = False
+        self.result_sent = False
 
     async def connect(self):
         try:
@@ -72,7 +73,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 self.players_ids[self.match_id].remove(self.players_id)
                 if not self.players_ids[self.match_id]:
                     logger.error(f'no players left in match_id: {self.match_id}')
-                    await self.game_over('', True)
+                    if  not self.result_sent:
+                        await self.game_over('', True)
                     del self.players_ids[self.match_id]
                 else:
                     if self.scheduled_task is not None:
@@ -292,6 +294,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.scheduled_task = None
 
     async def send_game_over_message(self, event):
+        self.result_sent = True
         message = event['message']
         timestamp = dt.utcnow().isoformat()
         if self.scheduled_task is None:
