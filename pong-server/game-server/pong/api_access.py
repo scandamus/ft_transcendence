@@ -37,3 +37,7 @@ def patch_match_to_api(match_id, send_data):
         logger.error('Error Timeout: %s', e)
     except requests.exceptions.RequestException as e:
         logger.error('Error: %s', e)
+
+def update_match_status_to_ongoing(match_id):
+    send_data = {'status': 'ongoing'}
+    patch_match_to_api(match_id, send_data)

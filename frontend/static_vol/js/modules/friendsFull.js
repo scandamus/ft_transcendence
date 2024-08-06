@@ -62,12 +62,14 @@ const displayFriendsAvailable = (pageInstance) => {
 
     //友達追加できないメッセージ非表示
     const blockFriendsFull = document.querySelector('.blockFriendsFull');
-    blockFriendsFull.classList.remove('is-show');
-
-    const contentFriendsFull = blockFriendsFull.querySelector('.blockFriendsFull_message');
-    if(contentFriendsFull) {
-        contentFriendsFull.remove();
+    if (blockFriendsFull) {
+        blockFriendsFull.classList.remove('is-show');
+        const contentFriendsFull = blockFriendsFull.querySelector('.blockFriendsFull_message');
+        if(contentFriendsFull) {
+            contentFriendsFull.remove();
+        }
     }
+
     //updateFriendRequest
     updateFriendRequestList(pageInstance).then(() => {});
 }

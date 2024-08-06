@@ -9,31 +9,35 @@ import PageBase from "../components/PageBase.js";
 import { handleExitGame } from "./modal.js";
 import GamePlay from "../components/GamePlay.js";
 import GamePlayQuad from "../components/GamePlayQuad.js";
+import { addNotice } from "./notice.js";
+import { labels } from "./labels.js";
 //import { closeWebSocket } from './websocket.js';
 
 const fetchLogout = async (isRefresh) => {
-    const accessToken = getToken('accessToken');
-    if (accessToken === null) {
-        throw new Error('accessToken is invalid.');
-    }
-    const response = await fetch('/api/players/logout/', {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
-    });
-    if (response.status === 401) {
-        if (!isRefresh) {
-            //初回のaccessToken expiredならrefreshして再度ログイン
-            if (!await refreshAccessToken()) {
-                throw new Error('fail refresh token');
+    try {
+        const accessToken = getToken('accessToken');
+        const response = await fetch('/api/players/logout/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
             }
-            await fetchLogout(true);
-        } else {
-            throw new Error('refreshed accessToken is invalid.');
+        });
+        if (response.status === 401) {
+            if (!isRefresh) {
+                //初回のaccessToken expiredならrefreshして再度ログイン
+                if (!await refreshAccessToken()) {
+                    throw new Error(`fail refresh token( ${response.status} )`);
+                }
+                await fetchLogout(true);
+            } else {
+                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
+            }
+        } else if (!response.ok) {
+            throw new Error(`fetchLogout error. status: ${response.status}`);
         }
-    } else if (!response.ok) {
-        throw new Error(`fetchLogout error. status: ${response.status}`);
+    } catch (error) {
+        console.error('Error on fetchLogout: ', error);
+        forcedLogout();
     }
 }
 
@@ -67,4 +71,12 @@ const processLogout = () => {
     router(false).then(() => {});
 }
 
-export { handleLogout, processLogout };
+const forcedLogout = () => {
+    const siteInfo = new SiteInfo();
+    if (!siteInfo.isLogout) {
+        addNotice(labels.common.logoutTokenExpired, true);
+        processLogout();
+    }
+}
+
+export { handleLogout, processLogout, forcedLogout };
