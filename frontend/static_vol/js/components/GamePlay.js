@@ -207,8 +207,6 @@ export default class GamePlay extends PageBase {
                         action: 'end_game',
                         match_id: gameMatchId,
                     }));
-                    webSocketManager.closeWebSocket(this.containerId);
-                    this.containerId = '';
                     const tournamentId = sessionStorage.getItem('tournament_id');
                     if (tournamentId) {
                         sessionStorage.setItem('tournament_status', 'waiting_round');
@@ -218,6 +216,8 @@ export default class GamePlay extends PageBase {
                     }
                     setTimeout(() => {
                         this.playSound(data.sound_type);
+                        webSocketManager.closeWebSocket(this.containerId);
+                        this.containerId = '';
                         router(true);
                     }, 1500);
                 } else {
