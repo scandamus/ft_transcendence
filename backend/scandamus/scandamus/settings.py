@@ -81,16 +81,12 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'scandamus.urls'
 
 CORS_ALLOW_CREDENTIALS = True
-
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost',
     'https://localhost',
-    'http://localhost:80',
-    'https://localhost:80',
     'https://localhost:443'
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://localhost']
 
 # クライアントからのリクエストヘッダーに含める項目をカスタマイズ
 # CORS_ALLOW_HEADERS = list(default_headers) + [
