@@ -36,6 +36,12 @@ CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_var('DEBUG')
 CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
+UID_42 = get_env_var('UID_42')
+SECRET_KEY_42 = get_env_var('SECRET_KEY_42')
+URL_AUTHORIZE_42 = get_env_var('URL_AUTHORIZE_42')
+URL_ACCESS_TOKEN_42 = get_env_var('URL_ACCESS_TOKEN_42')
+URL_PROFILE_42 = get_env_var('URL_PROFILE_42')
+URL_AUTH_REDIRECT_42 = get_env_var('URL_AUTH_REDIRECT_42')
 FRIENDS_MAX = get_env_var('FRIENDS_MAX')
 
 # SERVER HOST
@@ -61,11 +67,15 @@ INSTALLED_APPS = [
 #    'game',
     'django_celery_beat',
     'django_celery_results',
-    # ↓ 下記のようにapp名のみ指定すると、apps.PlayersConfigを探しに行く。
-    # 'players',
-    # 後方互換性のため残された記述であり、現代ではAppConfigまで明示するのが推奨される
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.oauth2',
+    'providers42',
 ]
 
+SITE_ID = 1
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -76,6 +86,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 ROOT_URLCONF = 'scandamus.urls'
@@ -155,6 +166,16 @@ GAME_JWT = {
     'ALGORITHM': 'HS256',
 #    'AUDIENCE': '',
 #    'ISSUER': 'pong-server'
+}
+
+SOCIALACCOUNT_PROVIDERS = {
+    'providers42': {
+        'APP': {
+            'client_id': UID_42,
+            'secret': SECRET_KEY_42,
+            'key': ''
+        }
+    }
 }
 
 ## ブラウザブルAPIレンダリングをOFFにする場合、下記を有効にする
