@@ -19,7 +19,10 @@ class Command(BaseCommand):
             player1 = random.choice(Player.objects.exclude(user__is_superuser=True))
             player2 = random.choice(Player.objects.exclude(user__is_superuser=True).exclude(id=player1.id))
             score1 = 10 if random.random() < 0.5 else random.randint(0, 9)
-            score2 = 10 if random.random() < 0.5 else random.randint(0, 9)
+            if score1 == 10:
+                score2 = random.randint(0, 9)
+            else:
+                score2 = 10
 
             match = Match.objects.create(
                 game_name='pong',
@@ -27,7 +30,8 @@ class Command(BaseCommand):
                 player2=player2,
                 score1=score1,
                 score2=score2,
-                status='before'
+                status='before',
+                last_updated=timezone.now()
             )
             serializer = MatchSerializer(match, data={'status': 'after'}, partial=True)
             if serializer.is_valid():
@@ -39,7 +43,9 @@ class Command(BaseCommand):
         # Create dummy matches for 'pong4' game
         for _ in range(10):
             players = random.sample(list(Player.objects.exclude(user__is_superuser=True)), 4)
-            scores = [10 if random.random() < 0.5 else random.randint(0, 9) for _ in range(4)]
+            scores = [0] * 4
+            chosen_index = random.randint(0, 3)
+            scores[chosen_index] = random.randint(1, 4)
 
             match = Match.objects.create(
                 game_name='pong4',
@@ -51,7 +57,8 @@ class Command(BaseCommand):
                 score2=scores[1],
                 score3=scores[2],
                 score4=scores[3],
-                status='before'
+                status='before',
+                last_updated=timezone.now()
             )
             serializer = MatchSerializer(match, data={'status': 'after'}, partial=True)
             if serializer.is_valid():
