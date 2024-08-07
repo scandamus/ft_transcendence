@@ -27,7 +27,8 @@ class Command(BaseCommand):
                 player2=player2,
                 score1=score1,
                 score2=score2,
-                status='before'
+                status='before',
+                last_updated=timezone.now()
             )
             serializer = MatchSerializer(match, data={'status': 'after'}, partial=True)
             if serializer.is_valid():
@@ -51,7 +52,8 @@ class Command(BaseCommand):
                 score2=scores[1],
                 score3=scores[2],
                 score4=scores[3],
-                status='before'
+                status='before',
+                last_updated=timezone.now()
             )
             serializer = MatchSerializer(match, data={'status': 'after'}, partial=True)
             if serializer.is_valid():
