@@ -1,4 +1,5 @@
 import json
+import asyncio
 
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -23,6 +24,8 @@ from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.files.base import ContentFile
 from players.player_utils import resize_avatar
+from asgiref.sync import async_to_sync, sync_to_async
+from channels.layers import get_channel_layer
 
 #
 # from django.urls import reverse
@@ -73,6 +76,33 @@ def generate_unique_username(base_username):
         if not User.objects.filter(username=candidate_username).exists():
             return candidate_username
     raise Exception("NoUsernamesAvailable")
+
+
+async def notify_new_login(player_id):
+    channel_layer = get_channel_layer()
+    await channel_layer.group_send(
+        f'friends_{player_id}',
+        {
+            'type': 'disconnect_by_new_login',
+        }
+    )
+
+async def wait_for_old_ws_disconnect(player_id):
+    max_wait_time = 5
+    wait_interval = 0.1
+    elapsed_time = 0
+
+    while elapsed_time < max_wait_time:
+        player = await sync_to_async(Player.objects.get)(id=player_id)
+        if not player.online:
+            break
+        await asyncio.sleep(wait_interval)
+        elapsed_time += wait_interval
+
+    if elapsed_time >= max_wait_time:
+        player.online = False
+        sync_to_async(player.save)(update_fields=['online'])
+        logger.info(f'//-- player save() on: wait_for_old_ws_disconnect')
 
 @csrf_exempt
 def exchange_token42(request):
@@ -139,9 +169,15 @@ def exchange_token42(request):
         if refresh:
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
-            return JsonResponse({
-                'access_token': access_token,
-                'refresh_token': refresh_token,
-            })
+
+            if access_token and refresh_token:
+                player = Player.objects.get(user=user)
+                async_to_sync(notify_new_login)(player.id)
+                async_to_sync(wait_for_old_ws_disconnect)(player.id)
+
+                return JsonResponse({
+                    'access_token': access_token,
+                    'refresh_token': refresh_token,
+                })
         return JsonResponse({'error': 'Token generation failed'}, status=400)
     return JsonResponse({'error': 'Invalid request method'}, status=405)
