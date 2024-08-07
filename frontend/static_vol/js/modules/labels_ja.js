@@ -9,7 +9,8 @@ export const labels_ja = {
         switchLang: '言語選択',
         logoutTokenExpired: 'セッション期限が切れました。再ログインしてください。',
         disconnected: 'サーバーとの接続が切れました',
-        disconnectedByNewLogin: 'サーバーに新しいログインがあったため切断されました'
+        disconnectedByNewLogin: 'サーバーに新しいログインがあったため切断されました',
+        failUpdateDbLang: '言語設定の保存に失敗しました',
     },
     home: {
         title: 'Home',
