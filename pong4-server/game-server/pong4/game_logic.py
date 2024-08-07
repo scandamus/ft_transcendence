@@ -75,9 +75,9 @@ class Paddle(Block):
 class Ball:
     def __init__(self, x, y, size):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 0), random.choice((-1, 1)))
-        self.x = x - BALL_SIZE / 2
-        self.y = y - BALL_SIZE / 2
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
+        self.x = x
+        self.y = y
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.size = size
@@ -85,9 +85,9 @@ class Ball:
 
     def reset(self, x, y):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 0), random.choice((-1, 1)))
-        self.x = x - BALL_SIZE / 2
-        self.y = y - BALL_SIZE / 2
+        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
+        self.x = x
+        self.y = y
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.flag = True
@@ -270,8 +270,8 @@ class Ball:
         self.dx = new_direction['dx']
         self.dy = new_direction['dy']
         self.speed += 1
-        if self.speed > 50:
-            self.speed = 50
+        if self.speed > 60:
+            self.speed = 60
 
     def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
         angle_radians = angle_degrees * (math.pi / 180)
