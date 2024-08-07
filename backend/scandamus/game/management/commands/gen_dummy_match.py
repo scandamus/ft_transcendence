@@ -19,7 +19,10 @@ class Command(BaseCommand):
             player1 = random.choice(Player.objects.exclude(user__is_superuser=True))
             player2 = random.choice(Player.objects.exclude(user__is_superuser=True).exclude(id=player1.id))
             score1 = 10 if random.random() < 0.5 else random.randint(0, 9)
-            score2 = 10 if random.random() < 0.5 else random.randint(0, 9)
+            if score1 == 10:
+                score2 = random.randint(0, 9)
+            else:
+                score2 = 10
 
             match = Match.objects.create(
                 game_name='pong',
