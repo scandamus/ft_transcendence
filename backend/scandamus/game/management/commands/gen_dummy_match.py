@@ -43,7 +43,9 @@ class Command(BaseCommand):
         # Create dummy matches for 'pong4' game
         for _ in range(10):
             players = random.sample(list(Player.objects.exclude(user__is_superuser=True)), 4)
-            scores = [10 if random.random() < 0.5 else random.randint(0, 9) for _ in range(4)]
+            scores = [0] * 4
+            chosen_index = random.randint(0, 3)
+            scores[chosen_index] = random.randint(1, 4)
 
             match = Match.objects.create(
                 game_name='pong4',
