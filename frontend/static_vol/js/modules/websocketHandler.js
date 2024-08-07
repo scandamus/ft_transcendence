@@ -108,10 +108,11 @@ const loadGameContent = async (data) => {
     }
 
     if (type === 'gameSessionTournament') {
-        //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
+        //ゲーム画面にいたら終了まで待つ
         if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
             await new Promise(resolve => setTimeout(resolve, 1500));
         }
+        //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
         if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {
             window.history.pushState(null, null, `/tournament/detail:${tournamentId}`);
             await router(true);
@@ -415,6 +416,9 @@ const handleTournamentMatchReceived = async (data) => {
         window.history.pushState(null, null, '/dashboard');
         await router(true);
     } else if (data.action === 'finished') {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         addNotice(labels.tournament.msgFinished.replace('$tournament', data.name), false);
         sessionStorage.removeItem('tournament_id');
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
@@ -423,24 +427,39 @@ const handleTournamentMatchReceived = async (data) => {
         }
         sessionStorage.removeItem('tournament_status');
     } else if (data.action === 'notifyByePlayer') {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitBye, labels.tournament.msgWaitBye);
             await PageBase.instance.generateTournamentResult();
         }
     } else if (data.action === 'notifyWaitSemiFinal') {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitSemiFinal, labels.tournament.msgWaitSemiFinal);
             await PageBase.instance.generateTournamentResult();
         }
     } else if (data.action === 'notifyWaitFinal') {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitFinal, labels.tournament.msgWaitFinal);
         }
     } else if (data.action === 'notifyFinalOnGoing') {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelFinalOnGoing, labels.tournament.msgFinalOnGoing);
         }
     } else if (data.action === 'roundEnd') {
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         if (PageBase.isInstance(PageBase.instance, 'TournamentDetail')) {
             PageBase.instance.displayWaiting(labels.tournament.labelWaitLose, labels.tournament.msgWaitLose);
             await PageBase.instance.generateTournamentResult();
