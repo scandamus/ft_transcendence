@@ -59,14 +59,19 @@ def list_social_apps():
 
 
 def generate_unique_username(base_username):
-    original_username = base_username
+    if not User.objects.filter(username=base_username).exists():
+        return base_username
+
     suffix = '42'
+    base_username_with_suffix = f"{base_username}{suffix}"
+    if not User.objects.filter(username=base_username_with_suffix).exists():
+        return base_username_with_suffix
+
     characters = string.ascii_lowercase + string.digits #a-z0-9
-    base_username = f"{original_username}{suffix}"
     for char in characters:
-        if not User.objects.filter(username=base_username).exists():
-            return base_username
-        base_username = f"{original_username}{suffix}{char}"
+        candidate_username = f"{base_username_with_suffix}{char}"
+        if not User.objects.filter(username=candidate_username).exists():
+            return candidate_username
     raise Exception("NoUsernamesAvailable")
 
 @csrf_exempt
