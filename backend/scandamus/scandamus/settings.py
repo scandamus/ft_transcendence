@@ -34,7 +34,7 @@ SECRET_KEY = get_env_var('BACKEND_SECRET_KEY')
 CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = get_env_var('DEBUG')
+DEBUG = get_env_var('DEBUG').lower() in ['true', '1']
 CREATE_TOURNAMENT_TIMELIMIT_MIN = get_env_var('CREATE_TOURNAMENT_TIMELIMIT_MIN')
 FRIENDS_MAX = get_env_var('FRIENDS_MAX')
 
@@ -122,7 +122,6 @@ TEMPLATES = [
     },
 ]
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'scandamus.authentication.InternalNetworkAuthentication',
@@ -131,7 +130,11 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'EXCEPTION_HANDLER': 'scandamus.api_exception.api_exception_handler'
 }
 
 AUTHENTICATION_BACKENDS = (
