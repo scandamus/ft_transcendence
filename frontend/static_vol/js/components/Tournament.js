@@ -93,6 +93,7 @@ export default class Tournament extends PageBase {
 
     updateLists() {
         try {
+            this.start_dates = [];
             updateUpcomingTournamentList(this).then((start_dates) => {
                 if (start_dates) {
                     this.start_dates = start_dates;
@@ -187,12 +188,11 @@ export default class Tournament extends PageBase {
             now.setMinutes(now.getMinutes() + CREATE_TOURNAMENT_TIMELIMIT_MIN);
             const minUTC = new Date(now.toISOString());
             const startUTC = new Date(startTime.toISOString());
+
+            elInput.setCustomValidity( '');
             if (startUTC < minUTC) {
                 elInput.setCustomValidity( 'startTimeInvalid');
-            } else {
-                elInput.setCustomValidity( '');
             }
-
             if (elInput.validity.valid) {
                 let isIntervalInvalid = false;
                 for (const existingStart of this.start_dates) {

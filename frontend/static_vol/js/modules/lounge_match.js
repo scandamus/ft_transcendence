@@ -7,13 +7,11 @@ import { initToken } from './token.js';
 const join_lounge_game = async(gameName) => {
     console.log(`join_${gameName}`);
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'lounge',
             action: 'requestJoinMatch',
             game: gameName,
-            token: accessToken.token
         });
         console.log(`Request join_game: ${gameName}  sent to backend.`);
     } catch (error) {
@@ -24,13 +22,11 @@ const join_lounge_game = async(gameName) => {
 const exit_lounge_match_room = async (gameName) => {
     console.log('exit_lounge_match_room');
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'lounge',
             action: 'requestExitRoom',
             game: gameName,
-            token: accessToken.token
         });
         console.log('Request exit_lounge_match_room to backend');
     } catch (error) {

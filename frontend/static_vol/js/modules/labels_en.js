@@ -118,6 +118,7 @@ export const labels_en = {
         labelTitleOnGoing: 'ongoing tournaments',
         labelTitleRecent: 'finished tournaments',
         labelTournamentLog: 'tournament log',
+        labelCanceledRound: '(Cancellation due to player forfeiture)',
         labelUpdateLists: 'Update Lists',
         descTournamentTitle: ['You can use lowercase alphabets, numbers, hiragana, katakana, kanji, and symbols(@_#$%&!.+*~)', 'Between 3 and 50 characters long'],
         descTournamentStart: [`[Allowable Range] From ${CREATE_TOURNAMENT_TIMELIMIT_MIN} minutes later to 1 month later.`, '[between tournaments] At least 6 hours'],

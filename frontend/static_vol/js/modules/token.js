@@ -49,8 +49,17 @@ const refreshAccessToken = async () => {
             if (response.ok) {
                 const refreshData = await response.json();
                 console.log(`refreshData: `, refreshData);
-                sessionStorage.setItem('accessToken', refreshData.access);
-                sessionStorage.setItem('refreshToken', refreshData.refresh);
+
+                const accessToken = refreshData.access;
+                const refreshToken = refreshData.refresh;
+                const accessTokenExpiry = decodeTokenExpiry(accessToken);
+                const refreshTokenExpiry = decodeTokenExpiry(refreshToken);
+
+                sessionStorage.setItem('accessToken', accessToken);
+                sessionStorage.setItem('refreshToken', refreshToken);
+                sessionStorage.setItem('accessTokenExpiry', accessTokenExpiry);
+                sessionStorage.setItem('refreshTokenExpiry', refreshTokenExpiry);
+
                 console.log(`Successfully token refreshed: ${refreshData.access}`);
                 return refreshData.access;
             }
@@ -69,13 +78,22 @@ const refreshAccessToken = async () => {
     return siteInfo.promiseTokenRefresh;
 }
 
-const isTokenExpired = (token) => {
+const decodeTokenExpiry = (token) => {
     try {
         const payloadBase64 = token.split('.')[1];
-        const decodePayload = JSON.parse(atob(payloadBase64));
-        const exp = decodePayload.exp;
+        const decodedPayload = JSON.parse(atob(payloadBase64));
+        return decodedPayload.exp;
+    } catch (e) {
+        console.log('Decode token failed: ', e);
+        return 0;
+    }
+};
+
+const isTokenExpired = (token) => {
+    try {
+        const expiry = decodeTokenExpiry(token);
         const currentUnixTime = Math.floor(Date.now() / 1000);
-        return exp < currentUnixTime;
+        return expiry < currentUnixTime;
     } catch (e) {
         console.error('Decode token failed: ', e);
         return true;
@@ -122,4 +140,29 @@ const initToken = async () => {
     }
 }
 
-export { getToken, refreshAccessToken, isTokenExpired, getValidToken, initToken };
+const startTokenRefreshInterval = () => {
+    const siteInfo = new SiteInfo();
+
+    const intervalId = setInterval(async() => {
+        const accessTokenExpiry = parseInt(sessionStorage.getItem('accessTokenExpiry'), 10);
+        const currentTime = new Date().getTime();
+
+        if (currentTime > accessTokenExpiry - 30000) {
+            console.log('Refreshing access token');
+            await refreshAccessToken();
+        }
+    }, 60000);
+    siteInfo.setRefreshIntervalId(intervalId);
+}
+
+const stopTokenRefreshInterval = () => {
+    const siteInfo = new SiteInfo();
+
+    const intervalId = siteInfo.getRefreshIntervalId();
+    if (intervalId !== null) {
+        clearInterval(intervalId);
+        siteInfo.setRefreshIntervalId(null);
+    }
+}
+
+export { getToken, refreshAccessToken, isTokenExpired, getValidToken, initToken, startTokenRefreshInterval, stopTokenRefreshInterval, decodeTokenExpiry };

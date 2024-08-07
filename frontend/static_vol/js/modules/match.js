@@ -7,11 +7,9 @@ import { initToken } from './token.js';
 const join_game = async (opponentName=null) => {
     console.log('join_game');
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             action: 'joinGame',
-            token: accessToken.token,
             opponentName: opponentName,
         });
         console.log('Request join_game sent to backend.');
@@ -23,7 +21,6 @@ const join_game = async (opponentName=null) => {
 const request_game = async (username, user_id) => {
     console.log('request_game called');
     try {
-        const accessToken = await initToken();
         console.log('Before opening WebSocket');
         await webSocketManager.openWebSocket('lounge', pongHandler);
         console.log('WebSocket opened');
@@ -31,9 +28,7 @@ const request_game = async (username, user_id) => {
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'friendMatchRequest',
             action: 'requestGame',
-            //vs_id: user_id,
             opponent_username: username,
-            token: accessToken.token
         });
         console.log(`Request game with ${username} ID: ${user_id} sent to backend.`);
     } catch (error) {
@@ -44,14 +39,12 @@ const request_game = async (username, user_id) => {
 const accept_game = async (request_id, from_username) => {
     console.log('accept_game ${request_id}')
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'friendMatchRequest',
             action: 'acceptGame',
             request_id: request_id,
             from_username: from_username,
-            token: accessToken.token,
         });
         console.log(`Accept game with ${from_username} request ID: ${request_id}`);
     } catch (error) {
@@ -62,14 +55,12 @@ const accept_game = async (request_id, from_username) => {
 const reject_game = async (request_id, from_username) => {
     console.log(`reject_game ${request_id}`)
     try {
-        const accessToken = await initToken();
         await webSocketManager.openWebSocket('lounge', pongHandler);
         webSocketManager.sendWebSocketMessage('lounge', {
             type: 'friendMatchRequest',
             action: 'rejectGame',
             request_id: request_id,
             from_username: from_username,
-            token: accessToken.token,
         });
         console.log(`Reject game with ${from_username} request ID: ${request_id}`);
     } catch (error) {
