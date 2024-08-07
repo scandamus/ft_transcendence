@@ -220,7 +220,6 @@ class Ball:
             paddle_start = Point(obj.x, obj.y)
             paddle_end = Point(obj.x + obj.length, obj.y)
         if intersects(ball_start, ball_end, paddle_start, paddle_end):
-            logger.error(f'{obj_side}: collision_front detected')
             return 'collision_front'
 
         ball_start2 = self.get_ball_corner_for_side(obj, obj_side)
@@ -243,7 +242,6 @@ class Ball:
         paddle_start2 = paddle_end
         if (intersects(ball_start2, ball_end2, paddle_start, paddle_end_side1)
                 or intersects(ball_start2, ball_end2, paddle_start2, paddle_end_side2)):
-            logger.error(f'{obj_side}: collision_side detected')
             return 'collision_side'
         return False
 
@@ -251,6 +249,8 @@ class Ball:
         normalize = REFLECTION_ANGLE / (obj.length / 2)
         if obj_side == 'RIGHT' or obj_side == 'LEFT':
             distance_from_paddle_center = (obj.y + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
+            if not obj.is_active:
+                distance_from_paddle_center = random.choice((-1, 1)) if distance_from_paddle_center == 0 else distance_from_paddle_center
             # 最大の反射角を45°に設定した場合
             # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
             # 角度 / paddleの大きさ で修正
@@ -260,6 +260,8 @@ class Ball:
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
             distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.x + (BALL_SIZE / 2))
+            if not obj.is_active:
+                distance_from_paddle_center = random.choice((-1, 1)) if distance_from_paddle_center == 0 else distance_from_paddle_center
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
