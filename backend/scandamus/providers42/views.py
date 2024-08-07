@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from allauth.socialaccount.models import SocialApp
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.db import transaction
 from players.models import Player
 from allauth.socialaccount.models import SocialAccount
 from rest_framework.authtoken.models import Token
@@ -143,31 +144,32 @@ def exchange_token42(request):
         avatar_url = user_info.get('image').get('link')
 
         try:
-            # 42login存在確認
-            social_account = SocialAccount.objects.filter(uid=login_name, provider='providers42').first()
-            # 存在していればログインするだけ。
-            if social_account:
-                user = social_account.user
-            # 存在していない=>playerID重複チェックしてアカウント作成
-            else:
-                player_name = generate_unique_username(login_name)
-                user = User.objects.create(username=player_name)
+            with transaction.atomic():
+                # 42login存在確認
+                social_account = SocialAccount.objects.filter(uid=login_name, provider='providers42').first()
+                # 存在していればログインするだけ。
+                if social_account:
+                    user = social_account.user
+                # 存在していない=>playerID重複チェックしてアカウント作成
+                else:
+                    player_name = generate_unique_username(login_name)
+                    user = User.objects.create(username=player_name)
 
-                social_account = SocialAccount.objects.create(user=user, provider='providers42')
-                social_account.uid = login_name
-                social_account.save()
+                    social_account = SocialAccount.objects.create(user=user, provider='providers42')
+                    social_account.uid = login_name
+                    social_account.save()
 
-                player = Player.objects.get(user=user)
-                if player:
-                    response = requests.get(avatar_url)
-                    response.raise_for_status()
+                    player = Player.objects.get(user=user)
+                    if player:
+                        response = requests.get(avatar_url)
+                        response.raise_for_status()
 
-                    image_data = BytesIO(response.content)
-                    file_name = f'{player_name}.jpg'
-                    image_file = InMemoryUploadedFile(image_data, 'ImageField', file_name, 'image/jpeg', len(response.content), None)
-                    if image_file:
-                        resized_avatar = resize_avatar(image_file)
-                        player.avatar.save(file_name, resized_avatar)
+                        image_data = BytesIO(response.content)
+                        file_name = f'{player_name}.jpg'
+                        image_file = InMemoryUploadedFile(image_data, 'ImageField', file_name, 'image/jpeg', len(response.content), None)
+                        if image_file:
+                            resized_avatar = resize_avatar(image_file)
+                            player.avatar.save(file_name, resized_avatar)
 
         except Exception as e:
             logger.error(f"Exception occurred: {e}")
