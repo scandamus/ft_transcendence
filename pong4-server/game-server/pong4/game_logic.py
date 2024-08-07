@@ -220,7 +220,6 @@ class Ball:
             paddle_start = Point(obj.x, obj.y)
             paddle_end = Point(obj.x + obj.length, obj.y)
         if intersects(ball_start, ball_end, paddle_start, paddle_end):
-            logger.error(f'{obj_side}: collision_front detected')
             return 'collision_front'
 
         ball_start2 = self.get_ball_corner_for_side(obj, obj_side)
@@ -243,7 +242,6 @@ class Ball:
         paddle_start2 = paddle_end
         if (intersects(ball_start2, ball_end2, paddle_start, paddle_end_side1)
                 or intersects(ball_start2, ball_end2, paddle_start2, paddle_end_side2)):
-            logger.error(f'{obj_side}: collision_side detected')
             return 'collision_side'
         return False
 
