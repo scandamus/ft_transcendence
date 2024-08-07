@@ -75,9 +75,9 @@ class Paddle(Block):
 class Ball:
     def __init__(self, x, y, size):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
-        self.x = x
-        self.y = y
+        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 0), random.choice((-1, 1)))
+        self.x = x - BALL_SIZE / 2
+        self.y = y - BALL_SIZE / 2
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.size = size
@@ -85,9 +85,9 @@ class Ball:
 
     def reset(self, x, y):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
-        self.x = x
-        self.y = y
+        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 0), random.choice((-1, 1)))
+        self.x = x - BALL_SIZE / 2
+        self.y = y - BALL_SIZE / 2
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.flag = True
@@ -251,9 +251,8 @@ class Ball:
         normalize = REFLECTION_ANGLE / (obj.length / 2)
         if obj_side == 'RIGHT' or obj_side == 'LEFT':
             distance_from_paddle_center = (obj.y + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
-            # 垂直方向のときのみ
-            if distance_from_paddle_center == 0:
-                distance_from_paddle_center = random.choice((-1, 1))
+            if not obj.is_active:
+                distance_from_paddle_center = random.choice((-1, 1)) if distance_from_paddle_center == 0 else distance_from_paddle_center
             # 最大の反射角を45°に設定した場合
             # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
             # 角度 / paddleの大きさ で修正
@@ -263,17 +262,16 @@ class Ball:
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
             distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.x + (BALL_SIZE / 2))
-            # 垂直方向のときのみ
-            if distance_from_paddle_center == 0:
-                distance_from_paddle_center = random.choice((-1, 1))
+            if not obj.is_active:
+                distance_from_paddle_center = random.choice((-1, 1)) if distance_from_paddle_center == 0 else distance_from_paddle_center
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
         self.dx = new_direction['dx']
         self.dy = new_direction['dy']
         self.speed += 1
-        if self.speed > 60:
-            self.speed = 60
+        if self.speed > 50:
+            self.speed = 50
 
     def get_ball_direction_and_random_speed(self, angle_degrees, direction_multiplier, orientation='vertical'):
         angle_radians = angle_degrees * (math.pi / 180)
