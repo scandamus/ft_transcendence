@@ -109,6 +109,9 @@ const loadGameContent = async (data) => {
 
     if (type === 'gameSessionTournament') {
         //トーナメント詳細ページにいなければリダイレクト(基本的にはトーナメント開始時)
+        if (PageBase.isInstance(PageBase.instance, 'GamePlay')) {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         if (window.location.pathname !== `/tournament/detail:${tournamentId}`) {
             window.history.pushState(null, null, `/tournament/detail:${tournamentId}`);
             await router(true);

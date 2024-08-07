@@ -306,6 +306,9 @@ export default class TournamentDetail extends PageBase {
     }
 
     displayWaiting(title, contents) {
+        if (this.elNextMatchWrap.classList.contains('is-show')) {
+            return;
+        }
         this.getElWaiting();
         this.getElWaitingTitle().textContent = title;
         this.getElWaitingContent().innerHTML = contents;
