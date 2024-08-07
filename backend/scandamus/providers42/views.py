@@ -62,6 +62,12 @@ def list_social_apps():
 
 
 def generate_unique_username(base_username):
+    username_max_length = 32
+    generate_random_username_max_attempt = 256
+
+    def generate_random_suffix(length=6):
+        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+
     if not User.objects.filter(username=base_username).exists():
         return base_username
 
@@ -70,11 +76,13 @@ def generate_unique_username(base_username):
     if not User.objects.filter(username=base_username_with_suffix).exists():
         return base_username_with_suffix
 
-    characters = string.ascii_lowercase + string.digits #a-z0-9
-    for char in characters:
-        candidate_username = f"{base_username_with_suffix}{char}"
-        if not User.objects.filter(username=candidate_username).exists():
+    count = 0
+    while count < generate_random_username_max_attempt:
+        candidate_username = f"{base_username[:username_max_length - 9]}42_{generate_random_suffix()}"
+        if len(candidate_username) <= username_max_length and not User.objects.filter(username=candidate_username).exists():
             return candidate_username
+        count += 1
+
     raise Exception("NoUsernamesAvailable")
 
 
