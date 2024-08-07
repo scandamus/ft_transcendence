@@ -100,23 +100,6 @@ class Ball:
 
     def move_for_multiple(self, right_paddle, left_paddle, upper_paddle, lower_paddle, walls):
         sound_type = None
-        # 壁を超えているか
-        if CANVAS_WIDTH_MULTI < self.x + self.dx:
-            self.handle_scored(right_paddle)
-            sound_type = 'scored'
-            return sound_type
-        elif self.x + self.size + self.dx < 0:
-            self.handle_scored(left_paddle)
-            sound_type = 'scored'
-            return sound_type
-        elif self.y + self.size + self.dy < 0:
-            self.handle_scored(upper_paddle)
-            sound_type = 'scored'
-            return sound_type
-        elif CANVAS_HEIGHT_MULTI < self.y + self.dy:
-            self.handle_scored(lower_paddle)
-            sound_type = 'scored'
-            return sound_type
 
         # x座標の操作
         collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
@@ -199,6 +182,25 @@ class Ball:
                     self.dx = -self.dx
                     self.y += self.dy
                 return sound_type
+
+        # 壁を超えているか
+        if CANVAS_WIDTH_MULTI < self.x:
+            self.handle_scored(right_paddle)
+            sound_type = 'scored'
+            return sound_type
+        elif self.x + self.size < 0:
+            self.handle_scored(left_paddle)
+            sound_type = 'scored'
+            return sound_type
+        elif self.y + self.size < 0:
+            self.handle_scored(upper_paddle)
+            sound_type = 'scored'
+            return sound_type
+        elif CANVAS_HEIGHT_MULTI < self.y:
+            self.handle_scored(lower_paddle)
+            sound_type = 'scored'
+            return sound_type
+
         return sound_type
 
     def collision_detection(self, obj, obj_side):
