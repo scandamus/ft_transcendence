@@ -218,7 +218,7 @@ class UserLevelView(APIView):
             'is_authenticated': user.is_authenticated,
             'level': "{:.1f}".format(player.level),
             'win_count': player.win_count,
-            'loss_count': player.play_count - player.win_count,
+            'play_count': player.play_count,
         }
         return Response(data)
 
