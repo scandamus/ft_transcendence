@@ -135,7 +135,9 @@ class MatchLogSerializer(serializers.ModelSerializer):
 
     def get_is_win(self, obj):
         user = self.context['request'].user
-        return obj.winner == user
+        if obj.winner:
+            return obj.winner.user == user
+        return False
 
     def get_players(self, obj):
         players_info = [
