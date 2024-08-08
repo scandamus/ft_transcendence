@@ -123,13 +123,13 @@ class MatchLogSerializer(serializers.ModelSerializer):
 
     def get_my_score(self, obj):
         user = self.context['request'].user
-        if obj.player1.user == user:
+        if obj.player1 and obj.player1.user == user:
             return obj.score1
-        elif obj.player2.user == user:
+        elif obj.player2 and obj.player2.user == user:
             return obj.score2
-        elif obj.player3.user == user:
+        elif obj.player3 and obj.player3.user == user:
             return obj.score3
-        elif obj.player4.user == user:
+        elif obj.player4 and obj.player4.user == user:
             return obj.score4
         return None
 
@@ -141,8 +141,8 @@ class MatchLogSerializer(serializers.ModelSerializer):
 
     def get_players(self, obj):
         players_info = [
-            {'username': obj.player1.user.username, 'avatar': obj.player1.avatar.url if obj.player1.avatar else None, 'score': obj.score1, 'is_win': obj.winner == obj.player1},
-            {'username': obj.player2.user.username, 'avatar': obj.player2.avatar.url if obj.player2.avatar else None, 'score': obj.score2, 'is_win': obj.winner == obj.player2}
+            {'username': obj.player1.user.username if obj.player1 else '--------', 'avatar': obj.player1.avatar.url if obj.player1 and obj.player1.avatar else None, 'score': obj.score1, 'is_win': obj.winner == obj.player1},
+            {'username': obj.player2.user.username if obj.player2 else '--------', 'avatar': obj.player2.avatar.url if obj.player2 and obj.player2.avatar else None, 'score': obj.score2, 'is_win': obj.winner == obj.player2}
         ]
         if obj.player3:
             players_info.append(
