@@ -16,15 +16,22 @@
         <section id="headerAccount" class="mainHeader_nav">
         </section>
     </header>
-    <main class="mainContainer">
-        <header class="mainContainer_header mainContainerHeader">
+    <main id="mainContainer" class="mainContainer">
+        <header class="mainContainer_header mainContainerHeader" aria-live="polite">
             <h2 id="titlePage" class="mainContainerHeader_title"></h2>
             <nav id="navBreadcrumb" class="mainContainerHeader_nav"></nav>
         </header>
-        <div id="app" class="mainContainer_content">
+        <div id="app" class="mainContainer_content" aria-live="polite">
         </div>
     </main>
     <footer class="mainFooter">
+        <div class="blockFontSize">
+            <ul class="blockFontSize_list" aria-label="change font size">
+                <li><button type="button" id="btnTextBig" class="blockFontSize_button blockFontSize_button-big">A</button></li>
+                <li><button type="button" id="btnTextMid" class="blockFontSize_button blockFontSize_button-mid">A</button></li>
+                <li><button type="button" id="btnTextSmall" class="blockFontSize_button blockFontSize_button-small">A</button></li>
+            </ul>
+        </div>
         <div class="mainFooter_lang formSwitchLang">
             <label for="languageSelect">SwitchLanguage:</label>
             <select id="languageSelect">
@@ -35,8 +42,8 @@
         </div>
     </footer>
 </section>
-<ul id="wrapNotice" class="wrapNotice"></ul>
-<div id="wrapModal" class="wrapModal"></div>
+<ul id="wrapNotice" class="wrapNotice" aria-live="assertive"></ul>
+<div id="wrapModal" class="wrapModal" aria-live="polite"></div>
 <script type="module" src="/js/main.js"></script>
 </body>
 </html>

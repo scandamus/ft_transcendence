@@ -10,6 +10,7 @@
 
   --content-color1: rgb(4, 229, 143);
   --content-color2: rgb(230, 0, 255);
+  --content-color3: #c82cbb;
   --color-burn1: rgba(105,134,30, 0.3);
   --color-burn2: rgba(105,134,30, 0.12);
   --color-burn3: rgba(25, 30, 12, 0.8);
@@ -246,14 +247,72 @@ hr {
 .mainFooter {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   flex-wrap: wrap;
-  height: 40px;
-  line-height: 40px;
+  height: 60px;
+  line-height: 60px;
   padding: 0 20px;
   border-top: 1px solid var(--color-black-alpha);
   text-align: right;
   font-size: 2rem;
+}
+
+.blockFontSize {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.blockFontSize_title {
+  font-size: 1.6rem;
+}
+
+.blockFontSize_title::after {
+  content: ":";
+  margin: 0 0.7em 0 0.4em;
+}
+
+.blockFontSize_list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.blockFontSize_list li {
+  height: 40px;
+}
+
+.blockFontSize li:not(:last-child) {
+  margin-right: 3px;
+}
+
+.blockFontSize_button {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  background-color: var(--color-burn2);
+  border: none;
+  font-size: 24px;
+  color: var(--color-white);
+  vertical-align: top;
+}
+
+.blockFontSize_button-big {
+  font-size: 30px;
+}
+
+.blockFontSize_button-small {
+  font-size: 18px;
+}
+
+.blockFontSize_button:hover {
+  animation: 0.2s ease-out linkHover1;
+  opacity: 1;
+}
+
+.blockFontSize_button.is-current {
+  background-color: var(--color-burn1);
 }
 
 .formSwitchLang {
@@ -780,19 +839,25 @@ input[type="text"]:disabled {
   margin-bottom: 0.5em;
 }
 
-/* listAnnotation */
+/* listAnnotation, ParaAnnotation */
 .listAnnotation {
   list-style: none;
   margin-top: 10px;
 }
 
-.listAnnotation li {
-  font-size: 1.4rem;
-  margin-right: 0.5em;
+.ParaAnnotation {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
 }
 
-.listAnnotation li {
-  text-shadow: none;
+.listAnnotation li,
+.ParaAnnotation {
+  font-size: 1.4rem;
+  margin-right: 0.5em;
+  text-shadow:
+          0.6px 0.6px var(--content-color1),
+          -0.6px -0.6px var(--content-color2);
   color: var(--color-white-alpha3);
 }
 
@@ -821,6 +886,12 @@ input[type="text"]:disabled {
   font-size: 1.8rem;
   margin-top: 1em;
   margin-bottom: 1em;
+}
+
+/* for screen reader */
+.forScreenReader {
+  visibility: hidden;
+  height: 0;
 }
 
 /* -----
@@ -1958,7 +2029,7 @@ html[lang="fr"] .unitRanker_rank {
 }
 
 .unitMatchPlayer_result {
-  background-color: var(--content-color2);
+  background-color: var(--content-color3);
   width: 55px;
   height: 1.5em;
   line-height: 1.5;

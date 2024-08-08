@@ -1,3 +1,6 @@
+'use strict';
+import { labels } from './labels.js';
+
 const sendMatchRequest = (args) => `
     <section class="blockModal" data-modal-game_name="${args.game_name}" data-modal-request_id="${args.request_id}" data-modal-username="${args.username}" data-modal-match_type="${args.matchType}">
         <h2 class="blockModal_title">${args.titleModal}</h2>
@@ -64,16 +67,17 @@ const entryTournament = (args) => `
             <dl class="blockForm_el">
                 <dt>${args.labelNickname}</dt>
                 <dd>
-                    <input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="20" required />
-                    <ul class="listError"></ul>
+                    <input type="text" id="inputNickname" placeholder="Enter Nickname" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\w@_#$%&!.+*~]+" minlength="3" maxlength="20" aria-describedby="errorInputNickName" required aria-required="true" />
+                    <ul id="errorInputNickName" class="listError"></ul>
                     <ul class="listAnnotation">${args.desc}</ul>
                 </dd>
             </dl>
             <input type="hidden" name="idTitle" value="${args.labelTournamentId}">
             <ul class="unitListBtn unitListBtn-horizontal-center">
-                <li><button type="submit" id="btnEntryTournament" class="unitButton">${args.labelEntry}</button></li>
+                <li><button type="submit" id="btnEntryTournament" class="unitButton" disabled>${args.labelEntry}</button></li>
                 <li><button type="button" class="blockBtnCancel_button unitButtonDecline unitButton-small">${args.labelCancel}</button></li>
             </ul>
+            <p class="ParaAnnotation">${labels.common.btnEnable}</p>
         </form>
     </section>
 `;

@@ -37,18 +37,18 @@ export default class TournamentDetail extends PageBase {
         return `
             <div class="wrapTournament">
                 <p class="blockTournamentStart"></p>
-                <section class="blockTournamentWaiting unitBox">
+                <section class="blockTournamentWaiting unitBox" aria-live="polite">
                     <h3 class="blockTournamentWaiting_title"></h3>
                     <div class="blockTournamentWaiting_message">
                         <p></p>
                     </div>
                 </section>
-                <section class="blockTournamentNextMatch unitBox">
+                <section class="blockTournamentNextMatch unitBox" aria-live="polite">
                     <h3 class="blockTournamentNextMatch_title"></h3>
                     <div class="blockNextMatch"></div>
                 </section>
-                <div class="blockTournamentRanking unitBox"></div>
-                <div class="wrapTournamentRound"></div>
+                <div class="blockTournamentRanking unitBox" aria-live="polite"></div>
+                <div class="wrapTournamentRound" aria-live="polite"></div>
             </div>`;
     }
 

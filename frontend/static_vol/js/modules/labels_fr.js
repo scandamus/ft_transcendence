@@ -7,6 +7,7 @@ export const labels_fr = {
     langName: 'français',
     common: {
         switchLang: 'Changer de langue',
+        btnEnable: 'Le bouton sera activé lorsque des valeurs valides seront saisies.',
         logoutTokenExpired: 'Session expirée. Vous avez été déconnecté. Veuillez vous reconnecter.',
         disconnected: 'Déconnecté du serveur',
         disconnectedByNewLogin: 'Déconnecté en raison d’une nouvelle connexion sur le serveur',
@@ -52,7 +53,6 @@ export const labels_fr = {
         loginError1: 'Veuillez vérifier le nom d’utilisateur et le mot de passe',
         loginError2: 'quelque chose s’est mal passé',
     },
-
     dashboard: {
         title: 'Tableau de bord',
         labelChangeAvatar: 'Changer l’avatar',
@@ -67,15 +67,18 @@ export const labels_fr = {
     friends: {
         title: 'Amis',
         labelMatch: 'jouer contre',
+        labelMatchAria: 'Jouer contre $friend ',
         labelReceiveMatch: 'Recevoir la rencontre',
         labelCancel: 'Annuler',
         labelRmFriend: 'Annuler l’amitié',
+        labelRmFriendAria: 'Annuler l’amitié avec $friend ',
         labelAccept: 'Accepter',
         labelDecline: 'Supprimer',
         labelApply: 'Jouer contre',
         labelSearch: 'Envoyer une demande d’ami',
         labelSendRequest: 'Envoyer',
         labelRequest: 'être amis',
+        labelRequestAria: 'Envoyer une demande d\'amitié à $player',
         msgNoUsername: 'Veuillez entrer un nom d’utilisateur à qui envoyer une demande d’ami',
         msgNoFriends: 'Vous n’avez pas encore d’amis',
         labelListFriends: 'Liste d’amis',
@@ -90,6 +93,8 @@ export const labels_fr = {
     lounge: {
         title: 'Lounge',
         labelMatch: 'Rejoindre',
+        labelMatchDual: 'Rejoindre un match à 2 joueurs',
+        labelMatchQuad: 'Rejoindre un match à 4 joueurs',
         labelCreateRoom: 'Créer une salle',
         labelDualGame: 'Jeu à 2 joueurs',
         labelQuadGame: 'Jeu à 4 joueur',

@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             router(getToken('accessToken'));
         }
     });
+
+    changeFontSize();
 });
 
 //reload
@@ -49,3 +51,33 @@ window.addEventListener('beforeunload', () => {
     sessionStorage.removeItem('tournament_id');
     sessionStorage.removeItem('tournament_status');
 });
+
+const unitChangeFontSize = (size, target, elHtml) => {
+    const listSize = target.closest('.blockFontSize_list');
+    const btnCurrent = listSize.querySelector('button.is-current');
+    if (btnCurrent !== target) {
+        btnCurrent.classList.remove('is-current');
+        elHtml.style.fontSize = size;
+        target.classList.add('is-current');
+    }
+}
+
+//changeFontSige
+const changeFontSize = () => {
+    const elHtml = document.querySelector('html');
+    const btnTextSmall = document.getElementById('btnTextSmall');
+    const btnTextMid = document.getElementById('btnTextMid');
+    const btnTextBig = document.getElementById('btnTextBig');
+
+    btnTextMid.classList.add('is-current');
+    btnTextSmall.addEventListener('click', (ev) => {
+        unitChangeFontSize('52.5%', ev.target, elHtml);
+
+    });
+    btnTextMid.addEventListener('click', (ev) => {
+        unitChangeFontSize('62.5%', ev.target, elHtml);
+    });
+    btnTextBig.addEventListener('click', (ev) => {
+        unitChangeFontSize('80%', ev.target, elHtml);
+    });
+}

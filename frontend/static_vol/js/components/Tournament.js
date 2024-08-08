@@ -53,8 +53,8 @@ export default class Tournament extends PageBase {
                     <dl class="blockForm_el formCreateTournament_elInput formCreateTournament_elInput-title">
                         <dt>${labels.tournament.labelTournamentTitle}</dt>
                         <dd>
-                            <input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\u3005\\w@_#$%&!.+*~]+" minlength="3" maxlength="50" required />
-                            <ul class="listError"></ul>
+                            <input type="text" id="inputTournamentTitle" placeholder="Enter Tournament Title" pattern="[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FFF\\u3005\\w@_#$%&!.+*~]+" minlength="3" maxlength="50" aria-describedby="errorInputTournamentTitle" required aria-required="true" />
+                            <ul id="errorInputTournamentTitle" class="listError"></ul>
                             <ul class="listAnnotation">${listDescTournamentTitle}</ul>
                         </dd>
                     </dl>
@@ -67,25 +67,27 @@ export default class Tournament extends PageBase {
                               name="startTime"
                               value=""
                               min=""
-                              max="" />
-                            <ul class="listError"></ul>
+                              max=""
+                              aria-describedby="errorInputTournamentStart" />
+                            <ul id="errorInputTournamentStart" class="listError"></ul>
                             <ul class="listAnnotation">${listDescTournamentStart}</ul>
                         </dd>
                     </dl>
                     <p class="formCreateTournament_button blockForm_button"><button type="submit" id="btnCreateTournament" class="unitButton" disabled>${labels.tournament.labelCreateTournament}</button></p>
+                    <p class="ParaAnnotation">${labels.common.btnEnable}</p>
                 </form>
                 <p class="btnUpdateTournamentLists"><button type="button" id="btnUpdateTournamentLists_button" class="unitButton unitButton-small">${labels.tournament.labelUpdateLists}</button></p>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleUpcoming}</h3>
-                    <div class="blockTournamentList_upcoming listLineDivide"></div>
+                    <div class="blockTournamentList_upcoming listLineDivide" aria-live="polite"></div>
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleOnGoing}</h3>
-                    <div class="blockTournamentList_ongoing listLineDivide"></div>
+                    <div class="blockTournamentList_ongoing listLineDivide" aria-live="polite"></div>
                 </section>
                 <section class="blockTournamentList">
                     <h3 class="blockTournamentList_title unitTitle1">${labels.tournament.labelTitleRecent}</h3>
-                    <div class="blockTournamentList_finished listLineDivide"></div>
+                    <div class="blockTournamentList_finished listLineDivide" aria-live="polite"></div>
                 </section>
             </div>
         `;

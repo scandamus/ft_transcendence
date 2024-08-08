@@ -46,26 +46,26 @@ export default class Friends extends PageBase {
                 <div class="blockUsers_column">
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
-                        <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <div class="blockFriends_friends listFriends listLineDivide" aria-live="polite"></div>
                     </section>
                 </div>
                 <div class="blockUsers_column">
                     <p class="blockFriendsFull"></p>
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
-                        <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
+                        <div class="blockFriendRequest_friends listFriends listLineDivide" aria-live="polite"></div>
                     </section>
                     <section class="blockSearchFriend">
                         <h3 class="blockSearchFriend_title unitTitle1">${labels.friends.labelSearch}</h3>
                         <form action="" method="post" class="blockSearchFriend_form blockForm" id="friendSearchForm">
-                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" required></p>
+                            <p class="blockForm_input"><input type="text" id="inputFriendsName" name="nameFriend" placeholder="Enter friend's name" pattern="(?=.*[a-z0-9])[a-z0-9_]+" minlength="3" maxlength="32" aria-describedby="errorInputFriendsName" required aria-required="true" /></p>
                             <p class="blockForm_button"><button type="submit" id="btnSearchFriend" class="unitButton">${labels.friends.labelSendRequest}</button></p>
-                            <ul class="listError"></ul>
+                            <ul id="errorInputFriendsName" class="listError"></ul>
                         </form>
                     </section>
                     <section class="blockFriendRecommended">
                         <h3 class="blockFriendRecommended_title unitTitle1">${labels.friends.labelRecommended}</h3>
-                        <div class="blockFriendRecommended_friends listFriends listLineDivide"></div>
+                        <div class="blockFriendRecommended_friends listFriends listLineDivide" aria-live="polite"></div>
                     </section>
                 </div>
             </div>

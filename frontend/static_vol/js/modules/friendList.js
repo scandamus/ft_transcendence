@@ -45,10 +45,14 @@ const updateFriendsList = async (pageInstance) => {
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
                         <ul class="unitFriendButton unitListBtn unitListBtn-horizontal">
-                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}" data-avatar="${avatar}" ${disableMatchButton}>${labels.friends.labelMatch}</button></li>`;
+                            <li><button type="button" class="unitFriendButton_matchRequest unitButton" data-username="${friend.username}" data-avatar="${avatar}" ${disableMatchButton} aria-label="${labels.friends.labelMatchAria.replace('$friend', friend.username)}">
+                                <span aria-hidden="true">${labels.friends.labelMatch}</span>
+                            </button></li>`;
                 if (isPageFriend) {
                     friendElement += `
-                            <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}">${labels.friends.labelRmFriend}</button></li>
+                            <li><button type="button" class="unitFriendButton_removeFriend unitButton" data-username="${friend.username}" aria-label="${labels.friends.labelRmFriendAria.replace('$friend', friend.username)}">
+                                <span aria-hidden="true">${labels.friends.labelRmFriend}</span>
+                            </button></li>
                     `;
                 }
                 friendElement += `</ul>
@@ -76,10 +80,12 @@ const updateFriendRequestList = async (pageInstance) => {
         else if (requests && requests.length === 0) {
             if (!secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.add('is-noRequest');
+                secRequestWrapper.ariaHidden = 'true';
             }
         } else {
             if (secRequestWrapper.classList.contains('is-noRequest')) {
                 secRequestWrapper.classList.remove('is-noRequest');
+                secRequestWrapper.ariaHidden = 'false';
             }
             listRequestWrapper.innerHTML = '';
             requests.forEach(request => {
@@ -129,7 +135,9 @@ const updateRecommend = async (pageInstance) => {
                             <p class="unitFriend_thumb"><img src="${avatar}" alt="" width="100" height="100"></p>
                         </header>
                         <p class="unitFriendButton">
-                            <button type="button" class="unitFriendButton_friendRequest unitButton" data-username="${player.username}">${labels.friends.labelRequest}</button>
+                            <button type="button" class="unitFriendButton_friendRequest unitButton" data-username="${player.username}" aria-label="${labels.friends.labelRequestAria.replace('player', player.username)}">
+                                <span aria-hidden="true">${labels.friends.labelRequest}</span>
+                            </button>
                         </p>
                     </section>
                 `;

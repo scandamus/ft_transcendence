@@ -60,7 +60,7 @@ export default class Dashboard extends PageBase {
                         <div class="blockAvatar_avatar thumb">
                             <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
                         </div>
-                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">${labels.dashboard.labelChangeAvatar}</button></p>
+                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small" aria-label="${labels.dashboard.labelChangeAvatar}"><span aria-hidden="true">${labels.dashboard.labelChangeAvatar}</span></button></p>
                         <input type="file" id="inputAvatarFile" accept=".jpg, .jpeg, .png" class="formPartsHide">
                         <ul class="blockAvatar_listButton listButton">
                             <li><button type="button" id="btnAvatarCancel" class="unitButton">${labels.dashboard.labelCancel}</button></li>
@@ -76,23 +76,23 @@ export default class Dashboard extends PageBase {
                 <div class="blockPlayerDetail_detail">
                     <section class="blockFriendRequest">
                         <h3 class="blockFriendRequest_title unitTitle2">${labels.friends.labelReceivedRequest}</h3>
-                        <div class="blockFriendRequest_friends listFriends listLineDivide"></div>
+                        <div class="blockFriendRequest_friends listFriends listLineDivide" aria-live="polite"></div>
                         <div class="blockFriendsFull">
                             <p class="unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>Friends</a></p>
                         </div>
                     </section>
                     <section class="blockFriends">
                         <h3 class="blockFriends_title unitTitle1">${labels.friends.labelListFriends}</h3>
-                        <div class="blockFriends_friends listFriends listLineDivide"></div>
+                        <div class="blockFriends_friends listFriends listLineDivide" aria-live="polite"></div>
                         <p class="blockFriends_link unitLinkText unitLinkText-right"><a href="/friends" class="unitLink" data-link>${labels.dashboard.labelViewAllFriends}</a></p>
                     </section>
                     <section class="blockDashboardLog">
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.tournament.labelTournamentLog}</h3>
-                        <div class="blockDashboardLog_listTournament listLineDivide"></div>
+                        <div class="blockDashboardLog_listTournament listLineDivide" aria-live="polite"></div>
                     </section>
                     <section class="blockDashboardLog">
                         <h3 class="blockDashboardLog_title unitTitle1">${labels.match.labelMatchLog}</h3>
-                        <div class="blockDashboardLog_listMatch listLineDivide"></div>
+                        <div class="blockDashboardLog_listMatch listLineDivide" aria-live="polite"></div>
                     </section>
                 </div>
             </div>

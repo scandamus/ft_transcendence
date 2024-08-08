@@ -7,13 +7,14 @@ export const labels_en = {
     langName: 'English',
     common: {
         switchLang: 'Switch Language',
+        btnEnable: 'The button becomes clickable when valid values are entered.',
         logoutTokenExpired: 'Session expired. You have been logged out. Please log in again.',
         disconnected: 'Disconnected from the server',
         disconnectedByNewLogin: 'Disconnected due to a new login on the server',
         failUpdateDbLang: 'Failed to save language settings',
     },
     home: {
-        title: 'Home',
+        title: 'Log In',
         labelUsername: 'username',
         labelPassword: 'password',
         labelButtonLogin: 'log in',
@@ -52,7 +53,6 @@ export const labels_en = {
         loginError1: 'Login failed. Please check your username and password.',
         loginError2: 'Something went wrong. Unable to log in.',
     },
-
     dashboard: {
         title: 'Dashboard',
         labelChangeAvatar: 'change avatar',
@@ -67,15 +67,18 @@ export const labels_en = {
     friends: {
         title: 'Friends',
         labelMatch: 'start a match',
+        labelMatchAria: 'Start a match against $friend ',
         labelReceiveMatch: 'take the match',
         labelCancel: 'cancel',
         labelRmFriend: 'remove friend',
+        labelRmFriendAria: 'Remove $friend from friends',
         labelAccept: 'accept',
         labelDecline: 'decline',
         labelApply: 'start a match',
         labelSearch: 'send friend request',
         labelSendRequest: 'send',
         labelRequest: 'friend request',
+        labelRequestAria: 'Send a friend request to $player',
         msgNoUsername: 'Enter a username to send friend request',
         msgNoFriends: 'no friends yet',
         labelListFriends: 'friends',
@@ -90,6 +93,8 @@ export const labels_en = {
     lounge: {
         title: 'Lounge',
         labelMatch: 'enter',
+        labelMatchDual: 'Enter a 2-player match',
+        labelMatchQuad: 'Enter a 4-player match',
         labelCreateRoom: 'create a room',
         labelDualGame: '2-player match',
         labelQuadGame: '4-player match',
