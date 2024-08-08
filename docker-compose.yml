@@ -63,6 +63,7 @@ services:
     volumes:
       - ./frontend/static_vol:/var/www/html
       - ${CERTS}:/etc/nginx/ssl
+      - ./backend/scandamus/static/:/var/www/static
     restart: always
     networks:
       - backend-network
@@ -87,6 +88,7 @@ services:
     container_name: pong-server
     environment:
       - PONG_LOG_LEVEL=${PONG_LOG_LEVEL}
+      - DEBUG=${DEBUG}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -111,6 +113,7 @@ services:
     container_name: pong4-server
     environment:
       - PONG4_LOG_LEVEL=${PONG4_LOG_LEVEL}
+      - DEBUG=${DEBUG}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}

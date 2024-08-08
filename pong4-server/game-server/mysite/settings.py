@@ -35,7 +35,7 @@ SECRET_KEY = get_env_var('SECRET_KEY')
 CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_env_var('DEBUG').lower() in ['true', '1']
 
 # SERVER HOST
 SERVER_HOST = get_env_var('DOMAIN_NAME')

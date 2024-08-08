@@ -129,7 +129,7 @@ class LoungeSession(AsyncWebsocketConsumer):
         logger.info(f'sent online status: {online_status} of {changed_username} to {self.user.username}')
 
     async def disconnect(self, close_code):
-        if hasattr(self, 'user') and self.user.username in self.players:
+        if hasattr(self, 'user') and self.user is not None and self.user.username in self.players:
             del LoungeSession.players[self.user.username]
             await self.channel_layer.group_discard(
                 self.group_name,
