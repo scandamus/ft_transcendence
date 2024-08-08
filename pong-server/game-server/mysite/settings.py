@@ -30,7 +30,6 @@ def get_env_var(var):
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-$$k5y1zm9k%%^v*sdqv=y(9#f44#l)yjxy3t3_=g-%1*a044gb'
 SECRET_KEY = get_env_var('SECRET_KEY')
 CHANNEL_SECRET_KEY = get_env_var('CHANNEL_SECRET_KEY')
 
@@ -39,9 +38,7 @@ DEBUG = get_env_var('DEBUG').lower() in ['true', '1']
 
 # SERVER HOST
 SERVER_HOST = get_env_var('DOMAIN_NAME')
-ALLOWED_HOSTS = ['backend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
-#ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['backend', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
 
@@ -89,8 +86,8 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 SIMPLE_JWT = {
     'SIGNING_KEY': get_env_var('SIGNING_KEY'),
     'ALGORITHM': 'HS256',
- #   'ENCODE': 'utf-8',
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'ENCODE': 'utf-8',
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
     'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化
@@ -111,17 +108,6 @@ DATABASES = {
         'PORT': 5432
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#         "TEST": {
-#             "NAME": BASE_DIR / "db.sqlite3",
-#         },
-#     }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

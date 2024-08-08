@@ -46,7 +46,7 @@ FRIENDS_MAX = get_env_var('FRIENDS_MAX')
 
 # SERVER HOST
 SERVER_HOST = get_env_var('DOMAIN_NAME')
-ALLOWED_HOSTS = ['backend', 'frontend', 'pong-server', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['backend', 'frontend', SERVER_HOST, 'localhost', '127.0.0.1', '[::1]']
 
 # Application definition
 INSTALLED_APPS = [
@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     'channels',
     'players.apps.PlayersConfig',
     'game.apps.GameConfig',
-#    'game',
     'django_celery_beat',
     'django_celery_results',
     'django.contrib.sites',
@@ -92,9 +91,10 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'scandamus.urls'
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    'https://localhost',
-    'https://localhost:443'
+     'https://localhost',
+     f'https://{SERVER_HOST}',
 ]
 
 CSRF_TRUSTED_ORIGINS = ['https://localhost']
@@ -149,8 +149,6 @@ AUTHENTICATION_BACKENDS = (
     # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-#JWT_SECRET_KEY = get_env_var('SECRET_KEY')
-
 SIMPLE_JWT = {
     'SIGNING_KEY': get_env_var('BACKEND_JWT_SIGNING_KEY'),
     'ALGORITHM': 'HS256',
@@ -160,15 +158,6 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True, # 期限切れなら自動でadcessTokenをrefreshする
     'BLACKLIST_AFTER_ROTATION': True, # 古いrefreshTokenを無効化
     'UPDATE_LAST_LOGIN': True,
-}
-
-GAME_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=3),
-    'SIGNING_KEY': get_env_var('GAME_JWT_SIGNING_KEY'),
-    'ALGORITHM': 'HS256',
-#    'AUDIENCE': '',
-#    'ISSUER': 'pong-server'
 }
 
 SOCIALACCOUNT_PROVIDERS = {
