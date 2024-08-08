@@ -4,7 +4,7 @@ import PageBase from './PageBase.js';
 import { labels } from '../modules/labels.js';
 import { webSocketManager } from '../modules/websocket.js';
 import { router } from '../modules/router.js';
-import { initToken } from '../modules/token.js';
+import { getToken, initToken } from '../modules/token.js';
 import { isTouchDevice } from "../modules/judgeTouchDevice.js";
 import { buttonControlManager } from "../modules/ButtonControlManager.js";
 
