@@ -49,7 +49,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.right_pressed = False
         self.left_pressed = False
         self.result_sent = False
-        self.tasks = []
+        self.pending_task = []
 
     async def connect(self):
         try:
@@ -67,15 +67,14 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.close(code=1011)
 
     async def disconnect(self, close_code):
-        logger.error('disconnect called')
         try:
             # Leave room group
-            if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
+            if self.match_id in self.players_ids and self.player_name in self.players_ids[self.match_id]:
                 logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
-                self.players_ids[self.match_id].remove(self.players_id)
+                self.players_ids[self.match_id].remove(self.player_name)
                 if not self.players_ids[self.match_id]:
                     logger.error(f'no players left in match_id: {self.match_id}')
-                    if  not self.result_sent:
+                    if not self.result_sent:
                         await self.game_over('', True)
                     del self.players_ids[self.match_id]
                 else:
@@ -89,7 +88,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                             await self.send_transfer_data()
                             await self.channel_layer.group_send(self.room_group_name, {
                                 'type': 'start_game',
-                                'master_id': new_next_master,
+                                'master_name': new_next_master,
                                 'state': 'ongoing',
                             })
             await self.channel_layer.group_discard(
@@ -112,7 +111,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             elif action == 'authenticateReconnect':
                 await self.handle_authenticate(text_data_json, True)
             elif action == 'exit_game':
-                logger.error('Exit game: 1')
                 await self.handle_exit_message(text_data)
         except json.JSONDecodeError as e:
             logger.error(f'JSON decode error: {e}')
@@ -150,7 +148,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.players_id = players_id
             if self.match_id not in self.players_ids:
                 self.players_ids[self.match_id] = set()
-            self.players_ids[self.match_id].add(self.players_id)
+            self.players_ids[self.match_id].add(self.player_name)
 
             if is_reconnect == True:
                 number_of_player = len(self.players_ids[self.match_id])
@@ -170,10 +168,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             if len(self.players_ids[self.match_id]) == 4:  # 4人に決め打ち
                 initial_master = sorted(self.players_ids[self.match_id])[0]
-                logger.info(f'initial_master: {initial_master}')
+                logger.error(f'initial_master: {initial_master}')
                 await self.channel_layer.group_send(self.room_group_name, {
                     'type': 'start.game',
-                    'master_id': initial_master,
+                    'master_name': initial_master,
                     'state': 'start',
                 })
                 await database_sync_to_async(update_match_status_to_ongoing)(self.match_id)
@@ -193,8 +191,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         })
 
     async def exit_game(self, event):
-        logger.error('Exit game: 3')
-        logger.error(f'exit_game called: {self.player_name}')
         exited_player = event['player_name']
         await self.deactivate_paddle(exited_player)
 
@@ -277,7 +273,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while self.game_continue:
                 # await asyncio.sleep(0.1)
-                await asyncio.sleep(1 / 60)  # 60Hz
+                await asyncio.sleep(1 / 20)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
                     await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score,
@@ -301,7 +297,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'message': message,
             })
 
-        await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, self.upper_paddle.score, self.lower_paddle.score, 'after')
+        update_task = asyncio.create_task(self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after'))
+        self.pending_task.append(update_task)
         if self.scheduled_task is not None:
             self.scheduled_task.cancel()
             self.scheduled_task = None
@@ -359,16 +356,16 @@ class PongConsumer(AsyncWebsocketConsumer):
         logger.info(f'{self.username}: receive transfer data')
 
     async def update_ball_and_send_data(self):
+        active_count = await self.count_active_paddle()
+        if self.active_paddle_count != active_count:
+            await self.remove_wall()
+            self.active_paddle_count = active_count
         self.right_paddle.move_for_multiple()
         self.left_paddle.move_for_multiple()
         self.upper_paddle.move_for_multiple()
         self.lower_paddle.move_for_multiple()
         sound_type = self.ball.move_for_multiple(self.right_paddle, self.left_paddle, self.upper_paddle,
                                                  self.lower_paddle, self.walls)
-        active_count = await self.count_active_paddle()
-        if self.active_paddle_count != active_count:
-            await self.remove_wall()
-            self.active_paddle_count = active_count
         ball_tmp = {
             'x': self.ball.x,
             'y': self.ball.y,
@@ -632,12 +629,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
-        master_id = event['master_id']
+        master_name = event['master_name']
         state = event['state']
         if state == 'start':
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
             await self.init_walls()
-        if self.players_id == master_id:
+        if self.player_name == master_name:
             logger.info(f"New master appointed: [{self.players_id}]{self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
