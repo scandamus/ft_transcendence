@@ -49,6 +49,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.right_pressed = False
         self.left_pressed = False
         self.result_sent = False
+        self.tasks = []
 
     async def connect(self):
         try:
@@ -66,6 +67,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.close(code=1011)
 
     async def disconnect(self, close_code):
+        logger.error('disconnect called')
         try:
             # Leave room group
             if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
@@ -79,10 +81,14 @@ class PongConsumer(AsyncWebsocketConsumer):
                 else:
                     if self.scheduled_task is not None:
                         # self.scheduled_task.cancel()
+                        # cancelする前にexit_gameを呼びたい
+                        if self.tasks:
+                            await asyncio.gather(*self.tasks)
                         await self.cancel_task('scheduled_task')
                         self.scheduled_task = None
                         if self.game_continue:
                             new_next_master = sorted(self.players_ids[self.match_id])[0]
+                            logger.error(f'new_next_master: {new_next_master}')
                             await self.send_transfer_data()
                             await self.channel_layer.group_send(self.room_group_name, {
                                 'type': 'start_game',
@@ -92,6 +98,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
+            if hasattr(self, 'pending_tasks') and self.pending_tasks:
+                await asyncio.gather(*self.pending_tasks)
         except Exception as e:
             logger.error(f'Error disconnecting: {e}')
 
@@ -107,6 +115,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             elif action == 'authenticateReconnect':
                 await self.handle_authenticate(text_data_json, True)
             elif action == 'exit_game':
+                logger.error('Exit game: 1')
                 await self.handle_exit_message(text_data)
         except json.JSONDecodeError as e:
             logger.error(f'JSON decode error: {e}')
@@ -178,6 +187,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
 
     async def handle_exit_message(self, text_data):
+        logger.error('Exit game: 2')
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'exit_game',
             'player_name': self.player_name,
@@ -185,15 +195,22 @@ class PongConsumer(AsyncWebsocketConsumer):
         })
 
     async def exit_game(self, event):
+        logger.error('Exit game: 3')
+        logger.error(f'exit_game called: {self.player_name}')
         exited_player = event['player_name']
-        if exited_player == 'player1':
-            self.left_paddle.deactivate(-1)
-        elif exited_player == 'player2':
-            self.right_paddle.deactivate(-1)
-        elif exited_player == 'player3':
-            self.upper_paddle.deactivate(-1)
-        elif exited_player == 'player4':
-            self.lower_paddle.deactivate(-1)
+        tmp = asyncio.create_task(self.deactivate_paddle(exited_player))
+        self.tasks.append(tmp)
+
+    async def deactivate_paddle(self, exited_player):
+        if self.scheduled_task is not None:
+            if exited_player == 'player1':
+                self.left_paddle.deactivate(-1)
+            elif exited_player == 'player2':
+                self.right_paddle.deactivate(-1)
+            elif exited_player == 'player3':
+                self.upper_paddle.deactivate(-1)
+            elif exited_player == 'player4':
+                self.lower_paddle.deactivate(-1)
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
