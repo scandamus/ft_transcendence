@@ -172,10 +172,8 @@ class Ball:
                 return sound_type
 
         # どちらにも当たらないならdx,dyを足してballを移動
-        if not collision_detected_upper and not collision_detected_lower:
-            self.x += self.dx
-        if not collision_detected_right and not collision_detected_left:
-            self.y += self.dy
+        self.x += self.dx
+        self.y += self.dy
 
         # 壁を超えているか
         if CANVAS_WIDTH_MULTI < self.x:
