@@ -60,7 +60,7 @@ export default class Dashboard extends PageBase {
                         <div class="blockAvatar_avatar thumb">
                             <img id="imgAvatar" src="${this.avatar}" alt="" width="200" height="200">
                         </div>
-                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small">${labels.dashboard.labelChangeAvatar}</button></p>
+                        <p class="blockAvatar_button is-show"><button type="button" id="btnUpdateAvatar" class="unitButton unitButton-small" aria-label="${labels.dashboard.labelChangeAvatar}"><span aria-hidden="true">${labels.dashboard.labelChangeAvatar}</span></button></p>
                         <input type="file" id="inputAvatarFile" accept=".jpg, .jpeg, .png" class="formPartsHide">
                         <ul class="blockAvatar_listButton listButton">
                             <li><button type="button" id="btnAvatarCancel" class="unitButton">${labels.dashboard.labelCancel}</button></li>
