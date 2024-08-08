@@ -86,8 +86,8 @@ class Ball:
     def reset(self, x, y):
         self.speed = 6
         tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
-        self.x = x
-        self.y = y
+        self.x = x - BALL_SIZE / 2
+        self.y = y - BALL_SIZE / 2
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.flag = True
