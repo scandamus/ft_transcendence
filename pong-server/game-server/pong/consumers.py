@@ -46,6 +46,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.up_pressed = False
         self.down_pressed = False
         self.result_sent = False
+        self.pending_task = []
 
     async def connect(self):
         try:
@@ -300,7 +301,8 @@ class PongConsumer(AsyncWebsocketConsumer):
                 'message': message,
             })
 
-        asyncio.create_task(self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after'))
+        update_task = asyncio.create_task(self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after'))
+        self.pending_task.append(update_task)
         # 問題を発生させるには上をコメントアウトして下の#を取る
         # await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score, 'after')
 
