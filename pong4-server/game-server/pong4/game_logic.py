@@ -86,8 +86,8 @@ class Ball:
     def reset(self, x, y):
         self.speed = 6
         tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
-        self.x = x
-        self.y = y
+        self.x = x - BALL_SIZE / 2
+        self.y = y - BALL_SIZE / 2
         self.dx = tmp['dx']
         self.dy = tmp['dy']
         self.flag = True
@@ -100,81 +100,51 @@ class Ball:
 
     def move_for_multiple(self, right_paddle, left_paddle, upper_paddle, lower_paddle, walls):
         sound_type = None
-        # 壁を超えているか
-        if CANVAS_WIDTH_MULTI < self.x + self.dx:
-            self.handle_scored(right_paddle)
-            sound_type = 'scored'
-            return sound_type
-        elif self.x + self.size + self.dx < 0:
-            self.handle_scored(left_paddle)
-            sound_type = 'scored'
-            return sound_type
-        elif self.y + self.size + self.dy < 0:
-            self.handle_scored(upper_paddle)
-            sound_type = 'scored'
-            return sound_type
-        elif CANVAS_HEIGHT_MULTI < self.y + self.dy:
-            self.handle_scored(lower_paddle)
-            sound_type = 'scored'
-            return sound_type
+        collision_detected_right = False
+        collision_detected_left = False
+        collision_detected_upper = False
+        collision_detected_lower = False
 
-        # x座標の操作
-        collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
-        if collision_detected_right == 'collision_front':
-            self.reflect_ball(right_paddle, 'RIGHT')
-            # 位置調整
-            self.x = right_paddle.x - self.size
-        elif collision_detected_right == 'collision_side':
-            # 位置調整
-            self.y += self.dy
-            # 設定
-            self.dy = -self.dy
-            self.x += self.dx
-        collision_detected_left = self.collision_detection(left_paddle, 'LEFT')
-        if collision_detected_left == 'collision_front':
-            self.reflect_ball(left_paddle, 'LEFT')
-            # 位置調整
-            self.x = left_paddle.thickness
-        elif collision_detected_left == 'collision_side':
-            # 位置調整
-            self.y += self.dy
-            # 設定
-            self.dy = -self.dy
-            self.x += self.dx
-        if not collision_detected_right and not collision_detected_left:
-            self.y += self.dy
-        # y座標の操作
-        collision_detected_upper = self.collision_detection(upper_paddle, 'UPPER')
-        if collision_detected_upper == 'collision_front':
-            self.reflect_ball(upper_paddle, 'UPPER')
-            # 位置調整
-            self.y = upper_paddle.y + upper_paddle.thickness
-        elif collision_detected_upper == 'collision_side':
-            # 位置調整
-            self.x += self.dx
-            # 設定
-            self.dx = -self.dx
-            self.y += self.dy
-        collision_detected_lower = self.collision_detection(lower_paddle, 'LOWER')
-        if collision_detected_lower == 'collision_front':
-            self.reflect_ball(lower_paddle, 'LOWER')
-            # 位置調整
-            self.y = lower_paddle.y - self.size
-        elif collision_detected_lower == 'collision_side':
-            # 位置調整
-            self.x += self.dx
-            # 設定
-            self.dx = -self.dx
-            self.y += self.dy
-        if not collision_detected_upper and not collision_detected_lower:
-            self.x += self.dx
-        if collision_detected_left or collision_detected_right or collision_detected_lower or collision_detected_upper:
-            return 'paddle_collision'
+        if 0 < self.dx:
+            collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
+        elif self.dx < 0:
+            collision_detected_left = self.collision_detection(left_paddle, 'LEFT')
+        if collision_detected_right or collision_detected_left:
+            sound_type = 'paddle_collision'
+            if collision_detected_right == 'collision_front':
+                self.reflect_ball(right_paddle, 'RIGHT')
+            elif collision_detected_right == 'collision_side':
+                self.dy = -self.dy
+                self.x += self.dx
+            elif collision_detected_left == 'collision_front':
+                self.reflect_ball(left_paddle, 'LEFT')
+            elif collision_detected_left == 'collision_side':
+                self.dy = -self.dy
+                self.x += self.dx
+            return sound_type
+        if 0 < self.dy:
+            collision_detected_lower = self.collision_detection(lower_paddle, 'LOWER')
+        elif self.dy < 0:
+            collision_detected_upper = self.collision_detection(upper_paddle, 'UPPER')
+        if collision_detected_upper or collision_detected_lower:
+            sound_type = 'paddle_collision'
+            if collision_detected_upper == 'collision_front':
+                self.reflect_ball(upper_paddle, 'UPPER')
+            elif collision_detected_upper == 'collision_side':
+                self.dx = -self.dx
+                self.y += self.dy
+            elif collision_detected_lower == 'collision_front':
+                self.reflect_ball(lower_paddle, 'LOWER')
+            elif collision_detected_lower == 'collision_side':
+                self.dx = -self.dx
+                self.y += self.dy
+            return sound_type
 
         for wall in walls:
             collision_detected = self.collision_detection(wall, wall.position)
             if collision_detected == 'collision_front':
                 sound_type = 'wall_collision'
+                # 無限ループしないように
                 tmp = random.uniform(0, 0.5)
                 # 座標調整
                 if wall.position == 'RIGHT':
@@ -188,7 +158,7 @@ class Ball:
                     self.dy = -self.dy + tmp
                 elif wall.position == 'LOWER':
                     tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy
+                    self.dy = -self.dy + tmp
                 return sound_type
             elif collision_detected == 'collision_side':
                 sound_type = 'wall_collision'
@@ -199,6 +169,29 @@ class Ball:
                     self.dx = -self.dx
                     self.y += self.dy
                 return sound_type
+
+        # どちらにも当たらないならdx,dyを足してballを移動
+        self.x += self.dx
+        self.y += self.dy
+
+        # 壁を超えているか
+        if CANVAS_WIDTH_MULTI < self.x:
+            self.handle_scored(right_paddle)
+            sound_type = 'scored'
+            return sound_type
+        elif self.x + self.size < 0:
+            self.handle_scored(left_paddle)
+            sound_type = 'scored'
+            return sound_type
+        elif self.y + self.size < 0:
+            self.handle_scored(upper_paddle)
+            sound_type = 'scored'
+            return sound_type
+        elif CANVAS_HEIGHT_MULTI < self.y:
+            self.handle_scored(lower_paddle)
+            sound_type = 'scored'
+            return sound_type
+
         return sound_type
 
     def collision_detection(self, obj, obj_side):
