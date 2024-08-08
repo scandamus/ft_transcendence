@@ -426,7 +426,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def send_game_data(self, game_status, message, timestamp, sound_type):
         try:
             await self.send(text_data=json.dumps({
-                'message': message + f'\n{timestamp}\n\n',
+                'message': 'GameData',
                 'game_status': game_status,
                 'ball': {
                     'x': self.ball.x,
