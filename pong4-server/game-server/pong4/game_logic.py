@@ -160,6 +160,7 @@ class Ball:
             collision_detected = self.collision_detection(wall, wall.position)
             if collision_detected == 'collision_front':
                 sound_type = 'wall_collision'
+                # 無限ループしないように
                 tmp = random.uniform(0, 0.5)
                 # 座標調整
                 if wall.position == 'RIGHT':
@@ -173,7 +174,7 @@ class Ball:
                     self.dy = -self.dy + tmp
                 elif wall.position == 'LOWER':
                     tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy
+                    self.dy = -self.dy + tmp
                 return sound_type
             elif collision_detected == 'collision_side':
                 sound_type = 'wall_collision'
