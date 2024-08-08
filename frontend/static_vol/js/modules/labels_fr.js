@@ -89,6 +89,8 @@ export const labels_fr = {
     lounge: {
         title: 'Lounge',
         labelMatch: 'Rejoindre',
+        labelMatchDual: 'Rejoindre un match à 2 joueurs',
+        labelMatchQuad: 'Rejoindre un match à 4 joueurs',
         labelCreateRoom: 'Créer une salle',
         labelDualGame: 'Jeu à 2 joueurs',
         labelQuadGame: 'Jeu à 4 joueur',
