@@ -81,9 +81,6 @@ class PongConsumer(AsyncWebsocketConsumer):
                 else:
                     if self.scheduled_task is not None:
                         # self.scheduled_task.cancel()
-                        # cancelする前にexit_gameを呼びたい
-                        if self.tasks:
-                            await asyncio.gather(*self.tasks)
                         await self.cancel_task('scheduled_task')
                         self.scheduled_task = None
                         if self.game_continue:
@@ -188,6 +185,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def handle_exit_message(self, text_data):
         logger.error('Exit game: 2')
+        await self.deactivate_paddle(self.player_name)
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'exit_game',
             'player_name': self.player_name,
@@ -198,19 +196,17 @@ class PongConsumer(AsyncWebsocketConsumer):
         logger.error('Exit game: 3')
         logger.error(f'exit_game called: {self.player_name}')
         exited_player = event['player_name']
-        tmp = asyncio.create_task(self.deactivate_paddle(exited_player))
-        self.tasks.append(tmp)
+        await self.deactivate_paddle(exited_player)
 
     async def deactivate_paddle(self, exited_player):
-        if self.scheduled_task is not None:
-            if exited_player == 'player1':
-                self.left_paddle.deactivate(-1)
-            elif exited_player == 'player2':
-                self.right_paddle.deactivate(-1)
-            elif exited_player == 'player3':
-                self.upper_paddle.deactivate(-1)
-            elif exited_player == 'player4':
-                self.lower_paddle.deactivate(-1)
+        if exited_player == 'player1':
+            self.left_paddle.deactivate(-1)
+        elif exited_player == 'player2':
+            self.right_paddle.deactivate(-1)
+        elif exited_player == 'player3':
+            self.upper_paddle.deactivate(-1)
+        elif exited_player == 'player4':
+            self.lower_paddle.deactivate(-1)
 
     async def handle_game_message(self, text_data):
         text_data_json = json.loads(text_data)
