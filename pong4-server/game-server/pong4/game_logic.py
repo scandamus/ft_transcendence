@@ -105,7 +105,6 @@ class Ball:
         collision_detected_upper = False
         collision_detected_lower = False
 
-        # x座標の操作
         if 0 < self.dx:
             collision_detected_right = self.collision_detection(right_paddle, 'RIGHT')
         elif self.dx < 0:
