@@ -8,6 +8,7 @@ import { pongHandler } from '../modules/websocketHandler.js';
 import { labels } from '../modules/labels.js';
 import { addErrorMessage } from '../modules/form.js';
 import { setLang, saveLang } from '../modules/switchLanguage.js';
+import { addNotice } from "../modules/notice.js";
 import { decodeTokenExpiry, startTokenRefreshInterval } from '../modules/token.js';
 
 export default class LogIn extends PageBase {
@@ -28,6 +29,7 @@ export default class LogIn extends PageBase {
         //afterRenderにmethod追加
         this.addAfterRenderHandler(this.listenLogin.bind(this));
         this.addAfterRenderHandler(this.listenFocus.bind(this));
+        this.addAfterRenderHandler(this.listenAuthMessage.bind(this));
     }
 
     async renderHtml() {
@@ -44,6 +46,10 @@ export default class LogIn extends PageBase {
                 <ul id="errorLoginForm" class="blockForm_el listError"></ul>
                 <p class="blockForm_button"><button type="submit" id="btnLoginForm" class="unitButton unitButton-large">${labels.home.labelButtonLogin}</button></p>
             </form>
+            <hr />
+            <div class="blockLogin42">
+                <p><button type="button" id="btnLogin42" class="unitButton unitButton-large">42LOGIN</button></p>
+            </div>
             <hr />
             <dl class="blockSignUp">
                 <dt class="blockSignUp_txt">${labels.home.textSignUp}</dt>
@@ -74,6 +80,10 @@ export default class LogIn extends PageBase {
         const btnLogin = document.getElementById('btnLoginForm');
         const boundHandleLogin = this.handleLogin.bind(this);
         this.addListListenInInstance(btnLogin, boundHandleLogin, 'click');
+
+        const btnLogin42 = document.getElementById('btnLogin42');
+        const boundHandleLogin42 = this.handleLogin42.bind(this);
+        this.addListListenInInstance(btnLogin42, boundHandleLogin42, 'click');
     }
 
     handleLogin(ev) {
@@ -170,6 +180,83 @@ export default class LogIn extends PageBase {
             this.loginErrorType = error;
             const errWrapper = document.querySelector('.listError');
             addErrorMessage(errWrapper, error);
+        }
+    }
+
+    async handleLogin42(ev) {
+        ev.preventDefault();
+        try {
+            const response = await fetch('/api/oauth42/authorize42');
+            const data = await response.json();
+
+            const width = 600;
+            const height = 700;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+            window.open(
+                data.authorize_url,
+                '42AuthWindow',
+                `width=${width},height=${height},top=${top},left=${left},toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no`
+            );
+        } catch (error) {
+            console.error('Failed to get authorize URL:', error);
+        }
+    }
+
+    listenAuthMessage() {
+        const boundHandleAuthMessage = this.handleAuthMessage.bind(this);
+        this.addListListenInInstance(window, boundHandleAuthMessage, 'message');
+    }
+
+    async handleAuthMessage(ev) {
+        if (ev.origin !== window.location.origin) {
+            console.log('Message from untrusted origin:', ev.origin);
+            return;
+        }
+        const data = ev.data;
+        if (data && data.code && data.state) {
+            const response = await fetch('/api/oauth42/exchange_token42/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code: data.code,
+                    state: data.state
+                }),
+            });
+
+            if (response.ok) {
+                const tokenData = await response.json();
+                sessionStorage.setItem('accessToken', tokenData.access_token);
+                sessionStorage.setItem('refreshToken', tokenData.refresh_token);
+                await webSocketManager.openWebSocket('lounge', pongHandler);
+                window.history.pushState({}, null, '/dashboard');
+                const userInfo = await getUserInfo();
+                if (userInfo) {
+                    const langStorage = localStorage.getItem('configLang');
+                    const elSelectLang = document.getElementById('languageSelect');
+                    // localStorageにconfigLangあり、かつDBと異なる場合はlocalStorage優先
+                    if (langStorage && (userInfo.lang !== langStorage)) {
+                        setLang(elSelectLang, langStorage);
+                        await saveLang(langStorage);
+                    } else {
+                        setLang(elSelectLang, userInfo.lang);
+                        await saveLang(userInfo.lang);
+                    }
+
+                    await switchDisplayAccount();
+                    await router(true);
+                }
+            } else {
+                console.error('Failed to exchange token');
+                const errorData = await response.json();
+                if (errorData.error === 'NoUsernamesAvailable') {
+                    addNotice(labels.home.fail42Login1, true);
+                } else {
+                    addNotice(labels.home.fail42Login2, true);
+                }
+            }
         }
     }
 

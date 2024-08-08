@@ -20,6 +20,8 @@ export const labels_en = {
         labelButtonLogout: 'log out',
         textSignUp: 'If you don\'t have an account:',
         labelLinkSignUp: 'sign up',
+        fail42Login1: 'No available accounts can be created with 42Login. Please register through sign up.',
+        fail42Login2: 'Failed to log in with 42Login.',
     },
     register: {
         title: 'Register',

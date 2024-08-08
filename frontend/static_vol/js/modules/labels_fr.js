@@ -20,6 +20,8 @@ export const labels_fr = {
         labelButtonLogout: 'Se déconnecter',
         textSignUp: 'Vous n’avez pas encore de compte ?',
         labelLinkSignUp: 'Créer un compte',
+        fail42Login1: 'Aucun compte disponible avec 42Login. Veuillez vous inscrire via l\'inscription.',
+        fail42Login2: 'Échec de la connexion avec 42Login.',
     },
     register: {
         title: 'Register',
