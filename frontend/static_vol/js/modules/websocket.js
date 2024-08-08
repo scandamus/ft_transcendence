@@ -21,70 +21,91 @@ class WebSocketManager {
                 return;
             }
 
-            const accessTokenResult = await getValidToken('accessToken');
-            if (!accessTokenResult || !accessTokenResult.token) {
-                console.error('Access token is missing or invalid');
-                reject('Access token is missing or invalid.');
-                return;
-            }
-
-            const url = 'wss://'
-                + window.location.host
-                + '/ws/'
-                + containerId
-                + '/';
-
-            const socket = new WebSocket(url);
-
-            // 接続したら必ずAccessToekenを送る
-            socket.onopen = () => {
-                console.log(`WebSocket for ${containerId} is open now.`);
-                this.sockets[containerId] = socket;
-                this.messageHandlers[containerId] = messageHandler || this.defaultMessageHandler(this, containerId);
-                if (containerId === 'lounge') {
-                    this.sendAccessToken(containerId)
-                        .then(() => {
-                            console.log(`Sent access token to ${containerId}`);
-                            resolve(socket);
-                        })
-                        .catch((error) => {
-                            console.error(`Failed to send access token for ${containerId}: `, error);
-                            reject(error);
-                        });
-                } else {
-                    resolve(socket);
+            try {
+                const accessTokenResult = await getValidToken('accessToken');
+                if (!accessTokenResult || !accessTokenResult.token) {
+                    console.error('Access token is missing or invalid');
+                    reject('Access token is missing or invalid.');
+                    return;
                 }
-                this.reconnectAttempts[containerId] = 0;
-                this.isWebSocketClosed[containerId] = false;
-            };
 
-            socket.onmessage = (event) => {
-                this.handleMessage(containerId, event);
-            };
+                const url = 'wss://'
+                    + window.location.host
+                    + '/ws/'
+                    + containerId
+                    + '/';
 
-            socket.onclose = (event) => {
-                console.log(`WebSocket for ${containerId} is onclose.`);
-                const handler = this.messageHandlers[containerId];
-                this.handleClose(containerId);
-                if (!this.isWebSocketClosed[containerId] && this.reconnectAttempts[containerId] < this.maxReconnectAttempts) {
-                    setTimeout(() => {
-                        console.log(`Try to reconnect WebScoket for ${containerId}`);
-                        this.reconnectAttempts[containerId]++;
-                        this.openWebSocket(containerId, handler);
-                    }, this.reconnectInterval);
-                } else if (!this.isWebSocketClosed[containerId]) {
-                    addNotice(labels.common.disconnected, true);
-                    handleLogout(new Event('logout'));
-                }
-            };
+                const socket = new WebSocket(url);
 
-            socket.onerror = (error) => {
-                console.error(`WebSocket error for ${containerId}: `, error);
-                reject(error);
-            };
+                // 接続したら必ずAccessToekenを送る
+                socket.onopen = () => {
+                    console.log(`WebSocket for ${containerId} is open now.`);
+                    this.sockets[containerId] = socket;
+                    this.messageHandlers[containerId] = messageHandler || this.defaultMessageHandler(this, containerId);
+                    if (containerId === 'lounge') {
+                        this.sendAccessToken(containerId)
+                            .then(() => {
+                                console.log(`Sent access token to ${containerId}`);
+                                resolve(socket);
+                            })
+                            .catch((error) => {
+                                console.error(`Failed to send access token for ${containerId}: `, error);
+                                reject(error);
+                            });
+                    } else {
+                        resolve(socket);
+                    }
+                    this.reconnectAttempts[containerId] = 0;
+                    this.isWebSocketClosed[containerId] = false;
+                };
+
+                socket.onmessage = (event) => {
+                    this.handleMessage(containerId, event);
+                };
+
+                socket.onclose = (event) => {
+                    console.log(`WebSocket for ${containerId} is onclose.`);
+                    this.handleClose(containerId, false);
+                    if (!this.isWebSocketClosed[containerId]) {
+                        this.reconnectWebSocket(containerId)
+                            .then(resolve)
+                            .catch(reject);
+                    } else {
+                        this.handleClose(containerId);
+                    }
+                };
+
+                socket.onerror = (error) => {
+                    console.error(`WebSocket error for ${containerId}: `, error);
+                    reject(error);
+                };
+            } catch(error) {
+                console.error('Error in openWebSocket:', error);
+            }   
         })
     }
 
+    reconnectWebSocket(containerId, handler) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                if (this.reconnectAttempts[containerId] >= this.maxReconnectAttempts) {
+                    addNotice(labels.common.disconnected, true);
+                    this.handleClose(containerId);
+                    handleLogout(new Event('logout'));
+                    reject(new Error('Maximum reconnect attempts reached'));
+                    return;
+                }
+                console.log(`Try to reconnect WebSocket for ${containerId}`);
+                this.reconnectAttempts[containerId]++;
+                this.openWebSocket(containerId, this.messageHandlers[containerId])
+                    .then(resolve)
+                    .catch((error) => {
+                        console.error(`Failed to reconnect:`, error);
+                    });
+            }, this.reconnectInterval);
+        });
+    }
+ 
     defaultMessageHandler(event, containerId) {
         const data = JSON.parse(event.data);
         console.log(`Default handler message from ${containerId}:`, data)
@@ -99,12 +120,12 @@ class WebSocketManager {
         }
     }
 
-    handleClose(containerId) {
+    handleClose(containerId, include_handler = true) {
         console.log(`WebSocket for ${containerId} is closing now.`);
         if (this.sockets[containerId]) {
             delete this.sockets[containerId];
         }
-        if (this.messageHandlers[containerId]) {
+        if (include_handler && this.messageHandlers[containerId]) {
             delete this.messageHandlers[containerId];
         }
     }
