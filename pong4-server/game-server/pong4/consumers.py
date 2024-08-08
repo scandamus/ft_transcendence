@@ -188,6 +188,10 @@ class PongConsumer(AsyncWebsocketConsumer):
             'player_name': self.player_name,
             'players_id': self.players_id,
         })
+        await self.send(text_data=json.dumps({
+            'type': 'exitGame',
+            'message': 'exit success'
+        }))
 
     async def exit_game(self, event):
         exited_player = event['player_name']
@@ -426,7 +430,7 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def send_game_data(self, game_status, message, timestamp, sound_type):
         try:
             await self.send(text_data=json.dumps({
-                'message': 'GameData',
+                'type': 'GameData',
                 'game_status': game_status,
                 'ball': {
                     'x': self.ball.x,

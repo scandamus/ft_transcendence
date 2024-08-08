@@ -222,22 +222,6 @@ export default class GamePlayQuad extends PageBase {
                 }
             }
 
-            // function showWinner(paddles) {
-            //     const scores = paddles.map(paddle => paddle.score);
-            //     const maxScore = Math.max(...scores);
-            //     const winningIndex = scores.indexOf(maxScore);
-            //     const winner = paddles[winningIndex];
-            //
-            //     ctx.fillStyle = 'red';
-            //     ctx.font = '48px Arial';
-            //     ctx.textAlign = 'center';
-            //
-            //     let xPosition = winner.x + (winner.horizontal / 2);
-            //     let yPosition = winner.y + (winner.vertical / 2);
-            //
-            //     ctx.fillText('WIN', xPosition, yPosition);
-            // }
-
             const updateGameObjects = async (data) => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 // 背景色
@@ -282,7 +266,19 @@ export default class GamePlayQuad extends PageBase {
                 try {
                     const data = JSON.parse(e.data);
                     console.log('received_data -> ', data);
-                    updateGameObjects(data);
+                    if (data.type === 'GameData') {
+                        updateGameObjects(data);
+                    } else if (data.type === 'exitGame') {
+                        console.log('exit button pressed');
+                        webSocketManager.closeWebSocket(this.containerId);
+                        this.containerId = '';
+                        window.history.pushState(null, null, `/dashboard`);
+                        try {
+                            router(getToken('accessToken'));
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
                 } catch (error) {
                     console.error('Error parsing message data:', error);
                 }

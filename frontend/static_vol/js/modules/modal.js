@@ -227,10 +227,6 @@ const handleExitGame = (instance) => {
     webSocketManager.sendWebSocketMessage(containerId, {
         'action': 'exit_game',
     });
-    if (PageBase.isInstance(instance, 'GamePlayQuad')) {
-        webSocketManager.closeWebSocket(containerId);
-        instance.containerId = '';
-    }
 }
 
 const closeModalOnExitGame = (ev) => {
@@ -251,11 +247,6 @@ const closeModalOnExitGame = (ev) => {
         .then(async () => {
             closeModal();
             handleExitGame(PageBase.instance);
-            try {
-                await router(getToken('accessToken'));
-            } catch (error) {
-                console.error(error);
-            }
         });
 }
 
