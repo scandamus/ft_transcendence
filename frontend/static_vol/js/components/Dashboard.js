@@ -209,18 +209,27 @@ export default class Dashboard extends PageBase {
             body: formData
         })
             .then( async (response) => {
-                if (!response.ok) {
+                if (response.ok) {
+                    return response.json();
+                } else if (response.status === 401) {
                     if (!isRefresh) {
                         if (!await refreshAccessToken()) {
-                            throw new Error(`fail refresh token( ${response.status} )`);
+                            const error = new Error(`fail refresh token( ${response.status} )`);
+                            error.status = response.status;
+                            throw error;
                         }
                         await this.fetchUploadAvatar(formData, true);
                         return;
                     } else {
-                        throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
+                        const error = new Error(`refreshed accessToken is invalid( ${response.status} )`);
+                        error.status = response.status;
+                        throw error;
                     }
-                 }
-                return response.json();
+                } else {
+                    const error = new Error(`fetchUploadAvatar error. status( ${response.status} )`);
+                    error.status = response.status;
+                    throw error;
+                }
             })
             .then( async (data) => {
                 if (!data) {
@@ -235,7 +244,9 @@ export default class Dashboard extends PageBase {
                 console.error('Error fetchUploadAvatar: ', error);
                 addNotice(labels.dashboard.msgFailAvatarUpload, true);
                 this.cancelAvatar();
-                forcedLogout();
+                if (error.status === 401) {
+                    forcedLogout();
+                }
             });
     }
 

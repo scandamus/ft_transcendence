@@ -9,7 +9,8 @@ export const labels_fr = {
         switchLang: 'Changer de langue',
         logoutTokenExpired: 'Session expirée. Vous avez été déconnecté. Veuillez vous reconnecter.',
         disconnected: 'Déconnecté du serveur',
-        disconnectedByNewLogin: 'Déconnecté en raison d’une nouvelle connexion sur le serveur'
+        disconnectedByNewLogin: 'Déconnecté en raison d’une nouvelle connexion sur le serveur',
+        failUpdateDbLang: 'Échec de la sauvegarde des paramètres de langue',
     },
     home: {
         title: 'Accueil',
