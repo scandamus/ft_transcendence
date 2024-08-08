@@ -182,7 +182,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
 
     async def handle_exit_message(self, text_data):
-        logger.error('Exit game: 2')
         await self.deactivate_paddle(self.player_name)
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'exit_game',
