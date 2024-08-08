@@ -272,7 +272,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         try:
             while self.game_continue:
                 # await asyncio.sleep(0.1)
-                await asyncio.sleep(1 / 20)  # 60Hz
+                await asyncio.sleep(1 / 60)  # 60Hz
                 self.game_continue = await self.update_ball_and_send_data()
                 if not self.game_continue:
                     await self.update_match_status(self.match_id, self.left_paddle.score, self.right_paddle.score,
