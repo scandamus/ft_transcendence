@@ -124,8 +124,10 @@ class Ball:
             # 設定
             self.dy = -self.dy
             self.x += self.dx
-        if not collision_detected_right and not collision_detected_left:
-            self.y += self.dy
+        # if not collision_detected_right and not collision_detected_left:
+        #     self.y += self.dy
+        if collision_detected_left or collision_detected_right:
+            return 'paddle_collision'
         # y座標の操作
         collision_detected_upper = self.collision_detection(upper_paddle, 'UPPER')
         if collision_detected_upper == 'collision_front':
@@ -149,9 +151,9 @@ class Ball:
             # 設定
             self.dx = -self.dx
             self.y += self.dy
-        if not collision_detected_upper and not collision_detected_lower:
-            self.x += self.dx
-        if collision_detected_left or collision_detected_right or collision_detected_lower or collision_detected_upper:
+        # if not collision_detected_upper and not collision_detected_lower:
+        #     self.x += self.dx
+        if collision_detected_lower or collision_detected_upper:
             return 'paddle_collision'
 
         for wall in walls:
@@ -182,6 +184,12 @@ class Ball:
                     self.dx = -self.dx
                     self.y += self.dy
                 return sound_type
+
+        # どちらにも当たらないならdx,dyを足してballを移動
+        if not collision_detected_upper and not collision_detected_lower:
+            self.x += self.dx
+        if not collision_detected_right and not collision_detected_left:
+            self.y += self.dy
 
         # 壁を超えているか
         if CANVAS_WIDTH_MULTI < self.x:
