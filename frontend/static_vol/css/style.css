@@ -993,7 +993,7 @@ input[type="text"]:disabled {
 }
 
 .blockPlayerDetail_stats {
-  padding: 10px 0 16px;
+  padding: 10px 16px 16px;
   text-align: center;
 }
 
@@ -1003,16 +1003,38 @@ input[type="text"]:disabled {
 }
 
 .blockPlayerDetail_stats .unitWinCount {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 0 auto;
   font-size: 2.3rem;
   line-height: 1.4;
+  max-width: 8em;
 }
 
 .blockPlayerDetail_stats .unitWinCount span {
-  display: inline-block;
+  flex: 1 1 auto;
 }
 
 .blockPlayerDetail_stats .unitWinCount span:first-child {
   margin-right: 0.3em;
+  text-align: left;
+  font-size: 2.7rem;
+}
+
+.blockPlayerDetail_stats .unitWinCount span:last-child {
+  text-align: right;
+}
+
+.blockPlayerDetail_stats .unitWinCount span:last-child::before {
+  content: "/";
+  display: inline-block;
+  margin-right: 0.2em;
+}
+
+html[lang="ja"] .blockPlayerDetail_stats .unitWinCount span {
+  flex: 0 0 auto;
 }
 
 /* blockDashboardLog */

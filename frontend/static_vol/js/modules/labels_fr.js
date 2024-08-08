@@ -9,7 +9,8 @@ export const labels_fr = {
         switchLang: 'Changer de langue',
         logoutTokenExpired: 'Session expirée. Vous avez été déconnecté. Veuillez vous reconnecter.',
         disconnected: 'Déconnecté du serveur',
-        disconnectedByNewLogin: 'Déconnecté en raison d’une nouvelle connexion sur le serveur'
+        disconnectedByNewLogin: 'Déconnecté en raison d’une nouvelle connexion sur le serveur',
+        failUpdateDbLang: 'Échec de la sauvegarde des paramètres de langue',
     },
     home: {
         title: 'Accueil',
@@ -101,10 +102,8 @@ export const labels_fr = {
         labelMatch: 'jouer contre',
         labelReceiveMatch: 'Recevoir le match',
         labelMatchLog: 'Journal du match',
-        labelWins: 'victoires',
-        labelLosses: 'défaites',
         fmtWin: '$win victoires',
-        fmtLoss: '$loss défaites',
+        fmtMatches: '$num matchs',
         msgNoMatch: 'aucune match',
         msgReconnectMatch: 'Reconnexion au jeu en cours',
     },

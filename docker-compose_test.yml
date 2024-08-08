@@ -17,7 +17,6 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
-      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
       - CHANNEL_SECRET_KEY=${BACKEND_CHANNEL_SECRET_KEY}
       - DEBUG=${DEBUG}
       - BACKEND_JWT_SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}
@@ -57,6 +56,7 @@ services:
     volumes:
       - ./frontend/static_vol:/var/www/html
       - ${CERTS}:/etc/nginx/ssl
+      - ./backend/scandamus/static/:/var/www/static
     restart: always
     networks:
       - frontend-network
@@ -82,13 +82,13 @@ services:
     container_name: pong-server
     environment:
       - PONG_LOG_LEVEL=${PONG_LOG_LEVEL}
+      - DEBUG=${DEBUG}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - SIGNING_KEY=${PONG_SERVER_SIGNING_KEY}
+      - SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}
       - SECRET_KEY=${PONG_SERVER_SECRET_KEY}
-      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
       - CHANNEL_SECRET_KEY=${PONG_SERVER_CHANNEL_SECRET_KEY}
       - POSTGRES_USER=${DB_USER}
     depends_on:
@@ -106,13 +106,13 @@ services:
     container_name: pong4-server
     environment:
       - PONG4_LOG_LEVEL=${PONG4_LOG_LEVEL}
+      - DEBUG=${DEBUG}
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - SIGNING_KEY=${PONG_SERVER_SIGNING_KEY}
+      - SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}
       - SECRET_KEY=${PONG_SERVER_SECRET_KEY}
-      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
       - CHANNEL_SECRET_KEY=${PONG_SERVER_CHANNEL_SECRET_KEY}
       - POSTGRES_USER=${DB_USER}
     depends_on:
@@ -150,7 +150,6 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
-      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
       - CHANNEL_SECRET_KEY=${BACKEND_CHANNEL_SECRET_KEY}
       - DEBUG=${DEBUG}
       - BACKEND_JWT_SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}
@@ -188,7 +187,6 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - BACKEND_SECRET_KEY=${BACKEND_SECRET_KEY}
-      - GAME_JWT_SIGNING_KEY=${GAME_JWT_SIGNING_KEY}
       - CHANNEL_SECRET_KEY=${BACKEND_CHANNEL_SECRET_KEY}
       - DEBUG=${DEBUG}
       - BACKEND_JWT_SIGNING_KEY=${BACKEND_JWT_SIGNING_KEY}

@@ -126,10 +126,10 @@ export default class Dashboard extends PageBase {
         const statsWrap = document.querySelector('.blockPlayerDetail_stats');
         if (data && statsWrap) {
             const textWin = (labels.match.fmtWin).replace('$win', data.win_count);
-            const textLoss = (labels.match.fmtLoss).replace('$loss', data.loss_count);
+            const textNumMatches = (labels.match.fmtMatches).replace('$num', data.play_count);
             statsWrap.innerHTML = `
                 <p class="unitLevel">LEVEL: ${data.level}</p>
-                <p class="unitWinCount"><span>${textWin}</span><span>${textLoss}</span></p>
+                <p class="unitWinCount"><span>${textWin}</span><span>${textNumMatches}</span></p>
             `;
         }
     }
@@ -209,18 +209,27 @@ export default class Dashboard extends PageBase {
             body: formData
         })
             .then( async (response) => {
-                if (!response.ok) {
+                if (response.ok) {
+                    return response.json();
+                } else if (response.status === 401) {
                     if (!isRefresh) {
                         if (!await refreshAccessToken()) {
-                            throw new Error(`fail refresh token( ${response.status} )`);
+                            const error = new Error(`fail refresh token( ${response.status} )`);
+                            error.status = response.status;
+                            throw error;
                         }
                         await this.fetchUploadAvatar(formData, true);
                         return;
                     } else {
-                        throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
+                        const error = new Error(`refreshed accessToken is invalid( ${response.status} )`);
+                        error.status = response.status;
+                        throw error;
                     }
-                 }
-                return response.json();
+                } else {
+                    const error = new Error(`fetchUploadAvatar error. status( ${response.status} )`);
+                    error.status = response.status;
+                    throw error;
+                }
             })
             .then( async (data) => {
                 if (!data) {
@@ -235,7 +244,9 @@ export default class Dashboard extends PageBase {
                 console.error('Error fetchUploadAvatar: ', error);
                 addNotice(labels.dashboard.msgFailAvatarUpload, true);
                 this.cancelAvatar();
-                forcedLogout();
+                if (error.status === 401) {
+                    forcedLogout();
+                }
             });
     }
 
