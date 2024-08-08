@@ -281,9 +281,7 @@ export default class GamePlayQuad extends PageBase {
             pongSocket.onmessage = (e) => {
                 try {
                     const data = JSON.parse(e.data);
-                    // document.querySelector('#pong-log').value += (data.message + '\n');
                     console.log('received_data -> ', data);
-                    // console.log('RIGHT_PADDLE: ', data.right_paddle.score, '  LEFT_PADDLE: ', data.left_paddle.score, 'UPPER_PADDLE: ', data.upper_paddle.score, '  LOWER_PADDLE: ', data.lower_paddle.score);
                     updateGameObjects(data);
                 } catch (error) {
                     console.error('Error parsing message data:', error);
