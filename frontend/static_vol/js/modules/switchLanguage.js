@@ -4,6 +4,7 @@ import { labels, switchLabels } from './labels.js';
 import { getToken, refreshAccessToken } from './token.js';
 import { languageLabels } from './labels.js';
 import { forcedLogout } from "./logout.js";
+import { addNotice } from "./notice.js";
 
 const setLangAttrSelected = (elSelectLang, lang) => {
     const options = elSelectLang.querySelectorAll('option');
@@ -40,6 +41,9 @@ const saveLang = async (lang) => {
         if (localStorage.getItem('configLang') !== lang) {
             localStorage.setItem('configLang', lang);
         }
+        if(!getToken('accessToken')) {
+            return;
+        }
         const data = await updateDbLang(lang, false);
         if (!data) {
             throw new Error(`Failed to updateDbLang`);
@@ -72,21 +76,32 @@ const updateDbLang = async (lang, isRefresh) => {
             },
             body: JSON.stringify({ lang }),
         });
-
-        if (!response.ok) {
+        if (response.ok) {
+            return response.json();
+        } else if (response.status === 401) {
             if (!isRefresh) {
                 if (!await refreshAccessToken()) {
-                    throw new Error(`fail refresh token( ${response.status} )`);
+                    const error = new Error(`fail refresh token( ${response.status} )`);
+                    error.status = response.status;
+                    throw error;
                 }
                 return await updateDbLang(lang, true);
             } else {
-                throw new Error(`refreshed accessToken is invalid( ${response.status} )`);
+                const error = new Error(`refreshed accessToken is invalid( ${response.status} )`);
+                error.status = response.status;
+                throw error;
             }
+        } else {
+            const error = new Error(`updateDbLang error. status( ${response.status} )`);
+            error.status = response.status;
+            throw error;
         }
-        return await response.json();
     } catch (error) {
         console.error('Error on updateDbLang:', error);
-        forcedLogout();
+        addNotice(labels.common.failUpdateDbLang, true);
+        if (error.status === 401) {
+            forcedLogout();
+        }
         return null;
     }
 }

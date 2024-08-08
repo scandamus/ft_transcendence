@@ -226,9 +226,19 @@ export default class LogIn extends PageBase {
             });
 
             if (response.ok) {
-                const tokenData = await response.json();
-                sessionStorage.setItem('accessToken', tokenData.access_token);
-                sessionStorage.setItem('refreshToken', tokenData.refresh_token);
+                const data = await response.json();
+                const accessToken = data.access_token;
+                const refreshToken = data.refresh_token;
+                const accessTokenPayload = decodeTokenExpiry(accessToken);
+                const refreshTokenPayload = decodeTokenExpiry(refreshToken);
+
+                sessionStorage.setItem('accessToken', accessToken);
+                sessionStorage.setItem('refreshToken', refreshToken);
+                sessionStorage.setItem('accessTokenExpiry', accessTokenPayload);
+                sessionStorage.setItem('refreshTokenExpiry', refreshTokenPayload);
+                // トークンの自動定期実行
+                startTokenRefreshInterval();
+
                 await webSocketManager.openWebSocket('lounge', pongHandler);
                 window.history.pushState({}, null, '/dashboard');
                 const userInfo = await getUserInfo();

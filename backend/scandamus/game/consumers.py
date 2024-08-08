@@ -4,7 +4,6 @@ import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import User
 from players.models import Player
-from .utils import generate_game_jwt
 from .friends import send_friend_request, send_friend_request_by_username, accept_friend_request, decline_friend_request, remove_friend
 from players.auth import handle_auth
 from .friend_match import handle_request_game, handle_accept_game, handle_reject_game, handle_cancel_game
@@ -129,7 +128,7 @@ class LoungeSession(AsyncWebsocketConsumer):
         logger.info(f'sent online status: {online_status} of {changed_username} to {self.user.username}')
 
     async def disconnect(self, close_code):
-        if hasattr(self, 'user') and self.user.username in self.players:
+        if hasattr(self, 'user') and self.user is not None and self.user.username in self.players:
             del LoungeSession.players[self.user.username]
             await self.channel_layer.group_discard(
                 self.group_name,

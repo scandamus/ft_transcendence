@@ -8,6 +8,7 @@ from django.contrib.auth.hashers import make_password
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Q
+from django.db import transaction
 from asgiref.sync import async_to_sync, sync_to_async
 from channels.layers import get_channel_layer
 
@@ -63,11 +64,12 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             validated_data = serializer.validated_data
-            # パスワードをハッシュ化して保存
-            hashed_password = make_password(validated_data['password'])
-            User.objects.create(username=validated_data['username'], password=hashed_password)
-            # new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
-            # new_user.save() create直後は不要
+            with transaction.atomic():
+                # パスワードをハッシュ化して保存
+                hashed_password = make_password(validated_data['password'])
+                User.objects.create(username=validated_data['username'], password=hashed_password)
+                # new_user = User.objects.create(username=validated_data['username'], password=hashed_password)
+                # new_user.save() create直後は不要
             return Response({'message': 'User created successfully.'}, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -218,7 +220,7 @@ class UserLevelView(APIView):
             'is_authenticated': user.is_authenticated,
             'level': "{:.1f}".format(player.level),
             'win_count': player.win_count,
-            'loss_count': player.play_count - player.win_count,
+            'play_count': player.play_count,
         }
         return Response(data)
 

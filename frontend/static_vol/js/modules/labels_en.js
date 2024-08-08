@@ -9,7 +9,8 @@ export const labels_en = {
         switchLang: 'Switch Language',
         logoutTokenExpired: 'Session expired. You have been logged out. Please log in again.',
         disconnected: 'Disconnected from the server',
-        disconnectedByNewLogin: 'Disconnected due to a new login on the server'
+        disconnectedByNewLogin: 'Disconnected due to a new login on the server',
+        failUpdateDbLang: 'Failed to save language settings',
     },
     home: {
         title: 'Home',
@@ -101,10 +102,8 @@ export const labels_en = {
         labelMatch: 'start a match',
         labelReceiveMatch: 'take the match',
         labelMatchLog: 'match log',
-        labelWins: 'wins',
-        labelLosses: 'losses',
-        fmtWin: '$win wins,',
-        fmtLoss: '$loss losses',
+        fmtWin: '$win wins',
+        fmtMatches: '$num matches',
         msgNoMatch: 'no match log',
         msgReconnectMatch: 'Reconnecting to the ongoing game',
     },
