@@ -7,6 +7,7 @@ from channels.db import database_sync_to_async
 from datetime import datetime, timedelta, timezone
 from .tournament_match import report_match_result
 from decimal import Decimal
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -123,8 +124,15 @@ class MatchSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         old_status = instance.status
         new_status = validated_data.get('status', instance.status)
-        instance = super().update(instance, validated_data)
-
+        atomic_needed = instance.tournament and instance.round and instance.tournament.status == 'ongoing' and new_status == 'after'
+        
+        with transaction.atomic():
+            if atomic_needed:
+                instance.tournament.matches.select_for_update().filter(round=instance.round)
+            instance = super().update(instance, validated_data)
+            if atomic_needed:
+                all_matches_finished = self.is_all_matches_finished(instance.tournament, instance.round)
+            
         if new_status == 'ongoing':
             return instance
 
@@ -136,7 +144,7 @@ class MatchSerializer(serializers.ModelSerializer):
         if instance.tournament and instance.round:
             if instance.tournament.status == 'ongoing':
                 self.update_player_status_after_match(instance)
-                if self.is_all_matches_finished(instance.tournament, instance.round):
+                if all_matches_finished:
                     logger.info(f"All matches finished for tournament: {instance.tournament.id}, round: {instance.round}")
                     report_match_result(instance.id)
         elif old_status != 'after' and new_status in ['after', 'canceled']: # トーナメントマッチ以外はリセット
