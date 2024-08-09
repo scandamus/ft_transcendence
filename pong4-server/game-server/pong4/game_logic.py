@@ -85,7 +85,7 @@ class Ball:
 
     def reset(self, x, y):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
+        tmp = self.get_ball_direction_and_random_speed(random.randint(0, 0), random.choice((-1, 1)))
         self.x = x - BALL_SIZE / 2
         self.y = y - BALL_SIZE / 2
         self.dx = tmp['dx']
@@ -112,18 +112,12 @@ class Ball:
         if collision_detected_right or collision_detected_left:
             sound_type = 'paddle_collision'
             if collision_detected_right == 'collision_front':
-                if right_paddle.is_active:
-                    self.reflect_ball(right_paddle, 'RIGHT')
-                else:
-                    self.dx = -self.dx
+                self.reflect_ball(right_paddle, 'RIGHT')
             elif collision_detected_right == 'collision_side':
                 self.dy = -self.dy
                 self.x += self.dx
             elif collision_detected_left == 'collision_front':
-                if left_paddle.is_active:
-                    self.reflect_ball(left_paddle, 'LEFT')
-                else:
-                    self.dx = -self.dx
+                self.reflect_ball(left_paddle, 'LEFT')
             elif collision_detected_left == 'collision_side':
                 self.dy = -self.dy
                 self.x += self.dx
@@ -135,18 +129,12 @@ class Ball:
         if collision_detected_upper or collision_detected_lower:
             sound_type = 'paddle_collision'
             if collision_detected_upper == 'collision_front':
-                if upper_paddle.is_active:
-                    self.reflect_ball(upper_paddle, 'UPPER')
-                else:
-                    self.dy = -self.dy
+                self.reflect_ball(upper_paddle, 'UPPER')
             elif collision_detected_upper == 'collision_side':
                 self.dx = -self.dx
                 self.y += self.dy
             elif collision_detected_lower == 'collision_front':
-                if lower_paddle.is_active:
-                    self.reflect_ball(lower_paddle, 'LOWER')
-                else:
-                    self.dy = -self.dy
+                self.reflect_ball(lower_paddle, 'LOWER')
             elif collision_detected_lower == 'collision_side':
                 self.dx = -self.dx
                 self.y += self.dy
@@ -163,20 +151,20 @@ class Ball:
             if collision_detected == 'collision_front':
                 sound_type = 'wall_collision'
                 # 無限ループしないように
-                tmp = random.uniform(0, 0.5)
+                random_value = random.uniform(0, 0.5)
                 # 座標調整
                 if wall.position == 'RIGHT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
+                    random_value = random_value if self.y > 0 else -random_value
+                    self.dx = -self.dx + random_value
                 elif wall.position == 'LEFT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
+                    random_value = random_value if self.y > 0 else -random_value
+                    self.dx = -self.dx + random_value
                 elif wall.position == 'UPPER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy + tmp
+                    random_value = random_value if self.x > 0 else -random_value
+                    self.dy = -self.dy + random_value
                 elif wall.position == 'LOWER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy + tmp
+                    random_value = random_value if self.x > 0 else -random_value
+                    self.dy = -self.dy + random_value
                 return sound_type
             elif collision_detected == 'collision_side':
                 sound_type = 'wall_collision'
@@ -257,6 +245,18 @@ class Ball:
         return False
 
     def reflect_ball(self, obj, obj_side):
+        if not obj.is_active:
+            if obj_side == 'RIGHT' or obj_side == 'LEFT':
+                if self.y == self.y + self.dy:
+                    deflect_value = 1 if self.y > 0 else -1
+                    self.dy = deflect_value
+                self.dx = -self.dx
+            elif obj_side == 'UPPER' or obj_side == 'LOWER':
+                if self.x == self.x + self.dx:
+                    deflect_value = 1 if self.x > 0 else -1
+                    self.dx = deflect_value
+                self.dy = -self.dy
+            return
         normalize = REFLECTION_ANGLE / (obj.length / 2)
         if obj_side == 'RIGHT' or obj_side == 'LEFT':
             distance_from_paddle_center = (obj.y + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
