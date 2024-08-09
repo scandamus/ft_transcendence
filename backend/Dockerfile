@@ -6,6 +6,8 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+RUN useradd -m django
+
 COPY tools/requirements.txt .
 RUN pip install -r requirements.txt
 
@@ -17,6 +19,8 @@ COPY tools/user_dummy.sql /usr/local/bin/
 COPY tools/player_dummy.sql /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+USER django
+
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8001" ]
 
@@ -26,6 +30,8 @@ FROM base AS celery
 COPY tools/docker-entrypoint-waitonly.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint-waitonly.sh
 
+USER django
+
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint-waitonly.sh" ]
 CMD ["celery", "-A", "scandamus", "worker", "--loglevel=info"]
 
@@ -34,6 +40,8 @@ FROM base AS celery-beat
 
 COPY tools/docker-entrypoint-waitonly.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint-waitonly.sh
+
+USER django
 
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint-waitonly.sh" ]
 CMD ["celery", "-A", "scandamus", "beat", "--loglevel=info"]
