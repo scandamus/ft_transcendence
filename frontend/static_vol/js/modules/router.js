@@ -107,7 +107,8 @@ const router = async (accessToken) => {
         }
     } else if (flagPopState) {
         //ゲーム以外からの履歴移動
-        accessToken = getToken('accessToken');
+        const isLogin = !!sessionStorage.getItem('accessToken');
+        accessToken = isLogin ? getToken('accessToken') : false;
 
         //gameへの移動はdashboardにリダイレクト
         if (location.pathname.startsWith('/game/pong')) {
