@@ -248,12 +248,12 @@ class Ball:
         if not obj.is_active:
             if obj_side == 'RIGHT' or obj_side == 'LEFT':
                 if self.y == self.y + self.dy:
-                    deflect_value = 1 if self.y > 0 else -1
+                    deflect_value = random.choice((-1, 1))
                     self.dy = deflect_value
                 self.dx = -self.dx
             elif obj_side == 'UPPER' or obj_side == 'LOWER':
                 if self.x == self.x + self.dx:
-                    deflect_value = 1 if self.x > 0 else -1
+                    deflect_value = random.choice((-1, 1))
                     self.dx = deflect_value
                 self.dy = -self.dy
             return
