@@ -49,7 +49,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.right_pressed = False
         self.left_pressed = False
         self.result_sent = False
-        self.pending_task = []
 
     async def connect(self):
         try:
@@ -69,12 +68,12 @@ class PongConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         try:
             # Leave room group
-            if self.match_id in self.players_ids and self.player_name in self.players_ids[self.match_id]:
+            if self.match_id in self.players_ids and self.players_id in self.players_ids[self.match_id]:
                 logger.info(f'remove: players_ids[{self.match_id}]: {self.players_id}')
-                self.players_ids[self.match_id].remove(self.player_name)
+                self.players_ids[self.match_id].remove(self.players_id)
                 if not self.players_ids[self.match_id]:
                     logger.error(f'no players left in match_id: {self.match_id}')
-                    if not self.result_sent:
+                    if  not self.result_sent:
                         await self.game_over('', True)
                     del self.players_ids[self.match_id]
                 else:
@@ -84,18 +83,15 @@ class PongConsumer(AsyncWebsocketConsumer):
                         self.scheduled_task = None
                         if self.game_continue:
                             new_next_master = sorted(self.players_ids[self.match_id])[0]
-                            logger.error(f'new_next_master: {new_next_master}')
                             await self.send_transfer_data()
                             await self.channel_layer.group_send(self.room_group_name, {
                                 'type': 'start_game',
-                                'master_name': new_next_master,
+                                'master_id': new_next_master,
                                 'state': 'ongoing',
                             })
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
-            if hasattr(self, 'pending_tasks') and self.pending_tasks:
-                await asyncio.gather(*self.pending_tasks)
         except Exception as e:
             logger.error(f'Error disconnecting: {e}')
 
@@ -133,8 +129,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         if int(self.match_id) != int(jwt_match_id):
             logger.error(f'Error: match ID conflict jwt match_id: {jwt_match_id}, URL match_id: {self.match_id}')
             await self.send(text_data=json.dumps({
-                'type': 'error',
-                'message': 'Match ID conflict'
+                    'type': 'error',
+                    'message': 'Match ID conflict'
             }))
             await self.close(code=4101)
             return
@@ -148,7 +144,7 @@ class PongConsumer(AsyncWebsocketConsumer):
             self.players_id = players_id
             if self.match_id not in self.players_ids:
                 self.players_ids[self.match_id] = set()
-            self.players_ids[self.match_id].add(self.player_name)
+            self.players_ids[self.match_id].add(self.players_id)
 
             if is_reconnect == True:
                 number_of_player = len(self.players_ids[self.match_id])
@@ -168,10 +164,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             if len(self.players_ids[self.match_id]) == 4:  # 4人に決め打ち
                 initial_master = sorted(self.players_ids[self.match_id])[0]
-                logger.error(f'initial_master: {initial_master}')
+                logger.info(f'initial_master: {initial_master}')
                 await self.channel_layer.group_send(self.room_group_name, {
                     'type': 'start.game',
-                    'master_name': initial_master,
+                    'master_id': initial_master,
                     'state': 'start',
                 })
                 await database_sync_to_async(update_match_status_to_ongoing)(self.match_id)
@@ -182,7 +178,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             return
 
     async def handle_exit_message(self, text_data):
-        await self.deactivate_paddle(self.player_name)
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'exit_game',
             'player_name': self.player_name,
@@ -191,9 +186,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def exit_game(self, event):
         exited_player = event['player_name']
-        await self.deactivate_paddle(exited_player)
-
-    async def deactivate_paddle(self, exited_player):
         if exited_player == 'player1':
             self.left_paddle.deactivate(-1)
         elif exited_player == 'player2':
@@ -627,12 +619,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         patch_match_to_api(match_id, send_data)
 
     async def start_game(self, event):
-        master_name = event['master_name']
+        master_id = event['master_id']
         state = event['state']
         if state == 'start':
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
             await self.init_walls()
-        if self.player_name == master_name:
+        if self.players_id == master_id:
             logger.info(f"New master appointed: [{self.players_id}]{self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
