@@ -75,21 +75,21 @@ class Paddle(Block):
 class Ball:
     def __init__(self, x, y, size):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
+        random_speed = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x
         self.y = y
-        self.dx = tmp['dx']
-        self.dy = tmp['dy']
+        self.dx = random_speed['dx']
+        self.dy = random_speed['dy']
         self.size = size
         self.flag = True  # 衝突判定を True:する False:しない
 
     def reset(self, x, y):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
+        random_speed = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x - BALL_SIZE / 2
         self.y = y - BALL_SIZE / 2
-        self.dx = tmp['dx']
-        self.dy = tmp['dy']
+        self.dx = random_speed['dx']
+        self.dy = random_speed['dy']
         self.flag = True
 
     def handle_scored(self, paddle):
