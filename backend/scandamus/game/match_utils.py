@@ -201,7 +201,11 @@ def get_user_by_player(player):
 
 @database_sync_to_async
 def get_player_by_username(username):
-    return Player.objects.get(user__username=username)
+    try:
+        return Player.objects.get(user__username=username)
+    except Player.DoesNotExist:
+        logger.info(f"Player doesn't exist for username: {username}")
+        return None
 
 @database_sync_to_async
 def get_player_by_user(user):
@@ -213,7 +217,11 @@ def get_player_by_user(user):
 
 @database_sync_to_async
 def get_player_by_id(player_id):
-    return Player.objects.get(id=player_id)
+    try:
+        return Player.objects.get(id=player_id)
+    except Player.DoesNotExist:
+        logger.info(f"Player doesn't exist for player_id: {player_id}")
+        return None        
 
 @database_sync_to_async
 def issue_jwt(user, player_name, players_id, match_id, game_name='pong', is_tournament=False):
