@@ -10,3 +10,4 @@ postgres_vol
 !.dockerignore
 !.gitkeep
 frontend/static_vol/js/modules/env.js
+backend/scandamus/static/
