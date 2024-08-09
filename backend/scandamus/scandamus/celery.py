@@ -8,6 +8,7 @@ app = Celery('scandamus')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.broker_url = os.environ.get('CELERY_BROKER_URL', 'redis://redis:6379/0')
 app.conf.result_backend = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+app.conf.broker_connection_retry_on_startup = True
 
 app.conf.beat_schedule = {
     'check_tournament_start_times': {
