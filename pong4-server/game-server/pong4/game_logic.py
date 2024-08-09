@@ -112,12 +112,18 @@ class Ball:
         if collision_detected_right or collision_detected_left:
             sound_type = 'paddle_collision'
             if collision_detected_right == 'collision_front':
-                self.reflect_ball(right_paddle, 'RIGHT')
+                if right_paddle.is_active:
+                    self.reflect_ball(right_paddle, 'RIGHT')
+                else:
+                    self.dx = -self.dx
             elif collision_detected_right == 'collision_side':
                 self.dy = -self.dy
                 self.x += self.dx
             elif collision_detected_left == 'collision_front':
-                self.reflect_ball(left_paddle, 'LEFT')
+                if left_paddle.is_active:
+                    self.reflect_ball(left_paddle, 'LEFT')
+                else:
+                    self.dx = -self.dx
             elif collision_detected_left == 'collision_side':
                 self.dy = -self.dy
                 self.x += self.dx
@@ -129,12 +135,18 @@ class Ball:
         if collision_detected_upper or collision_detected_lower:
             sound_type = 'paddle_collision'
             if collision_detected_upper == 'collision_front':
-                self.reflect_ball(upper_paddle, 'UPPER')
+                if upper_paddle.is_active:
+                    self.reflect_ball(upper_paddle, 'UPPER')
+                else:
+                    self.dy = -self.dy
             elif collision_detected_upper == 'collision_side':
                 self.dx = -self.dx
                 self.y += self.dy
             elif collision_detected_lower == 'collision_front':
-                self.reflect_ball(lower_paddle, 'LOWER')
+                if lower_paddle.is_active:
+                    self.reflect_ball(lower_paddle, 'LOWER')
+                else:
+                    self.dy = -self.dy
             elif collision_detected_lower == 'collision_side':
                 self.dx = -self.dx
                 self.y += self.dy
