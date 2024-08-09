@@ -2,6 +2,7 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: ${DOCKERFILE_TYPE}
       target: backend
     container_name: backend
     expose:
@@ -26,6 +27,12 @@ services:
       - DJANGO_PLAYER1_PASSWORD=${DJANGO_PLAYER1_PASSWORD}
       - POSTGRES_USER=${DB_USER}
       - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - UID_42=${UID_42}
+      - SECRET_KEY_42=${SECRET_KEY_42}
+      - URL_AUTHORIZE_42=${URL_AUTHORIZE_42}
+      - URL_ACCESS_TOKEN_42=${URL_ACCESS_TOKEN_42}
+      - URL_PROFILE_42=${URL_PROFILE_42}
+      - URL_AUTH_REDIRECT_42=${URL_AUTH_REDIRECT_42}
       - FRIENDS_MAX=${FRIENDS_MAX}
     restart: always
     networks:
@@ -78,7 +85,10 @@ services:
       - backend-network
 
   pong-server:
-    build: pong-server
+    build:
+      context: ./pong-server
+      dockerfile: ${DOCKERFILE_TYPE}
+      target: pong-server
     container_name: pong-server
     environment:
       - PONG_LOG_LEVEL=${PONG_LOG_LEVEL}
@@ -102,7 +112,10 @@ services:
       - backend-network
 
   pong4-server:
-    build: pong4-server
+    build:
+      context: ./pong4-server
+      dockerfile: ${DOCKERFILE_TYPE}
+      target: pong4-server
     container_name: pong4-server
     environment:
       - PONG4_LOG_LEVEL=${PONG4_LOG_LEVEL}
@@ -134,8 +147,9 @@ services:
       - "6379"
   
   celery:
-    build: 
+    build:
       context: ./backend
+      dockerfile: ${DOCKERFILE_TYPE}
       target: celery
     container_name: celery
     volumes:
@@ -164,6 +178,12 @@ services:
       - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
       - POSTGRES_USER=${DB_USER}
       - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - UID_42=${UID_42}
+      - SECRET_KEY_42=${SECRET_KEY_42}
+      - URL_AUTHORIZE_42=${URL_AUTHORIZE_42}
+      - URL_ACCESS_TOKEN_42=${URL_ACCESS_TOKEN_42}
+      - URL_PROFILE_42=${URL_PROFILE_42}
+      - URL_AUTH_REDIRECT_42=${URL_AUTH_REDIRECT_42}
       - FRIENDS_MAX=${FRIENDS_MAX}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -173,6 +193,7 @@ services:
   celery-beat:
     build: 
       context: ./backend
+      dockerfile: ${DOCKERFILE_TYPE}
       target: celery-beat
     container_name: celery-beat
     volumes:
@@ -201,6 +222,12 @@ services:
       - DJANGO_PLAYER2_PASSWORD=${DJANGO_PLAYER2_PASSWORD}
       - POSTGRES_USER=${DB_USER}
       - CREATE_TOURNAMENT_TIMELIMIT_MIN=${CREATE_TOURNAMENT_TIMELIMIT_MIN}
+      - UID_42=${UID_42}
+      - SECRET_KEY_42=${SECRET_KEY_42}
+      - URL_AUTHORIZE_42=${URL_AUTHORIZE_42}
+      - URL_ACCESS_TOKEN_42=${URL_ACCESS_TOKEN_42}
+      - URL_PROFILE_42=${URL_PROFILE_42}
+      - URL_AUTH_REDIRECT_42=${URL_AUTH_REDIRECT_42}
       - FRIENDS_MAX=${FRIENDS_MAX}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0

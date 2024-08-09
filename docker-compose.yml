@@ -2,6 +2,7 @@ services:
   backend:
     build: 
       context: ./backend
+      dockerfile: ${DOCKERFILE_TYPE}
       target: backend
     container_name: backend
     expose:
@@ -83,7 +84,10 @@ services:
       - backend-network
 
   pong-server:
-    build: pong-server
+    build:
+      context: ./pong-server
+      dockerfile: ${DOCKERFILE_TYPE}
+      target: pong-server
     container_name: pong-server
     environment:
       - PONG_LOG_LEVEL=${PONG_LOG_LEVEL}
@@ -107,7 +111,10 @@ services:
       - backend-network
 
   pong4-server:
-    build: pong4-server
+    build:
+      context: ./pong4-server
+      dockerfile: ${DOCKERFILE_TYPE}
+      target: pong4-server
     container_name: pong4-server
     environment:
       - PONG4_LOG_LEVEL=${PONG4_LOG_LEVEL}
@@ -141,6 +148,7 @@ services:
   celery:
     build: 
       context: ./backend
+      dockerfile: ${DOCKERFILE_TYPE}
       target: celery
     container_name: celery
     volumes:
@@ -184,6 +192,7 @@ services:
   celery-beat:
     build: 
       context: ./backend
+      dockerfile: ${DOCKERFILE_TYPE}
       target: celery-beat
     container_name: celery-beat
     volumes:
