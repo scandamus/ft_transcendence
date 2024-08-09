@@ -185,6 +185,11 @@ export default class LogIn extends PageBase {
 
     async handleLogin42(ev) {
         ev.preventDefault();
+        //すでに処理中ならキャンセル
+        if (this.loginInProgress) {
+            return;
+        }
+        this.loginInProgress = true;
         try {
             const response = await fetch('/api/oauth42/authorize42');
             const data = await response.json();
