@@ -182,9 +182,10 @@ const closeModalOnAccept = (ev) => {
 }
 
 const closeModalOnReturnToGame = () => {
-    console.log('closeModalOnReturnToGame');
     const containerId = (GamePlay.instance) ? GamePlay.instance.containerId : GamePlayQuad.instance.containerId;
-
+    if (window.location.pathname !== `/game/${containerId}`) {
+        window.history.pushState(null, null, `/game/${containerId}`);
+    }
     initToken()
         .then((accessToken) => {
             const btnReturnToGame = document.querySelector('.blockBtnReturnToGame_button');
