@@ -49,7 +49,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         self.right_pressed = False
         self.left_pressed = False
         self.result_sent = False
-        self.pending_task = []
 
     async def connect(self):
         try:
@@ -94,8 +93,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
-            if hasattr(self, 'pending_tasks') and self.pending_tasks:
-                await asyncio.gather(*self.pending_tasks)
         except Exception as e:
             logger.error(f'Error disconnecting: {e}')
 
@@ -186,7 +183,6 @@ class PongConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(self.room_group_name, {
             'type': 'exit_game',
             'player_name': self.player_name,
-            'players_id': self.players_id,
         })
 
     async def exit_game(self, event):
