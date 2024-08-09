@@ -628,7 +628,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         if state == 'start':
             # ここで初期化しないとNoneTypeになってしまう
             await self.reset_game_data()
-            await self.init_walls()
         if self.player_name == master_name:
+            await self.init_walls()
             logger.info(f"New master appointed: [{self.players_id}]{self.player_name}")
             self.scheduled_task = asyncio.create_task(self.schedule_ball_update())
