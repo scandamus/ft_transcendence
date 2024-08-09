@@ -11,3 +11,4 @@ postgres_vol
 !.gitkeep
 frontend/static_vol/js/modules/env.js
 backend/scandamus/static/
+backend/scandamus/celerybeat-schedule
