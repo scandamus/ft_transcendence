@@ -205,6 +205,7 @@ export default class LogIn extends PageBase {
             );
         } catch (error) {
             console.error('Failed to get authorize URL:', error);
+            this.loginInProgress = false;
         }
     }
 
