@@ -75,21 +75,21 @@ class Paddle(Block):
 class Ball:
     def __init__(self, x, y, size):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
+        random_speed = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x
         self.y = y
-        self.dx = tmp['dx']
-        self.dy = tmp['dy']
+        self.dx = random_speed['dx']
+        self.dy = random_speed['dy']
         self.size = size
         self.flag = True  # 衝突判定を True:する False:しない
 
     def reset(self, x, y):
         self.speed = 6
-        tmp = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
+        random_speed = self.get_ball_direction_and_random_speed(random.randint(-90, 90), random.choice((-1, 1)))
         self.x = x - BALL_SIZE / 2
         self.y = y - BALL_SIZE / 2
-        self.dx = tmp['dx']
-        self.dy = tmp['dy']
+        self.dx = random_speed['dx']
+        self.dy = random_speed['dy']
         self.flag = True
 
     def handle_scored(self, paddle):
@@ -151,20 +151,20 @@ class Ball:
             if collision_detected == 'collision_front':
                 sound_type = 'wall_collision'
                 # 無限ループしないように
-                tmp = random.uniform(0, 0.5)
+                random_value = random.uniform(0, 0.5)
                 # 座標調整
                 if wall.position == 'RIGHT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
+                    random_value = random_value if self.y > 0 else -random_value
+                    self.dx = -self.dx + random_value
                 elif wall.position == 'LEFT':
-                    tmp = tmp if self.y > 0 else -tmp
-                    self.dx = -self.dx + tmp
+                    random_value = random_value if self.y > 0 else -random_value
+                    self.dx = -self.dx + random_value
                 elif wall.position == 'UPPER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy + tmp
+                    random_value = random_value if self.x > 0 else -random_value
+                    self.dy = -self.dy + random_value
                 elif wall.position == 'LOWER':
-                    tmp = tmp if self.x > 0 else -tmp
-                    self.dy = -self.dy + tmp
+                    random_value = random_value if self.x > 0 else -random_value
+                    self.dy = -self.dy + random_value
                 return sound_type
             elif collision_detected == 'collision_side':
                 sound_type = 'wall_collision'
@@ -245,12 +245,21 @@ class Ball:
         return False
 
     def reflect_ball(self, obj, obj_side):
+        if not obj.is_active:
+            if obj_side == 'RIGHT' or obj_side == 'LEFT':
+                if self.y == self.y + self.dy:
+                    deflect_value = random.choice((-1, 1))
+                    self.dy = deflect_value
+                self.dx = -self.dx
+            elif obj_side == 'UPPER' or obj_side == 'LOWER':
+                if self.x == self.x + self.dx:
+                    deflect_value = random.choice((-1, 1))
+                    self.dx = deflect_value
+                self.dy = -self.dy
+            return
         normalize = REFLECTION_ANGLE / (obj.length / 2)
         if obj_side == 'RIGHT' or obj_side == 'LEFT':
             distance_from_paddle_center = (obj.y + (obj.length / 2)) - (self.y + (BALL_SIZE / 2))
-            if not obj.is_active:
-                distance_from_paddle_center = random.choice(
-                    (-1, 1)) if distance_from_paddle_center == 0 else distance_from_paddle_center
             # 最大の反射角を45°に設定した場合
             # paddleの大きさに依存した数値(1.2)なので、paddleを修正する場合にはここも修正が必要
             # 角度 / paddleの大きさ で修正
@@ -260,9 +269,6 @@ class Ball:
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction)
         else:
             distance_from_paddle_center = (obj.x + (obj.length / 2)) - (self.x + (BALL_SIZE / 2))
-            if not obj.is_active:
-                distance_from_paddle_center = random.choice(
-                    (-1, 1)) if distance_from_paddle_center == 0 else distance_from_paddle_center
             angle_degrees = distance_from_paddle_center * normalize
             ball_direction = 1 if obj_side == 'UPPER' else -1
             new_direction = self.get_ball_direction_and_random_speed(angle_degrees, ball_direction, 'horizontal')
