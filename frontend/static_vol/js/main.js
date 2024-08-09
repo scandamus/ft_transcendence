@@ -32,10 +32,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const elSelectLang = ev.target;
         const selectedLanguage = elSelectLang.value;
         const currentLang = localStorage.getItem('configLang');
+
+        // ログイン状態判定
+        const isLogin = !!sessionStorage.getItem('accessToken');
         if (selectedLanguage !== currentLang) {
             setLang(elSelectLang, selectedLanguage);
             saveLang(selectedLanguage);
-            router(getToken('accessToken'));
+            router(isLogin);
         }
     });
 
