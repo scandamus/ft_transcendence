@@ -142,7 +142,7 @@ class Ball:
 
         for wall in walls:
             collision_detected = False
-            # paddleがactiveな場合のみ特定の側面の衝突判定を行うように
+            # paddleがactiveな場合のみその面の衝突判定を行うように
             if ((wall.position == 'RIGHT' and right_paddle.is_active)
                     or (wall.position == 'LEFT' and left_paddle.is_active)
                     or (wall.position == 'UPPER' and upper_paddle.is_active)
