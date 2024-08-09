@@ -17,6 +17,9 @@ done
 python manage.py makemigrations
 python manage.py migrate
 
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+
 superuser_exists=$(python manage.py shell << END
 from django.contrib.auth import get_user_model
 
