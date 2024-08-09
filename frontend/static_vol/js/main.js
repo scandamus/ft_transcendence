@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const elSelectLang = ev.target;
         const selectedLanguage = elSelectLang.value;
         const currentLang = localStorage.getItem('configLang');
+        if (selectedLanguage !== 'en' && selectedLanguage !== 'ja' && selectedLanguage !== 'fr') {
+            return;
+        }
 
         // ログイン状態判定
         const isLogin = !!sessionStorage.getItem('accessToken');
