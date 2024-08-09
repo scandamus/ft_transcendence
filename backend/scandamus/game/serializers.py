@@ -124,10 +124,13 @@ class MatchSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         old_status = instance.status
         new_status = validated_data.get('status', instance.status)
-
+        atomic_needed = instance.tournament and instance.round and instance.tournament.status == 'ongoing' and new_status == 'after'
+        
         with transaction.atomic():
+            if atomic_needed:
+                instance.tournament.matches.select_for_update().filter(round=instance.round)
             instance = super().update(instance, validated_data)
-            if instance.tournament and instance.round and instance.tournament.status == 'ongoing' and new_status == 'after':
+            if atomic_needed:
                 all_matches_finished = self.is_all_matches_finished(instance.tournament, instance.round)
             
         if new_status == 'ongoing':
