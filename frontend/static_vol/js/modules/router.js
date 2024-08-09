@@ -53,7 +53,12 @@ const linkSpa = async (ev) => {
     }
     history.pushState(null, null, link);
     try {
-        await router(getToken('accessToken'));
+        const isLogin = !!sessionStorage.getItem('accessToken');
+        if (isLogin) {
+            await router(getToken('accessToken'));
+        } else {
+            await router(false);
+        }
     } catch (error) {
         console.error(error);
     }
