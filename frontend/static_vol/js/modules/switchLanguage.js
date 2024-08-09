@@ -41,9 +41,11 @@ const saveLang = async (lang) => {
         if (localStorage.getItem('configLang') !== lang) {
             localStorage.setItem('configLang', lang);
         }
-        if(!getToken('accessToken')) {
+        //非ログイン後ならここまで
+        if(!sessionStorage.getItem('accessToken')) {
             return;
         }
+        //ログイン後ならDBにも保存
         const data = await updateDbLang(lang, false);
         if (!data) {
             throw new Error(`Failed to updateDbLang`);
