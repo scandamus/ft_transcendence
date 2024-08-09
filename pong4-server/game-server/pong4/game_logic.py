@@ -160,15 +160,15 @@ class Ball:
                     tmp = tmp if self.x > 0 else -tmp
                     self.dy = -self.dy + tmp
                 return sound_type
-            # elif collision_detected == 'collision_side':
-            #     sound_type = 'wall_collision'
-            #     if wall.position == 'RIGHT' or wall.position == 'LEFT':
-            #         self.dy = -self.dy
-            #         self.x += self.dx
-            #     elif wall.position == 'UPPER' or wall.position == 'LOWER':
-            #         self.dx = -self.dx
-            #         self.y += self.dy
-            #     return sound_type
+            elif collision_detected == 'collision_side':
+                sound_type = 'wall_collision'
+                if wall.position == 'RIGHT' or wall.position == 'LEFT':
+                    self.dy = -self.dy
+                    self.x += self.dx
+                elif wall.position == 'UPPER' or wall.position == 'LOWER':
+                    self.dx = -self.dx
+                    self.y += self.dy
+                return sound_type
 
         # どちらにも当たらないならdx,dyを足してballを移動
         self.x += self.dx
