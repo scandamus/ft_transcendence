@@ -144,10 +144,11 @@ const startTokenRefreshInterval = () => {
     const siteInfo = new SiteInfo();
 
     const intervalId = setInterval(async() => {
-        const accessTokenExpiry = parseInt(sessionStorage.getItem('accessTokenExpiry'), 10);
+        const accessTokenExpiry = parseInt(sessionStorage.getItem('accessTokenExpiry'), 10) * 1000;
         const currentTime = new Date().getTime();
-
-        if (currentTime > accessTokenExpiry - 30000) {
+        
+        // 期限の90秒前を過ぎたらリフレッシュする
+        if (currentTime >= accessTokenExpiry - 90000) {
             console.log('Refreshing access token');
             await refreshAccessToken();
         }
