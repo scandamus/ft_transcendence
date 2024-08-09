@@ -53,7 +53,12 @@ const linkSpa = async (ev) => {
     }
     history.pushState(null, null, link);
     try {
-        await router(getToken('accessToken'));
+        const isLogin = !!sessionStorage.getItem('accessToken');
+        if (isLogin) {
+            await router(getToken('accessToken'));
+        } else {
+            await router(false);
+        }
     } catch (error) {
         console.error(error);
     }
@@ -102,7 +107,8 @@ const router = async (accessToken) => {
         }
     } else if (flagPopState) {
         //ゲーム以外からの履歴移動
-        accessToken = getToken('accessToken');
+        const isLogin = !!sessionStorage.getItem('accessToken');
+        accessToken = isLogin ? getToken('accessToken') : false;
 
         //gameへの移動はdashboardにリダイレクト
         if (location.pathname.startsWith('/game/pong')) {
